@@ -24,5 +24,6 @@ if __name__ == "__main__":
 
     atom_enc = AtomEncoder(emb_dim=100)
     atom_emb = atom_enc(dataset.data.x)
-
+    # aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    # Check if black's hook work
     print(atom_emb.shape)
