@@ -1,5 +1,6 @@
 black
 pre-commit
+PyTDC
 ogb
 rdkit
 scikit-learn
