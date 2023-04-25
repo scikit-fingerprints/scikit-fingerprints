@@ -23,7 +23,7 @@ def test_morgan_fingerprint():
     X_2 = X.copy()
 
     # Concurrent
-    morgan = MorganFingerprint(radius=2, n_bits=2048, n_jobs=-1)
+    morgan = MorganFingerprintAsBitVect(radius=2, n_bits=2048, n_jobs=-1)
     X_train = morgan.transform(X)
 
     # Sequential
