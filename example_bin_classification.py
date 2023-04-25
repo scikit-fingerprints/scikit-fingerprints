@@ -74,7 +74,7 @@ def example_ogbg(dataset_name: str):
 def example_tdc():
     dataset = Tox(name="hERG")
     split = dataset.get_split()
-    train, valid, test = split["train"], split["valid"], split["test"]
+    train, valid, test = split["train"], split["valid"], split["tests"]
 
     y_train = train["Y"]
     X_train = train["Drug"]
