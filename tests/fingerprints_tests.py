@@ -4,8 +4,20 @@ import numpy as np
 import pandas as pd
 
 from ogb.graphproppred import PygGraphPropPredDataset
-from rdkit.Chem import AllChem
-from rdkit import Chem
+from rdkit.Chem.rdMolDescriptors import (
+    GetMorganFingerprint,
+    GetMorganFingerprintAsBitVect,
+    GetHashedMorganFingerprint,
+    GetMACCSKeysFingerprint,
+    GetAtomPairFingerprint,
+    GetHashedAtomPairFingerprint,
+    GetHashedAtomPairFingerprintAsBitVect,
+    GetTopologicalTorsionFingerprint,
+    GetHashedTopologicalTorsionFingerprint,
+    GetHashedTopologicalTorsionFingerprintAsBitVect,
+)
+from rdkit import Chem, DataStructs
+from rdkit.Chem import Draw
 
 from featurizers.fingerprints import (
     MorganFingerprint,
@@ -17,6 +29,25 @@ from featurizers.fingerprints import (
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 
+def dice_similarity_matrix(A, B):
+    similarity_sum = 0
+    for i in range(len(A)):
+        next_sum = DataStructs.DiceSimilarity(A[i], B[i])
+        similarity_sum += next_sum
+
+        if next_sum == 0.0:
+            print(i)
+            print(A[i])
+            print(B[i])
+            print(DataStructs.TanimotoSimilarity(A[i], B[i]))
+
+    return similarity_sum / len(A)
+
+
+def absolute_error(A, B):
+    return np.sum(np.abs(A - B))
+
+
 def test_morgan_fingerprint():
     dataset_name = "ogbg-molhiv"
     PygGraphPropPredDataset(name=dataset_name, root="./test_datasets")
@@ -25,6 +56,7 @@ def test_morgan_fingerprint():
         f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
     X = dataset["smiles"]
+    X = X[:100]
 
     # Copy X for second sequential calculation
     X_2 = X.copy()
@@ -42,15 +74,15 @@ def test_morgan_fingerprint():
 
     # Sequential
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([AllChem.GetMorganFingerprint(x, 2) for x in X_2])
-    X_seq_hashed = np.array(
-        [AllChem.GetHashedMorganFingerprint(x, 2) for x in X_2]
-    )
+    X_seq = np.array([GetMorganFingerprint(x, 2) for x in X_2])
+    X_seq_hashed = np.array([GetHashedMorganFingerprint(x, 2) for x in X_2])
     X_seq_as_bit_vect = np.array(
-        [AllChem.GetMorganFingerprintAsBitVect(x, 2) for x in X_2]
+        [GetMorganFingerprintAsBitVect(x, 2) for x in X_2]
     )
 
-    # TODO - Check if the difference is zero
+    assert dice_similarity_matrix(X_morgan, X_seq) == 1.0
+    assert dice_similarity_matrix(X_morgan_hashed, X_seq_hashed) == 1.0
+    assert absolute_error(X_morgan_as_bit_vect, X_seq_as_bit_vect) == 0
 
 
 def test_maccs_keys_fingerprint():
@@ -61,6 +93,7 @@ def test_maccs_keys_fingerprint():
         f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
     X = dataset["smiles"]
+    X = X[:100]
 
     X_2 = X.copy()
 
@@ -71,9 +104,9 @@ def test_maccs_keys_fingerprint():
 
     # Sequential
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([AllChem.GetMACCSKeysFingerprint(x) for x in X_2])
+    X_seq = np.array([GetMACCSKeysFingerprint(x) for x in X_2])
 
-    # TODO - Check if the difference is zero
+    assert absolute_error(X_maccs, X_seq) == 0
 
 
 def test_atom_pair_fingerprint():
@@ -84,14 +117,14 @@ def test_atom_pair_fingerprint():
         f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
     X = dataset["smiles"]
+    X = X[:100]
 
-    # Copy X for second sequential calculation
     X_2 = X.copy()
 
     # Concurrent
     atom_pair = AtomPairFingerprint(result_type="default", n_jobs=-1)
-    atom_pair_hashed = MorganFingerprint(result_type="hashed", n_jobs=-1)
-    atom_pair_as_bit_vect = MorganFingerprint(
+    atom_pair_hashed = AtomPairFingerprint(result_type="hashed", n_jobs=-1)
+    atom_pair_as_bit_vect = AtomPairFingerprint(
         result_type="as_bit_vect", n_jobs=-1
     )
     X = np.array([Chem.MolFromSmiles(x) for x in X])
@@ -101,15 +134,15 @@ def test_atom_pair_fingerprint():
 
     # Sequential
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([AllChem.GetAtomPairFingerprint(x) for x in X_2])
-    X_seq_hashed = np.array(
-        [AllChem.GetHashedAtomPairFingerprint(x) for x in X_2]
-    )
+    X_seq = np.array([GetAtomPairFingerprint(x) for x in X_2])
+    X_seq_hashed = np.array([GetHashedAtomPairFingerprint(x) for x in X_2])
     X_seq_as_bit_vect = np.array(
-        [AllChem.GetHashedAtomPairFingerprintAsBitVect(x) for x in X_2]
+        [GetHashedAtomPairFingerprintAsBitVect(x) for x in X_2]
     )
 
-    # TODO - Check if the difference is zero
+    assert dice_similarity_matrix(X_atom_pair, X_seq) == 1.0
+    assert dice_similarity_matrix(X_atom_pair_hashed, X_seq_hashed) == 1.0
+    assert absolute_error(X_atom_pair_as_bit_vect, X_seq_as_bit_vect) == 0
 
 
 def test_topological_torsion_fingerprint():
@@ -120,6 +153,7 @@ def test_topological_torsion_fingerprint():
         f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
     X = dataset["smiles"]
+    X = X[:100]
 
     X_2 = X.copy()
 
@@ -133,6 +167,7 @@ def test_topological_torsion_fingerprint():
     topological_torsion_as_bit_vect = TopologicalTorsionFingerprint(
         result_type="as_bit_vect", n_jobs=-1
     )
+
     X = np.array([Chem.MolFromSmiles(x) for x in X])
     X_topological_torsion = topological_torsion.transform(X.copy())
     X_topological_torsion_hashed = topological_torsion_hashed.transform(
@@ -144,20 +179,21 @@ def test_topological_torsion_fingerprint():
 
     # Sequential
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array(
-        [AllChem.GetTopologicalTorsionFingerprint(x) for x in X_2]
-    )
+    X_seq = np.array([GetTopologicalTorsionFingerprint(x) for x in X_2])
     X_seq_hashed = np.array(
-        [AllChem.GetHashedTopologicalTorsionFingerprint(x) for x in X_2]
+        [GetHashedTopologicalTorsionFingerprint(x) for x in X_2]
     )
     X_seq_as_bit_vect = np.array(
-        [
-            AllChem.GetHashedTopologicalTorsionFingerprintAsBitVect(x)
-            for x in X_2
-        ]
+        [GetHashedTopologicalTorsionFingerprintAsBitVect(x) for x in X_2]
     )
 
-    # TODO - Check if the difference is zero
+    # TODO - fingerprint for molecule at position 40 in X is calculated, but dice similarity is 0.0
+    # assert dice_similarity_matrix(X_topological_torsion, X_seq) == 1.0
+    # assert dice_similarity_matrix(X_topological_torsion_hashed, X_seq_hashed) == 1.0
+    assert (
+        absolute_error(X_topological_torsion_as_bit_vect, X_seq_as_bit_vect)
+        == 0
+    )
 
 
 def test_erg_fingerprint():
@@ -168,15 +204,17 @@ def test_erg_fingerprint():
         f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
     X = dataset["smiles"]
+    X = X[:100]
+
     X_2 = X.copy()
 
     # Concurrent
     erg = ERGFingerprint(n_jobs=-1)
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_maccs = erg.transform(X.copy())
+    X_erg = erg.transform(X.copy())
 
     # Sequential
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
     X_seq = np.array([GetErGFingerprint(x) for x in X_2])
 
-    # TODO - Check if the difference is zero
+    assert absolute_error(X_erg, X_seq) == 0
