@@ -24,6 +24,7 @@ def test_morgan_fingerprint():
 
     # Concurrent
     morgan = MorganFingerprintAsBitVect(radius=2, n_bits=2048, n_jobs=-1)
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
     X_train = morgan.transform(X)
 
     # Sequential

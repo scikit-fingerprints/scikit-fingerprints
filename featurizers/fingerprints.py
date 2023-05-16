@@ -52,12 +52,15 @@ class MorganFingerprintAsBitVect(FingerprintTransformer):
         return result
 
     def transform(self, X: Union[pd.DataFrame, np.ndarray]) -> np.ndarray:
+        """
+
+        :param X: np.array or DataFrame of rdkit.Mol objects
+        :return: np.array of calculated fingerprints for each molecule
+        """
         batch_size = len(X) // self.n_jobs
 
         if batch_size == 0:
             batch_size = 1
-
-        X = np.array([Chem.MolFromSmiles(x) for x in X])
 
         with mp.Pool(processes=self.n_jobs) as pool:
             args = [
