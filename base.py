@@ -5,6 +5,8 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from featurizers.descriptors import fp_descriptors
+
 
 class FingerprintTransformer(ABC):
     def __init__(self, n_jobs):
@@ -13,12 +15,17 @@ class FingerprintTransformer(ABC):
         else:
             self.n_jobs = n_jobs
 
-        self.fp_descriptor = None
         self.fp_args = None
+        self.fp_descriptor_name: str = ""
 
-    @abstractmethod
     def _transform(self, X: Union[pd.DataFrame, np.ndarray]) -> np.ndarray:
-        pass
+        result = np.array(
+            [
+                fp_descriptors[self.fp_descriptor_name](x, **self.fp_args)
+                for x in X
+            ]
+        )
+        return result
 
     def transform(self, X: Union[pd.DataFrame, np.ndarray]) -> np.ndarray:
         """
