@@ -1,4 +1,3 @@
-import multiprocessing as mp
 from typing import Union
 
 import numpy as np
@@ -33,25 +32,53 @@ class MorganFingerprint(FingerprintTransformer):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
         super().__init__(n_jobs)
+        self.radius = radius
+        self.n_bits = n_bits
+        self.use_chirality = use_chirality
+        self.use_bond_types = use_bond_types
+        self.use_features = use_features
+        self.result_type = result_type
 
-        self.fp_args = {
-            "radius": radius,
-            "useChirality": use_chirality,
-            "useBondTypes": use_bond_types,
-            "useFeatures": use_features,
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        fp_args = {
+            "radius": self.radius,
+            "useChirality": self.use_chirality,
+            "useBondTypes": self.use_bond_types,
+            "useFeatures": self.use_features,
         }
 
-        if result_type in ["as_bit_vect", "hashed"]:
-            self.fp_args["nBits"] = n_bits
+        if self.result_type == "default":
+            from rdkit.Chem.rdMolDescriptors import GetMorganFingerprint
 
-        self.fp_descriptor_name = "morgan_" + result_type
+            fp_function = GetMorganFingerprint
+        elif self.result_type == "as_bit_vect":
+            from rdkit.Chem.rdMolDescriptors import (
+                GetMorganFingerprintAsBitVect,
+            )
+
+            fp_function = GetMorganFingerprintAsBitVect
+            fp_args["nBits"] = self.n_bits
+        else:
+            from rdkit.Chem.rdMolDescriptors import GetHashedMorganFingerprint
+
+            fp_function = GetHashedMorganFingerprint
+            fp_args["nBits"] = self.n_bits
+
+        return np.array([fp_function(x, **fp_args) for x in X])
 
 
 class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(self, n_jobs: int = 1):
         super().__init__(n_jobs)
-        self.fp_args = {}
-        self.fp_descriptor_name = "maccs_keys"
+
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
+
+        return np.array([GetMACCSKeysFingerprint(x) for x in X])
 
 
 class AtomPairFingerprint(FingerprintTransformer):
@@ -72,23 +99,51 @@ class AtomPairFingerprint(FingerprintTransformer):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
         super().__init__(n_jobs)
-        self.fp_args = {
-            "minLength": min_length,
-            "maxLength": max_length,
-            "fromAtoms": from_atoms,
-            "ignoreAtoms": ignore_atoms,
-            "atomInvariants": atom_invariants,
-            "includeChirality": include_chirality,
-            "use2D": use_2D,
+        self.n_bits = n_bits
+        self.min_length = min_length
+        self.max_length = max_length
+        self.from_atoms = from_atoms
+        self.ignore_atoms = ignore_atoms
+        self.atom_invariants = atom_invariants
+        self.n_bits_per_entry = n_bits_per_entry
+        self.include_chirality = include_chirality
+        self.use_2D = use_2D
+        self.result_type = result_type
+
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        fp_args = {
+            "minLength": self.min_length,
+            "maxLength": self.max_length,
+            "fromAtoms": self.from_atoms,
+            "ignoreAtoms": self.ignore_atoms,
+            "atomInvariants": self.atom_invariants,
+            "includeChirality": self.include_chirality,
+            "use2D": self.use_2D,
         }
 
-        if result_type == "hashed":
-            self.fp_args["nBits"] = n_bits
-        elif result_type == "as_bit_vect":
-            self.fp_args["nBits"] = n_bits
-            self.fp_args["nBitsPerEntry"] = n_bits_per_entry
+        if self.result_type == "default":
+            from rdkit.Chem.rdMolDescriptors import GetAtomPairFingerprint
 
-        self.fp_descriptor_name = "atom_pair_" + result_type
+            fp_function = GetAtomPairFingerprint
+        elif self.result_type == "as_bit_vect":
+            from rdkit.Chem.rdMolDescriptors import (
+                GetHashedAtomPairFingerprintAsBitVect,
+            )
+
+            fp_function = GetHashedAtomPairFingerprintAsBitVect
+            fp_args["nBits"] = self.n_bits
+            fp_args["nBitsPerEntry"] = self.n_bits_per_entry
+        else:
+            from rdkit.Chem.rdMolDescriptors import (
+                GetHashedAtomPairFingerprint,
+            )
+
+            fp_function = GetHashedAtomPairFingerprint
+            fp_args["nBits"] = self.n_bits
+
+        return np.array([fp_function(x, **fp_args) for x in X])
 
 
 class TopologicalTorsionFingerprint(FingerprintTransformer):
@@ -106,18 +161,47 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
         super().__init__(n_jobs)
-        self.fp_args = {
-            "targetSize": target_size,
-            "fromAtoms": from_atoms,
-            "ignoreAtoms": ignore_atoms,
-            "atomInvariants": atom_invariants,
-            "includeChirality": include_chirality,
+        self.n_bits = n_bits
+        self.target_size = target_size
+        self.from_atoms = from_atoms
+        self.ignore_atoms = ignore_atoms
+        self.atom_invariants = atom_invariants
+        self.include_chirality = include_chirality
+        self.result_type = result_type
+
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        fp_args = {
+            "targetSize": self.target_size,
+            "fromAtoms": self.from_atoms,
+            "ignoreAtoms": self.ignore_atoms,
+            "atomInvariants": self.atom_invariants,
+            "includeChirality": self.include_chirality,
         }
 
-        if result_type in ["hashed", "as_bit_vect"]:
-            self.fp_args["nBits"] = n_bits
+        if self.result_type == "default":
+            from rdkit.Chem.rdMolDescriptors import (
+                GetTopologicalTorsionFingerprint,
+            )
 
-        self.fp_descriptor_name = "topological_torsion_" + result_type
+            fp_function = GetTopologicalTorsionFingerprint
+        elif self.result_type == "as_bit_vect":
+            from rdkit.Chem.rdMolDescriptors import (
+                GetHashedTopologicalTorsionFingerprintAsBitVect,
+            )
+
+            fp_function = GetHashedTopologicalTorsionFingerprintAsBitVect
+            fp_args["nBits"] = self.n_bits
+        else:
+            from rdkit.Chem.rdMolDescriptors import (
+                GetHashedTopologicalTorsionFingerprint,
+            )
+
+            fp_function = GetHashedTopologicalTorsionFingerprint
+            fp_args["nBits"] = self.n_bits
+
+        return np.array([fp_function(x, **fp_args) for x in X])
 
 
 class ERGFingerprint(FingerprintTransformer):
@@ -130,12 +214,21 @@ class ERGFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
     ):
         super().__init__(n_jobs)
+        self.atom_types = atom_types
+        self.fuzz_increment = fuzz_increment
+        self.min_path = min_path
+        self.max_path = max_path
 
-        self.fp_args = {
-            "atomTypes": atom_types,
-            "fuzzIncrement": fuzz_increment,
-            "minPath": min_path,
-            "maxPath": max_path,
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
+
+        fp_args = {
+            "atomTypes": self.atom_types,
+            "fuzzIncrement": self.fuzz_increment,
+            "minPath": self.min_path,
+            "maxPath": self.max_path,
         }
 
-        self.fp_descriptor_name = "erg"
+        return np.array([GetErGFingerprint(x, **fp_args) for x in X])

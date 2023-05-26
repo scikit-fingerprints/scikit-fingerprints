@@ -1,9 +1,7 @@
 import pytest
 
 import numpy as np
-import pandas as pd
 
-from ogb.graphproppred import PygGraphPropPredDataset
 from rdkit.Chem.rdMolDescriptors import (
     GetMorganFingerprint,
     GetMorganFingerprintAsBitVect,
@@ -17,7 +15,6 @@ from rdkit.Chem.rdMolDescriptors import (
     GetHashedTopologicalTorsionFingerprintAsBitVect,
 )
 from rdkit import Chem, DataStructs
-from rdkit.Chem import Draw
 
 from featurizers.fingerprints import (
     MorganFingerprint,
@@ -29,71 +26,64 @@ from featurizers.fingerprints import (
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 
-def dice_similarity_matrix(A, B):
-    similarity_sum = 0
-    for i in range(len(A)):
-        next_sum = DataStructs.DiceSimilarity(A[i], B[i])
-        similarity_sum += next_sum
-
-        if next_sum == 0.0:
-            print(i)
-            print(A[i])
-            print(B[i])
-            print(DataStructs.TanimotoSimilarity(A[i], B[i]))
-
-    return similarity_sum / len(A)
+@pytest.fixture
+def example_molecules():
+    return [
+        "COc1cccc(NC(=O)CC(=O)N2N=C(N(CCC#N)c3ccc(Cl)cc3)CC2c2ccccc2)c1",
+        "CCN(CCO)CCNc1ccc(C)c2sc3ccccc3c(=O)c12",
+        "Oc1ncnc2c1sc1nc3ccccc3n12",
+        "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
+        "Cc1ccc2nsnc2c1[N+](=O)[O-]",
+    ]
 
 
-def absolute_error(A, B):
-    return np.sum(np.abs(A - B))
-
-
-def test_morgan_fingerprint():
-    dataset_name = "ogbg-molhiv"
-    PygGraphPropPredDataset(name=dataset_name, root="./test_datasets")
-
-    dataset = pd.read_csv(
-        f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-    )
-    X = dataset["smiles"]
-    X = X[:100]
+def test_morgan_fingerprint(example_molecules):
+    X = example_molecules
 
     # Copy X for second sequential calculation
     X_2 = X.copy()
 
     # Concurrent
     morgan = MorganFingerprint(result_type="default", n_jobs=-1)
-    morgan_hashed = MorganFingerprint(result_type="hashed", n_jobs=-1)
     morgan_as_bit_vect = MorganFingerprint(
         result_type="as_bit_vect", n_jobs=-1
     )
     X = np.array([Chem.MolFromSmiles(x) for x in X])
     X_morgan = morgan.transform(X.copy())
-    X_morgan_hashed = morgan_hashed.transform(X.copy())
     X_morgan_as_bit_vect = morgan_as_bit_vect.transform(X.copy())
 
     # Sequential
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
     X_seq = np.array([GetMorganFingerprint(x, 2) for x in X_2])
-    X_seq_hashed = np.array([GetHashedMorganFingerprint(x, 2) for x in X_2])
     X_seq_as_bit_vect = np.array(
         [GetMorganFingerprintAsBitVect(x, 2) for x in X_2]
     )
 
-    assert dice_similarity_matrix(X_morgan, X_seq) == 1.0
-    assert dice_similarity_matrix(X_morgan_hashed, X_seq_hashed) == 1.0
-    assert absolute_error(X_morgan_as_bit_vect, X_seq_as_bit_vect) == 0
+    assert np.all(X_morgan == X_seq)
+    assert np.all(X_morgan_as_bit_vect == X_seq_as_bit_vect)
 
 
-def test_maccs_keys_fingerprint():
-    dataset_name = "ogbg-molhiv"
-    PygGraphPropPredDataset(name=dataset_name, root="./test_datasets")
+def test_morgan_hashed_fingerprint(example_molecules):
+    X = example_molecules
 
-    dataset = pd.read_csv(
-        f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-    )
-    X = dataset["smiles"]
-    X = X[:100]
+    # Copy X for second sequential calculation
+    X_2 = X.copy()
+
+    # Concurrent
+    morgan_hashed = MorganFingerprint(result_type="hashed", n_jobs=-1)
+
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_morgan_hashed = morgan_hashed.transform(X.copy())
+
+    # Sequential
+    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
+    X_seq_hashed = np.array([GetHashedMorganFingerprint(x, 2) for x in X_2])
+
+    assert np.all(X_morgan_hashed == X_seq_hashed)
+
+
+def test_maccs_keys_fingerprint(example_molecules):
+    X = example_molecules
 
     X_2 = X.copy()
 
@@ -106,18 +96,11 @@ def test_maccs_keys_fingerprint():
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
     X_seq = np.array([GetMACCSKeysFingerprint(x) for x in X_2])
 
-    assert absolute_error(X_maccs, X_seq) == 0
+    assert np.all(X_maccs == X_seq)
 
 
-def test_atom_pair_fingerprint():
-    dataset_name = "ogbg-molhiv"
-    PygGraphPropPredDataset(name=dataset_name, root="./test_datasets")
-
-    dataset = pd.read_csv(
-        f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-    )
-    X = dataset["smiles"]
-    X = X[:100]
+def test_atom_pair_fingerprint(example_molecules):
+    X = example_molecules
 
     X_2 = X.copy()
 
@@ -140,20 +123,13 @@ def test_atom_pair_fingerprint():
         [GetHashedAtomPairFingerprintAsBitVect(x) for x in X_2]
     )
 
-    assert dice_similarity_matrix(X_atom_pair, X_seq) == 1.0
-    assert dice_similarity_matrix(X_atom_pair_hashed, X_seq_hashed) == 1.0
-    assert absolute_error(X_atom_pair_as_bit_vect, X_seq_as_bit_vect) == 0
+    assert np.all(X_atom_pair == X_seq)
+    assert np.all(X_atom_pair_hashed == X_seq_hashed)
+    assert np.all(X_atom_pair_as_bit_vect == X_seq_as_bit_vect)
 
 
-def test_topological_torsion_fingerprint():
-    dataset_name = "ogbg-molhiv"
-    PygGraphPropPredDataset(name=dataset_name, root="./test_datasets")
-
-    dataset = pd.read_csv(
-        f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-    )
-    X = dataset["smiles"]
-    X = X[:100]
+def test_topological_torsion_fingerprint(example_molecules):
+    X = example_molecules
 
     X_2 = X.copy()
 
@@ -187,24 +163,13 @@ def test_topological_torsion_fingerprint():
         [GetHashedTopologicalTorsionFingerprintAsBitVect(x) for x in X_2]
     )
 
-    # TODO - fingerprint for molecule at position 40 in X is calculated, but dice similarity is 0.0
-    # assert dice_similarity_matrix(X_topological_torsion, X_seq) == 1.0
-    # assert dice_similarity_matrix(X_topological_torsion_hashed, X_seq_hashed) == 1.0
-    assert (
-        absolute_error(X_topological_torsion_as_bit_vect, X_seq_as_bit_vect)
-        == 0
-    )
+    assert np.all(X_topological_torsion == X_seq)
+    assert np.all(X_topological_torsion_hashed == X_seq_hashed)
+    assert np.all(X_topological_torsion_as_bit_vect == X_seq_as_bit_vect)
 
 
-def test_erg_fingerprint():
-    dataset_name = "ogbg-molhiv"
-    PygGraphPropPredDataset(name=dataset_name, root="./test_datasets")
-
-    dataset = pd.read_csv(
-        f"./test_datasets/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-    )
-    X = dataset["smiles"]
-    X = X[:100]
+def test_erg_fingerprint(example_molecules):
+    X = example_molecules
 
     X_2 = X.copy()
 
@@ -217,4 +182,32 @@ def test_erg_fingerprint():
     X_2 = [Chem.MolFromSmiles(x) for x in X_2]
     X_seq = np.array([GetErGFingerprint(x) for x in X_2])
 
-    assert absolute_error(X_erg, X_seq) == 0
+    assert np.all(X_erg == X_seq)
+
+
+def test_input_validation(example_molecules):
+    X = example_molecules
+
+    X_test = X.copy()
+
+    morgan = MorganFingerprint(result_type="default", n_jobs=-1)
+
+    X_test = np.array([Chem.MolFromSmiles(x) for x in X_test])
+    X_seq = np.array([GetMorganFingerprint(x, 2) for x in X_test])
+
+    # 1) Some of the molecules are still given as SMILES
+    X = [Chem.MolFromSmiles(x) if i % 2 == 0 else x for i, x in enumerate(X)]
+    X_morgan = morgan.transform(X)
+    assert np.all(X_morgan == X_seq)
+
+    # 2) There exists an element in the list, which is not a molecule
+    X_2 = np.copy(X)
+    X_2[1] = 1
+
+    with pytest.raises(ValueError) as exec_info:
+        X_morgan_2 = morgan.transform(X_2)
+
+    assert (
+        str(exec_info.value)
+        == "Passed value is neither rdkit.Chem.rdChem.Mol nor SMILES"
+    )
