@@ -39,10 +39,10 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         return X
 
     def fit(self, X, y=None, **fit_params):
-        pass
+        return self
 
     def fit_transform(self, X, y=None, **fit_params):
-        pass
+        return self.transform(X)
 
     def transform(self, X: Union[pd.DataFrame, np.ndarray]):
         """
