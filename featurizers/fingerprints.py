@@ -26,6 +26,7 @@ class MorganFingerprint(FingerprintTransformer):
         use_chirality: bool = False,
         use_bond_types: bool = True,
         use_features: bool = False,
+        sparse: bool = False,
         result_type: str = "default",
         n_jobs: int = 1,
     ):
@@ -70,7 +71,7 @@ class MorganFingerprint(FingerprintTransformer):
 
 
 class MACCSKeysFingerprint(FingerprintTransformer):
-    def __init__(self, n_jobs: int = 1):
+    def __init__(self, sparse: bool = False, n_jobs: int = 1):
         super().__init__(n_jobs)
 
     def _calculate_fingerprint(
@@ -93,6 +94,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         n_bits_per_entry: int = 4,
         include_chirality: bool = False,
         use_2D: bool = True,
+        sparse: bool = False,
         result_type: str = "default",
         n_jobs: int = 1,
     ):
@@ -155,6 +157,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         ignore_atoms: int = 0,
         atom_invariants: int = 0,
         include_chirality: bool = False,
+        sparse: bool = False,
         result_type: str = "default",
         n_jobs: int = 1,
     ):
@@ -211,6 +214,7 @@ class ERGFingerprint(FingerprintTransformer):
         fuzz_increment: float = 0.3,
         min_path: int = 1,
         max_path: int = 15,
+        sparse: bool = False,
         n_jobs: int = 1,
     ):
         super().__init__(n_jobs)
