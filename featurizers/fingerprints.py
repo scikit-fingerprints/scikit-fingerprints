@@ -2,7 +2,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-import rdkit.Chem as Chem
 
 from base import FingerprintTransformer
 
@@ -43,35 +42,61 @@ class MorganFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
-        fp_args = {
-            "radius": self.radius,
-            "useChirality": self.use_chirality,
-            "useBondTypes": self.use_bond_types,
-            "useFeatures": self.use_features,
-        }
-
         if self.result_type == "default":
             from rdkit.Chem.rdMolDescriptors import GetMorganFingerprint
 
-            fp_function = GetMorganFingerprint
+            return np.array(
+                [
+                    GetMorganFingerprint(
+                        x,
+                        radius=self.radius,
+                        useChirality=self.use_chirality,
+                        useBondTypes=self.use_bond_types,
+                        useFeatures=self.use_features,
+                    )
+                    for x in X
+                ]
+            )
         elif self.result_type == "as_bit_vect":
             from rdkit.Chem.rdMolDescriptors import (
                 GetMorganFingerprintAsBitVect,
             )
 
-            fp_function = GetMorganFingerprintAsBitVect
-            fp_args["nBits"] = self.n_bits
+            return np.array(
+                [
+                    GetMorganFingerprintAsBitVect(
+                        x,
+                        radius=self.radius,
+                        useChirality=self.use_chirality,
+                        useBondTypes=self.use_bond_types,
+                        useFeatures=self.use_features,
+                        nBits=self.n_bits,
+                    )
+                    for x in X
+                ]
+            )
         else:
             from rdkit.Chem.rdMolDescriptors import GetHashedMorganFingerprint
 
-            fp_function = GetHashedMorganFingerprint
-            fp_args["nBits"] = self.n_bits
-
-        return np.array([fp_function(x, **fp_args) for x in X])
+            return np.array(
+                [
+                    GetHashedMorganFingerprint(
+                        x,
+                        radius=self.radius,
+                        useChirality=self.use_chirality,
+                        useBondTypes=self.use_bond_types,
+                        useFeatures=self.use_features,
+                        nBits=self.n_bits,
+                    )
+                    for x in X
+                ]
+            )
 
 
 class MACCSKeysFingerprint(FingerprintTransformer):
-    def __init__(self, sparse: bool = False, n_jobs: int = 1):
+    def __init__(
+        self, sparse: bool = False, n_jobs: int = 1
+    ):  # the sparse parameter will be unused
         super().__init__(n_jobs)
 
     def _calculate_fingerprint(

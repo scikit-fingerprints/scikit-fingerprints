@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import joblib
 from joblib import delayed, effective_n_jobs, Parallel
-from typing import Iterable, Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -22,7 +22,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X: Iterable):
+    def transform(self, X: Union[pd.DataFrame, np.ndarray]):
         """
         :param X: np.array or DataFrame of rdkit.Mol objects
         :return: np.array of calculated fingerprints for each molecule
@@ -58,7 +58,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         pass
 
-    def _validate_input(self, X: Iterable):
+    def _validate_input(self, X: List):
         if not all(
             [
                 isinstance(molecule, Mol) or type(molecule) == str
