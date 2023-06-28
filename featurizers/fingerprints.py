@@ -42,6 +42,8 @@ class MorganFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
+        X = self._validate_input(X)
+
         if self.result_type == "default":
             from rdkit.Chem.rdMolDescriptors import GetMorganFingerprint
 
@@ -102,6 +104,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
+        X = self._validate_input(X)
         from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 
         return np.array([GetMACCSKeysFingerprint(x) for x in X])
@@ -140,6 +143,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
+        X = self._validate_input(X)
         fp_args = {
             "minLength": self.min_length,
             "maxLength": self.max_length,
@@ -200,6 +204,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
+        X = self._validate_input(X)
         fp_args = {
             "targetSize": self.target_size,
             "fromAtoms": self.from_atoms,
@@ -251,6 +256,7 @@ class ERGFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
+        X = self._validate_input(X)
         from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
         fp_args = {

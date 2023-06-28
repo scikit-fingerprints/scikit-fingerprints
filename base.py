@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
 
 
@@ -27,7 +26,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         :param X: np.array or DataFrame of rdkit.Mol objects
         :return: np.array of calculated fingerprints for each molecule
         """
-        X = self._validate_input(X)
 
         if self.n_jobs == 1:
             return self._calculate_fingerprint(X)
@@ -38,7 +36,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                 X[i : i + batch_size] for i in range(0, len(X), batch_size)
             )
 
-            with joblib.parallel_backend(n_jobs=self.n_jobs):
+            with joblib.parallel_backend(backend="loky",n_jobs=self.n_jobs):
                 results = Parallel()(
                     delayed(self._calculate_fingerprint)(X_sub)
                     for X_sub in args
@@ -68,6 +66,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             raise ValueError(
                 "Passed value is neither rdkit.Chem.rdChem.Mol nor SMILES"
             )
-
+        from rdkit.Chem import MolFromSmiles
         X = [MolFromSmiles(x) if type(x) == str else x for x in X]
         return X
