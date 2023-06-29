@@ -60,9 +60,8 @@ class MorganFingerprint(FingerprintTransformer):
                 ]
             )
         elif self.result_type == "as_bit_vect":
-            from rdkit.Chem.rdMolDescriptors import (
-                GetMorganFingerprintAsBitVect,
-            )
+            from rdkit.Chem.rdMolDescriptors import GetMorganFingerprintAsBitVect
+
 
             return np.array(
                 [
