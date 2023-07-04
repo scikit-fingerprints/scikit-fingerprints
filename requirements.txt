@@ -1,8 +1,9 @@
 black
+mhfp
+ogb
 pre-commit
 PyTDC
-ogb
 rdkit
 scikit-learn
-torch-geometric
 tmap
+torch-geometric

@@ -22,7 +22,9 @@ from featurizers.fingerprints import (
     AtomPairFingerprint,
     TopologicalTorsionFingerprint,
     ERGFingerprint,
+    MAP4Fingerprint,
 )
+from featurizers.map4 import GetMAP4Fingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 
@@ -183,6 +185,23 @@ def test_erg_fingerprint(example_molecules):
     X_seq = np.array([GetErGFingerprint(x) for x in X_2])
 
     assert np.all(X_erg == X_seq)
+
+
+def test_map4_fingerprint(example_molecules):
+    X = example_molecules
+
+    X_2 = X.copy()
+
+    # Concurrent
+    erg = MAP4Fingerprint(is_folded=True, n_jobs=-1)
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_map4 = erg.transform(X.copy())
+
+    # Sequential
+    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
+    X_seq = np.array([GetMAP4Fingerprint(x, is_folded=True) for x in X_2])
+
+    assert np.all(X_map4 == X_seq)
 
 
 def test_input_validation(example_molecules):
