@@ -5,3 +5,4 @@ ogb
 rdkit
 scikit-learn
 torch-geometric
+tmap
