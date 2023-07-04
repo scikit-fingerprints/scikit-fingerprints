@@ -38,11 +38,9 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                 X[i : i + batch_size] for i in range(0, len(X), batch_size)
             )
 
-            with joblib.parallel_backend(n_jobs=self.n_jobs):
-                results = Parallel()(
-                    delayed(self._calculate_fingerprint)(X_sub)
-                    for X_sub in args
-                )
+            results = Parallel(n_jobs=self.n_jobs)(
+                delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
+            )
 
             return np.concatenate(results)
 
