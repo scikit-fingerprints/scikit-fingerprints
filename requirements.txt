@@ -5,5 +5,8 @@ pre-commit
 PyTDC
 rdkit
 scikit-learn
-tmap
 torch-geometric
+e3fp
+mpi4py
+h5py
+standardiser

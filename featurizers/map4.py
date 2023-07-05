@@ -6,6 +6,8 @@ https://github.com/reymond-group/map4
 import itertools
 from collections import defaultdict
 
+import numpy as np
+
 from mhfp.encoder import MHFPEncoder
 from rdkit.Chem import MolToSmiles, PathToSubmol
 from rdkit.Chem.rdchem import Mol
@@ -26,9 +28,6 @@ def _find_env(Mol: Mol, idx: int, radius: int) -> str:
     atom_map = {}
 
     submol = PathToSubmol(Mol, env, atomMap=atom_map)
-    # print(f"Idx {idx}:")
-    # print(MolToSmiles(submol))
-    # print(atom_map)
 
     if idx in atom_map:
         smiles = MolToSmiles(
@@ -37,10 +36,7 @@ def _find_env(Mol: Mol, idx: int, radius: int) -> str:
             canonical=True,
             isomericSmiles=False,
         )
-        # print(smiles)
-        # print()
         return smiles
-    # print()
     return ""
 
 
@@ -109,15 +105,11 @@ def GetMAP4Fingerprint(
     encoder = MHFPEncoder(n_permutations=dimensions, seed=random_state)
 
     atoms_envs = _get_atom_envs(Mol, radius)
-    # print("Atoms envs:", atoms_envs)
 
     atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, is_counted)
-    # print("Atoms Envs pairs:", atom_env_pairs)
 
     if is_folded:
-        # Hash the shingles in the list and fold it to obtain a bit vector
         fp_hash = encoder.hash(set(atom_env_pairs))
-        # print("Hashed fp:", fp_hash)
         return encoder.fold(fp_hash, dimensions)
     elif return_strings:
         return atom_env_pairs
