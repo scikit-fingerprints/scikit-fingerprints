@@ -11,10 +11,19 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
 
+legal_result_types = {"bit", "sparse", "count", "sparse_count"}
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
-    def __init__(self, n_jobs: int = None):
+    def __init__(self, result_vector_type: str = "bit", n_jobs: int = None):
+        """
+        result_vector_tape has to be one of the following:
+        bit, spares, count, sparse_count
+        """
+        assert result_vector_type in legal_result_types
         self.n_jobs = effective_n_jobs(n_jobs)
+        self.result_vector_type = result_vector_type
+        self.fp_generator_function = None
+        self.fp_generator_args = {}
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -27,7 +36,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         :param X: np.array or DataFrame of rdkit.Mol objects
         :return: np.array of calculated fingerprints for each molecule
         """
-        X = self._validate_input(X)
 
         if self.n_jobs == 1:
             return self._calculate_fingerprint(X)

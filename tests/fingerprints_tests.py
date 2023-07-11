@@ -24,6 +24,7 @@ from featurizers.fingerprints import (
     ERGFingerprint,
 )
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
+import rdkit.Chem.rdFingerprintGenerator as fpgens
 
 
 @pytest.fixture
@@ -37,49 +38,53 @@ def example_molecules():
     ]
 
 
-def test_morgan_fingerprint(example_molecules):
+def test_morgan_bit_fingerprint(example_molecules):
     X = example_molecules
-
-    # Copy X for second sequential calculation
-    X_2 = X.copy()
-
-    # Concurrent
-    morgan = MorganFingerprint(result_type="default", n_jobs=-1)
-    morgan_as_bit_vect = MorganFingerprint(
-        result_type="as_bit_vect", n_jobs=-1
-    )
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_morgan = morgan.transform(X.copy())
-    X_morgan_as_bit_vect = morgan_as_bit_vect.transform(X.copy())
 
-    # Sequential
-    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([GetMorganFingerprint(x, 2) for x in X_2])
-    X_seq_as_bit_vect = np.array(
-        [GetMorganFingerprintAsBitVect(x, 2) for x in X_2]
-    )
+    rdkit_generator = fpgens.GetMorganGenerator()
+    morgan = MorganFingerprint(result_vector_type="bit", n_jobs=-1)
 
-    assert np.all(X_morgan == X_seq)
-    assert np.all(X_morgan_as_bit_vect == X_seq_as_bit_vect)
+    fp_function = rdkit_generator.GetFingerprint
+    X_emf = morgan.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
 
-
-def test_morgan_hashed_fingerprint(example_molecules):
+def test_morgan_count_fingerprint(example_molecules):
     X = example_molecules
-
-    # Copy X for second sequential calculation
-    X_2 = X.copy()
-
-    # Concurrent
-    morgan_hashed = MorganFingerprint(result_type="hashed", n_jobs=-1)
-
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_morgan_hashed = morgan_hashed.transform(X.copy())
 
-    # Sequential
-    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq_hashed = np.array([GetHashedMorganFingerprint(x, 2) for x in X_2])
+    rdkit_generator = fpgens.GetMorganGenerator()
+    morgan = MorganFingerprint(result_vector_type="count", n_jobs=-1)
 
-    assert np.all(X_morgan_hashed == X_seq_hashed)
+    fp_function = rdkit_generator.GetCountFingerprint
+    X_emf = morgan.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
+
+def test_morgan_sparse_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+
+    rdkit_generator = fpgens.GetMorganGenerator()
+    morgan = MorganFingerprint(result_vector_type="sparse", n_jobs=-1)
+
+    fp_function = rdkit_generator.GetSparseFingerprint
+    X_emf = morgan.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
+
+def test_morgan_sparse_count_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+
+    rdkit_generator = fpgens.GetMorganGenerator()
+    morgan = MorganFingerprint(result_vector_type="sparse_count", n_jobs=-1)
+
+    fp_function = rdkit_generator.GetSparseCountFingerprint
+    X_emf = morgan.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
 
 
 def test_maccs_keys_fingerprint(example_molecules):
@@ -190,10 +195,12 @@ def test_input_validation(example_molecules):
 
     X_test = X.copy()
 
-    morgan = MorganFingerprint(result_type="default", n_jobs=-1)
+    rdkit_generator = fpgens.GetMorganGenerator()
+    morgan = MorganFingerprint(n_jobs=-1)
+    fp_function = rdkit_generator.GetFingerprint
 
     X_test = np.array([Chem.MolFromSmiles(x) for x in X_test])
-    X_seq = np.array([GetMorganFingerprint(x, 2) for x in X_test])
+    X_seq = np.array([fp_function(x) for x in X_test])
 
     # 1) Some of the molecules are still given as SMILES
     X = [Chem.MolFromSmiles(x) if i % 2 == 0 else x for i, x in enumerate(X)]
