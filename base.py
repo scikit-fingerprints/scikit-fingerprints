@@ -13,6 +13,7 @@ from rdkit.Chem.rdchem import Mol
 
 legal_result_types = {"bit", "sparse", "count", "sparse_count"}
 
+
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def __init__(self, result_vector_type: str = "bit", n_jobs: int = None):
         """

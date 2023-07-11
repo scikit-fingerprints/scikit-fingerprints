@@ -41,46 +41,41 @@ def example_molecules():
 def test_morgan_bit_fingerprint(example_molecules):
     X = example_molecules
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-
     rdkit_generator = fpgens.GetMorganGenerator()
     morgan = MorganFingerprint(result_vector_type="bit", n_jobs=-1)
-
     fp_function = rdkit_generator.GetFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = np.array([fp_function(x) for x in X])
     assert np.all(X_emf == X_rdkit)
 
+
 def test_morgan_count_fingerprint(example_molecules):
     X = example_molecules
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-
     rdkit_generator = fpgens.GetMorganGenerator()
     morgan = MorganFingerprint(result_vector_type="count", n_jobs=-1)
-
     fp_function = rdkit_generator.GetCountFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = np.array([fp_function(x) for x in X])
     assert np.all(X_emf == X_rdkit)
 
+
 def test_morgan_sparse_fingerprint(example_molecules):
     X = example_molecules
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-
     rdkit_generator = fpgens.GetMorganGenerator()
     morgan = MorganFingerprint(result_vector_type="sparse", n_jobs=-1)
-
     fp_function = rdkit_generator.GetSparseFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = np.array([fp_function(x) for x in X])
     assert np.all(X_emf == X_rdkit)
 
+
 def test_morgan_sparse_count_fingerprint(example_molecules):
     X = example_molecules
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-
     rdkit_generator = fpgens.GetMorganGenerator()
     morgan = MorganFingerprint(result_vector_type="sparse_count", n_jobs=-1)
-
     fp_function = rdkit_generator.GetSparseCountFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = np.array([fp_function(x) for x in X])

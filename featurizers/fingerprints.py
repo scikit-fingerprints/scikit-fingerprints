@@ -18,6 +18,7 @@ that class), otherwise pickle gets angry:
         TypeError: cannot pickle 'Boost.Python.function' object
 """
 
+
 class MorganFingerprint(FingerprintTransformer):
     def __init__(
         self,
@@ -43,8 +44,9 @@ class MorganFingerprint(FingerprintTransformer):
             "fpSize": fpSize,
         }
 
-    def get_genertator(self,**kwargs):
+    def get_genertator(self, **kwargs):
         from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
+
         return GetMorganGenerator(**kwargs)
 
     # this method can be used with every fingerprint implementig generator interface
