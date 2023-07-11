@@ -1,9 +1,11 @@
 import logging
+import sys
 from typing import Union
 
 import e3fp.fingerprint.fprint
 import numpy as np
 import pandas as pd
+import rdkit.rdBase
 from rdkit.Chem import MolToSmiles
 
 from base import FingerprintTransformer
@@ -31,10 +33,11 @@ class MorganFingerprint(FingerprintTransformer):
         sparse: bool = False,
         result_type: str = "default",
         n_jobs: int = 1,
+        verbose: int = 0,
     ):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
-        super().__init__(n_jobs)
+        super().__init__(n_jobs, verbose)
         self.radius = radius
         self.n_bits = n_bits
         self.use_chirality = use_chirality
@@ -98,9 +101,9 @@ class MorganFingerprint(FingerprintTransformer):
 
 class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(
-        self, sparse: bool = False, n_jobs: int = 1
+        self, sparse: bool = False, n_jobs: int = 1, verbose: int = 0
     ):  # the sparse parameter will be unused
-        super().__init__(n_jobs)
+        super().__init__(n_jobs, verbose)
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -125,10 +128,11 @@ class AtomPairFingerprint(FingerprintTransformer):
         sparse: bool = False,
         result_type: str = "default",
         n_jobs: int = 1,
+        verbose: int = 0,
     ):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
-        super().__init__(n_jobs)
+        super().__init__(n_jobs, verbose)
         self.n_bits = n_bits
         self.min_length = min_length
         self.max_length = max_length
@@ -188,10 +192,11 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         sparse: bool = False,
         result_type: str = "default",
         n_jobs: int = 1,
+        verbose: int = 0,
     ):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
-        super().__init__(n_jobs)
+        super().__init__(n_jobs, verbose)
         self.n_bits = n_bits
         self.target_size = target_size
         self.from_atoms = from_atoms
@@ -244,8 +249,9 @@ class ERGFingerprint(FingerprintTransformer):
         max_path: int = 15,
         sparse: bool = False,
         n_jobs: int = 1,
+        verbose: int = 0,
     ):
-        super().__init__(n_jobs)
+        super().__init__(n_jobs, verbose)
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
         self.min_path = min_path
@@ -276,8 +282,9 @@ class MAP4Fingerprint(FingerprintTransformer):
         return_strings: bool = False,
         random_state: int = 0,
         n_jobs: int = 1,
+        verbose: int = 0,
     ):
-        super().__init__(n_jobs)
+        super().__init__(n_jobs, verbose)
         self.dimensions = dimensions
         self.radius = radius
         self.is_counted = is_counted
@@ -347,7 +354,7 @@ class E3FP(FingerprintTransformer):
         confgen_params["seed"] = confgen_params.get("seed", SEED_DEF)
         confgen_params["get_values"] = True
 
-        super().__init__(n_jobs)
+        super().__init__(n_jobs, verbose)
         self.confgen_params = confgen_params
         self.fprint_params = fprint_params
         self.is_folded = is_folded
@@ -355,8 +362,6 @@ class E3FP(FingerprintTransformer):
         self.standardise = standardise
         self.first = confgen_params.get("first", 1)
         self.random_state = random_state
-        self.n_jobs = n_jobs
-        self.verbose = verbose
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -365,9 +370,11 @@ class E3FP(FingerprintTransformer):
         from e3fp.conformer.generator import ConformerGenerator
         from e3fp.pipeline import fprints_from_mol
 
-        # Disable logging
-        if self.verbose == 0:
-            logging.getLogger("e3fp").setLevel(logging.CRITICAL)
+        # # Disable logging
+        # if self.verbose == 0:
+        #     rdkit.rdBase.LogToPythonLogger()
+        #     logger = logging.getLogger()
+        #     logger.disabled = True
 
         conf_gen = ConformerGenerator(
             **self.confgen_params,

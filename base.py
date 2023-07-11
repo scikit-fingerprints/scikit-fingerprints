@@ -10,11 +10,15 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
+from tqdm import tqdm
+
+from utils.logger import tqdm_joblib
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
-    def __init__(self, n_jobs: int = None):
+    def __init__(self, n_jobs: int = None, verbose: int = 0):
         self.n_jobs = effective_n_jobs(n_jobs)
+        self.verbose = verbose
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -38,9 +42,23 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                 X[i : i + batch_size] for i in range(0, len(X), batch_size)
             )
 
-            results = Parallel(n_jobs=self.n_jobs)(
-                delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
-            )
+            if self.verbose > 0:
+                total_batches = min(self.n_jobs, len(X))
+
+                with tqdm_joblib(
+                    tqdm(
+                        desc="Calculating fingerprints...", total=total_batches
+                    )
+                ) as progress_bar:
+                    results = Parallel(n_jobs=self.n_jobs)(
+                        delayed(self._calculate_fingerprint)(X_sub)
+                        for X_sub in args
+                    )
+            else:
+                results = Parallel(n_jobs=self.n_jobs)(
+                    delayed(self._calculate_fingerprint)(X_sub)
+                    for X_sub in args
+                )
 
             return np.concatenate(results)
 
