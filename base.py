@@ -15,16 +15,13 @@ legal_result_types = {"bit", "sparse", "count", "sparse_count"}
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
-    def __init__(self, result_vector_type: str = "bit", n_jobs: int = None):
+    def __init__(self, n_jobs: int = None):
         """
         result_vector_tape has to be one of the following:
         bit, spares, count, sparse_count
         """
-        assert result_vector_type in legal_result_types
         self.n_jobs = effective_n_jobs(n_jobs)
-        self.result_vector_type = result_vector_type
-        self.fp_generator_function = None
-        self.fp_generator_args = {}
+        self.fp_generator_kwargs = {}
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -78,3 +75,37 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
 
         X = [MolFromSmiles(x) if type(x) == str else x for x in X]
         return X
+
+
+class FingerprintGeneratorInterface(ABC):
+    def __init__(self, result_vector_type: str = "bit"):
+        """
+        result_vector_tape has to be one of the following:
+        bit, spares, count, sparse_count
+        """
+        assert result_vector_type in legal_result_types
+        self.result_vector_type = result_vector_type
+        self.fp_generator_kwargs = {}
+
+    @abstractmethod
+    def _get_generator(self):
+        """
+        Function that creates a generator object in each sub-process.
+
+        :return: rdkit fingerprint generator for current fp_generator_kwargs parameter
+        """
+        pass
+
+    def _generate_fingerprints(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        fp_generator = self._get_generator()
+        if self.result_vector_type == "bit":
+            fp_function = fp_generator.GetFingerprint
+        elif self.result_vector_type == "sparse":
+            fp_function = fp_generator.GetSparseFingerprint
+        elif self.result_vector_type == "count":
+            fp_function = fp_generator.GetCountFingerprint
+        else:
+            fp_function = fp_generator.GetSparseCountFingerprint
+        return np.array([fp_function(x) for x in X])

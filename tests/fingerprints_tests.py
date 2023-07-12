@@ -3,18 +3,9 @@ import pytest
 import numpy as np
 
 from rdkit.Chem.rdMolDescriptors import (
-    GetMorganFingerprint,
-    GetMorganFingerprintAsBitVect,
-    GetHashedMorganFingerprint,
     GetMACCSKeysFingerprint,
-    GetAtomPairFingerprint,
-    GetHashedAtomPairFingerprint,
-    GetHashedAtomPairFingerprintAsBitVect,
-    GetTopologicalTorsionFingerprint,
-    GetHashedTopologicalTorsionFingerprint,
-    GetHashedTopologicalTorsionFingerprintAsBitVect,
 )
-from rdkit import Chem, DataStructs
+from rdkit import Chem
 
 from featurizers.fingerprints import (
     MorganFingerprint,
@@ -60,6 +51,7 @@ def test_morgan_count_fingerprint(example_molecules):
     assert np.all(X_emf == X_rdkit)
 
 
+# this test raises a memory error
 def test_morgan_sparse_fingerprint(example_molecules):
     X = example_molecules
     X = np.array([Chem.MolFromSmiles(x) for x in X])
@@ -99,73 +91,104 @@ def test_maccs_keys_fingerprint(example_molecules):
     assert np.all(X_maccs == X_seq)
 
 
+def test_atom_pair_bit_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    rdkit_generator = fpgens.GetAtomPairGenerator()
+    atom_pair = AtomPairFingerprint(result_vector_type="bit", n_jobs=-1)
+    fp_function = rdkit_generator.GetFingerprint
+    X_emf = atom_pair.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
+
+
 def test_atom_pair_fingerprint(example_molecules):
     X = example_molecules
-
-    X_2 = X.copy()
-
-    # Concurrent
-    atom_pair = AtomPairFingerprint(result_type="default", n_jobs=-1)
-    atom_pair_hashed = AtomPairFingerprint(result_type="hashed", n_jobs=-1)
-    atom_pair_as_bit_vect = AtomPairFingerprint(
-        result_type="as_bit_vect", n_jobs=-1
-    )
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_atom_pair = atom_pair.transform(X.copy())
-    X_atom_pair_hashed = atom_pair_hashed.transform(X.copy())
-    X_atom_pair_as_bit_vect = atom_pair_as_bit_vect.transform(X.copy())
-
-    # Sequential
-    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([GetAtomPairFingerprint(x) for x in X_2])
-    X_seq_hashed = np.array([GetHashedAtomPairFingerprint(x) for x in X_2])
-    X_seq_as_bit_vect = np.array(
-        [GetHashedAtomPairFingerprintAsBitVect(x) for x in X_2]
-    )
-
-    assert np.all(X_atom_pair == X_seq)
-    assert np.all(X_atom_pair_hashed == X_seq_hashed)
-    assert np.all(X_atom_pair_as_bit_vect == X_seq_as_bit_vect)
+    rdkit_generator = fpgens.GetAtomPairGenerator()
+    atom_pair = AtomPairFingerprint(result_vector_type="count", n_jobs=-1)
+    fp_function = rdkit_generator.GetCountFingerprint
+    X_emf = atom_pair.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
 
 
-def test_topological_torsion_fingerprint(example_molecules):
+# this test takes too long
+def test_atom_pair_sparse_fingerprint(example_molecules):
     X = example_molecules
-
-    X_2 = X.copy()
-
-    # Concurrent
-    topological_torsion = TopologicalTorsionFingerprint(
-        result_type="default", n_jobs=-1
-    )
-    topological_torsion_hashed = TopologicalTorsionFingerprint(
-        result_type="hashed", n_jobs=-1
-    )
-    topological_torsion_as_bit_vect = TopologicalTorsionFingerprint(
-        result_type="as_bit_vect", n_jobs=-1
-    )
-
     X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_topological_torsion = topological_torsion.transform(X.copy())
-    X_topological_torsion_hashed = topological_torsion_hashed.transform(
-        X.copy()
-    )
-    X_topological_torsion_as_bit_vect = (
-        topological_torsion_as_bit_vect.transform(X.copy())
-    )
+    rdkit_generator = fpgens.GetAtomPairGenerator()
+    atom_pair = AtomPairFingerprint(result_vector_type="sparse", n_jobs=-1)
+    fp_function = rdkit_generator.GetSparseFingerprint
+    X_emf = atom_pair.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
 
-    # Sequential
-    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([GetTopologicalTorsionFingerprint(x) for x in X_2])
-    X_seq_hashed = np.array(
-        [GetHashedTopologicalTorsionFingerprint(x) for x in X_2]
-    )
-    X_seq_as_bit_vect = np.array(
-        [GetHashedTopologicalTorsionFingerprintAsBitVect(x) for x in X_2]
-    )
 
-    assert np.all(X_topological_torsion == X_seq)
-    assert np.all(X_topological_torsion_hashed == X_seq_hashed)
-    assert np.all(X_topological_torsion_as_bit_vect == X_seq_as_bit_vect)
+def test_atom_pair_sparse_count_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    rdkit_generator = fpgens.GetAtomPairGenerator()
+    atom_pair = AtomPairFingerprint(
+        result_vector_type="sparse_count", n_jobs=-1
+    )
+    fp_function = rdkit_generator.GetSparseCountFingerprint
+    X_emf = atom_pair.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
+
+
+def test_topological_torsion_bit_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
+    topological_torsion = TopologicalTorsionFingerprint(
+        result_vector_type="bit", n_jobs=-1
+    )
+    fp_function = rdkit_generator.GetFingerprint
+    X_emf = topological_torsion.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
+
+
+def test_topological_torsion_count_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
+    topological_torsion = TopologicalTorsionFingerprint(
+        result_vector_type="count", n_jobs=-1
+    )
+    fp_function = rdkit_generator.GetCountFingerprint
+    X_emf = topological_torsion.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
+
+
+# this test raises a memory error
+def test_topological_torsion_sparse_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
+    topological_torsion = TopologicalTorsionFingerprint(
+        result_vector_type="sparse", n_jobs=-1
+    )
+    fp_function = rdkit_generator.GetSparseFingerprint
+    X_emf = topological_torsion.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
+
+
+def test_topological_torsion_sparse_count_fingerprint(example_molecules):
+    X = example_molecules
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
+    topological_torsion = TopologicalTorsionFingerprint(
+        result_vector_type="sparse_count", n_jobs=-1
+    )
+    fp_function = rdkit_generator.GetSparseCountFingerprint
+    X_emf = topological_torsion.transform(X.copy())
+    X_rdkit = np.array([fp_function(x) for x in X])
+    assert np.all(X_emf == X_rdkit)
 
 
 def test_erg_fingerprint(example_molecules):

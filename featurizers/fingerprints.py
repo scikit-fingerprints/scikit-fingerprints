@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 from rdkit.Chem.rdMolDescriptors import AtomPairsParameters
 
-from base import FingerprintTransformer
-import rdkit.Chem.rdFingerprintGenerator as fpgens
+from base import FingerprintTransformer, FingerprintGeneratorInterface
 
 """
 If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside
@@ -19,7 +18,7 @@ that class), otherwise pickle gets angry:
 """
 
 
-class MorganFingerprint(FingerprintTransformer):
+class MorganFingerprint(FingerprintTransformer, FingerprintGeneratorInterface):
     def __init__(
         self,
         radius: int = 3,
@@ -32,7 +31,8 @@ class MorganFingerprint(FingerprintTransformer):
         result_vector_type="bit",
         n_jobs: int = 1,
     ):
-        super().__init__(result_vector_type, n_jobs)
+        FingerprintTransformer.__init__(self, n_jobs)
+        FingerprintGeneratorInterface.__init__(self, result_vector_type)
 
         self.fp_generator_kwargs = {
             "radius": radius,
@@ -44,27 +44,16 @@ class MorganFingerprint(FingerprintTransformer):
             "fpSize": fpSize,
         }
 
-    def get_genertator(self, **kwargs):
+    def _get_generator(self):
         from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
 
-        return GetMorganGenerator(**kwargs)
+        return GetMorganGenerator(**self.fp_generator_kwargs)
 
-    # this method can be used with every fingerprint implementig generator interface
-    # TODO generalize and consider replacing the abstract method in base.py if possible
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
         X = self._validate_input(X)
-        fp_generator = self.get_genertator(**self.fp_generator_kwargs)
-        if self.result_vector_type == "bit":
-            fp_function = fp_generator.GetFingerprint
-        elif self.result_vector_type == "sparse":
-            fp_function = fp_generator.GetSparseFingerprint
-        elif self.result_vector_type == "count":
-            fp_function = fp_generator.GetCountFingerprint
-        else:
-            fp_function = fp_generator.GetSparseCountFingerprint
-        return np.array([fp_function(x) for x in X])
+        return self._generate_fingerprints(X)
 
 
 class MACCSKeysFingerprint(FingerprintTransformer):
@@ -82,131 +71,84 @@ class MACCSKeysFingerprint(FingerprintTransformer):
         return np.array([GetMACCSKeysFingerprint(x) for x in X])
 
 
-class AtomPairFingerprint(FingerprintTransformer):
+class AtomPairFingerprint(
+    FingerprintTransformer, FingerprintGeneratorInterface
+):
     def __init__(
         self,
-        n_bits: int = 2048,
-        min_length: int = 1,
-        max_length: int = 30,
-        from_atoms: int = 0,
-        ignore_atoms: int = 0,
-        atom_invariants: int = 0,
-        n_bits_per_entry: int = 4,
-        include_chirality: bool = False,
-        use_2D: bool = True,
-        sparse: bool = False,
-        result_type: str = "default",
+        minDistance: int = 1,
+        maxDistance: int = 30,
+        includeChirality: bool = False,
+        use2D: bool = True,
+        countSimulation: bool = True,
+        countBounds: AtomPairsParameters = None,
+        fpSize: int = 2048,
+        result_vector_type: str = "bit",
         n_jobs: int = 1,
     ):
-        assert result_type in ["default", "as_bit_vect", "hashed"]
+        FingerprintTransformer.__init__(self, n_jobs)
+        FingerprintGeneratorInterface.__init__(self, result_vector_type)
 
-        super().__init__(n_jobs=n_jobs)
-        self.n_bits = n_bits
-        self.min_length = min_length
-        self.max_length = max_length
-        self.from_atoms = from_atoms
-        self.ignore_atoms = ignore_atoms
-        self.atom_invariants = atom_invariants
-        self.n_bits_per_entry = n_bits_per_entry
-        self.include_chirality = include_chirality
-        self.use_2D = use_2D
-        self.result_type = result_type
+        self.fp_generator_kwargs = {
+            "minDistance": minDistance,
+            "maxDistance": maxDistance,
+            "includeChirality": includeChirality,
+            "use2D": use2D,
+            "countSimulation": countSimulation,
+            "countBounds": countBounds,
+            "fpSize": fpSize,
+        }
+
+    def _get_generator(self):
+        from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
+
+        return GetAtomPairGenerator(**self.fp_generator_kwargs)
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
         X = self._validate_input(X)
-        fp_args = {
-            "minLength": self.min_length,
-            "maxLength": self.max_length,
-            "fromAtoms": self.from_atoms,
-            "ignoreAtoms": self.ignore_atoms,
-            "atomInvariants": self.atom_invariants,
-            "includeChirality": self.include_chirality,
-            "use2D": self.use_2D,
-        }
-
-        if self.result_type == "default":
-            from rdkit.Chem.rdMolDescriptors import GetAtomPairFingerprint
-
-            fp_function = GetAtomPairFingerprint
-        elif self.result_type == "as_bit_vect":
-            from rdkit.Chem.rdMolDescriptors import (
-                GetHashedAtomPairFingerprintAsBitVect,
-            )
-
-            fp_function = GetHashedAtomPairFingerprintAsBitVect
-            fp_args["nBits"] = self.n_bits
-            fp_args["nBitsPerEntry"] = self.n_bits_per_entry
-        else:
-            from rdkit.Chem.rdMolDescriptors import (
-                GetHashedAtomPairFingerprint,
-            )
-
-            fp_function = GetHashedAtomPairFingerprint
-            fp_args["nBits"] = self.n_bits
-
-        return np.array([fp_function(x, **fp_args) for x in X])
+        return self._generate_fingerprints(X)
 
 
-class TopologicalTorsionFingerprint(FingerprintTransformer):
+class TopologicalTorsionFingerprint(
+    FingerprintTransformer, FingerprintGeneratorInterface
+):
     def __init__(
         self,
-        n_bits: int = 2048,
-        target_size: int = 4,
-        from_atoms: int = 0,
-        ignore_atoms: int = 0,
-        atom_invariants: int = 0,
-        include_chirality: bool = False,
-        sparse: bool = False,
-        result_type: str = "default",
+        includeChirality: bool = False,
+        torsionAtomCount: int = 4,
+        countSimulation: bool = True,
+        countBounds: AtomPairsParameters = None,
+        fpSize: int = 2048,
+        atomInvariantsGenerator: AtomPairsParameters = None,
+        result_vector_type: str = "bit",
         n_jobs: int = 1,
     ):
-        assert result_type in ["default", "as_bit_vect", "hashed"]
+        FingerprintTransformer.__init__(self, n_jobs)
+        FingerprintGeneratorInterface.__init__(self, result_vector_type)
 
-        super().__init__(n_jobs=n_jobs)
-        self.n_bits = n_bits
-        self.target_size = target_size
-        self.from_atoms = from_atoms
-        self.ignore_atoms = ignore_atoms
-        self.atom_invariants = atom_invariants
-        self.include_chirality = include_chirality
-        self.result_type = result_type
+        self.fp_generator_kwargs = {
+            "includeChirality": includeChirality,
+            "torsionAtomCount": torsionAtomCount,
+            "countSimulation": countSimulation,
+            "countBounds": countBounds,
+            "atomInvariantsGenerator": atomInvariantsGenerator,
+            "fpSize": fpSize,
+        }
+
+    def _get_generator(self):
+        from rdkit.Chem.rdFingerprintGenerator import (
+            GetTopologicalTorsionGenerator,
+        )
+
+        return GetTopologicalTorsionGenerator(**self.fp_generator_kwargs)
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
         X = self._validate_input(X)
-        fp_args = {
-            "targetSize": self.target_size,
-            "fromAtoms": self.from_atoms,
-            "ignoreAtoms": self.ignore_atoms,
-            "atomInvariants": self.atom_invariants,
-            "includeChirality": self.include_chirality,
-        }
-
-        if self.result_type == "default":
-            from rdkit.Chem.rdMolDescriptors import (
-                GetTopologicalTorsionFingerprint,
-            )
-
-            fp_function = GetTopologicalTorsionFingerprint
-        elif self.result_type == "as_bit_vect":
-            from rdkit.Chem.rdMolDescriptors import (
-                GetHashedTopologicalTorsionFingerprintAsBitVect,
-            )
-
-            fp_function = GetHashedTopologicalTorsionFingerprintAsBitVect
-            fp_args["nBits"] = self.n_bits
-        else:
-            from rdkit.Chem.rdMolDescriptors import (
-                GetHashedTopologicalTorsionFingerprint,
-            )
-
-            fp_function = GetHashedTopologicalTorsionFingerprint
-            fp_args["nBits"] = self.n_bits
-
-        return np.array([fp_function(x, **fp_args) for x in X])
+        return self._generate_fingerprints(X)
 
 
 class ERGFingerprint(FingerprintTransformer):
