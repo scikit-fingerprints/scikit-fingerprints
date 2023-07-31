@@ -15,6 +15,8 @@ from rdkit.Chem import MolToSmiles, PathToSubmol
 from rdkit.Chem.rdchem import Mol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 
+from featurizers.minhash import Minhash
+
 
 def _find_env(Mol: Mol, idx: int, radius: int) -> str:
     """
@@ -108,24 +110,26 @@ def GetMAP4Fingerprint(
     #   https://github.com/Arch4ngel21/emf/issues/13
     #   So for now it's handled by try/except
     try:
-        encoder = MHFPEncoder(n_permutations=dimensions, seed=random_state)
+        if is_folded:
+            encoder = MHFPEncoder(n_permutations=dimensions, seed=random_state)
+        else:
+            encoder = Minhash(dimensions)
 
-        start = time()
+        # start = time()
         atoms_envs = _get_atom_envs(Mol, radius)
-        print(f"Envs: {time() - start:4f} s")
+        # print(f"Envs: {time() - start:4f} s")
 
-        start = time()
+        # start = time()
         atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, is_counted)
-        print(f"Pairs: {time() - start:4f} s")
+        # print(f"Pairs: {time() - start:4f} s")
 
         if is_folded:
             fp_hash = encoder.hash(set(atom_env_pairs))
             return encoder.fold(fp_hash, dimensions)
         elif return_strings:
             return atom_env_pairs
+        return encoder.from_string_array(atom_env_pairs)
 
     except ValueError:
+        print(MolToSmiles(Mol))
         return np.full(shape=dimensions, fill_value=-1)
-
-    # TODO - here should be the default option - tmap.Minhash. Unfortunately tmap is not available for python 3.9.
-    #   Need to solve this later.
