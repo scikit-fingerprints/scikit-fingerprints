@@ -272,43 +272,6 @@ class ERGFingerprint(FingerprintTransformer):
         return np.array([GetErGFingerprint(x, **fp_args) for x in X])
 
 
-class MAP4Fingerprint(FingerprintTransformer):
-    def __init__(
-        self,
-        dimensions: int = 1024,
-        radius: int = 2,
-        is_counted: bool = False,
-        is_folded: bool = False,
-        return_strings: bool = False,
-        random_state: int = 0,
-        n_jobs: int = 1,
-        verbose: int = 0,
-    ):
-        super().__init__(n_jobs, verbose)
-        self.dimensions = dimensions
-        self.radius = radius
-        self.is_counted = is_counted
-        self.is_folded = is_folded
-        self.return_strings = return_strings
-        self.random_state = random_state
-
-    def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
-        from featurizers.map4 import GetMAP4Fingerprint
-
-        fp_args = {
-            "dimensions": self.dimensions,
-            "radius": self.radius,
-            "is_counted": self.is_counted,
-            "is_folded": self.is_folded,
-            "return_strings": self.return_strings,
-            "random_state": self.random_state,
-        }
-
-        return np.array([GetMAP4Fingerprint(x, **fp_args) for x in X])
-
-
 class E3FP(FingerprintTransformer):
     def __init__(
         self,
