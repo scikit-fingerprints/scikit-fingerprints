@@ -333,12 +333,6 @@ class E3FP(FingerprintTransformer):
         from e3fp.conformer.generator import ConformerGenerator
         from e3fp.pipeline import fprints_from_mol
 
-        # # Disable logging
-        # if self.verbose == 0:
-        #     rdkit.rdBase.LogToPythonLogger()
-        #     logger = logging.getLogger()
-        #     logger.disabled = True
-
         conf_gen = ConformerGenerator(
             **self.confgen_params,
         )
