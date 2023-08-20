@@ -6,9 +6,6 @@ https://github.com/reymond-group/map4
 import itertools
 from collections import defaultdict
 
-# TODO - to delete
-from time import time
-
 import numpy as np
 from mhfp.encoder import MHFPEncoder
 from rdkit.Chem import MolToSmiles, PathToSubmol
@@ -115,13 +112,9 @@ def GetMAP4Fingerprint(
         else:
             encoder = Minhash(dimensions)
 
-        # start = time()
         atoms_envs = _get_atom_envs(Mol, radius)
-        # print(f"Envs: {time() - start:4f} s")
 
-        # start = time()
         atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, is_counted)
-        # print(f"Pairs: {time() - start:4f} s")
 
         if is_folded:
             fp_hash = encoder.hash(set(atom_env_pairs))
@@ -131,5 +124,5 @@ def GetMAP4Fingerprint(
         return encoder.from_string_array(atom_env_pairs)
 
     except ValueError:
-        print(MolToSmiles(Mol))
+        # print(MolToSmiles(Mol))
         return np.full(shape=dimensions, fill_value=-1)
