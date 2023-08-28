@@ -6,8 +6,13 @@ from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 from rdkit import Chem
 
-from featurizers.fingerprints import MorganFingerprint, MACCSKeysFingerprint, AtomPairFingerprint, \
-    TopologicalTorsionFingerprint, ERGFingerprint
+from featurizers.fingerprints import (
+    MorganFingerprint,
+    MACCSKeysFingerprint,
+    AtomPairFingerprint,
+    TopologicalTorsionFingerprint,
+    ERGFingerprint,
+)
 
 import rdkit.Chem.rdFingerprintGenerator as fpgens
 from scipy.sparse import csr_array
@@ -38,45 +43,49 @@ def example_molecules():
 
 def test_morgan_bit_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(result_vector_type="bit", n_jobs=-1)
+    morgan = MorganFingerprint(fingerprint_type="bit", n_jobs=-1)
     fp_function = rdkit_generator.GetFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = np.array([fp_function(x) for x in X_for_rdkit])
     assert np.all(X_emf == X_rdkit)
 
+
 # WARNING - in case of failure it will try to overload memory and result in error
 def test_morgan_sparse_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(result_vector_type="sparse", n_jobs=-1)
+    morgan = MorganFingerprint(fingerprint_type="bit", sparse=True, n_jobs=-1)
     fp_function = rdkit_generator.GetFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = csr_array([fp_function(x) for x in X_for_rdkit])
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
+
 def test_morgan_count_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(result_vector_type="count", n_jobs=-1)
+    morgan = MorganFingerprint(fingerprint_type="count", n_jobs=-1)
     fp_function = rdkit_generator.GetCountFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = np.array([fp_function(x).ToList() for x in X_for_rdkit])
     assert np.all(X_emf == X_rdkit)
 
+
 def test_morgan_sparse_count_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(result_vector_type="sparse_count", n_jobs=-1)
+    morgan = MorganFingerprint(
+        fingerprint_type="count", sparse=True, n_jobs=-1
+    )
     fp_function = rdkit_generator.GetCountFingerprint
     X_emf = morgan.transform(X.copy())
     X_rdkit = csr_array([fp_function(x).ToList() for x in X_for_rdkit])
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
-
 
 
 def test_maccs_keys_fingerprint(example_molecules):
@@ -98,9 +107,9 @@ def test_maccs_keys_fingerprint(example_molecules):
 
 def test_atom_pair_bit_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetAtomPairGenerator()
-    atom_pair = AtomPairFingerprint(result_vector_type="bit", n_jobs=-1)
+    atom_pair = AtomPairFingerprint(fingerprint_type="bit", n_jobs=-1)
     fp_function = rdkit_generator.GetFingerprint
     X_emf = atom_pair.transform(X.copy())
     X_rdkit = np.array([fp_function(x) for x in X_for_rdkit])
@@ -109,9 +118,11 @@ def test_atom_pair_bit_fingerprint(example_molecules):
 
 def test_atom_pair_sparse_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetAtomPairGenerator()
-    atom_pair = AtomPairFingerprint(result_vector_type="sparse", n_jobs=-1)
+    atom_pair = AtomPairFingerprint(
+        fingerprint_type="bit", sparse=True, n_jobs=-1
+    )
     fp_function = rdkit_generator.GetFingerprint
     X_emf = atom_pair.transform(X.copy())
     X_rdkit = csr_array([fp_function(x) for x in X_for_rdkit])
@@ -120,9 +131,9 @@ def test_atom_pair_sparse_fingerprint(example_molecules):
 
 def test_atom_pair_cound_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetAtomPairGenerator()
-    atom_pair = AtomPairFingerprint(result_vector_type="count", n_jobs=-1)
+    atom_pair = AtomPairFingerprint(fingerprint_type="count", n_jobs=-1)
     fp_function = rdkit_generator.GetCountFingerprint
     X_emf = atom_pair.transform(X.copy())
     X_rdkit = np.array([fp_function(x).ToList() for x in X_for_rdkit])
@@ -131,10 +142,10 @@ def test_atom_pair_cound_fingerprint(example_molecules):
 
 def test_atom_pair_sparse_count_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetAtomPairGenerator()
     atom_pair = AtomPairFingerprint(
-        result_vector_type="sparse_count", n_jobs=-1
+        fingerprint_type="count", sparse=True, n_jobs=-1
     )
     fp_function = rdkit_generator.GetCountFingerprint
     X_emf = atom_pair.transform(X.copy())
@@ -144,10 +155,10 @@ def test_atom_pair_sparse_count_fingerprint(example_molecules):
 
 def test_topological_torsion_bit_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
     topological_torsion = TopologicalTorsionFingerprint(
-        result_vector_type="bit", n_jobs=-1
+        fingerprint_type="bit", n_jobs=-1
     )
     fp_function = rdkit_generator.GetFingerprint
     X_emf = topological_torsion.transform(X.copy())
@@ -157,10 +168,10 @@ def test_topological_torsion_bit_fingerprint(example_molecules):
 
 def test_topological_torsion_sparse_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
     topological_torsion = TopologicalTorsionFingerprint(
-        result_vector_type="sparse", n_jobs=-1
+        fingerprint_type="bit", sparse=True, n_jobs=-1
     )
     fp_function = rdkit_generator.GetFingerprint
     X_emf = topological_torsion.transform(X.copy())
@@ -170,10 +181,10 @@ def test_topological_torsion_sparse_fingerprint(example_molecules):
 
 def test_topological_torsion_count_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
     topological_torsion = TopologicalTorsionFingerprint(
-        result_vector_type="count", n_jobs=-1
+        fingerprint_type="count", n_jobs=-1
     )
     fp_function = rdkit_generator.GetCountFingerprint
     X_emf = topological_torsion.transform(X.copy())
@@ -183,10 +194,10 @@ def test_topological_torsion_count_fingerprint(example_molecules):
 
 def test_topological_torsion_sparse_count_fingerprint(example_molecules):
     X = example_molecules
-    X_for_rdkit = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_for_rdkit = [Chem.MolFromSmiles(x) for x in X]
     rdkit_generator = fpgens.GetTopologicalTorsionGenerator()
     topological_torsion = TopologicalTorsionFingerprint(
-        result_vector_type="sparse_count", n_jobs=-1
+        fingerprint_type="count", sparse=True, n_jobs=-1
     )
     fp_function = rdkit_generator.GetCountFingerprint
     X_emf = topological_torsion.transform(X.copy())

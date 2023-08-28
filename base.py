@@ -5,13 +5,13 @@ from typing import List, Union
 
 import numpy as np
 import pandas as pd
-from scipy.sparse import vstack, csr_array
+import scipy.sparse as sparse
+
+# from scipy.sparse import vstack, csr_array
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
-
-legal_result_types = {"bit", "sparse", "count", "sparse_count"}
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
@@ -22,7 +22,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         self.n_jobs = effective_n_jobs(n_jobs)
         self.fp_generator_kwargs = {}
-        self.concatenate_function = np.concatenate
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -48,13 +47,15 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             results = Parallel(n_jobs=self.n_jobs)(
                 delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
             )
-
-            return self.concatenate_function(results)
+            if isinstance(results[0], sparse.csr_array):
+                return sparse.vstack(results)
+            else:
+                return np.concatenate(results)
 
     @abstractmethod
     def _calculate_fingerprint(
         self, X: Union[np.ndarray]
-    ) -> Union[np.ndarray, csr_array]:
+    ) -> Union[np.ndarray, sparse.csr_array]:
         """
         Helper function to be executed in each sub-process.
 
@@ -78,17 +79,16 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         return X
 
 
-class FingerprintGeneratorInterface(ABC):
-    def __init__(self, result_vector_type: str = "bit"):
+class FingerprintGeneratorMixin(ABC):
+    def __init__(self, fingerprint_type: str = "bit", sparse=False):
         """
         result_vector_tape has to be one of the following:
         bit, spares, count, sparse_count
         """
-        assert result_vector_type in legal_result_types
-        self.result_vector_type = result_vector_type
+        assert fingerprint_type in ["bit", "count"]
+        self.result_vector_type = fingerprint_type
         self.fp_generator_kwargs = {}
-        if result_vector_type in ["sparse", "sparse_count"]:
-            self.concatenate_function = vstack
+        self.sparse_output = sparse
 
     @abstractmethod
     def _get_generator(self):
@@ -99,18 +99,17 @@ class FingerprintGeneratorInterface(ABC):
         """
         pass
 
-    def _sparse_to_csr(self, sparse_vec):
-        return
-
     def _generate_fingerprints(
         self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> Union[np.ndarray, csr_array]:
+    ) -> Union[np.ndarray, sparse.csr_array]:
         fp_generator = self._get_generator()
+
         if self.result_vector_type == "bit":
-            return np.array([fp_generator.GetFingerprint(x) for x in X])
-        elif self.result_vector_type == "sparse":
-            return csr_array([fp_generator.GetFingerprint(x) for x in X])
-        elif self.result_vector_type == "count":
-            return np.array([fp_generator.GetCountFingerprint(x).ToList() for x in X])
+            X = [fp_generator.GetFingerprintAsNumPy(x) for x in X]
         else:
-            return csr_array([fp_generator.GetCountFingerprint(x).ToList() for x in X])
+            X = [fp_generator.GetCountFingerprintAsNumPy(x) for x in X]
+
+        if self.sparse_output:
+            return sparse.csr_array(X)
+        else:
+            return np.array(X)

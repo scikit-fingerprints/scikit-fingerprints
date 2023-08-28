@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from rdkit.Chem.rdMolDescriptors import AtomPairsParameters
 
-from base import FingerprintTransformer, FingerprintGeneratorInterface
+from base import FingerprintTransformer, FingerprintGeneratorMixin
 
 """
 If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside
@@ -18,7 +18,7 @@ that class), otherwise pickle gets angry:
 """
 
 
-class MorganFingerprint(FingerprintTransformer, FingerprintGeneratorInterface):
+class MorganFingerprint(FingerprintTransformer, FingerprintGeneratorMixin):
     def __init__(
         self,
         radius: int = 3,
@@ -28,11 +28,12 @@ class MorganFingerprint(FingerprintTransformer, FingerprintGeneratorInterface):
         includeRingMembership: bool = True,
         countBounds: AtomPairsParameters = None,
         fpSize: int = 2048,
-        result_vector_type="bit",
+        fingerprint_type: str = "bit",
+        sparse: bool = False,
         n_jobs: int = 1,
     ):
         FingerprintTransformer.__init__(self, n_jobs)
-        FingerprintGeneratorInterface.__init__(self, result_vector_type)
+        FingerprintGeneratorMixin.__init__(self, fingerprint_type, sparse)
 
         self.fp_generator_kwargs = {
             "radius": radius,
@@ -71,9 +72,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
         return np.array([GetMACCSKeysFingerprint(x) for x in X])
 
 
-class AtomPairFingerprint(
-    FingerprintTransformer, FingerprintGeneratorInterface
-):
+class AtomPairFingerprint(FingerprintTransformer, FingerprintGeneratorMixin):
     def __init__(
         self,
         minDistance: int = 1,
@@ -83,11 +82,12 @@ class AtomPairFingerprint(
         countSimulation: bool = True,
         countBounds: AtomPairsParameters = None,
         fpSize: int = 2048,
-        result_vector_type: str = "bit",
+        fingerprint_type: str = "bit",
+        sparse: bool = False,
         n_jobs: int = 1,
     ):
         FingerprintTransformer.__init__(self, n_jobs)
-        FingerprintGeneratorInterface.__init__(self, result_vector_type)
+        FingerprintGeneratorMixin.__init__(self, fingerprint_type, sparse)
 
         self.fp_generator_kwargs = {
             "minDistance": minDistance,
@@ -112,7 +112,7 @@ class AtomPairFingerprint(
 
 
 class TopologicalTorsionFingerprint(
-    FingerprintTransformer, FingerprintGeneratorInterface
+    FingerprintTransformer, FingerprintGeneratorMixin
 ):
     def __init__(
         self,
@@ -122,11 +122,12 @@ class TopologicalTorsionFingerprint(
         countBounds: AtomPairsParameters = None,
         fpSize: int = 2048,
         atomInvariantsGenerator: AtomPairsParameters = None,
-        result_vector_type: str = "bit",
+        fingerprint_type: str = "bit",
+        sparse: bool = False,
         n_jobs: int = 1,
     ):
         FingerprintTransformer.__init__(self, n_jobs)
-        FingerprintGeneratorInterface.__init__(self, result_vector_type)
+        FingerprintGeneratorMixin.__init__(self, fingerprint_type, sparse)
 
         self.fp_generator_kwargs = {
             "includeChirality": includeChirality,
