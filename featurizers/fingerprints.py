@@ -17,6 +17,7 @@ that class), otherwise pickle gets angry:
         TypeError: cannot pickle 'Boost.Python.function' object
 """
 
+
 class MorganFingerprint(FingerprintTransformer):
     def __init__(
         self,
@@ -32,7 +33,6 @@ class MorganFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
     ):
         FingerprintTransformer.__init__(self, n_jobs, sparse, fingerprint_type)
-
 
         self.fp_generator_kwargs = {
             "radius": radius,
@@ -60,7 +60,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(
         self, sparse: bool = False, n_jobs: int = 1
     ):  # the sparse parameter will be unused
-        super().__init__(n_jobs=n_jobs,sparse = sparse)
+        super().__init__(n_jobs=n_jobs, sparse=sparse)
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -72,6 +72,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
 
     def _get_generator(self):
         pass
+
 
 class AtomPairFingerprint(FingerprintTransformer):
     def __init__(
@@ -111,9 +112,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         return self._generate_fingerprints(X)
 
 
-class TopologicalTorsionFingerprint(
-    FingerprintTransformer
-):
+class TopologicalTorsionFingerprint(FingerprintTransformer):
     def __init__(
         self,
         includeChirality: bool = False,

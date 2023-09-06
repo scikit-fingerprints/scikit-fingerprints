@@ -15,7 +15,9 @@ from rdkit.Chem.rdchem import Mol
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
-    def __init__(self, n_jobs: int = None, sparse = False, fingerprint_type: str = "bit"):
+    def __init__(
+        self, n_jobs: int = None, sparse=False, fingerprint_type: str = "bit"
+    ):
         """
         result_vector_type has to be one of the following:
         bit, sparse, count, sparse_count
@@ -25,7 +27,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         assert fingerprint_type in ["bit", "count"]
         self.result_vector_type = fingerprint_type
         self.fp_generator_kwargs = {}
-
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -92,7 +93,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         pass
 
     def _generate_fingerprints(
-            self, X: Union[pd.DataFrame, np.ndarray]
+        self, X: Union[pd.DataFrame, np.ndarray]
     ) -> Union[np.ndarray, sparse.csr_array]:
         fp_generator = self._get_generator()
 
