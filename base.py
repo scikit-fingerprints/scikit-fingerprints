@@ -15,13 +15,17 @@ from rdkit.Chem.rdchem import Mol
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
-    def __init__(self, n_jobs: int = None):
+    def __init__(self, n_jobs: int = None, sparse = False, fingerprint_type: str = "bit"):
         """
-        result_vector_tape has to be one of the following:
-        bit, spares, count, sparse_count
+        result_vector_type has to be one of the following:
+        bit, sparse, count, sparse_count
         """
         self.n_jobs = effective_n_jobs(n_jobs)
+        self.sparse_output = sparse
+        assert fingerprint_type in ["bit", "count"]
+        self.result_vector_type = fingerprint_type
         self.fp_generator_kwargs = {}
+
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -32,7 +36,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def transform(self, X: Union[pd.DataFrame, np.ndarray]):
         """
         :param X: np.array or DataFrame of rdkit.Mol objects
-        :return: np.array of calculated fingerprints for each molecule
+        :return: np.array or sparse array of calculated fingerprints for each molecule
         """
 
         if self.n_jobs == 1:
@@ -78,18 +82,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         X = [MolFromSmiles(x) if type(x) == str else x for x in X]
         return X
 
-
-class FingerprintGeneratorMixin(ABC):
-    def __init__(self, fingerprint_type: str = "bit", sparse=False):
-        """
-        result_vector_tape has to be one of the following:
-        bit, spares, count, sparse_count
-        """
-        assert fingerprint_type in ["bit", "count"]
-        self.result_vector_type = fingerprint_type
-        self.fp_generator_kwargs = {}
-        self.sparse_output = sparse
-
     @abstractmethod
     def _get_generator(self):
         """
@@ -100,7 +92,7 @@ class FingerprintGeneratorMixin(ABC):
         pass
 
     def _generate_fingerprints(
-        self, X: Union[pd.DataFrame, np.ndarray]
+            self, X: Union[pd.DataFrame, np.ndarray]
     ) -> Union[np.ndarray, sparse.csr_array]:
         fp_generator = self._get_generator()
 

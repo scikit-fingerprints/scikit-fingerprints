@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from rdkit.Chem.rdMolDescriptors import AtomPairsParameters
 
-from base import FingerprintTransformer, FingerprintGeneratorMixin
+from base import FingerprintTransformer
 
 """
 If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside
@@ -17,8 +17,7 @@ that class), otherwise pickle gets angry:
         TypeError: cannot pickle 'Boost.Python.function' object
 """
 
-
-class MorganFingerprint(FingerprintTransformer, FingerprintGeneratorMixin):
+class MorganFingerprint(FingerprintTransformer):
     def __init__(
         self,
         radius: int = 3,
@@ -32,8 +31,8 @@ class MorganFingerprint(FingerprintTransformer, FingerprintGeneratorMixin):
         sparse: bool = False,
         n_jobs: int = 1,
     ):
-        FingerprintTransformer.__init__(self, n_jobs)
-        FingerprintGeneratorMixin.__init__(self, fingerprint_type, sparse)
+        FingerprintTransformer.__init__(self, n_jobs, sparse, fingerprint_type)
+
 
         self.fp_generator_kwargs = {
             "radius": radius,
@@ -61,7 +60,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(
         self, sparse: bool = False, n_jobs: int = 1
     ):  # the sparse parameter will be unused
-        super().__init__(n_jobs=n_jobs)
+        super().__init__(n_jobs=n_jobs,sparse = sparse)
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -71,8 +70,10 @@ class MACCSKeysFingerprint(FingerprintTransformer):
 
         return np.array([GetMACCSKeysFingerprint(x) for x in X])
 
+    def _get_generator(self):
+        pass
 
-class AtomPairFingerprint(FingerprintTransformer, FingerprintGeneratorMixin):
+class AtomPairFingerprint(FingerprintTransformer):
     def __init__(
         self,
         minDistance: int = 1,
@@ -86,8 +87,7 @@ class AtomPairFingerprint(FingerprintTransformer, FingerprintGeneratorMixin):
         sparse: bool = False,
         n_jobs: int = 1,
     ):
-        FingerprintTransformer.__init__(self, n_jobs)
-        FingerprintGeneratorMixin.__init__(self, fingerprint_type, sparse)
+        FingerprintTransformer.__init__(self, n_jobs, sparse, fingerprint_type)
 
         self.fp_generator_kwargs = {
             "minDistance": minDistance,
@@ -112,7 +112,7 @@ class AtomPairFingerprint(FingerprintTransformer, FingerprintGeneratorMixin):
 
 
 class TopologicalTorsionFingerprint(
-    FingerprintTransformer, FingerprintGeneratorMixin
+    FingerprintTransformer
 ):
     def __init__(
         self,
@@ -126,8 +126,7 @@ class TopologicalTorsionFingerprint(
         sparse: bool = False,
         n_jobs: int = 1,
     ):
-        FingerprintTransformer.__init__(self, n_jobs)
-        FingerprintGeneratorMixin.__init__(self, fingerprint_type, sparse)
+        FingerprintTransformer.__init__(self, n_jobs, sparse, fingerprint_type)
 
         self.fp_generator_kwargs = {
             "includeChirality": includeChirality,
@@ -162,7 +161,7 @@ class ERGFingerprint(FingerprintTransformer):
         sparse: bool = False,
         n_jobs: int = 1,
     ):
-        super().__init__(n_jobs=n_jobs)
+        super().__init__(n_jobs, sparse)
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
         self.min_path = min_path
@@ -182,3 +181,6 @@ class ERGFingerprint(FingerprintTransformer):
         }
 
         return np.array([GetErGFingerprint(x, **fp_args) for x in X])
+
+    def _get_generator(self):
+        pass

@@ -6,3 +6,4 @@ rdkit
 scikit-learn
 torch-geometric
 tmap
+pytest
