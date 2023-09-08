@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -26,13 +26,13 @@ class MorganFingerprint(FingerprintTransformer):
         useBondTypes: bool = True,
         onlyNonzeroInvariants: bool = False,
         includeRingMembership: bool = True,
-        countBounds: AtomPairsParameters = None,
+        countBounds: Optional[List] = None,
         fpSize: int = 2048,
-        fingerprint_type: str = "bit",
-        sparse: bool = False,
         n_jobs: int = 1,
+        sparse: bool = False,
+        count: bool = False,
     ):
-        FingerprintTransformer.__init__(self, n_jobs, sparse, fingerprint_type)
+        FingerprintTransformer.__init__(self, n_jobs, sparse, count)
 
         self.fp_generator_kwargs = {
             "radius": radius,
@@ -70,9 +70,6 @@ class MACCSKeysFingerprint(FingerprintTransformer):
 
         return np.array([GetMACCSKeysFingerprint(x) for x in X])
 
-    def _get_generator(self):
-        pass
-
 
 class AtomPairFingerprint(FingerprintTransformer):
     def __init__(
@@ -82,13 +79,13 @@ class AtomPairFingerprint(FingerprintTransformer):
         includeChirality: bool = False,
         use2D: bool = True,
         countSimulation: bool = True,
-        countBounds: AtomPairsParameters = None,
+        countBounds: Optional[List] = None,
         fpSize: int = 2048,
-        fingerprint_type: str = "bit",
-        sparse: bool = False,
         n_jobs: int = 1,
+        sparse: bool = False,
+        count: bool = False,
     ):
-        FingerprintTransformer.__init__(self, n_jobs, sparse, fingerprint_type)
+        FingerprintTransformer.__init__(self, n_jobs, sparse, count)
 
         self.fp_generator_kwargs = {
             "minDistance": minDistance,
@@ -118,14 +115,14 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         includeChirality: bool = False,
         torsionAtomCount: int = 4,
         countSimulation: bool = True,
-        countBounds: AtomPairsParameters = None,
+        countBounds: Optional[List] = None,
         fpSize: int = 2048,
-        atomInvariantsGenerator: AtomPairsParameters = None,
-        fingerprint_type: str = "bit",
-        sparse: bool = False,
+        atomInvariantsGenerator: Optional[List] = None,
         n_jobs: int = 1,
+        sparse: bool = False,
+        count: bool = False,
     ):
-        FingerprintTransformer.__init__(self, n_jobs, sparse, fingerprint_type)
+        FingerprintTransformer.__init__(self, n_jobs, sparse, count)
 
         self.fp_generator_kwargs = {
             "includeChirality": includeChirality,
@@ -180,6 +177,3 @@ class ERGFingerprint(FingerprintTransformer):
         }
 
         return np.array([GetErGFingerprint(x, **fp_args) for x in X])
-
-    def _get_generator(self):
-        pass
