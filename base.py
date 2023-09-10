@@ -23,7 +23,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         self.n_jobs = effective_n_jobs(n_jobs)
         self.sparse = sparse
         self.count = count
-        self.fp_generator_kwargs = {}
 
     def fit(self, X, y=None, **fit_params):
         return self

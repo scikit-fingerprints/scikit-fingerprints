@@ -2,7 +2,6 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
-from rdkit.Chem.rdMolDescriptors import AtomPairsParameters
 
 from base import FingerprintTransformer
 
@@ -22,32 +21,39 @@ class MorganFingerprint(FingerprintTransformer):
     def __init__(
         self,
         radius: int = 3,
-        includeChirality: bool = False,
-        useBondTypes: bool = True,
-        onlyNonzeroInvariants: bool = False,
-        includeRingMembership: bool = True,
-        countBounds: Optional[List] = None,
-        fpSize: int = 2048,
+        include_chirality: bool = False,
+        use_bond_types: bool = True,
+        only_nonzero_invariants: bool = False,
+        include_ring_membership: bool = True,
+        count_bounds: Optional[List] = None,
+        fp_size: int = 2048,
         n_jobs: int = 1,
         sparse: bool = False,
         count: bool = False,
     ):
         FingerprintTransformer.__init__(self, n_jobs, sparse, count)
-
-        self.fp_generator_kwargs = {
-            "radius": radius,
-            "includeChirality": includeChirality,
-            "useBondTypes": useBondTypes,
-            "onlyNonzeroInvariants": onlyNonzeroInvariants,
-            "includeRingMembership": includeRingMembership,
-            "countBounds": countBounds,
-            "fpSize": fpSize,
-        }
+        self.radius = radius
+        self.include_chirality = include_chirality
+        self.radius = radius
+        self.include_chirality = include_chirality
+        self.use_bond_types = use_bond_types
+        self.only_nonzero_invariants = only_nonzero_invariants
+        self.include_ring_membership = include_ring_membership
+        self.count_bounds = count_bounds
+        self.fp_size = fp_size
 
     def _get_generator(self):
         from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
 
-        return GetMorganGenerator(**self.fp_generator_kwargs)
+        return GetMorganGenerator(
+            radius=self.radius,
+            includeChirality=self.include_chirality,
+            useBondTypes=self.use_bond_types,
+            onlyNonzeroInvariants=self.only_nonzero_invariants,
+            includeRingMembership=self.include_ring_membership,
+            countBounds=self.count_bounds,
+            fpSize=self.fp_size,
+        )
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -74,33 +80,39 @@ class MACCSKeysFingerprint(FingerprintTransformer):
 class AtomPairFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        minDistance: int = 1,
-        maxDistance: int = 30,
-        includeChirality: bool = False,
-        use2D: bool = True,
-        countSimulation: bool = True,
-        countBounds: Optional[List] = None,
-        fpSize: int = 2048,
+        min_distance: int = 1,
+        max_distance: int = 30,
+        include_chirality: bool = False,
+        use_2D: bool = True,
+        count_simulation: bool = True,
+        count_bounds: Optional[List] = None,
+        fp_size: int = 2048,
         n_jobs: int = 1,
         sparse: bool = False,
         count: bool = False,
     ):
         FingerprintTransformer.__init__(self, n_jobs, sparse, count)
 
-        self.fp_generator_kwargs = {
-            "minDistance": minDistance,
-            "maxDistance": maxDistance,
-            "includeChirality": includeChirality,
-            "use2D": use2D,
-            "countSimulation": countSimulation,
-            "countBounds": countBounds,
-            "fpSize": fpSize,
-        }
+        self.min_distance = min_distance
+        self.max_distance = max_distance
+        self.include_chirality = include_chirality
+        self.use_2D = use_2D
+        self.count_simulation = count_simulation
+        self.count_bounds = count_bounds
+        self.fp_size = fp_size
 
     def _get_generator(self):
         from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
 
-        return GetAtomPairGenerator(**self.fp_generator_kwargs)
+        return GetAtomPairGenerator(
+            minDistance=self.min_distance,
+            maxDistance=self.max_distance,
+            includeChirality=self.include_chirality,
+            use2D=self.use_2D,
+            countSimulation=self.count_simulation,
+            countBounds=self.count_bounds,
+            fpSize=self.fp_size,
+        )
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -112,33 +124,38 @@ class AtomPairFingerprint(FingerprintTransformer):
 class TopologicalTorsionFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        includeChirality: bool = False,
-        torsionAtomCount: int = 4,
-        countSimulation: bool = True,
-        countBounds: Optional[List] = None,
-        fpSize: int = 2048,
-        atomInvariantsGenerator: Optional[List] = None,
+        include_chirality: bool = False,
+        torsion_atom_count: int = 4,
+        count_simulation: bool = True,
+        count_bounds: Optional[List] = None,
+        fp_size: int = 2048,
+        atom_invariants_generator: Optional[List] = None,
         n_jobs: int = 1,
         sparse: bool = False,
         count: bool = False,
     ):
         FingerprintTransformer.__init__(self, n_jobs, sparse, count)
 
-        self.fp_generator_kwargs = {
-            "includeChirality": includeChirality,
-            "torsionAtomCount": torsionAtomCount,
-            "countSimulation": countSimulation,
-            "countBounds": countBounds,
-            "atomInvariantsGenerator": atomInvariantsGenerator,
-            "fpSize": fpSize,
-        }
+        self.include_chirality = include_chirality
+        self.torsion_atom_count = torsion_atom_count
+        self.count_simulation = count_simulation
+        self.count_bounds = count_bounds
+        self.fp_size = fp_size
+        self.atom_invariants_generator = atom_invariants_generator
 
     def _get_generator(self):
         from rdkit.Chem.rdFingerprintGenerator import (
             GetTopologicalTorsionGenerator,
         )
 
-        return GetTopologicalTorsionGenerator(**self.fp_generator_kwargs)
+        return GetTopologicalTorsionGenerator(
+            includeChirality=self.include_chirality,
+            torsionAtomCount=self.torsion_atom_count,
+            countSimulation=self.count_simulation,
+            countBounds=self.count_bounds,
+            atomInvariantsGenerator=self.atom_invariants_generator,
+            fpSize=self.fp_size,
+        )
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
