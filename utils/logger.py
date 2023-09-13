@@ -60,17 +60,3 @@ class CaptureLogger(logging.Handler):
         rdkit.logger.removeHandler(self)
         self.devnull.close()
         return self.logs
-
-
-if __name__ == "__main__":
-    mol = Chem.MolFromSmiles("[Zn+2]")
-
-    with CaptureLogger() as capture:
-        embed_success = AllChem.EmbedMolecule(
-            mol,
-            useExpTorsionAnglePrefs=True,
-            useBasicKnowledge=True,
-            useRandomCoords=True,
-        )
-
-    print(capture["ERROR"])

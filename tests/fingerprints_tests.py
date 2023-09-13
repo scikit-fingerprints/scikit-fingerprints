@@ -23,8 +23,9 @@ from featurizers.fingerprints import (
     TopologicalTorsionFingerprint,
     ERGFingerprint,
     MAP4Fingerprint,
+    MHFP,
 )
-from featurizers.map4 import GetMAP4Fingerprint
+from featurizers.fingerprint_helper_functions import get_map4_fingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 
@@ -190,18 +191,31 @@ def test_erg_fingerprint(example_molecules):
 def test_map4_fingerprint(example_molecules):
     X = example_molecules
 
-    X_2 = X.copy()
-
     # Concurrent
-    map4_fp = MAP4Fingerprint(is_folded=True, n_jobs=-1)
+    map4_fp = MAP4Fingerprint(random_state=0, n_jobs=-1)
     X = np.array([Chem.MolFromSmiles(x) for x in X])
     X_map4 = map4_fp.transform(X.copy())
 
     # Sequential
-    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([GetMAP4Fingerprint(x, is_folded=True) for x in X_2])
+    map4_fp_seq = MAP4Fingerprint(random_state=0, n_jobs=1)
+    X_seq = map4_fp_seq.transform(X)
 
-    assert np.all(X_map4 == X_seq)
+    assert np.array_equal(X_map4, X_seq)
+
+
+def test_mhfp6_fingerprint(example_molecules):
+    X = example_molecules
+
+    # Concurrent
+    map4_fp = MHFP(random_state=0, n_jobs=-1)
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_map4 = map4_fp.transform(X.copy())
+
+    # Sequential
+    map4_fp_seq = MHFP(random_state=0, n_jobs=1)
+    X_seq = map4_fp_seq.transform(X)
+
+    assert np.array_equal(X_map4, X_seq)
 
 
 def test_input_validation(example_molecules):
