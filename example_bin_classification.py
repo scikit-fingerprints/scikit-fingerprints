@@ -2,15 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rdkit
-
 from ogb.graphproppred import PygGraphPropPredDataset
+from rdkit import Chem
+from rdkit.Chem import AllChem
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import roc_auc_score, average_precision_score
+from sklearn.metrics import average_precision_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputClassifier
 from tdc.single_pred import Tox
-from rdkit.Chem import AllChem
-from rdkit import Chem
 
 
 def example_ogbg(dataset_name: str):

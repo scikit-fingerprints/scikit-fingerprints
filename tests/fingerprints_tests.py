@@ -1,21 +1,18 @@
-import pytest
-
 import numpy as np
+import pytest
+import rdkit.Chem.rdFingerprintGenerator as fpgens
+from rdkit import Chem
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
-
-from rdkit import Chem
+from scipy.sparse import csr_array
 
 from featurizers.fingerprints import (
-    MorganFingerprint,
-    MACCSKeysFingerprint,
     AtomPairFingerprint,
-    TopologicalTorsionFingerprint,
     ERGFingerprint,
+    MACCSKeysFingerprint,
+    MorganFingerprint,
+    TopologicalTorsionFingerprint,
 )
-
-import rdkit.Chem.rdFingerprintGenerator as fpgens
-from scipy.sparse import csr_array
 
 smiles_data = [
     "Oc1ncnc2c1sc1nc3ccccc3n12",

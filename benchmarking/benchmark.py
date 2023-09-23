@@ -1,27 +1,24 @@
+from time import time
+from typing import Callable, List
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.sparse import csr_array
-
-from joblib import cpu_count
-
 import rdkit.Chem.rdFingerprintGenerator as fpgens
+from joblib import cpu_count
+from ogb.graphproppred import GraphPropPredDataset
+from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
-from rdkit.Chem import MolFromSmiles
-
-from time import time
-from typing import List, Callable
-
-from ogb.graphproppred import GraphPropPredDataset
+from scipy.sparse import csr_array
 
 from base import FingerprintTransformer
 from featurizers.fingerprints import (
-    MorganFingerprint,
     AtomPairFingerprint,
-    TopologicalTorsionFingerprint,
-    MACCSKeysFingerprint,
     ERGFingerprint,
+    MACCSKeysFingerprint,
+    MorganFingerprint,
+    TopologicalTorsionFingerprint,
 )
 
 dataset_name = "ogbg-molhiv"
