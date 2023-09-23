@@ -3,12 +3,19 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_array
 
+from joblib import cpu_count
+
 import rdkit.Chem.rdFingerprintGenerator as fpgens
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
+from rdkit.Chem import MolFromSmiles
 
 from time import time
+from typing import List, Callable
 
+from ogb.graphproppred import GraphPropPredDataset
+
+from base import FingerprintTransformer
 from featurizers.fingerprints import (
     MorganFingerprint,
     AtomPairFingerprint,
@@ -18,41 +25,58 @@ from featurizers.fingerprints import (
 )
 
 dataset_name = "ogbg-molhiv"
+
+# N_SPLITS - number of parts in which the dataset will be divided.
+# the test is performed first on 1 of them, then 2, ... then N_SPLITS
+# testing different sizes of input data
 N_SPLITS = 5
+# N_REPEATS - number of test repetitions - for getting average time score
 N_REPEATS = 5
-N_CORES = [1, 2, 4, -1]
+N_CORES = [i for i in range(1, cpu_count() + 1)]
 COUNT_TYPES = [False, True]
 SPARSE_TYPES = [False, True]
 
 
-def get_times_emf(X, n_molecules, transformer_function, **kwargs):
-    result = []
+def get_times_emf(
+    X: pd.DataFrame, transformer_function: FingerprintTransformer, **kwargs
+):
+    n_molecules = X.shape[0]
     emf_transformer = transformer_function(**kwargs)
+
+    # testing for different sizes of input datasets
+    result = []
     for data_fraction in np.linspace(0, 1, N_SPLITS + 1)[1:]:
         n = int(n_molecules * data_fraction)
         subset = X[:n]
         times = [None for _ in range(N_REPEATS)]
+        # testing several times to get average computation time
         for i in range(N_REPEATS):
             start = time()
             X_transformed = emf_transformer.transform(subset)
             end = time()
             times[i] = end - start
-        result.append(sum(times) / N_REPEATS)
+        result.append(np.mean(times))
     return np.array(result)
 
 
-def get_generator_times_rdkit(X, n_molecules, generator, count, sparse):
+def get_generator_times_rdkit(
+    X: pd.DataFrame, generator: object, count: bool, sparse: bool
+):
+    n_molecules = X.shape[0]
     if count:
         fp_function = lambda x: generator.GetCountFingerprint(
             MolFromSmiles(x)
         ).ToList()
     else:
         fp_function = lambda x: generator.GetFingerprint(MolFromSmiles(x))
+
+    # testing for different sizes of input datasets
     result = []
     for data_fraction in np.linspace(0, 1, N_SPLITS + 1)[1:]:
         n = int(n_molecules * data_fraction)
         subset = X[:n]
         times = [None for _ in range(N_REPEATS)]
+        # testing several times to get average computation time
         for i in range(N_REPEATS):
             start = time()
             if sparse:
@@ -61,16 +85,21 @@ def get_generator_times_rdkit(X, n_molecules, generator, count, sparse):
                 X_transformed = np.array([fp_function(x) for x in subset])
             end = time()
             times[i] = end - start
-        result.append(sum(times) / N_REPEATS)
+        result.append(np.mean(times))
     return np.array(result)
 
 
-def get_times_rdkit(X, n_molecules, func, sparse=False, **kwargs):
+def get_times_rdkit(
+    X: pd.DataFrame, func: Callable, sparse: bool = False, **kwargs
+):
+    n_molecules = X.shape[0]
+    # testing for different sizes of input datasets
     result = []
     for data_fraction in np.linspace(0, 1, N_SPLITS + 1)[1:]:
         n = int(n_molecules * data_fraction)
         subset = X[:n]
         times = [None for _ in range(N_REPEATS)]
+        # testing several times to get average computation time
         for i in range(N_REPEATS):
             start = time()
             if sparse:
@@ -83,12 +112,18 @@ def get_times_rdkit(X, n_molecules, func, sparse=False, **kwargs):
                 )
             end = time()
             times[i] = end - start
-        result.append(sum(times) / N_REPEATS)
+        result.append(np.mean(times))
     return np.array(result)
 
 
 def plot_results(
-    n_molecules, y_emf, y_rdkit, title="", sparse=None, count=None
+    n_molecules: int,
+    y_emf: List,
+    y_rdkit: List,
+    title: str = "",
+    sparse: bool = None,
+    count: bool = None,
+    save: bool = True,
 ):
     if sparse is not None:
         if sparse:
@@ -120,11 +155,11 @@ def plot_results(
     ax1.set_ylim(bottom=0)
 
     plt.legend(loc="upper left")
-    plt.savefig(title.replace(" ", "_") + ".png")
-    # plt.show()
+    if save:
+        plt.savefig(title.replace(" ", "_") + ".png")
+    else:
+        plt.show()
 
-
-from rdkit.Chem import MolFromSmiles
 
 if __name__ == "__main__":
     # GraphPropPredDataset(name=dataset_name)
@@ -136,9 +171,11 @@ if __name__ == "__main__":
 
     n_molecules = X.shape[0]
 
+    print(type(X))
+
     # MORGAN FINGERPRINT
     print("Morgan")
-    print("emf times")c
+    print("emf times")
     morgan_emf_times = [
         [
             [
