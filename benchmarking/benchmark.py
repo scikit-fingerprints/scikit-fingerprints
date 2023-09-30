@@ -1,5 +1,5 @@
 from time import time
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -57,7 +57,7 @@ def get_times_emf(
 
 
 def get_generator_times_rdkit(
-    X: pd.DataFrame, generator: object, count: bool, sparse: bool
+    X: pd.DataFrame, generator: object, count: Optional[bool], sparse: bool
 ):
     n_molecules = X.shape[0]
     if count:
@@ -122,15 +122,13 @@ def plot_results(
     count: bool = None,
     save: bool = True,
 ):
-    if sparse is not None:
-        if sparse:
-            title += " sparse"
+    if sparse:
+        title += " sparse"
 
-    if count is not None:
-        if count:
-            title += " count"
-        else:
-            title += " bit"
+    if count:
+        title += " count"
+    elif count is not None:
+        title += " bit"
 
     X = n_molecules * np.linspace(0, 1, N_SPLITS + 1)[1:]
 
@@ -145,8 +143,8 @@ def plot_results(
     ax1.plot(X, y_emf[3], label="emf time - all jobs")
     ax1.plot(X, y_rdkit, label="rdkit time")
 
-    ax1.set_ylabel("Time of computiation")
-    ax1.set_xlabel("Number of finberprints")
+    ax1.set_ylabel("Time of computation")
+    ax1.set_xlabel("Number of fingerprints")
 
     ax1.set_xlim(n_molecules * 0.1, n_molecules * 1.1)
     ax1.set_ylim(bottom=0)
@@ -168,11 +166,7 @@ if __name__ == "__main__":
 
     n_molecules = X.shape[0]
 
-    print(type(X))
-
     # MORGAN FINGERPRINT
-    print("Morgan")
-    print("emf times")
     morgan_emf_times = [
         [
             [
@@ -193,7 +187,6 @@ if __name__ == "__main__":
 
     generator = fpgens.GetMorganGenerator()
 
-    print("rdkit times")
     morgan_rdkit_times = [
         [
             get_generator_times_rdkit(
@@ -220,8 +213,6 @@ if __name__ == "__main__":
             )
 
     # ATOM PAIR FINGERPRINT
-    print("Atom Pair")
-    print("emf times")
     atom_pair_emf_times = [
         [
             [
@@ -242,7 +233,6 @@ if __name__ == "__main__":
 
     generator = fpgens.GetAtomPairGenerator()
 
-    print("rdkit times")
     atom_pair_rdkit_times = [
         [
             get_generator_times_rdkit(
@@ -269,8 +259,6 @@ if __name__ == "__main__":
             )
 
     # TOPOLOGICAL TORSION FINGERPRINT
-    print("Topological Torsion")
-    print("emf times")
     topological_torsion_emf_times = [
         [
             [
@@ -291,7 +279,6 @@ if __name__ == "__main__":
 
     generator = fpgens.GetTopologicalTorsionGenerator()
 
-    print("rdkit times")
     topological_torsion_rdkit_times = [
         [
             get_generator_times_rdkit(
@@ -318,8 +305,6 @@ if __name__ == "__main__":
             )
 
     # MACCS KEYS FINGERPRINT
-    print("MACCS Keys")
-    print("emf times")
     MACCSKeys_emf_times = [
         [
             get_times_emf(
@@ -334,7 +319,6 @@ if __name__ == "__main__":
         for sparse in SPARSE_TYPES
     ]
 
-    print("rdkit times")
     MACCSKeys_rdkit_times = [
         get_times_rdkit(X, n_molecules, GetMACCSKeysFingerprint, sparse=sparse)
         for sparse in SPARSE_TYPES
@@ -351,8 +335,6 @@ if __name__ == "__main__":
         )
 
     # ERG FINGERPRINT
-    print("ERG")
-    print("emf times")
     ERG_emf_times = [
         [
             get_times_emf(
@@ -363,7 +345,6 @@ if __name__ == "__main__":
         for sparse in SPARSE_TYPES
     ]
 
-    print("rdkit times")
     ERG_rdkit_times = [
         get_times_rdkit(X, n_molecules, GetErGFingerprint, sparse=sparse)
         for sparse in SPARSE_TYPES
