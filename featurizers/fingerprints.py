@@ -2,6 +2,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
+import scipy.sparse as spsparse
 
 from base import FingerprintTransformer
 
@@ -60,21 +61,6 @@ class MorganFingerprint(FingerprintTransformer):
     ) -> np.ndarray:
         X = self._validate_input(X)
         return self._generate_fingerprints(X)
-
-
-class MACCSKeysFingerprint(FingerprintTransformer):
-    def __init__(
-        self, sparse: bool = False, n_jobs: int = 1
-    ):  # the sparse parameter will be unused
-        super().__init__(n_jobs=n_jobs, sparse=sparse)
-
-    def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
-        X = self._validate_input(X)
-        from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
-
-        return np.array([GetMACCSKeysFingerprint(x) for x in X])
 
 
 class AtomPairFingerprint(FingerprintTransformer):
@@ -164,6 +150,23 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         return self._generate_fingerprints(X)
 
 
+class MACCSKeysFingerprint(FingerprintTransformer):
+    def __init__(self, sparse: bool = False, n_jobs: int = 1):
+        super().__init__(n_jobs=n_jobs, sparse=sparse)
+
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        X = self._validate_input(X)
+        from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
+
+        X = [GetMACCSKeysFingerprint(x) for x in X]
+        if self.sparse:
+            return spsparse.csr_array(X)
+        else:
+            return np.array(X)
+
+
 class ERGFingerprint(FingerprintTransformer):
     def __init__(
         self,
@@ -186,11 +189,18 @@ class ERGFingerprint(FingerprintTransformer):
         X = self._validate_input(X)
         from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
-        fp_args = {
-            "atomTypes": self.atom_types,
-            "fuzzIncrement": self.fuzz_increment,
-            "minPath": self.min_path,
-            "maxPath": self.max_path,
-        }
+        X = [
+            GetErGFingerprint(
+                x,
+                atomTypes=self.atom_types,
+                fuzzIncrement=self.fuzz_increment,
+                minPath=self.min_path,
+                maxPath=self.max_path,
+            )
+            for x in X
+        ]
 
-        return np.array([GetErGFingerprint(x, **fp_args) for x in X])
+        if self.sparse:
+            return spsparse.csr_array(X)
+        else:
+            return np.array(X)

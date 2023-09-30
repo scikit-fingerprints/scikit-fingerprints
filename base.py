@@ -1,16 +1,13 @@
 from abc import ABC, abstractmethod
-
-from joblib import delayed, effective_n_jobs, Parallel
 from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
 import scipy.sparse as spsparse
-
-from sklearn.base import BaseEstimator, TransformerMixin
-
+from joblib import Parallel, delayed, effective_n_jobs
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):

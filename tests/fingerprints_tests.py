@@ -1,21 +1,18 @@
-import pytest
-
 import numpy as np
+import pytest
+import rdkit.Chem.rdFingerprintGenerator as fpgens
+from rdkit import Chem
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
-
-from rdkit import Chem
+from scipy.sparse import csr_array
 
 from featurizers.fingerprints import (
-    MorganFingerprint,
-    MACCSKeysFingerprint,
     AtomPairFingerprint,
-    TopologicalTorsionFingerprint,
     ERGFingerprint,
+    MACCSKeysFingerprint,
+    MorganFingerprint,
+    TopologicalTorsionFingerprint,
 )
-
-import rdkit.Chem.rdFingerprintGenerator as fpgens
-from scipy.sparse import csr_array
 
 smiles_data = [
     "Oc1ncnc2c1sc1nc3ccccc3n12",
@@ -93,23 +90,6 @@ def test_morgan_sparse_count_fingerprint(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
     )
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
-
-
-def test_maccs_keys_fingerprint(example_molecules):
-    X = example_molecules
-
-    X_2 = X.copy()
-
-    # Concurrent
-    maccs = MACCSKeysFingerprint(n_jobs=-1)
-    X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_maccs = maccs.transform(X.copy())
-
-    # Sequential
-    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([GetMACCSKeysFingerprint(x) for x in X_2])
-
-    assert np.all(X_maccs == X_seq)
 
 
 def test_atom_pair_bit_fingerprint(example_molecules, rdkit_example_molecules):
@@ -222,21 +202,44 @@ def test_topological_torsion_sparse_count_fingerprint(
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
 
-def test_erg_fingerprint(example_molecules):
+def test_maccs_keys_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    erg = MACCSKeysFingerprint(n_jobs=-1, sparse=False)
+    X_emf = erg.transform(X)
+    X_rdkit = np.array([GetMACCSKeysFingerprint(x) for x in X_for_rdkit])
 
-    X_2 = X.copy()
+    assert np.all(X_emf == X_rdkit)
 
-    # Concurrent
-    erg = ERGFingerprint(n_jobs=-1)
-    X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_erg = erg.transform(X.copy())
 
-    # Sequential
-    X_2 = [Chem.MolFromSmiles(x) for x in X_2]
-    X_seq = np.array([GetErGFingerprint(x) for x in X_2])
+def test_maccs_keys_sparse_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    erg = MACCSKeysFingerprint(n_jobs=-1, sparse=True)
+    X_emf = erg.transform(X)
+    X_rdkit = csr_array([GetMACCSKeysFingerprint(x) for x in X_for_rdkit])
+    assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
-    assert np.all(X_erg == X_seq)
+
+def test_erg_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    erg = ERGFingerprint(n_jobs=-1, sparse=False)
+    X_emf = erg.transform(X)
+    X_rdkit = np.array([GetErGFingerprint(x) for x in X_for_rdkit])
+
+    assert np.all(X_emf == X_rdkit)
+
+
+def test_erg_sparse_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    erg = ERGFingerprint(n_jobs=-1, sparse=True)
+    X_emf = erg.transform(X)
+    X_rdkit = csr_array([GetErGFingerprint(x) for x in X_for_rdkit])
+    assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
 
 def test_input_validation(example_molecules):
