@@ -49,6 +49,7 @@ def get_times_emf(
         # testing several times to get average computation time
         for i in range(N_REPEATS):
             start = time()
+            start = time()
             X_transformed = emf_transformer.transform(subset)
             end = time()
             times[i] = end - start
@@ -137,10 +138,9 @@ def plot_results(
     ax1 = fig.add_subplot()
     ax1.set_title(title)
 
-    ax1.plot(X, y_emf[0], label="emf time - 1 job")
-    ax1.plot(X, y_emf[1], label="emf time - 2 job")
-    ax1.plot(X, y_emf[2], label="emf time - 4 job")
-    ax1.plot(X, y_emf[3], label="emf time - all jobs")
+    for y, i in enumerate(y_emf):
+        ax1.plot(X, y, label=f"emf time - {i+1} job")
+
     ax1.plot(X, y_rdkit, label="rdkit time")
 
     ax1.set_ylabel("Time of computation")
@@ -157,9 +157,9 @@ def plot_results(
 
 
 if __name__ == "__main__":
-    # GraphPropPredDataset(name=dataset_name)
+    GraphPropPredDataset(name=dataset_name)
     dataset = pd.read_csv(
-        f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
+        f"./dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
     X = dataset["smiles"]
     y = dataset["HIV_active"]
@@ -172,7 +172,6 @@ if __name__ == "__main__":
             [
                 get_times_emf(
                     X,
-                    n_molecules,
                     MorganFingerprint,
                     sparse=sparse,
                     count=count,
@@ -191,7 +190,6 @@ if __name__ == "__main__":
         [
             get_generator_times_rdkit(
                 X,
-                n_molecules,
                 generator,
                 sparse=sparse,
                 count=count,
@@ -218,7 +216,6 @@ if __name__ == "__main__":
             [
                 get_times_emf(
                     X,
-                    n_molecules,
                     AtomPairFingerprint,
                     sparse=sparse,
                     count=count,
@@ -237,7 +234,6 @@ if __name__ == "__main__":
         [
             get_generator_times_rdkit(
                 X,
-                n_molecules,
                 generator,
                 sparse=sparse,
                 count=count,
@@ -264,7 +260,6 @@ if __name__ == "__main__":
             [
                 get_times_emf(
                     X,
-                    n_molecules,
                     TopologicalTorsionFingerprint,
                     sparse=sparse,
                     count=count,
@@ -283,7 +278,6 @@ if __name__ == "__main__":
         [
             get_generator_times_rdkit(
                 X,
-                n_molecules,
                 generator,
                 sparse=sparse,
                 count=count,
@@ -309,7 +303,6 @@ if __name__ == "__main__":
         [
             get_times_emf(
                 X,
-                n_molecules,
                 MACCSKeysFingerprint,
                 n_jobs=n_cores,
                 sparse=sparse,
@@ -337,16 +330,14 @@ if __name__ == "__main__":
     # ERG FINGERPRINT
     ERG_emf_times = [
         [
-            get_times_emf(
-                X, n_molecules, ERGFingerprint, n_jobs=n_cores, sparse=sparse
-            )
+            get_times_emf(X, ERGFingerprint, n_jobs=n_cores, sparse=sparse)
             for n_cores in N_CORES
         ]
         for sparse in SPARSE_TYPES
     ]
 
     ERG_rdkit_times = [
-        get_times_rdkit(X, n_molecules, GetErGFingerprint, sparse=sparse)
+        get_times_rdkit(X, GetErGFingerprint, sparse=sparse)
         for sparse in SPARSE_TYPES
     ]
 
