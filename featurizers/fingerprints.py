@@ -1,11 +1,7 @@
-import logging
-import sys
 from typing import Union
 
 import numpy as np
 import pandas as pd
-import rdkit.rdBase
-from rdkit.Chem import MolToSmiles
 
 from base import FingerprintTransformer
 

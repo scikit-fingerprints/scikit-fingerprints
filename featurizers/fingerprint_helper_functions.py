@@ -79,13 +79,15 @@ def _all_pairs(Mol: Mol, atoms_envs: dict, radius: int, is_counted: bool):
 
             if is_counted:
                 shingle_dict[shingle] += 1
-                shingle += "|" + str(shingle_dict[shingle])
             else:
                 atom_pairs.append(shingle.encode("utf-8"))
 
     if is_counted:
-        for shingle in shingle_dict.keys():
-            shingle += "|" + str(shingle_dict[shingle])
+        # Shingle in a format:
+        # (neighborhood of atom A of radius i) | (distance between atom A and atom B) | \
+        # (neighborhood of atom B of radius i) | (shingle count)
+        for shingle, shingle_val in shingle_dict.items():
+            shingle += "|" + str(shingle_val)
             atom_pairs.append(shingle.encode("utf-8"))
 
     return atom_pairs
