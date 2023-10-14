@@ -1,11 +1,16 @@
-import logging
-import sys
 from typing import Union
 
 import e3fp.fingerprint.fprint
+from e3fp.conformer.generate import (
+    NUM_CONF_DEF,
+    POOL_MULTIPLIER_DEF,
+    RMSD_CUTOFF_DEF,
+    MAX_ENERGY_DIFF_DEF,
+    FORCEFIELD_DEF,
+    SEED_DEF,
+)
 import numpy as np
 import pandas as pd
-import rdkit.rdBase
 from rdkit.Chem import MolToSmiles
 
 from base import FingerprintTransformer
@@ -275,8 +280,16 @@ class ERGFingerprint(FingerprintTransformer):
 class E3FP(FingerprintTransformer):
     def __init__(
         self,
-        confgen_params: dict,
-        fprint_params: dict,
+        bits: int,
+        radius_multiplier: float,
+        rdkit_invariants: bool = True,
+        first: int = 1,
+        num_conf: int = NUM_CONF_DEF,
+        pool_multiplier: float = POOL_MULTIPLIER_DEF,
+        rmsd_cutoff: float = RMSD_CUTOFF_DEF,
+        max_energy_diff: float = MAX_ENERGY_DIFF_DEF,
+        forcefield: float = FORCEFIELD_DEF,
+        get_values: bool = True,
         is_folded: bool = False,
         fold_bits: int = 1024,
         standardise: bool = False,
@@ -284,46 +297,20 @@ class E3FP(FingerprintTransformer):
         n_jobs: int = 1,
         verbose: int = 0,
     ):
-        if "first" not in confgen_params:
-            confgen_params["first"] = fprint_params.get("first", 1)
-        if "first" not in fprint_params:
-            fprint_params["first"] = confgen_params.get("first", 1)
-
-        # Get necessary default values if not specified
-        from e3fp.conformer.generate import (
-            NUM_CONF_DEF,
-            POOL_MULTIPLIER_DEF,
-            RMSD_CUTOFF_DEF,
-            MAX_ENERGY_DIFF_DEF,
-            FORCEFIELD_DEF,
-            SEED_DEF,
-        )
-
-        confgen_params["num_conf"] = confgen_params.get(
-            "num_conf", NUM_CONF_DEF
-        )
-        confgen_params["pool_multiplier"] = confgen_params.get(
-            "pool_multiplier", POOL_MULTIPLIER_DEF
-        )
-        confgen_params["rmsd_cutoff"] = confgen_params.get(
-            "rmsd_cutoff", RMSD_CUTOFF_DEF
-        )
-        confgen_params["max_energy_diff"] = confgen_params.get(
-            "max_energy_diff", MAX_ENERGY_DIFF_DEF
-        )
-        confgen_params["forcefield"] = confgen_params.get(
-            "forcefield", FORCEFIELD_DEF
-        )
-        confgen_params["seed"] = confgen_params.get("seed", SEED_DEF)
-        confgen_params["get_values"] = True
-
         super().__init__(n_jobs, verbose)
-        self.confgen_params = confgen_params
-        self.fprint_params = fprint_params
+        self.bits = bits
+        self.radius_multiplier = radius_multiplier
+        self.rdkit_invariants = rdkit_invariants
+        self.first = first
+        self.num_conf = num_conf
+        self.pool_multiplier = pool_multiplier
+        self.rmsd_cutoff = rmsd_cutoff
+        self.max_energy_diff = max_energy_diff
+        self.forcefield = forcefield
+        self.get_values = get_values
         self.is_folded = is_folded
         self.fold_bits = fold_bits
         self.standardise = standardise
-        self.first = confgen_params.get("first", 1)
         self.random_state = random_state
 
     def _calculate_fingerprint(
@@ -334,7 +321,13 @@ class E3FP(FingerprintTransformer):
         from e3fp.pipeline import fprints_from_mol
 
         conf_gen = ConformerGenerator(
-            **self.confgen_params,
+            first=self.first,
+            num_conf=self.num_conf,
+            pool_multiplier=self.pool_multiplier,
+            rmsd_cutoff=self.rmsd_cutoff,
+            max_energy_diff=self.max_energy_diff,
+            forcefield=self.forcefield,
+            get_values=self.get_values,
         )
 
         result = []
@@ -351,7 +344,14 @@ class E3FP(FingerprintTransformer):
 
             max_conformers, indices, energies, rmsds_mat = values
 
-            fps = fprints_from_mol(mol, fprint_params=self.fprint_params)
+            fps = fprints_from_mol(
+                mol,
+                fprint_params={
+                    "bits": self.bits,
+                    "radius_multiplier": self.radius_multiplier,
+                    "rdkit_invariants": self.rdkit_invariants,
+                },
+            )
 
             # Set a property for each fingerprint, to be able to obtain energy later
             for i in range(len(fps)):
@@ -363,6 +363,6 @@ class E3FP(FingerprintTransformer):
 
             result.extend(fps)
 
-        result = np.array(result, dtype=object)
+        result = np.array(result)
 
         return result

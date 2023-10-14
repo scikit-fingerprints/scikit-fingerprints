@@ -209,7 +209,6 @@ def test_e3fp(example_molecules):
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
         "forcefield": FORCEFIELD_DEF,
-        "seed": 0,
     }
 
     fprint_params = {
@@ -220,7 +219,11 @@ def test_e3fp(example_molecules):
 
     # Concurrent
     e3fp_fp = E3FP(
-        confgen_params, fprint_params, is_folded=False, n_jobs=-1, verbose=0
+        **confgen_params,
+        **fprint_params,
+        is_folded=False,
+        n_jobs=-1,
+        verbose=0
     )
     X_e3fp = e3fp_fp.transform(X)
 
