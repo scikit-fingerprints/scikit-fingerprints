@@ -287,7 +287,7 @@ class MAP4Fingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
-        from featurizers.fingerprint_helper_functions import (
+        from featurizers.map4_mhfp_helper_functions import (
             get_map4_fingerprint,
         )
 
@@ -320,7 +320,7 @@ class MHFP(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
-        from featurizers.fingerprint_helper_functions import get_mhfp
+        from featurizers.map4_mhfp_helper_functions import get_mhfp
 
         fp_args = {
             "dimensions": self.dimensions,

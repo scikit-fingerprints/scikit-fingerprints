@@ -25,7 +25,7 @@ from featurizers.fingerprints import (
     MAP4Fingerprint,
     MHFP,
 )
-from featurizers.fingerprint_helper_functions import get_map4_fingerprint
+from featurizers.map4_mhfp_helper_functions import get_map4_fingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 
