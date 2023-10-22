@@ -288,11 +288,11 @@ class E3FP(FingerprintTransformer):
         pool_multiplier: float = POOL_MULTIPLIER_DEF,
         rmsd_cutoff: float = RMSD_CUTOFF_DEF,
         max_energy_diff: float = MAX_ENERGY_DIFF_DEF,
-        forcefield: float = FORCEFIELD_DEF,
+        force_field: float = FORCEFIELD_DEF,
         get_values: bool = True,
         is_folded: bool = False,
         fold_bits: int = 1024,
-        standardise: bool = False,
+        standardise: bool = True,
         random_state: int = 0,
         n_jobs: int = 1,
         verbose: int = 0,
@@ -306,7 +306,7 @@ class E3FP(FingerprintTransformer):
         self.pool_multiplier = pool_multiplier
         self.rmsd_cutoff = rmsd_cutoff
         self.max_energy_diff = max_energy_diff
-        self.forcefield = forcefield
+        self.force_field = force_field
         self.get_values = get_values
         self.is_folded = is_folded
         self.fold_bits = fold_bits
@@ -326,8 +326,9 @@ class E3FP(FingerprintTransformer):
             pool_multiplier=self.pool_multiplier,
             rmsd_cutoff=self.rmsd_cutoff,
             max_energy_diff=self.max_energy_diff,
-            forcefield=self.forcefield,
+            forcefield=self.force_field,
             get_values=self.get_values,
+            seed=self.random_state,
         )
 
         result = []
@@ -357,8 +358,7 @@ class E3FP(FingerprintTransformer):
             for i in range(len(fps)):
                 fps[i].set_prop("Energy", energies[i])
 
-            if self.is_folded:
-                for i in range(len(fps)):
+                if self.is_folded:
                     fps[i] = fps[i].fold(self.fold_bits)
 
             result.extend(fps)

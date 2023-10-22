@@ -208,7 +208,7 @@ def test_e3fp(example_molecules):
         "pool_multiplier": POOL_MULTIPLIER_DEF,
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
-        "forcefield": FORCEFIELD_DEF,
+        "force_field": FORCEFIELD_DEF,
     }
 
     fprint_params = {
@@ -222,6 +222,7 @@ def test_e3fp(example_molecules):
         **confgen_params,
         **fprint_params,
         is_folded=False,
+        standardise=False,
         n_jobs=-1,
         verbose=0
     )
@@ -253,14 +254,16 @@ def test_e3fp(example_molecules):
     X_seq = X_seq.flatten()
 
     if type(X_seq[0]) is list:
+        # new_X_seq = [fp for x_seq in X_seq for fp in x_seq]
         new_X_seq = []
         for x_seq in X_seq:
             for fp in x_seq:
                 new_X_seq.append(fp)
+
         X_seq = np.array(new_X_seq, dtype=object)
 
     for i in range(len(X_e3fp)):
-        assert tanimoto(X_e3fp[i], X_seq[i])
+        assert tanimoto(X_e3fp[i], X_seq[i]) == 1
 
 
 def test_input_validation(example_molecules):
