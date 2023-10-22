@@ -34,20 +34,24 @@ def _find_neighborhood(Mol: Mol, idx: int, radius: int) -> str:
         return ""
 
 
-def _get_atom_envs(Mol: Mol, radius: int):
+def _get_atom_envs(Mol: Mol, radius: int) -> dict:
     """
     For each atom get its environment.
     """
-    atoms_env = defaultdict(lambda: [])
+    atoms_env = defaultdict(list)
     for atom in Mol.GetAtoms():
         idx = atom.GetIdx()
-        for r in range(1, radius + 1):
-            atoms_env[idx].append(_find_neighborhood(Mol, idx, r))
+        new_values = [
+            _find_neighborhood(Mol, idx, r) for r in range(1, radius + 1)
+        ]
+        atoms_env[idx].extend(new_values)
 
     return atoms_env
 
 
-def _all_pairs(Mol: Mol, atoms_envs: dict, radius: int, is_counted: bool):
+def _all_pairs(
+    Mol: Mol, atoms_envs: dict, radius: int, is_counted: bool
+) -> list[str]:
     """
     Gets a list of atom-pair molecular shingles - circular structures written as SMILES, separated by the bond distance
     between the two atoms along the shortest path.
@@ -65,15 +69,17 @@ def _all_pairs(Mol: Mol, atoms_envs: dict, radius: int, is_counted: bool):
     for idx_1, idx_2 in itertools.combinations(range(num_atoms), 2):
         # distance_matrix consists of floats as integers, so they need to be converted to integers first
         dist = str(int(distance_matrix[idx_1][idx_2]))
+        env_a = atoms_envs[idx_1]
+        env_b = atoms_envs[idx_2]
 
         for i in range(radius):
-            env_a = atoms_envs[idx_1][i]
-            env_b = atoms_envs[idx_2][i]
+            env_a_radius = env_a[i]
+            env_b_radius = env_b[i]
 
-            if not len(env_a) or not len(env_b):
+            if not len(env_a_radius) or not len(env_b_radius):
                 continue
 
-            ordered = sorted([env_a, env_b])
+            ordered = sorted([env_a_radius, env_b_radius])
 
             shingle = f"{ordered[0]}|{dist}|{ordered[1]}"
 
@@ -86,9 +92,11 @@ def _all_pairs(Mol: Mol, atoms_envs: dict, radius: int, is_counted: bool):
         # Shingle in a format:
         # (neighborhood of atom A of radius i) | (distance between atom A and atom B) | \
         # (neighborhood of atom B of radius i) | (shingle count)
-        for shingle, shingle_val in shingle_dict.items():
-            shingle += "|" + str(shingle_val)
-            atom_pairs.append(shingle.encode("utf-8"))
+        new_atom_pairs = [
+            f"{shingle}|{shingle_count}".encode("utf-8")
+            for shingle, shingle_count in shingle_dict.items()
+        ]
+        atom_pairs.extend(new_atom_pairs)
 
     return atom_pairs
 

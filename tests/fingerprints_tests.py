@@ -192,12 +192,12 @@ def test_map4_fingerprint(example_molecules):
     X = example_molecules
 
     # Concurrent
-    map4_fp = MAP4Fingerprint(random_state=0, n_jobs=-1)
+    map4_fp = MAP4Fingerprint(is_counted=True, random_state=0, n_jobs=-1)
     X = np.array([Chem.MolFromSmiles(x) for x in X])
     X_map4 = map4_fp.transform(X.copy())
 
     # Sequential
-    map4_fp_seq = MAP4Fingerprint(random_state=0, n_jobs=1)
+    map4_fp_seq = MAP4Fingerprint(is_counted=True, random_state=0, n_jobs=1)
     X_seq = map4_fp_seq.transform(X)
 
     assert np.array_equal(X_map4, X_seq)

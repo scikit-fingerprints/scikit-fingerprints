@@ -32,7 +32,7 @@ class MorganFingerprint(FingerprintTransformer):
     ):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
         self.radius = radius
         self.n_bits = n_bits
         self.use_chirality = use_chirality
@@ -98,7 +98,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(
         self, sparse: bool = False, n_jobs: int = None, verbose: int = 0
     ):  # the sparse parameter will be unused
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -127,7 +127,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     ):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
         self.n_bits = n_bits
         self.min_length = min_length
         self.max_length = max_length
@@ -191,7 +191,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
     ):
         assert result_type in ["default", "as_bit_vect", "hashed"]
 
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
         self.n_bits = n_bits
         self.target_size = target_size
         self.from_atoms = from_atoms
@@ -246,7 +246,7 @@ class ERGFingerprint(FingerprintTransformer):
         n_jobs: int = None,
         verbose: int = 0,
     ):
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
         self.min_path = min_path
@@ -278,7 +278,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         n_jobs: int = None,
         verbose: int = 0,
     ):
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
         self.dimensions = dimensions
         self.radius = radius
         self.is_counted = is_counted
@@ -311,7 +311,7 @@ class MHFP(FingerprintTransformer):
         n_jobs: int = None,
         verbose: int = 0,
     ):
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
         self.dimensions = dimensions
         self.radius = radius
         self.is_counted = is_counted
