@@ -7,7 +7,6 @@
 - [Library Description](#library-description)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Competitive Solutions](#competitive-solutions)
 - [Technologies Used](#technologies-used)
 - [Contributing](#contributing)
 - [License](#license)
