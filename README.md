@@ -57,8 +57,6 @@ Our project leverages the following technologies:
 
 - [Joblib](https://joblib.readthedocs.io): Used for parallel computing.
 
-- C++: Utilized for performance optimization if needed.
-
 - [Pandas](https://pandas.pydata.org): A widely used Python library for data manipulation and analysis.
 
 ---
