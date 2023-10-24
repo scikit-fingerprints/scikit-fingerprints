@@ -15,7 +15,7 @@ from e3fp.conformer.util import mol_to_standardised_mol
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
 
-from base import FingerprintTransformer
+from emf.emf.base import FingerprintTransformer
 
 """
 If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside
