@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import scipy.sparse as spsparse
 
-from base import FingerprintTransformer
+from emf.emf.base import FingerprintTransformer
 
 """
 If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside

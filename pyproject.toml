@@ -1,8 +1,11 @@
 [tool.poetry]
 name = "emf"
 version = "0.1.0"
-description = ""
-authors = ["Arch4ngel21 <adammichal657@gmail.com>"]
+description = "Library for concurrent chemical fingerprints processing"
+authors = ["Michal Szafarczyk <adammichal657@gmail.com>", "Piotr Ludynia",
+    "Przemyslaw Kukla <przemek.kukla0703@gmail.com>"]
+license = "MIT"
+
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -10,6 +13,11 @@ python = "^3.9"
 pytest = "^7.3.1"
 torch = {version = "^2.0.1+cpu", source = "pytorch"}
 torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
+numpy = "^1.19.5"
+pandas = "^1.3.3"
+scipy = "^1.7.3"
+joblib = "^1.1.0"
+
 
 [[tool.poetry.source]]
 name = "pytorch"

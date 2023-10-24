@@ -12,8 +12,8 @@ from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array
 
-from base import FingerprintTransformer
-from featurizers.fingerprints import (
+from emf.emf.base import FingerprintTransformer
+from emf.emf.featurizers.fingerprints import (
     AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
