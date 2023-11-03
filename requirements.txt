@@ -9,3 +9,5 @@ rdkit
 scikit-learn
 torch-geometric
 e3fp
+tmap
+pytest
