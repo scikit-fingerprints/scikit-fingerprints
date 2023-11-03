@@ -1,9 +1,13 @@
 black
+datasketch
+mhfp
+ogb
+poetry
 pre-commit
 PyTDC
-ogb
 rdkit
 scikit-learn
 torch-geometric
+e3fp
 tmap
 pytest
