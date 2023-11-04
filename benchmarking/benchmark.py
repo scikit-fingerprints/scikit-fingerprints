@@ -216,8 +216,6 @@ if __name__ == "__main__":
                 sparse,
             )
 
-    print("morgan done")
-
     # ATOM PAIR FINGERPRINT
     atom_pair_emf_times = [
         [
