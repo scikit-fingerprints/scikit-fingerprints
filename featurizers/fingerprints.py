@@ -31,8 +31,9 @@ class MorganFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
         sparse: bool = False,
         count: bool = False,
+        verbose: int = 0
     ):
-        FingerprintTransformer.__init__(self, n_jobs, sparse, count)
+        super().__init__(self, n_jobs, sparse, count)
         self.radius = radius
         self.include_chirality = include_chirality
         self.radius = radius
@@ -62,7 +63,7 @@ class MorganFingerprint(FingerprintTransformer):
         X = self._validate_input(X)
         return self._generate_fingerprints(X)
 
-
+      
 class AtomPairFingerprint(FingerprintTransformer):
     def __init__(
         self,
@@ -76,9 +77,9 @@ class AtomPairFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
         sparse: bool = False,
         count: bool = False,
-    ):
-        FingerprintTransformer.__init__(self, n_jobs, sparse, count)
-
+        verbose: int = 0
+):
+        super().__init__(self, n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose)
         self.min_distance = min_distance
         self.max_distance = max_distance
         self.include_chirality = include_chirality
@@ -116,12 +117,12 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         count_bounds: Optional[List] = None,
         fp_size: int = 2048,
         atom_invariants_generator: Optional[List] = None,
-        n_jobs: int = 1,
+        n_jobs: int = None,
         sparse: bool = False,
         count: bool = False,
+        verbose: int = 0
     ):
-        FingerprintTransformer.__init__(self, n_jobs, sparse, count)
-
+        super().__init__(self, n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose)
         self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
         self.count_simulation = count_simulation
@@ -151,8 +152,12 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
 
 
 class MACCSKeysFingerprint(FingerprintTransformer):
-    def __init__(self, sparse: bool = False, n_jobs: int = 1):
-        super().__init__(n_jobs=n_jobs, sparse=sparse)
+    def __init__(self, 
+                 sparse: bool = False, 
+                 n_jobs: int = 1,
+                 verbose: int = 0
+                ):
+        super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -175,9 +180,10 @@ class ERGFingerprint(FingerprintTransformer):
         min_path: int = 1,
         max_path: int = 15,
         sparse: bool = False,
-        n_jobs: int = 1,
+        n_jobs: int = None,
+        verbose: int = 0,
     ):
-        super().__init__(n_jobs, sparse)
+        super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
         self.min_path = min_path
@@ -199,8 +205,73 @@ class ERGFingerprint(FingerprintTransformer):
             )
             for x in X
         ]
-
+        
         if self.sparse:
             return spsparse.csr_array(X)
         else:
             return np.array(X)
+          
+
+class MAP4Fingerprint(FingerprintTransformer):
+    def __init__(
+        self,
+        dimensions: int = 1024,
+        radius: int = 2,
+        is_counted: bool = False,
+        is_folded: bool = False,
+        random_state: int = 0,
+        n_jobs: int = None,
+        verbose: int = 0,
+    ):
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
+        self.dimensions = dimensions
+        self.radius = radius
+        self.is_counted = is_counted
+        self.random_state = random_state
+
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        from featurizers.map4_mhfp_helper_functions import (
+            get_map4_fingerprint,
+        )
+
+        fp_args = {
+            "dimensions": self.dimensions,
+            "radius": self.radius,
+            "is_counted": self.is_counted,
+            "random_state": self.random_state,
+        }
+
+        return np.array([get_map4_fingerprint(x, **fp_args) for x in X])
+
+
+class MHFP(FingerprintTransformer):
+    def __init__(
+        self,
+        dimensions: int = 1024,
+        radius: int = 2,
+        is_counted: bool = False,
+        random_state: int = 0,
+        n_jobs: int = None,
+        verbose: int = 0,
+    ):
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
+        self.dimensions = dimensions
+        self.radius = radius
+        self.is_counted = is_counted
+        self.random_state = random_state
+
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        from featurizers.map4_mhfp_helper_functions import get_mhfp
+
+        fp_args = {
+            "dimensions": self.dimensions,
+            "radius": self.radius,
+            "is_counted": self.is_counted,
+            "random_state": self.random_state,
+        }
+
+        return np.array([get_mhfp(x, **fp_args) for x in X])

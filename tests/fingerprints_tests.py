@@ -9,10 +9,14 @@ from scipy.sparse import csr_array
 from featurizers.fingerprints import (
     AtomPairFingerprint,
     ERGFingerprint,
+    MAP4Fingerprint,
+    MHFP,
     MACCSKeysFingerprint,
     MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
+from featurizers.map4_mhfp_helper_functions import get_map4_fingerprint
+from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 smiles_data = [
     "Oc1ncnc2c1sc1nc3ccccc3n12",
@@ -33,7 +37,6 @@ smiles_data = [
     "Oc1ncnc2c1sc1nc3ccccc3n12",
     "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
 ]
-
 
 @pytest.fixture
 def example_molecules():
@@ -240,6 +243,36 @@ def test_erg_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X_emf = erg.transform(X)
     X_rdkit = csr_array([GetErGFingerprint(x) for x in X_for_rdkit])
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
+
+
+def test_map4_fingerprint(example_molecules):
+    X = example_molecules
+
+    # Concurrent
+    map4_fp = MAP4Fingerprint(is_counted=True, random_state=0, n_jobs=-1)
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_map4 = map4_fp.transform(X.copy())
+
+    # Sequential
+    map4_fp_seq = MAP4Fingerprint(is_counted=True, random_state=0, n_jobs=1)
+    X_seq = map4_fp_seq.transform(X)
+
+    assert np.array_equal(X_map4, X_seq)
+
+
+def test_mhfp6_fingerprint(example_molecules):
+    X = example_molecules
+
+    # Concurrent
+    map4_fp = MHFP(random_state=0, n_jobs=-1)
+    X = np.array([Chem.MolFromSmiles(x) for x in X])
+    X_map4 = map4_fp.transform(X.copy())
+
+    # Sequential
+    map4_fp_seq = MHFP(random_state=0, n_jobs=1)
+    X_seq = map4_fp_seq.transform(X)
+
+    assert np.array_equal(X_map4, X_seq)
 
 
 def test_input_validation(example_molecules):
