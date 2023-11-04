@@ -38,6 +38,7 @@ smiles_data = [
     "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
 ]
 
+
 @pytest.fixture
 def example_molecules():
     return smiles_data

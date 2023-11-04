@@ -12,13 +12,14 @@ from tqdm import tqdm
 from utils.logger import tqdm_joblib
 from sklearn.base import BaseEstimator, TransformerMixin
 
+
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def __init__(
         self,
         n_jobs: Optional[int] = None,
         sparse: bool = False,
         count: bool = False,
-        verbose: int = 0
+        verbose: int = 0,
     ):
         self.n_jobs = effective_n_jobs(n_jobs)
         self.sparse = sparse
