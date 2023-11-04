@@ -33,7 +33,6 @@ N_CORES = [i for i in range(1, cpu_count() + 1)]
 COUNT_TYPES = [False, True]
 SPARSE_TYPES = [False, True]
 
-
 def get_times_emf(
     X: pd.DataFrame, transformer_function: FingerprintTransformer, **kwargs
 ):
@@ -48,7 +47,6 @@ def get_times_emf(
         times = [None for _ in range(N_REPEATS)]
         # testing several times to get average computation time
         for i in range(N_REPEATS):
-            start = time()
             start = time()
             X_transformed = emf_transformer.transform(subset)
             end = time()
@@ -138,8 +136,8 @@ def plot_results(
     ax1 = fig.add_subplot()
     ax1.set_title(title)
 
-    for y, i in enumerate(y_emf):
-        ax1.plot(X, y, label=f"emf time - {i+1} job")
+    for i, y in enumerate(y_emf):
+        ax1.plot(X, y, label=f"emf time - {i+1}")
 
     ax1.plot(X, y_rdkit, label="rdkit time")
 
@@ -149,7 +147,7 @@ def plot_results(
     ax1.set_xlim(n_molecules * 0.1, n_molecules * 1.1)
     ax1.set_ylim(bottom=0)
 
-    plt.legend(loc="upper left")
+    plt.legend(loc="upper left",fontsize="8")
     if save:
         plt.savefig(title.replace(" ", "_") + ".png")
     else:
@@ -157,6 +155,9 @@ def plot_results(
 
 
 if __name__ == "__main__":
+    print(N_CORES)
+    benchmark_time_start = time()
+
     GraphPropPredDataset(name=dataset_name)
     dataset = pd.read_csv(
         f"./dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
@@ -199,8 +200,8 @@ if __name__ == "__main__":
         for count in COUNT_TYPES
     ]
 
-    for count, i in enumerate(COUNT_TYPES):
-        for sparse, j in enumerate(SPARSE_TYPES):
+    for i, count in enumerate(COUNT_TYPES):
+        for j, sparse in enumerate(SPARSE_TYPES):
             plot_results(
                 n_molecules,
                 morgan_emf_times[i][j],
@@ -243,8 +244,8 @@ if __name__ == "__main__":
         for count in COUNT_TYPES
     ]
 
-    for count, i in enumerate(COUNT_TYPES):
-        for sparse, j in enumerate(SPARSE_TYPES):
+    for i, count in enumerate(COUNT_TYPES):
+        for j, sparse in enumerate(SPARSE_TYPES):
             plot_results(
                 n_molecules,
                 atom_pair_emf_times[i][j],
@@ -287,8 +288,8 @@ if __name__ == "__main__":
         for count in COUNT_TYPES
     ]
 
-    for count, i in enumerate(COUNT_TYPES):
-        for sparse, j in enumerate(SPARSE_TYPES):
+    for i, count in enumerate(COUNT_TYPES):
+        for j, sparse in enumerate(SPARSE_TYPES):
             plot_results(
                 n_molecules,
                 topological_torsion_emf_times[i][j],
@@ -313,11 +314,11 @@ if __name__ == "__main__":
     ]
 
     MACCSKeys_rdkit_times = [
-        get_times_rdkit(X, n_molecules, GetMACCSKeysFingerprint, sparse=sparse)
+        get_times_rdkit(X, GetMACCSKeysFingerprint, sparse=sparse)
         for sparse in SPARSE_TYPES
     ]
 
-    for sparse, i in enumerate(SPARSE_TYPES):
+    for i, sparse in enumerate(SPARSE_TYPES):
         plot_results(
             n_molecules,
             MACCSKeys_emf_times[i],
@@ -341,7 +342,7 @@ if __name__ == "__main__":
         for sparse in SPARSE_TYPES
     ]
 
-    for sparse, i in enumerate(SPARSE_TYPES):
+    for i, sparse in enumerate(SPARSE_TYPES):
         plot_results(
             n_molecules,
             ERG_emf_times[i],
@@ -350,3 +351,7 @@ if __name__ == "__main__":
             count=None,
             sparse=sparse,
         )
+
+    benchmark_time_end = time()
+
+    print("time: ", benchmark_time_end-benchmark_time_start)
