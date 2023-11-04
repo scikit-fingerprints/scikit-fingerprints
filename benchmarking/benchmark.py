@@ -155,7 +155,6 @@ def plot_results(
 
 
 if __name__ == "__main__":
-    print(N_CORES)
     benchmark_time_start = time()
 
     GraphPropPredDataset(name=dataset_name)
@@ -353,5 +352,3 @@ if __name__ == "__main__":
         )
 
     benchmark_time_end = time()
-
-    print("time: ", benchmark_time_end-benchmark_time_start)
