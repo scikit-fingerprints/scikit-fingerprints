@@ -1,3 +1,4 @@
+import os
 from time import time
 from typing import Callable, List, Optional
 
@@ -32,6 +33,8 @@ N_REPEATS = 5
 N_CORES = [i for i in range(1, cpu_count() + 1)]
 COUNT_TYPES = [False, True]
 SPARSE_TYPES = [False, True]
+PLOT_DIR = "./benchmark_times_plotted"
+
 
 def get_times_emf(
     X: pd.DataFrame, transformer_function: FingerprintTransformer, **kwargs
@@ -147,15 +150,18 @@ def plot_results(
     ax1.set_xlim(n_molecules * 0.1, n_molecules * 1.1)
     ax1.set_ylim(bottom=0)
 
-    plt.legend(loc="upper left",fontsize="8")
+    plt.legend(loc="upper left", fontsize="8")
     if save:
-        plt.savefig(title.replace(" ", "_") + ".png")
+        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".png")
     else:
         plt.show()
 
 
 if __name__ == "__main__":
     benchmark_time_start = time()
+
+    if not os.path.exists(PLOT_DIR):
+        os.mkdir(PLOT_DIR)
 
     GraphPropPredDataset(name=dataset_name)
     dataset = pd.read_csv(
@@ -209,6 +215,8 @@ if __name__ == "__main__":
                 count,
                 sparse,
             )
+
+    print("morgan done")
 
     # ATOM PAIR FINGERPRINT
     atom_pair_emf_times = [
