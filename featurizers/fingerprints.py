@@ -7,7 +7,6 @@ from e3fp.conformer.generate import (
     RMSD_CUTOFF_DEF,
     MAX_ENERGY_DIFF_DEF,
     FORCEFIELD_DEF,
-    SEED_DEF,
 )
 import numpy as np
 import pandas as pd
@@ -225,8 +224,8 @@ class ERGFingerprint(FingerprintTransformer):
             return spsparse.csr_array(X)
         else:
             return np.array(X)
-          
-          
+
+
 class MAP4Fingerprint(FingerprintTransformer):
     def __init__(
         self,
@@ -291,7 +290,7 @@ class MHFP(FingerprintTransformer):
 
         return np.array([get_mhfp(x, **fp_args) for x in X])
 
-      
+
 class E3FP(FingerprintTransformer):
     def __init__(
         self,
@@ -312,7 +311,7 @@ class E3FP(FingerprintTransformer):
         n_jobs: int = 1,
         verbose: int = 0,
     ):
-        super().__init__(n_jobs, verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
         self.bits = bits
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
@@ -334,6 +333,8 @@ class E3FP(FingerprintTransformer):
         from e3fp.conformer.util import mol_from_smiles
         from e3fp.conformer.generator import ConformerGenerator
         from e3fp.pipeline import fprints_from_mol
+
+        X = self._validate_input(X)
 
         conf_gen = ConformerGenerator(
             first=self.first,
@@ -381,4 +382,3 @@ class E3FP(FingerprintTransformer):
         result = np.array(result)
 
         return result
-

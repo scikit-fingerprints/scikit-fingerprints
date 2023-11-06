@@ -1,10 +1,20 @@
 import numpy as np
 import pytest
 import rdkit.Chem.rdFingerprintGenerator as fpgens
+from e3fp.pipeline import fprints_from_smiles
 from rdkit import Chem
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array
+
+from e3fp.conformer.generate import (
+    NUM_CONF_DEF,
+    POOL_MULTIPLIER_DEF,
+    RMSD_CUTOFF_DEF,
+    MAX_ENERGY_DIFF_DEF,
+    FORCEFIELD_DEF,
+)
+from e3fp.fingerprint.metrics import tanimoto
 
 from featurizers.fingerprints import (
     AtomPairFingerprint,
@@ -25,19 +35,8 @@ smiles_data = [
     "Cc1ccc2nsnc2c1[N+](=O)[O-]",
     "COc1cccc(NC(=O)CC(=O)N2N=C(N(CCC#N)c3ccc(Cl)cc3)CC2c2ccccc2)c1",
     "CCN(CCO)CCNc1ccc(C)c2sc3ccccc3c(=O)c12",
-    "Oc1ncnc2c1sc1nc3ccccc3n12",
-    "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
-    "Cc1ccc2nsnc2c1[N+](=O)[O-]",
-    "COc1cccc(NC(=O)CC(=O)N2N=C(N(CCC#N)c3ccc(Cl)cc3)CC2c2ccccc2)c1",
-    "CCN(CCO)CCNc1ccc(C)c2sc3ccccc3c(=O)c12",
-    "Oc1ncnc2c1sc1nc3ccccc3n12",
-    "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
-    "Cc1ccc2nsnc2c1[N+](=O)[O-]",
-    "COc1cccc(NC(=O)CC(=O)N2N=C(N(CCC#N)c3ccc(Cl)cc3)CC2c2ccccc2)c1",
-    "CCN(CCO)CCNc1ccc(C)c2sc3ccccc3c(=O)c12",
-    "Oc1ncnc2c1sc1nc3ccccc3n12",
-    "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
 ]
+
 
 @pytest.fixture
 def example_molecules():
@@ -245,7 +244,7 @@ def test_erg_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X_rdkit = csr_array([GetErGFingerprint(x) for x in X_for_rdkit])
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
-        
+
 def test_map4_fingerprint(example_molecules):
     X = example_molecules
 
@@ -275,7 +274,7 @@ def test_mhfp6_fingerprint(example_molecules):
 
     assert np.array_equal(X_map4, X_seq)
 
-    
+
 def test_e3fp(example_molecules):
     X = example_molecules
 
@@ -333,7 +332,6 @@ def test_e3fp(example_molecules):
     X_seq = X_seq.flatten()
 
     if type(X_seq[0]) is list:
-        # new_X_seq = [fp for x_seq in X_seq for fp in x_seq]
         new_X_seq = []
         for x_seq in X_seq:
             for fp in x_seq:
