@@ -1,12 +1,13 @@
 black
+datasketch
 mhfp
 ogb
+poetry
 pre-commit
 PyTDC
 rdkit
 scikit-learn
 torch-geometric
 e3fp
-mpi4py
-h5py
-standardiser
+tmap
+pytest
