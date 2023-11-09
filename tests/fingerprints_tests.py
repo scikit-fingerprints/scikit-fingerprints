@@ -25,7 +25,10 @@ from featurizers.fingerprints import (
     MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
-from featurizers.map4_mhfp_helper_functions import get_map4_fingerprint
+from featurizers.map4_mhfp_helper_functions import (
+    get_map4_fingerprint,
+    get_mhfp,
+)
 
 smiles_data = [
     "Oc1ncnc2c1sc1nc3ccccc3n12",
@@ -283,19 +286,42 @@ def test_map4_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
 
-def test_mhfp6_fingerprint(example_molecules):
+def test_mhfp6_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    mhfp6 = MHFP(random_state=0, n_jobs=-1)
+    X_emf = mhfp6.transform(X)
+    X_rdkit = np.array([get_mhfp(x) for x in X_for_rdkit])
+    assert np.all(X_emf == X_rdkit)
 
-    # Concurrent
-    map4_fp = MHFP(random_state=0, n_jobs=-1)
-    X = np.array([Chem.MolFromSmiles(x) for x in X])
-    X_map4 = map4_fp.transform(X.copy())
 
-    # Sequential
-    map4_fp_seq = MHFP(random_state=0, n_jobs=1)
-    X_seq = map4_fp_seq.transform(X)
+def test_mhfp6_sparse_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    mhfp6 = MHFP(random_state=0, n_jobs=-1, sparse=True)
+    X_emf = mhfp6.transform(X)
+    X_rdkit = csr_array([get_mhfp(x) for x in X_for_rdkit])
+    assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
-    assert np.array_equal(X_map4, X_seq)
+
+def test_mhfp6_count_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    mhfp6 = MHFP(random_state=0, n_jobs=-1, count=True)
+    X_emf = mhfp6.transform(X)
+    X_rdkit = np.array([get_mhfp(x, count=True) for x in X_for_rdkit])
+    assert np.all(X_emf == X_rdkit)
+
+
+def test_mhfp6_sparse_count_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    mhfp6 = MHFP(random_state=0, n_jobs=-1, sparse=True, count=True)
+    X_emf = mhfp6.transform(X)
+    X_rdkit = csr_array([get_mhfp(x, count=True) for x in X_for_rdkit])
+    assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
 
 def test_e3fp(example_molecules):

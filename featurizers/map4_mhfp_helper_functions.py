@@ -129,17 +129,17 @@ def get_map4_fingerprint(
 
 def get_mhfp(
     Mol: Mol,
-    dimensions: int,
-    radius: int,
-    is_counted: bool,
-    random_state: int,
+    dimensions: int = 1024,
+    radius: int = 2,
+    count: bool = False,
+    random_state: int = 0,
 ):
     try:
         from mhfp.encoder import MHFPEncoder
 
         atoms_envs = _get_atom_envs(Mol, radius)
 
-        atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, is_counted)
+        atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, count)
 
         encoder = MHFPEncoder(n_permutations=dimensions, seed=random_state)
         fp_hash = encoder.hash(set(atom_env_pairs))
