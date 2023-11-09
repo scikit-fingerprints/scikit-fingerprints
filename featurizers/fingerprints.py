@@ -70,8 +70,8 @@ class MorganFingerprint(FingerprintTransformer):
         )
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
+    ) -> Union[np.ndarray, spsparse.csr_array]:
         X = self._validate_input(X)
         return self._generate_fingerprints(X)
 
@@ -116,8 +116,8 @@ class AtomPairFingerprint(FingerprintTransformer):
         )
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
+    ) -> Union[np.ndarray, spsparse.csr_array]:
         X = self._validate_input(X)
         return self._generate_fingerprints(X)
 
@@ -161,8 +161,8 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         )
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
+    ) -> Union[np.ndarray, spsparse.csr_array]:
         X = self._validate_input(X)
         return self._generate_fingerprints(X)
 
@@ -174,8 +174,8 @@ class MACCSKeysFingerprint(FingerprintTransformer):
         super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
+    ) -> Union[np.ndarray, spsparse.csr_array]:
         X = self._validate_input(X)
         from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 
@@ -204,8 +204,8 @@ class ERGFingerprint(FingerprintTransformer):
         self.max_path = max_path
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
+    ) -> Union[np.ndarray, spsparse.csr_array]:
         X = self._validate_input(X)
         from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
@@ -231,33 +231,42 @@ class MAP4Fingerprint(FingerprintTransformer):
         self,
         dimensions: int = 1024,
         radius: int = 2,
-        is_counted: bool = False,
-        is_folded: bool = False,
         random_state: int = 0,
+        sparse: bool = False,
+        count: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
     ):
-        super().__init__(n_jobs=n_jobs, verbose=verbose)
+        super().__init__(
+            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+        )
         self.dimensions = dimensions
         self.radius = radius
-        self.is_counted = is_counted
         self.random_state = random_state
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
+    ) -> Union[np.ndarray, spsparse.csr_array]:
+        X = self._validate_input(X)
         from featurizers.map4_mhfp_helper_functions import (
             get_map4_fingerprint,
         )
 
-        fp_args = {
-            "dimensions": self.dimensions,
-            "radius": self.radius,
-            "is_counted": self.is_counted,
-            "random_state": self.random_state,
-        }
+        X = [
+            get_map4_fingerprint(
+                x,
+                dimensions=self.dimensions,
+                radius=self.radius,
+                is_counted=self.count,
+                random_state=self.random_state,
+            )
+            for x in X
+        ]
 
-        return np.array([get_map4_fingerprint(x, **fp_args) for x in X])
+        if self.sparse:
+            return spsparse.csr_array(X)
+        else:
+            return np.array(X)
 
 
 class MHFP(FingerprintTransformer):

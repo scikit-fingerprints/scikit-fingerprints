@@ -103,10 +103,10 @@ def _all_pairs(
 
 def get_map4_fingerprint(
     Mol: Mol,
-    dimensions: int,
-    radius: int,
-    is_counted: bool,
-    random_state: int,
+    dimensions: int = 1024,
+    radius: int = 2,
+    is_counted: bool = False,
+    random_state: int = 0,
 ):
     # TODO - There are certain molecules, for which this function will return a error:
     #   https://github.com/Arch4ngel21/emf/issues/13

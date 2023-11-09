@@ -158,7 +158,7 @@ def plot_results(
 
 
 if __name__ == "__main__":
-    benchmark_time_start = time()
+    full_time_start = time()
 
     if not os.path.exists(PLOT_DIR):
         os.mkdir(PLOT_DIR)
@@ -357,5 +357,5 @@ if __name__ == "__main__":
             sparse=sparse,
         )
 
-    benchmark_time_end = time()
-    print("Time of execution: ", benchmark_time_end-benchmark_time_start, "s")
+    full_time_end = time()
+    print("Time of execution: ", full_time_end - full_time_start, "s")
