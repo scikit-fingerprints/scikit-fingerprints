@@ -267,7 +267,7 @@ def test_map4_count_fingerprint(example_molecules, rdkit_example_molecules):
     map4 = MAP4Fingerprint(count=True, random_state=0, n_jobs=-1)
     X_emf = map4.transform(X)
     X_rdkit = np.array(
-        [get_map4_fingerprint(x, is_counted=True) for x in X_for_rdkit]
+        [get_map4_fingerprint(x, count=True) for x in X_for_rdkit]
     )
     assert np.all(X_emf == X_rdkit)
 
@@ -278,7 +278,7 @@ def test_map4_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     map4 = MAP4Fingerprint(sparse=True, count=True, random_state=0, n_jobs=-1)
     X_emf = map4.transform(X)
     X_rdkit = csr_array(
-        [get_map4_fingerprint(x, is_counted=True) for x in X_for_rdkit]
+        [get_map4_fingerprint(x, count=True) for x in X_for_rdkit]
     )
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
 

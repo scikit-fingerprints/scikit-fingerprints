@@ -254,7 +254,7 @@ class MAP4Fingerprint(FingerprintTransformer):
                 x,
                 dimensions=self.dimensions,
                 radius=self.radius,
-                is_counted=self.count,
+                count=self.count,
                 random_state=self.random_state,
             )
             for x in X
