@@ -1,8 +1,18 @@
 from typing import List, Optional, Union
 
+import e3fp.fingerprint.fprint
+from e3fp.conformer.generate import (
+    NUM_CONF_DEF,
+    POOL_MULTIPLIER_DEF,
+    RMSD_CUTOFF_DEF,
+    MAX_ENERGY_DIFF_DEF,
+    FORCEFIELD_DEF,
+)
 import numpy as np
 import pandas as pd
 import scipy.sparse as spsparse
+
+from rdkit.Chem import MolToSmiles
 
 from base import FingerprintTransformer
 
@@ -31,9 +41,11 @@ class MorganFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
         sparse: bool = False,
         count: bool = False,
-        verbose: int = 0
+        verbose: int = 0,
     ):
-        super().__init__(self, n_jobs, sparse, count)
+        super().__init__(
+            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+        )
         self.radius = radius
         self.include_chirality = include_chirality
         self.radius = radius
@@ -63,7 +75,7 @@ class MorganFingerprint(FingerprintTransformer):
         X = self._validate_input(X)
         return self._generate_fingerprints(X)
 
-      
+
 class AtomPairFingerprint(FingerprintTransformer):
     def __init__(
         self,
@@ -77,9 +89,11 @@ class AtomPairFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
         sparse: bool = False,
         count: bool = False,
-        verbose: int = 0
-):
-        super().__init__(self, n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose)
+        verbose: int = 0,
+    ):
+        super().__init__(
+            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+        )
         self.min_distance = min_distance
         self.max_distance = max_distance
         self.include_chirality = include_chirality
@@ -120,9 +134,11 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         n_jobs: int = None,
         sparse: bool = False,
         count: bool = False,
-        verbose: int = 0
+        verbose: int = 0,
     ):
-        super().__init__(self, n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose)
+        super().__init__(
+            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+        )
         self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
         self.count_simulation = count_simulation
@@ -152,11 +168,9 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
 
 
 class MACCSKeysFingerprint(FingerprintTransformer):
-    def __init__(self, 
-                 sparse: bool = False, 
-                 n_jobs: int = 1,
-                 verbose: int = 0
-                ):
+    def __init__(
+        self, sparse: bool = False, n_jobs: int = 1, verbose: int = 0
+    ):
         super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
 
     def _calculate_fingerprint(
@@ -205,12 +219,12 @@ class ERGFingerprint(FingerprintTransformer):
             )
             for x in X
         ]
-        
+
         if self.sparse:
             return spsparse.csr_array(X)
         else:
             return np.array(X)
-          
+
 
 class MAP4Fingerprint(FingerprintTransformer):
     def __init__(
@@ -275,3 +289,96 @@ class MHFP(FingerprintTransformer):
         }
 
         return np.array([get_mhfp(x, **fp_args) for x in X])
+
+
+class E3FP(FingerprintTransformer):
+    def __init__(
+        self,
+        bits: int,
+        radius_multiplier: float,
+        rdkit_invariants: bool = True,
+        first: int = 1,
+        num_conf: int = NUM_CONF_DEF,
+        pool_multiplier: float = POOL_MULTIPLIER_DEF,
+        rmsd_cutoff: float = RMSD_CUTOFF_DEF,
+        max_energy_diff: float = MAX_ENERGY_DIFF_DEF,
+        force_field: float = FORCEFIELD_DEF,
+        get_values: bool = True,
+        is_folded: bool = False,
+        fold_bits: int = 1024,
+        standardise: bool = True,
+        random_state: int = 0,
+        n_jobs: int = 1,
+        verbose: int = 0,
+    ):
+        super().__init__(n_jobs=n_jobs, verbose=verbose)
+        self.bits = bits
+        self.radius_multiplier = radius_multiplier
+        self.rdkit_invariants = rdkit_invariants
+        self.first = first
+        self.num_conf = num_conf
+        self.pool_multiplier = pool_multiplier
+        self.rmsd_cutoff = rmsd_cutoff
+        self.max_energy_diff = max_energy_diff
+        self.force_field = force_field
+        self.get_values = get_values
+        self.is_folded = is_folded
+        self.fold_bits = fold_bits
+        self.standardise = standardise
+        self.random_state = random_state
+
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray]
+    ) -> np.ndarray:
+        from e3fp.conformer.util import mol_from_smiles
+        from e3fp.conformer.generator import ConformerGenerator
+        from e3fp.pipeline import fprints_from_mol
+
+        X = self._validate_input(X)
+
+        conf_gen = ConformerGenerator(
+            first=self.first,
+            num_conf=self.num_conf,
+            pool_multiplier=self.pool_multiplier,
+            rmsd_cutoff=self.rmsd_cutoff,
+            max_energy_diff=self.max_energy_diff,
+            forcefield=self.force_field,
+            get_values=self.get_values,
+            seed=self.random_state,
+        )
+
+        result = []
+
+        for x in X:
+            input_mol = mol_from_smiles(
+                smiles=MolToSmiles(x),
+                name=MolToSmiles(x),
+                standardise=self.standardise,
+            )
+
+            # Generating conformers. Only few first conformers with lowest energy are used - specified by self.first
+            mol, values = conf_gen.generate_conformers(input_mol)
+
+            max_conformers, indices, energies, rmsds_mat = values
+
+            fps = fprints_from_mol(
+                mol,
+                fprint_params={
+                    "bits": self.bits,
+                    "radius_multiplier": self.radius_multiplier,
+                    "rdkit_invariants": self.rdkit_invariants,
+                },
+            )
+
+            # Set a property for each fingerprint, to be able to obtain energy later
+            for i in range(len(fps)):
+                fps[i].set_prop("Energy", energies[i])
+
+                if self.is_folded:
+                    fps[i] = fps[i].fold(self.fold_bits)
+
+            result.extend(fps)
+
+        result = np.array(result)
+
+        return result
