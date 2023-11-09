@@ -1,33 +1,31 @@
 import numpy as np
 import pytest
 import rdkit.Chem.rdFingerprintGenerator as fpgens
+from e3fp.conformer.generate import (
+    FORCEFIELD_DEF,
+    MAX_ENERGY_DIFF_DEF,
+    NUM_CONF_DEF,
+    POOL_MULTIPLIER_DEF,
+    RMSD_CUTOFF_DEF,
+)
+from e3fp.fingerprint.metrics import tanimoto
 from e3fp.pipeline import fprints_from_smiles
 from rdkit import Chem
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array
 
-from e3fp.conformer.generate import (
-    NUM_CONF_DEF,
-    POOL_MULTIPLIER_DEF,
-    RMSD_CUTOFF_DEF,
-    MAX_ENERGY_DIFF_DEF,
-    FORCEFIELD_DEF,
-)
-from e3fp.fingerprint.metrics import tanimoto
-
 from featurizers.fingerprints import (
+    E3FP,
+    MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
-    E3FP,
-    MAP4Fingerprint,
-    MHFP,
     MACCSKeysFingerprint,
+    MAP4Fingerprint,
     MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
 from featurizers.map4_mhfp_helper_functions import get_map4_fingerprint
-from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 smiles_data = [
     "Oc1ncnc2c1sc1nc3ccccc3n12",
@@ -253,6 +251,7 @@ def test_map4_fingerprint(example_molecules, rdkit_example_molecules):
     X_rdkit = np.array([get_map4_fingerprint(x) for x in X_for_rdkit])
     assert np.all(X_emf == X_rdkit)
 
+
 def test_map4_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
@@ -261,23 +260,27 @@ def test_map4_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X_rdkit = csr_array([get_map4_fingerprint(x) for x in X_for_rdkit])
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
+
 def test_map4_count_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
-    map4 = MAP4Fingerprint(count=True,random_state=0, n_jobs=-1)
+    map4 = MAP4Fingerprint(count=True, random_state=0, n_jobs=-1)
     X_emf = map4.transform(X)
-    X_rdkit = np.array([get_map4_fingerprint(x,is_counted=True) for x in X_for_rdkit])
+    X_rdkit = np.array(
+        [get_map4_fingerprint(x, is_counted=True) for x in X_for_rdkit]
+    )
     assert np.all(X_emf == X_rdkit)
+
 
 def test_map4_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
-    map4 = MAP4Fingerprint(sparse=True,count=True, random_state=0, n_jobs=-1)
+    map4 = MAP4Fingerprint(sparse=True, count=True, random_state=0, n_jobs=-1)
     X_emf = map4.transform(X)
-    X_rdkit = csr_array([get_map4_fingerprint(x,is_counted=True) for x in X_for_rdkit])
+    X_rdkit = csr_array(
+        [get_map4_fingerprint(x, is_counted=True) for x in X_for_rdkit]
+    )
     assert np.all(X_emf.toarray() == X_rdkit.toarray())
-
-
 
 
 def test_mhfp6_fingerprint(example_molecules):

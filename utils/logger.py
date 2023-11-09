@@ -1,11 +1,11 @@
 import contextlib
-import joblib
 import logging
 import os
 import sys
 
+import joblib
 import rdkit
-from rdkit import rdBase, Chem
+from rdkit import Chem, rdBase
 from rdkit.Chem import AllChem
 from tqdm import tqdm
 

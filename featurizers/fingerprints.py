@@ -1,17 +1,16 @@
 from typing import List, Optional, Union
 
 import e3fp.fingerprint.fprint
-from e3fp.conformer.generate import (
-    NUM_CONF_DEF,
-    POOL_MULTIPLIER_DEF,
-    RMSD_CUTOFF_DEF,
-    MAX_ENERGY_DIFF_DEF,
-    FORCEFIELD_DEF,
-)
 import numpy as np
 import pandas as pd
 import scipy.sparse as spsparse
-
+from e3fp.conformer.generate import (
+    FORCEFIELD_DEF,
+    MAX_ENERGY_DIFF_DEF,
+    NUM_CONF_DEF,
+    POOL_MULTIPLIER_DEF,
+    RMSD_CUTOFF_DEF,
+)
 from rdkit.Chem import MolToSmiles
 
 from base import FingerprintTransformer
@@ -248,9 +247,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
     ) -> Union[np.ndarray, spsparse.csr_array]:
         X = self._validate_input(X)
-        from featurizers.map4_mhfp_helper_functions import (
-            get_map4_fingerprint,
-        )
+        from featurizers.map4_mhfp_helper_functions import get_map4_fingerprint
 
         X = [
             get_map4_fingerprint(
@@ -339,8 +336,8 @@ class E3FP(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
-        from e3fp.conformer.util import mol_from_smiles
         from e3fp.conformer.generator import ConformerGenerator
+        from e3fp.conformer.util import mol_from_smiles
         from e3fp.pipeline import fprints_from_mol
 
         X = self._validate_input(X)
