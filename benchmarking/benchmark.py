@@ -30,7 +30,7 @@ dataset_name = "ogbg-molhiv"
 N_SPLITS = 5
 # N_REPEATS - number of test repetitions - for getting average time score
 N_REPEATS = 5
-N_CORES = [i for i in range(1, cpu_count() + 1)]
+N_CORES = [i for i in range(1, cpu_count() + 1)][:8]
 COUNT_TYPES = [False, True]
 SPARSE_TYPES = [False, True]
 PLOT_DIR = "./benchmark_times_plotted"
