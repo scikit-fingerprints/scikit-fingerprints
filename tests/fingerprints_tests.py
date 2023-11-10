@@ -1,22 +1,31 @@
 import numpy as np
 import pytest
 import rdkit.Chem.rdFingerprintGenerator as fpgens
+from e3fp.conformer.generate import (
+    FORCEFIELD_DEF,
+    MAX_ENERGY_DIFF_DEF,
+    NUM_CONF_DEF,
+    POOL_MULTIPLIER_DEF,
+    RMSD_CUTOFF_DEF,
+)
+from e3fp.fingerprint.metrics import tanimoto
+from e3fp.pipeline import fprints_from_smiles
 from rdkit import Chem
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array
 
 from featurizers.fingerprints import (
+    E3FP,
+    MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
-    MAP4Fingerprint,
-    MHFP,
     MACCSKeysFingerprint,
+    MAP4Fingerprint,
     MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
 from featurizers.map4_mhfp_helper_functions import get_map4_fingerprint
-from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 smiles_data = [
     "Oc1ncnc2c1sc1nc3ccccc3n12",
@@ -24,18 +33,6 @@ smiles_data = [
     "Cc1ccc2nsnc2c1[N+](=O)[O-]",
     "COc1cccc(NC(=O)CC(=O)N2N=C(N(CCC#N)c3ccc(Cl)cc3)CC2c2ccccc2)c1",
     "CCN(CCO)CCNc1ccc(C)c2sc3ccccc3c(=O)c12",
-    "Oc1ncnc2c1sc1nc3ccccc3n12",
-    "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
-    "Cc1ccc2nsnc2c1[N+](=O)[O-]",
-    "COc1cccc(NC(=O)CC(=O)N2N=C(N(CCC#N)c3ccc(Cl)cc3)CC2c2ccccc2)c1",
-    "CCN(CCO)CCNc1ccc(C)c2sc3ccccc3c(=O)c12",
-    "Oc1ncnc2c1sc1nc3ccccc3n12",
-    "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
-    "Cc1ccc2nsnc2c1[N+](=O)[O-]",
-    "COc1cccc(NC(=O)CC(=O)N2N=C(N(CCC#N)c3ccc(Cl)cc3)CC2c2ccccc2)c1",
-    "CCN(CCO)CCNc1ccc(C)c2sc3ccccc3c(=O)c12",
-    "Oc1ncnc2c1sc1nc3ccccc3n12",
-    "CC1=CC(=C(c2cc(C)c(O)c(C(=O)O)c2)c2c(Cl)ccc(S(=O)(=O)O)c2Cl)C=C(C(=O)O)C1=O.[NaH]",
 ]
 
 
@@ -274,6 +271,74 @@ def test_mhfp6_fingerprint(example_molecules):
     X_seq = map4_fp_seq.transform(X)
 
     assert np.array_equal(X_map4, X_seq)
+
+
+def test_e3fp(example_molecules):
+    X = example_molecules
+
+    X_2 = X.copy()
+
+    confgen_params = {
+        "num_conf": NUM_CONF_DEF,
+        "first": 1,
+        "pool_multiplier": POOL_MULTIPLIER_DEF,
+        "rmsd_cutoff": RMSD_CUTOFF_DEF,
+        "max_energy_diff": MAX_ENERGY_DIFF_DEF,
+        "force_field": FORCEFIELD_DEF,
+    }
+
+    fprint_params = {
+        "bits": 4096,
+        "radius_multiplier": 1.5,
+        "rdkit_invariants": True,
+    }
+
+    # Concurrent
+    e3fp_fp = E3FP(
+        **confgen_params,
+        **fprint_params,
+        is_folded=False,
+        standardise=False,
+        n_jobs=-1,
+        verbose=0
+    )
+    X_e3fp = e3fp_fp.transform(X)
+
+    confgen_params = {
+        "num_conf": NUM_CONF_DEF,
+        "first": 1,
+        "pool_multiplier": POOL_MULTIPLIER_DEF,
+        "rmsd_cutoff": RMSD_CUTOFF_DEF,
+        "max_energy_diff": MAX_ENERGY_DIFF_DEF,
+        "forcefield": FORCEFIELD_DEF,
+        "seed": 0,
+    }
+
+    # Sequential
+    X_seq = np.array(
+        [
+            fprints_from_smiles(
+                x,
+                x,
+                confgen_params=confgen_params,
+                fprint_params=fprint_params,
+            )
+            for x in X_2
+        ],
+        dtype=object,
+    )
+    X_seq = X_seq.flatten()
+
+    if type(X_seq[0]) is list:
+        new_X_seq = []
+        for x_seq in X_seq:
+            for fp in x_seq:
+                new_X_seq.append(fp)
+
+        X_seq = np.array(new_X_seq, dtype=object)
+
+    for i in range(len(X_e3fp)):
+        assert tanimoto(X_e3fp[i], X_seq[i]) == 1
 
 
 def test_input_validation(example_molecules):

@@ -358,4 +358,6 @@ if __name__ == "__main__":
         )
 
     benchmark_time_end = time()
-    print("Time of execution: ", benchmark_time_end-benchmark_time_start, "s")
+    print(
+        "Time of execution: ", benchmark_time_end - benchmark_time_start, "s"
+    )
