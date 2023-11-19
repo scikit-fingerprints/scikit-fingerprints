@@ -65,7 +65,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                     for X_sub in args
                 )
 
-            if isinstance(results[0], spsparse.csr_array):
+            if self.sparse:
                 return spsparse.vstack(results)
             else:
                 return np.concatenate(results)

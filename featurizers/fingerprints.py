@@ -11,7 +11,9 @@ from e3fp.conformer.generate import (
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
-from rdkit.Chem import MolToSmiles
+from e3fp.conformer.util import mol_to_standardised_mol
+from rdkit.Chem import MolToSmiles, Mol, MolFromSmiles
+from rdkit.Chem.PropertyMol import PropertyMol
 
 from base import FingerprintTransformer
 
@@ -327,7 +329,7 @@ class E3FP(FingerprintTransformer):
         n_jobs: int = 1,
         verbose: int = 0,
     ):
-        super().__init__(n_jobs=n_jobs, verbose=verbose)
+        super().__init__(n_jobs=n_jobs, verbose=verbose, sparse=True)
         self.bits = bits
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
@@ -347,10 +349,7 @@ class E3FP(FingerprintTransformer):
         self, X: Union[pd.DataFrame, np.ndarray]
     ) -> np.ndarray:
         from e3fp.conformer.generator import ConformerGenerator
-        from e3fp.conformer.util import mol_from_smiles
         from e3fp.pipeline import fprints_from_mol
-
-        X = self._validate_input(X)
 
         conf_gen = ConformerGenerator(
             first=self.first,
@@ -366,16 +365,21 @@ class E3FP(FingerprintTransformer):
         result = []
 
         for x in X:
-            input_mol = mol_from_smiles(
-                smiles=MolToSmiles(x),
-                name=MolToSmiles(x),
-                standardise=self.standardise,
-            )
+            if isinstance(x, Mol):
+                smiles = MolToSmiles(x)
+                mol = x
+            else:
+                smiles = x
+                mol = MolFromSmiles(x)
+
+            mol.SetProp("_Name", smiles)
+            if self.standardise:
+                mol = mol_to_standardised_mol(mol)
+            mol = PropertyMol(mol)
+            mol.SetProp("_SMILES", smiles)
 
             # Generating conformers. Only few first conformers with lowest energy are used - specified by self.first
-            mol, values = conf_gen.generate_conformers(input_mol)
-
-            max_conformers, indices, energies, rmsds_mat = values
+            mol, values = conf_gen.generate_conformers(mol)
 
             fps = fprints_from_mol(
                 mol,
@@ -387,14 +391,15 @@ class E3FP(FingerprintTransformer):
             )
 
             # Set a property for each fingerprint, to be able to obtain energy later
-            for i in range(len(fps)):
-                fps[i].set_prop("Energy", energies[i])
+            # This piece of code is not possible to extract now
+            """energies = values[2]
+            for fp, energy in zip(fps,energies):
+                fp.set_prop("Energy", energy)"""
 
-                if self.is_folded:
-                    fps[i] = fps[i].fold(self.fold_bits)
+            if self.is_folded:
+                fps = [fp.fold(self.fold_bits) for fp in fps]
+
+            fps = [fp.to_vector() for fp in fps]
 
             result.extend(fps)
-
-        result = np.array(result)
-
-        return result
+        return spsparse.vstack(result)

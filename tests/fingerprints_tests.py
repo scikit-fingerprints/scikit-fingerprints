@@ -14,6 +14,7 @@ from rdkit import Chem
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array
+from scipy.sparse import vstack
 
 from featurizers.fingerprints import (
     E3FP,
@@ -353,7 +354,7 @@ def test_e3fp(example_molecules):
         n_jobs=-1,
         verbose=0
     )
-    X_e3fp = e3fp_fp.transform(X)
+    X_emf = e3fp_fp.transform(X)
 
     confgen_params = {
         "num_conf": NUM_CONF_DEF,
@@ -378,18 +379,11 @@ def test_e3fp(example_molecules):
         ],
         dtype=object,
     )
+
     X_seq = X_seq.flatten()
+    X_seq = vstack([fp.to_vector() for fp in X_seq])
 
-    if type(X_seq[0]) is list:
-        new_X_seq = []
-        for x_seq in X_seq:
-            for fp in x_seq:
-                new_X_seq.append(fp)
-
-        X_seq = np.array(new_X_seq, dtype=object)
-
-    for i in range(len(X_e3fp)):
-        assert tanimoto(X_e3fp[i], X_seq[i]) == 1
+    assert np.all(X_emf.toarray() == X_seq.toarray())
 
 
 def test_input_validation(example_molecules):
