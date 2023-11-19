@@ -7,10 +7,11 @@ import scipy.sparse as spsparse
 from joblib import Parallel, delayed, effective_n_jobs
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
-
-from tqdm import tqdm
-from utils.logger import tqdm_joblib
 from sklearn.base import BaseEstimator, TransformerMixin
+from tqdm import tqdm
+
+from utils.logger import tqdm_joblib
+
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def __init__(
@@ -18,7 +19,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         n_jobs: Optional[int] = None,
         sparse: bool = False,
         count: bool = False,
-        verbose: int = 0
+        verbose: int = 0,
     ):
         self.n_jobs = effective_n_jobs(n_jobs)
         self.sparse = sparse
@@ -31,7 +32,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X: Union[pd.DataFrame, np.ndarray]):
+    def transform(self, X: Union[pd.DataFrame, np.ndarray, list[str]]):
         """
         :param X: np.array or DataFrame of rdkit.Mol objects
         :return: np.array or sparse array of calculated fingerprints for each molecule

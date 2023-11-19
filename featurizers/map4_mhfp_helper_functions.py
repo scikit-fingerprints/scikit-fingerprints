@@ -50,7 +50,7 @@ def _get_atom_envs(Mol: Mol, radius: int) -> dict:
 
 
 def _all_pairs(
-    Mol: Mol, atoms_envs: dict, radius: int, is_counted: bool
+    Mol: Mol, atoms_envs: dict, radius: int, count: bool
 ) -> list[str]:
     """
     Gets a list of atom-pair molecular shingles - circular structures written as SMILES, separated by the bond distance
@@ -83,12 +83,12 @@ def _all_pairs(
 
             shingle = f"{ordered[0]}|{dist}|{ordered[1]}"
 
-            if is_counted:
+            if count:
                 shingle_dict[shingle] += 1
             else:
                 atom_pairs.append(shingle.encode("utf-8"))
 
-    if is_counted:
+    if count:
         # Shingle in a format:
         # (neighborhood of atom A of radius i) | (distance between atom A and atom B) | \
         # (neighborhood of atom B of radius i) | (shingle count)
@@ -103,10 +103,10 @@ def _all_pairs(
 
 def get_map4_fingerprint(
     Mol: Mol,
-    dimensions: int,
-    radius: int,
-    is_counted: bool,
-    random_state: int,
+    dimensions: int = 1024,
+    radius: int = 2,
+    count: bool = False,
+    random_state: int = 0,
 ):
     # TODO - There are certain molecules, for which this function will return a error:
     #   https://github.com/Arch4ngel21/emf/issues/13
@@ -116,7 +116,7 @@ def get_map4_fingerprint(
 
         atoms_envs = _get_atom_envs(Mol, radius)
 
-        atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, is_counted)
+        atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, count)
 
         encoder = MinHash(seed=random_state)
         for pair in atom_env_pairs:
@@ -129,17 +129,17 @@ def get_map4_fingerprint(
 
 def get_mhfp(
     Mol: Mol,
-    dimensions: int,
-    radius: int,
-    is_counted: bool,
-    random_state: int,
+    dimensions: int = 1024,
+    radius: int = 2,
+    count: bool = False,
+    random_state: int = 0,
 ):
     try:
         from mhfp.encoder import MHFPEncoder
 
         atoms_envs = _get_atom_envs(Mol, radius)
 
-        atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, is_counted)
+        atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, count)
 
         encoder = MHFPEncoder(n_permutations=dimensions, seed=random_state)
         fp_hash = encoder.hash(set(atom_env_pairs))
