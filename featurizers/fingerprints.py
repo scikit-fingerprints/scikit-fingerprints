@@ -12,7 +12,7 @@ from e3fp.conformer.generate import (
     RMSD_CUTOFF_DEF,
 )
 from e3fp.conformer.util import mol_to_standardised_mol
-from rdkit.Chem import MolToSmiles, Mol, MolFromSmiles
+from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
 
 from base import FingerprintTransformer
@@ -320,16 +320,17 @@ class E3FP(FingerprintTransformer):
         pool_multiplier: float = POOL_MULTIPLIER_DEF,
         rmsd_cutoff: float = RMSD_CUTOFF_DEF,
         max_energy_diff: float = MAX_ENERGY_DIFF_DEF,
-        force_field: float = FORCEFIELD_DEF,
+        forcefield: float = FORCEFIELD_DEF,
         get_values: bool = True,
         is_folded: bool = False,
         fold_bits: int = 1024,
         standardise: bool = True,
-        random_state: int = 0,
+        seed: int = 0,
+        sparse: bool = False,
         n_jobs: int = 1,
         verbose: int = 0,
     ):
-        super().__init__(n_jobs=n_jobs, verbose=verbose, sparse=True)
+        super().__init__(n_jobs=n_jobs, verbose=verbose, sparse=sparse)
         self.bits = bits
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
@@ -338,16 +339,16 @@ class E3FP(FingerprintTransformer):
         self.pool_multiplier = pool_multiplier
         self.rmsd_cutoff = rmsd_cutoff
         self.max_energy_diff = max_energy_diff
-        self.force_field = force_field
+        self.forcefield = forcefield
         self.get_values = get_values
         self.is_folded = is_folded
         self.fold_bits = fold_bits
         self.standardise = standardise
-        self.random_state = random_state
+        self.seed = seed
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+    ) -> Union[np.ndarray, spsparse.csr_array]:
         from e3fp.conformer.generator import ConformerGenerator
         from e3fp.pipeline import fprints_from_mol
 
@@ -357,9 +358,9 @@ class E3FP(FingerprintTransformer):
             pool_multiplier=self.pool_multiplier,
             rmsd_cutoff=self.rmsd_cutoff,
             max_energy_diff=self.max_energy_diff,
-            forcefield=self.force_field,
+            forcefield=self.forcefield,
             get_values=self.get_values,
-            seed=self.random_state,
+            seed=self.seed,
         )
 
         result = []
@@ -390,16 +391,15 @@ class E3FP(FingerprintTransformer):
                 },
             )
 
-            # Set a property for each fingerprint, to be able to obtain energy later
-            # This piece of code is not possible to extract now
-            """energies = values[2]
-            for fp, energy in zip(fps,energies):
-                fp.set_prop("Energy", energy)"""
+            energies = values[2]
+            fp = fps[np.argmin(energies)]
 
             if self.is_folded:
-                fps = [fp.fold(self.fold_bits) for fp in fps]
+                fp = fp.fold(self.fold_bits)
 
-            fps = [fp.to_vector() for fp in fps]
+            result.append(fp.to_vector())
 
-            result.extend(fps)
-        return spsparse.vstack(result)
+        if self.sparse:
+            return spsparse.vstack(result)
+        else:
+            return np.array([fp.toarray().squeeze() for fp in result])
