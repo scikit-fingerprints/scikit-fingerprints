@@ -20,11 +20,13 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         self.n_jobs = effective_n_jobs(n_jobs)
         self.sparse = sparse
         self.count = count
         self.verbose = verbose
+        self.random_state = random_state
 
     def fit(self, X, y=None, **fit_params):
         return self

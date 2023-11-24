@@ -330,6 +330,16 @@ def test_mhfp6_sparse_count_fingerprint(
 def test_e3fp(example_molecules):
     X = example_molecules
 
+    e3fp_fp = E3FP(
+        4096,
+        1.5,
+        is_folded=True,
+        n_jobs=-1,
+        verbose=0,
+        sparse=False,
+    )
+    X_emf = e3fp_fp.transform(X)
+
     confgen_params = {
         "first": 1,
         "num_conf": NUM_CONF_DEF,
@@ -345,24 +355,12 @@ def test_e3fp(example_molecules):
         "radius_multiplier": 1.5,
         "rdkit_invariants": True,
     }
-    e3fp_fp = E3FP(
-        **confgen_params,
-        **fprint_params,
-        is_folded=True,
-        standardise=True,
-        n_jobs=-1,
-        verbose=0,
-        sparse=False,
-    )
-    X_emf = e3fp_fp.transform(X)
-
     X_seq = []
     conf_gen = ConformerGenerator(**confgen_params)
     for smiles in X:
         # creating molecule object
         mol = Chem.MolFromSmiles(smiles)
         mol.SetProp("_Name", smiles)
-        mol = mol_to_standardised_mol(mol)
         mol = PropertyMol(mol)
         mol.SetProp("_SMILES", smiles)
 
@@ -382,6 +380,16 @@ def test_e3fp(example_molecules):
 def test_e3fp_sparse(example_molecules):
     X = example_molecules
 
+    e3fp_fp = E3FP(
+        4096,
+        1.5,
+        is_folded=True,
+        n_jobs=-1,
+        verbose=0,
+        sparse=True,
+    )
+    X_emf = e3fp_fp.transform(X)
+
     confgen_params = {
         "first": 1,
         "num_conf": NUM_CONF_DEF,
@@ -397,24 +405,12 @@ def test_e3fp_sparse(example_molecules):
         "radius_multiplier": 1.5,
         "rdkit_invariants": True,
     }
-    e3fp_fp = E3FP(
-        **confgen_params,
-        **fprint_params,
-        is_folded=True,
-        standardise=True,
-        n_jobs=-1,
-        verbose=0,
-        sparse=True,
-    )
-    X_emf = e3fp_fp.transform(X)
-
     X_seq = []
     conf_gen = ConformerGenerator(**confgen_params)
     for smiles in X:
         # creating molecule object
         mol = Chem.MolFromSmiles(smiles)
         mol.SetProp("_Name", smiles)
-        mol = mol_to_standardised_mol(mol)
         mol = PropertyMol(mol)
         mol.SetProp("_SMILES", smiles)
 

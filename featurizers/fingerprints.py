@@ -43,9 +43,14 @@ class MorganFingerprint(FingerprintTransformer):
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.radius = radius
         self.include_chirality = include_chirality
@@ -91,9 +96,14 @@ class AtomPairFingerprint(FingerprintTransformer):
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.min_distance = min_distance
         self.max_distance = max_distance
@@ -136,9 +146,14 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
@@ -170,9 +185,18 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
 
 class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(
-        self, sparse: bool = False, n_jobs: int = 1, verbose: int = 0
+        self,
+        sparse: bool = False,
+        n_jobs: int = 1,
+        verbose: int = 0,
+        random_state: int = 0,
     ):
-        super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
+        super().__init__(
+            n_jobs=n_jobs,
+            sparse=sparse,
+            verbose=verbose,
+            random_state=random_state,
+        )
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
@@ -197,8 +221,14 @@ class ERGFingerprint(FingerprintTransformer):
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
+        random_state: int = 0,
     ):
-        super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
+        super().__init__(
+            n_jobs=n_jobs,
+            sparse=sparse,
+            verbose=verbose,
+            random_state=random_state,
+        )
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
         self.min_path = min_path
@@ -239,11 +269,14 @@ class MAP4Fingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.dimensions = dimensions
         self.radius = radius
-        self.random_state = random_state
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
@@ -280,11 +313,14 @@ class MHFP(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.dimensions = dimensions
         self.radius = radius
-        self.random_state = random_state
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
@@ -320,17 +356,22 @@ class E3FP(FingerprintTransformer):
         pool_multiplier: float = POOL_MULTIPLIER_DEF,
         rmsd_cutoff: float = RMSD_CUTOFF_DEF,
         max_energy_diff: float = MAX_ENERGY_DIFF_DEF,
-        forcefield: float = FORCEFIELD_DEF,
+        force_field: float = FORCEFIELD_DEF,
         get_values: bool = True,
         is_folded: bool = False,
         fold_bits: int = 1024,
-        standardise: bool = True,
-        seed: int = 0,
         sparse: bool = False,
         n_jobs: int = 1,
         verbose: int = 0,
+        random_state: int = 0,
+        aggregation_type: str = "min_energy",
     ):
-        super().__init__(n_jobs=n_jobs, verbose=verbose, sparse=sparse)
+        super().__init__(
+            n_jobs=n_jobs,
+            verbose=verbose,
+            sparse=sparse,
+            random_state=random_state,
+        )
         self.bits = bits
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
@@ -339,12 +380,11 @@ class E3FP(FingerprintTransformer):
         self.pool_multiplier = pool_multiplier
         self.rmsd_cutoff = rmsd_cutoff
         self.max_energy_diff = max_energy_diff
-        self.forcefield = forcefield
+        self.force_field = force_field
         self.get_values = get_values
         self.is_folded = is_folded
         self.fold_bits = fold_bits
-        self.standardise = standardise
-        self.seed = seed
+        self.aggregation_type = aggregation_type
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
@@ -358,9 +398,9 @@ class E3FP(FingerprintTransformer):
             pool_multiplier=self.pool_multiplier,
             rmsd_cutoff=self.rmsd_cutoff,
             max_energy_diff=self.max_energy_diff,
-            forcefield=self.forcefield,
+            forcefield=self.force_field,
             get_values=self.get_values,
-            seed=self.seed,
+            seed=self.random_state,
         )
 
         result = []
@@ -374,8 +414,6 @@ class E3FP(FingerprintTransformer):
                 mol = MolFromSmiles(x)
 
             mol.SetProp("_Name", smiles)
-            if self.standardise:
-                mol = mol_to_standardised_mol(mol)
             mol = PropertyMol(mol)
             mol.SetProp("_SMILES", smiles)
 
@@ -391,8 +429,12 @@ class E3FP(FingerprintTransformer):
                 },
             )
 
-            energies = values[2]
-            fp = fps[np.argmin(energies)]
+            # TODO: in future - add other aggregation types
+            if self.aggregation_type == "min_energy":
+                energies = values[2]
+                fp = fps[np.argmin(energies)]
+            else:
+                fp = fps[0]
 
             if self.is_folded:
                 fp = fp.fold(self.fold_bits)
