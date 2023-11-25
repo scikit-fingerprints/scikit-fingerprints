@@ -11,7 +11,9 @@ from e3fp.conformer.generate import (
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
-from rdkit.Chem import MolToSmiles
+from e3fp.conformer.util import mol_to_standardised_mol
+from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
+from rdkit.Chem.PropertyMol import PropertyMol
 
 from base import FingerprintTransformer
 
@@ -41,9 +43,14 @@ class MorganFingerprint(FingerprintTransformer):
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.radius = radius
         self.include_chirality = include_chirality
@@ -89,9 +96,14 @@ class AtomPairFingerprint(FingerprintTransformer):
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.min_distance = min_distance
         self.max_distance = max_distance
@@ -134,9 +146,14 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
@@ -168,9 +185,18 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
 
 class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(
-        self, sparse: bool = False, n_jobs: int = 1, verbose: int = 0
+        self,
+        sparse: bool = False,
+        n_jobs: int = 1,
+        verbose: int = 0,
+        random_state: int = 0,
     ):
-        super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
+        super().__init__(
+            n_jobs=n_jobs,
+            sparse=sparse,
+            verbose=verbose,
+            random_state=random_state,
+        )
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
@@ -195,8 +221,14 @@ class ERGFingerprint(FingerprintTransformer):
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
+        random_state: int = 0,
     ):
-        super().__init__(n_jobs=n_jobs, sparse=sparse, verbose=verbose)
+        super().__init__(
+            n_jobs=n_jobs,
+            sparse=sparse,
+            verbose=verbose,
+            random_state=random_state,
+        )
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
         self.min_path = min_path
@@ -237,11 +269,14 @@ class MAP4Fingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.dimensions = dimensions
         self.radius = radius
-        self.random_state = random_state
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
@@ -278,11 +313,14 @@ class MHFP(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs, sparse=sparse, count=count, verbose=verbose
+            n_jobs=n_jobs,
+            sparse=sparse,
+            count=count,
+            verbose=verbose,
+            random_state=random_state,
         )
         self.dimensions = dimensions
         self.radius = radius
-        self.random_state = random_state
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
@@ -322,12 +360,18 @@ class E3FP(FingerprintTransformer):
         get_values: bool = True,
         is_folded: bool = False,
         fold_bits: int = 1024,
-        standardise: bool = True,
-        random_state: int = 0,
+        sparse: bool = False,
         n_jobs: int = 1,
         verbose: int = 0,
+        random_state: int = 0,
+        aggregation_type: str = "min_energy",
     ):
-        super().__init__(n_jobs=n_jobs, verbose=verbose)
+        super().__init__(
+            n_jobs=n_jobs,
+            verbose=verbose,
+            sparse=sparse,
+            random_state=random_state,
+        )
         self.bits = bits
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
@@ -340,17 +384,13 @@ class E3FP(FingerprintTransformer):
         self.get_values = get_values
         self.is_folded = is_folded
         self.fold_bits = fold_bits
-        self.standardise = standardise
-        self.random_state = random_state
+        self.aggregation_type = aggregation_type
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> np.ndarray:
+    ) -> Union[np.ndarray, spsparse.csr_array]:
         from e3fp.conformer.generator import ConformerGenerator
-        from e3fp.conformer.util import mol_from_smiles
         from e3fp.pipeline import fprints_from_mol
-
-        X = self._validate_input(X)
 
         conf_gen = ConformerGenerator(
             first=self.first,
@@ -366,16 +406,19 @@ class E3FP(FingerprintTransformer):
         result = []
 
         for x in X:
-            input_mol = mol_from_smiles(
-                smiles=MolToSmiles(x),
-                name=MolToSmiles(x),
-                standardise=self.standardise,
-            )
+            if isinstance(x, Mol):
+                smiles = MolToSmiles(x)
+                mol = x
+            else:
+                smiles = x
+                mol = MolFromSmiles(x)
+
+            mol.SetProp("_Name", smiles)
+            mol = PropertyMol(mol)
+            mol.SetProp("_SMILES", smiles)
 
             # Generating conformers. Only few first conformers with lowest energy are used - specified by self.first
-            mol, values = conf_gen.generate_conformers(input_mol)
-
-            max_conformers, indices, energies, rmsds_mat = values
+            mol, values = conf_gen.generate_conformers(mol)
 
             fps = fprints_from_mol(
                 mol,
@@ -386,15 +429,19 @@ class E3FP(FingerprintTransformer):
                 },
             )
 
-            # Set a property for each fingerprint, to be able to obtain energy later
-            for i in range(len(fps)):
-                fps[i].set_prop("Energy", energies[i])
+            # TODO: in future - add other aggregation types
+            if self.aggregation_type == "min_energy":
+                energies = values[2]
+                fp = fps[np.argmin(energies)]
+            else:
+                fp = fps[0]
 
-                if self.is_folded:
-                    fps[i] = fps[i].fold(self.fold_bits)
+            if self.is_folded:
+                fp = fp.fold(self.fold_bits)
 
-            result.extend(fps)
+            result.append(fp.to_vector())
 
-        result = np.array(result)
-
-        return result
+        if self.sparse:
+            return spsparse.vstack(result)
+        else:
+            return np.array([fp.toarray().squeeze() for fp in result])
