@@ -103,7 +103,7 @@ def _all_pairs(
 
 def get_map4_fingerprint(
     Mol: Mol,
-    dimensions: int = 128,
+    dimensions: int = 1024,
     radius: int = 2,
     count: bool = False,
     random_state: int = 0,
@@ -118,7 +118,7 @@ def get_map4_fingerprint(
 
         atom_env_pairs = _all_pairs(Mol, atoms_envs, radius, count)
 
-        encoder = MinHash(seed=random_state)
+        encoder = MinHash(num_perm=dimensions, seed=random_state)
         for pair in atom_env_pairs:
             encoder.update(pair)
 

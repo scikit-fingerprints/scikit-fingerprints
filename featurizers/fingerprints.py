@@ -264,7 +264,7 @@ class ERGFingerprint(FingerprintTransformer):
 class MAP4Fingerprint(FingerprintTransformer):
     def __init__(
         self,
-        dimensions: int = 128,
+        dimensions: int = 1024,
         radius: int = 2,
         random_state: int = 0,
         sparse: bool = False,
