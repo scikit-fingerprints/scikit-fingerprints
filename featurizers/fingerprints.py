@@ -190,13 +190,14 @@ class MACCSKeysFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
         verbose: int = 0,
         random_state: int = 0,
-        count: Optional[bool] = None,  # unused
+        count: bool = False,  # unused
     ):
         super().__init__(
             n_jobs=n_jobs,
             sparse=sparse,
             verbose=verbose,
             random_state=random_state,
+            count=count,
         )
 
     def _calculate_fingerprint(
@@ -223,13 +224,14 @@ class ERGFingerprint(FingerprintTransformer):
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
-        count: Optional[bool] = None,  # unused
+        count: bool = False,  # unused
     ):
         super().__init__(
             n_jobs=n_jobs,
             sparse=sparse,
             verbose=verbose,
             random_state=random_state,
+            count=count,
         )
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
@@ -366,13 +368,14 @@ class E3FP(FingerprintTransformer):
         verbose: int = 0,
         random_state: int = 0,
         aggregation_type: str = "min_energy",
-        count: Optional[bool] = None,  # unused
+        count: bool = False,  # unused
     ):
         super().__init__(
             n_jobs=n_jobs,
             verbose=verbose,
             sparse=sparse,
             random_state=random_state,
+            count=count,
         )
         self.bits = bits
         self.radius_multiplier = radius_multiplier

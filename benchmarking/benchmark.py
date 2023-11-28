@@ -6,6 +6,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rdkit.Chem.rdFingerprintGenerator as fpgens
+from e3fp.conformer.generate import (
+    FORCEFIELD_DEF,
+    MAX_ENERGY_DIFF_DEF,
+    NUM_CONF_DEF,
+    POOL_MULTIPLIER_DEF,
+    RMSD_CUTOFF_DEF,
+)
 from e3fp.conformer.generator import ConformerGenerator
 from e3fp.pipeline import fprints_from_mol
 from joblib import cpu_count
@@ -18,26 +25,19 @@ from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
 
 from base import FingerprintTransformer
-from featurizers.map4_mhfp_helper_functions import (
-    get_map4_fingerprint,
-    get_mhfp,
-)
 from featurizers.fingerprints import (
+    E3FP,
+    MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
+    MAP4Fingerprint,
     MorganFingerprint,
     TopologicalTorsionFingerprint,
-    MAP4Fingerprint,
-    MHFP,
-    E3FP,
 )
-from e3fp.conformer.generate import (
-    FORCEFIELD_DEF,
-    MAX_ENERGY_DIFF_DEF,
-    NUM_CONF_DEF,
-    POOL_MULTIPLIER_DEF,
-    RMSD_CUTOFF_DEF,
+from featurizers.map4_mhfp_helper_functions import (
+    get_map4_fingerprint,
+    get_mhfp,
 )
 
 dataset_name = "ogbg-molhiv"
