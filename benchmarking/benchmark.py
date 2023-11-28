@@ -52,6 +52,7 @@ N_CORES = [i for i in range(1, cpu_count() + 1)]
 COUNT_TYPES = [False, True]
 SPARSE_TYPES = [False, True]
 PLOT_DIR = "./benchmark_times_plotted"
+SCORE_DIR = "./benchmark_times_saved"
 
 
 def get_times_emf(
@@ -246,7 +247,7 @@ def get_times_e3fp(X: pd.DataFrame, sparse: bool = False):
     return np.array(result)
 
 
-def plot_results(
+def save_results(
     n_molecules: int,
     y_emf: List,
     y_rdkit: List,
@@ -282,10 +283,15 @@ def plot_results(
     ax1.set_ylim(bottom=0)
 
     plt.legend(loc="upper left", fontsize="8")
+
+    to_save = np.object_([y_rdkit, y_emf])
+    np.save(SCORE_DIR + "/" + title.replace(" ", "_") + ".npy", to_save)
+
     if save:
         plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".png")
     else:
         plt.show()
+    plt.close(fig)
 
 
 def save_all_results(
@@ -298,7 +304,7 @@ def save_all_results(
     if use_count:
         for i, count in enumerate(COUNT_TYPES):
             for j, sparse in enumerate(SPARSE_TYPES):
-                plot_results(
+                save_results(
                     n_molecules,
                     scores_emf[i][j],
                     scores_seq[i][j],
@@ -308,7 +314,7 @@ def save_all_results(
                 )
     else:
         for j, sparse in enumerate(SPARSE_TYPES):
-            plot_results(
+            save_results(
                 n_molecules,
                 scores_emf[j],
                 scores_seq[j],
@@ -323,6 +329,9 @@ if __name__ == "__main__":
 
     if not os.path.exists(PLOT_DIR):
         os.mkdir(PLOT_DIR)
+
+    if not os.path.exists(SCORE_DIR):
+        os.mkdir(SCORE_DIR)
 
     GraphPropPredDataset(name=dataset_name, root="../dataset")
     dataset = pd.read_csv(
