@@ -190,6 +190,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
         n_jobs: int = 1,
         verbose: int = 0,
         random_state: int = 0,
+        count: Optional[bool] = None,  # unused
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -222,6 +223,7 @@ class ERGFingerprint(FingerprintTransformer):
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
+        count: Optional[bool] = None,  # unused
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -260,7 +262,7 @@ class ERGFingerprint(FingerprintTransformer):
 class MAP4Fingerprint(FingerprintTransformer):
     def __init__(
         self,
-        dimensions: int = 1024,
+        dimensions: int = 128,
         radius: int = 2,
         random_state: int = 0,
         sparse: bool = False,
@@ -296,9 +298,9 @@ class MAP4Fingerprint(FingerprintTransformer):
         ]
 
         if self.sparse:
-            return spsparse.csr_array(X)
+            return spsparse.csr_array(np.stack(X))
         else:
-            return np.array(X)
+            return np.stack(X)
 
 
 class MHFP(FingerprintTransformer):
@@ -338,7 +340,6 @@ class MHFP(FingerprintTransformer):
             )
             for x in X
         ]
-
         if self.sparse:
             return spsparse.csr_array(X)
         else:
@@ -348,8 +349,8 @@ class MHFP(FingerprintTransformer):
 class E3FP(FingerprintTransformer):
     def __init__(
         self,
-        bits: int,
-        radius_multiplier: float,
+        bits: int = 4090,
+        radius_multiplier: float = 1.5,
         rdkit_invariants: bool = True,
         first: int = 1,
         num_conf: int = NUM_CONF_DEF,
@@ -365,6 +366,7 @@ class E3FP(FingerprintTransformer):
         verbose: int = 0,
         random_state: int = 0,
         aggregation_type: str = "min_energy",
+        count: Optional[bool] = None,  # unused
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -419,7 +421,6 @@ class E3FP(FingerprintTransformer):
 
             # Generating conformers. Only few first conformers with lowest energy are used - specified by self.first
             mol, values = conf_gen.generate_conformers(mol)
-
             fps = fprints_from_mol(
                 mol,
                 fprint_params={
