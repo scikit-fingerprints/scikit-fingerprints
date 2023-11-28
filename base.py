@@ -70,7 +70,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             if self.sparse:
                 return spsparse.vstack(results)
             else:
-                return np.concatenate(results)
+                return np.vstack(results)
 
     @abstractmethod
     def _calculate_fingerprint(

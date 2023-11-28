@@ -103,7 +103,7 @@ def _all_pairs(
 
 def get_map4_fingerprint(
     Mol: Mol,
-    dimensions: int = 1024,
+    dimensions: int = 128,
     radius: int = 2,
     count: bool = False,
     random_state: int = 0,
