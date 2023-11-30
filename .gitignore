@@ -5,3 +5,4 @@ dataset
 __pycache__
 *.png
 *.npy
+*.csv
