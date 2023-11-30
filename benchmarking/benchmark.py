@@ -328,82 +328,82 @@ if __name__ == "__main__":
 
     n_molecules = X.shape[0]
 
-    # # MORGAN FINGERPRINT
-    # print("Morgan")
-    # morgan_emf_times = get_all_times_emf(X, MorganFingerprint)
-    # generator = fpgens.GetMorganGenerator()
-    # morgan_rdkit_times = get_all_generator_times_rdkit(X, generator)
-    # save_all_results(
-    #     morgan_emf_times,
-    #     morgan_rdkit_times,
-    #     n_molecules,
-    #     "Morgan Fingerprint",
-    #     True,
-    # )
-    #
-    # # ATOM PAIR FINGERPRINT
-    # print("Atom Pair")
-    # atom_pair_emf_times = get_all_times_emf(X, AtomPairFingerprint)
-    # generator = fpgens.GetAtomPairGenerator()
-    # atom_pair_rdkit_times = get_all_generator_times_rdkit(X, generator)
-    # save_all_results(
-    #     atom_pair_emf_times,
-    #     atom_pair_rdkit_times,
-    #     n_molecules,
-    #     "Atom Pair Fingerprint",
-    #     True,
-    # )
-    #
-    # # TOPOLOGICAL TORSION FINGERPRINT
-    # print("Topological Torsion")
-    # topological_torsion_emf_times = get_all_times_emf(
-    #     X, TopologicalTorsionFingerprint
-    # )
-    # generator = fpgens.GetTopologicalTorsionGenerator()
-    # topological_torsion_rdkit_times = get_all_generator_times_rdkit(
-    #     X, generator
-    # )
-    # save_all_results(
-    #     topological_torsion_emf_times,
-    #     topological_torsion_rdkit_times,
-    #     n_molecules,
-    #     "Topological Torsion Fingerprint",
-    #     True,
-    # )
-    #
-    # # MACCS KEYS FINGERPRINT
-    # print("MACCS Keys")
-    # MACCSKeys_emf_times = get_all_times_emf(X, MACCSKeysFingerprint, False)
-    # MACCSKeys_rdkit_times = get_all_sequential_times(
-    #     X, GetMACCSKeysFingerprint, False
-    # )
-    # save_all_results(
-    #     MACCSKeys_emf_times,
-    #     MACCSKeys_rdkit_times,
-    #     n_molecules,
-    #     "MACCS Keys fingerprint",
-    #     False,
-    # )
-    #
-    # # ERG FINGERPRINT
-    # print("ERG")
-    # ERG_emf_times = get_all_times_emf(X, ERGFingerprint, False)
-    # ERG_rdkit_times = get_all_sequential_times(X, GetErGFingerprint, False)
-    # save_all_results(
-    #     ERG_emf_times, ERG_rdkit_times, n_molecules, "ERG fingerprint", False
-    # )
-    #
-    # # MAP4 FINGERPRINT
-    # print("MAP4")
-    # MAP4_emf_times = get_all_times_emf(X, MAP4Fingerprint)
-    # MAP4_sequential_times = get_all_sequential_times(X, get_map4_fingerprint)
-    # save_all_results(
-    #     MAP4_emf_times,
-    #     MAP4_sequential_times,
-    #     n_molecules,
-    #     "MAP4 fingerprint",
-    #     True,
-    # )
+    # MORGAN FINGERPRINT
+    print("Morgan")
+    morgan_emf_times = get_all_times_emf(X, MorganFingerprint)
+    generator = fpgens.GetMorganGenerator()
+    morgan_rdkit_times = get_all_generator_times_rdkit(X, generator)
+    save_all_results(
+        morgan_emf_times,
+        morgan_rdkit_times,
+        n_molecules,
+        "Morgan Fingerprint",
+        True,
+    )
+
+    # ATOM PAIR FINGERPRINT
+    print("Atom Pair")
+    atom_pair_emf_times = get_all_times_emf(X, AtomPairFingerprint)
+    generator = fpgens.GetAtomPairGenerator()
+    atom_pair_rdkit_times = get_all_generator_times_rdkit(X, generator)
+    save_all_results(
+        atom_pair_emf_times,
+        atom_pair_rdkit_times,
+        n_molecules,
+        "Atom Pair Fingerprint",
+        True,
+    )
+
+    # TOPOLOGICAL TORSION FINGERPRINT
+    print("Topological Torsion")
+    topological_torsion_emf_times = get_all_times_emf(
+        X, TopologicalTorsionFingerprint
+    )
+    generator = fpgens.GetTopologicalTorsionGenerator()
+    topological_torsion_rdkit_times = get_all_generator_times_rdkit(
+        X, generator
+    )
+    save_all_results(
+        topological_torsion_emf_times,
+        topological_torsion_rdkit_times,
+        n_molecules,
+        "Topological Torsion Fingerprint",
+        True,
+    )
+
+    # MACCS KEYS FINGERPRINT
+    print("MACCS Keys")
+    MACCSKeys_emf_times = get_all_times_emf(X, MACCSKeysFingerprint, False)
+    MACCSKeys_rdkit_times = get_all_sequential_times(
+        X, GetMACCSKeysFingerprint, False
+    )
+    save_all_results(
+        MACCSKeys_emf_times,
+        MACCSKeys_rdkit_times,
+        n_molecules,
+        "MACCS Keys fingerprint",
+        False,
+    )
+
+    # ERG FINGERPRINT
+    print("ERG")
+    ERG_emf_times = get_all_times_emf(X, ERGFingerprint, False)
+    ERG_rdkit_times = get_all_sequential_times(X, GetErGFingerprint, False)
+    save_all_results(
+        ERG_emf_times, ERG_rdkit_times, n_molecules, "ERG fingerprint", False
+    )
+
+    # MAP4 FINGERPRINT
+    print("MAP4")
+    MAP4_emf_times = get_all_times_emf(X, MAP4Fingerprint)
+    MAP4_sequential_times = get_all_sequential_times(X, get_map4_fingerprint)
+    save_all_results(
+        MAP4_emf_times,
+        MAP4_sequential_times,
+        n_molecules,
+        "MAP4 fingerprint",
+        True,
+    )
 
     # MHFP FINGERPRINT
     print("MHFP")
