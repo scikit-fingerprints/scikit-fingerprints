@@ -6,6 +6,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 import lightgbm as lgb
 from time import time
+from sklearn.preprocessing import MinMaxScaler
 
 from featurizers.fingerprints import (
     MHFP,
@@ -61,6 +62,7 @@ classifier_kwargs = [
     {
         "random_state": 42,
         "class_weight": "balanced",
+        "max_iter": 1000,
         "penalty": None,
         "n_jobs": -1,
     },
@@ -76,6 +78,11 @@ for fingerprint, fp_name in zip(fingerprints, fp_names):
     fp_transformer = fingerprint(n_jobs=-1)
     X_fp_train = fp_transformer.transform(X_train)
     X_fp_test = fp_transformer.transform(X_test)
+
+    scaler = MinMaxScaler()
+    X_fp_train = scaler.fit_transform(X_fp_train)
+    X_fp_test = scaler.transform(X_fp_test)
+
     end = time()
     execution_time = end - start
     print(f" - Time of fingerprints computing : {round(execution_time,2)}s")
