@@ -264,7 +264,7 @@ def save_results(
     for i, y in zip(N_CORES, y_emf):
         ax1.plot(X, y, label=f"emf time - {i} cores")
 
-    ax1.plot(X, y_rdkit, label="rdkit time")
+    ax1.plot(X, y_rdkit, label="sequential time")
 
     ax1.set_ylabel("Time of computation [s]")
     ax1.set_xlabel("Number of fingerprints")
