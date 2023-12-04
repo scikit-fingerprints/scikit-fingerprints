@@ -1,16 +1,19 @@
 [tool.poetry]
-name = "emf" #change this one
+name = "emf" #this NEEDS to be changed to the other name (for example scikit-emf), however
+#either poetry or git do not allow to change the name of the project and still work
+#needs to be fixed ASAP
 version = "1.0.0"
 description = "Library for effective chemical fingerprints calculation"
 authors = ["Michal Szafarczyk <adammichal657@gmail.com>", "Piotr Ludynia",
     "Przemyslaw Kukla <przemek.kukla0703@gmail.com>"]
+repository = "https://github.com/Arch4ngel21/emf"
 license = "MIT"
 
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-numpy = "*"
+numpy = "^1.20.0"
 pandas = "*"
 scipy = "*"
 joblib = "*"
@@ -26,6 +29,10 @@ pytest = "^7.3.1"
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cpu"
 priority = "explicit"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

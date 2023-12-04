@@ -41,7 +41,7 @@ We encourage you to submit pull requests (PRs) to improve our project. To do so,
 To set up a development environment for Effective Molecule Fingerprints library, follow the installation instructions in the README.
 
 ### Testing
-Before submitting a pull request, please make sure to run the tests to ensure that your changes do not introduce regressions. If necessary, add new tests to cover your code.
+Before submitting a pull request, please make sure to run the tests to ensure that your changes do not introduce regressions. If necessary, add new tests to cover your code. Also please be sure that you do not violate any code style requirements (you can check it simply by running "flake8" in the CLI).
 
 ### Code of Conduct
 By participating in this project, you agree to abide by the Code of Conduct. We take violations seriously and may take action if necessary to maintain a welcoming and respectful community.

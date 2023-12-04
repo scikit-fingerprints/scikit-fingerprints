@@ -42,7 +42,7 @@ The primary goal of this project is to develop a Python library that simplifies 
 You can install the library using pip:
 
 ```bash
-pip install molecular-fingerprint-library
+pip install scikit-emf
 ```
 
 
@@ -56,7 +56,7 @@ Our project leverages the following technologies:
 
 - [Joblib](https://joblib.readthedocs.io): Used for parallel computing.
 
-- [Pandas](https://pandas.pydata.org): A widely used Python library for data manipulation and analysis.
+- [Rdkit](https://www.rdkit.org/): Open-Source Cheminformatics Software.
 
 ---
 
@@ -64,7 +64,7 @@ By contributing to this project, you can help advance the fields of chemistry an
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## License
 

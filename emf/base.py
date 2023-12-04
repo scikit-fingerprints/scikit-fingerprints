@@ -46,7 +46,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             batch_size = max(len(X) // self.n_jobs, 1)
 
             args = (
-                X[i : i + batch_size] for i in range(0, len(X), batch_size)
+                X[i: i + batch_size] for i in range(0, len(X), batch_size)
             )
 
             if self.verbose > 0:
