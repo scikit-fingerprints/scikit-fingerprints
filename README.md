@@ -18,7 +18,7 @@
 Molecular fingerprints are crucial in various scientific fields, including drug discovery, materials science, and chemical analysis. However, existing Python libraries for computing molecular fingerprints often lack performance, user-friendliness, and support for modern programming standards. This project aims to address these shortcomings by creating an efficient and accessible Python library for molecular fingerprint computation.
 
 ## General Project Vision
-
+ 
 The primary goal of this project is to develop a Python library that simplifies the computation of widely-used molecular fingerprints, such as Morgan's fingerprint, MACCS fingerprint, and others. This library will have the following key features:
 
 - **User-Friendly Interface:** The library will provide an intuitive interface, making it easy to integrate into machine learning workflows.
