@@ -1,7 +1,5 @@
 [tool.poetry]
-name = "scikit-fingerprints" #this NEEDS to be changed to the other name (for example scikit-scikit-fingerprints), however
-#either poetry or git do not allow to change the name of the project and still work
-#needs to be fixed ASAP
+name = "scikit-fingerprints"
 version = "1.0.0"
 description = "Library for effective molecular fingerprints calculation"
 authors = ["Michal Szafarczyk <adammichal657@gmail.com>", "Piotr Ludynia",
