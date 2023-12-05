@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Version 0.1.0 (10.2023)
+## Version 1.0.0 (10.2023)
 
 ### New Features
 

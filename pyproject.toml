@@ -1,13 +1,16 @@
 [tool.poetry]
-name = "emf" #this NEEDS to be changed to the other name (for example scikit-emf), however
+name = "scikit-fingerprints" #this NEEDS to be changed to the other name (for example scikit-scikit-fingerprints), however
 #either poetry or git do not allow to change the name of the project and still work
 #needs to be fixed ASAP
 version = "1.0.0"
-description = "Library for effective chemical fingerprints calculation"
+description = "Library for effective molecular fingerprints calculation"
 authors = ["Michal Szafarczyk <adammichal657@gmail.com>", "Piotr Ludynia",
     "Przemyslaw Kukla <przemek.kukla0703@gmail.com>"]
 repository = "https://github.com/Arch4ngel21/emf"
 license = "MIT"
+packages = [
+    { include = "scikit-fingerprints" }
+]
 
 readme = "README.md"
 
@@ -19,16 +22,18 @@ scipy = "*"
 joblib = "*"
 rdkit = "*"
 scikit-learn = "*"  # No minimal version specified, will use the latest available
-torch = {version = "^2.0.1+cpu", source = "pytorch"}
-torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.3.1"
+torch = {version = "^2.0.1+cpu", source = "pytorch"}
+torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
 
 [[tool.poetry.source]]
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cpu"
 priority = "explicit"
+
 
 
 [tool.poetry.group.dev.dependencies]

@@ -90,7 +90,7 @@ def get_times_emf(
 
 
 def get_all_times_emf(X, fingerprint_transformer, use_count: bool = True):
-    print(" - emf")
+    print(" - scikit-fingerprints")
     times = [
         [
             get_times_emf(
@@ -262,7 +262,7 @@ def save_results(
     ax1.set_title(title)
 
     for i, y in zip(N_CORES, y_emf):
-        ax1.plot(X, y, label=f"emf time - {i} cores")
+        ax1.plot(X, y, label=f"scikit-fingerprints time - {i} cores")
 
     ax1.plot(X, y_rdkit, label="sequential time")
 
