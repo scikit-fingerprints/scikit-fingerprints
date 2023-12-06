@@ -7,7 +7,7 @@ authors = ["Michal Szafarczyk <adammichal657@gmail.com>", "Piotr Ludynia",
 repository = "https://github.com/Arch4ngel21/emf"
 license = "MIT"
 packages = [
-    { include = "scikit-fingerprints" }
+    { include = "skfp" }
 ]
 
 readme = "README.md"
@@ -19,6 +19,13 @@ pandas = "*"
 scipy = "*"
 joblib = "*"
 rdkit = "*"
+e3fp = "*"
+ogb = "*"
+datasketch = "*"
+mhfp = "*"
+tqdm = "*"
+lightgbm = "*"
+matplotlib = "*"
 scikit-learn = "*"  # No minimal version specified, will use the latest available
 
 
