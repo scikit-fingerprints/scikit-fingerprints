@@ -1,6 +1,6 @@
 import os
 from time import time
-from typing import Callable, List, Optional
+from typing import Callable, List
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,11 +22,9 @@ from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
-from scipy.sparse import csr_array, vstack
 
-from base import FingerprintTransformer
-from featurizers.fingerprints import (
-    E3FP,
+from skfp.fingerprints.base import FingerprintTransformer
+from skfp import (
     MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
@@ -35,7 +33,7 @@ from featurizers.fingerprints import (
     MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
-from featurizers.map4_mhfp_helper_functions import (
+from skfp.helpers.map4_mhfp_helpers import (
     get_map4_fingerprint,
     get_mhfp,
 )
@@ -90,7 +88,7 @@ def get_times_emf(
 
 
 def get_all_times_emf(X, fingerprint_transformer, use_count: bool = True):
-    print(" - scikit-fingerprints")
+    print(" - skfp")
     times = [
         [
             get_times_emf(
@@ -262,7 +260,7 @@ def save_results(
     ax1.set_title(title)
 
     for i, y in zip(N_CORES, y_emf):
-        ax1.plot(X, y, label=f"scikit-fingerprints time - {i} cores")
+        ax1.plot(X, y, label=f"skfp time - {i} cores")
 
     ax1.plot(X, y_rdkit, label="sequential time")
 

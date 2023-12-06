@@ -8,7 +8,7 @@ import lightgbm as lgb
 from time import time
 from sklearn.preprocessing import MinMaxScaler
 
-from featurizers.fingerprints import (
+from skfp import (
     MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
@@ -45,7 +45,7 @@ fp_names = [
     "MAP4",
     "MHFP",
 ]
-fingerprints = [
+fprints = [
     MorganFingerprint,
     AtomPairFingerprint,
     TopologicalTorsionFingerprint,
@@ -70,7 +70,7 @@ classifier_kwargs = [
 ]
 
 
-for fingerprint, fp_name in zip(fingerprints, fp_names):
+for fingerprint, fp_name in zip(fprints, fp_names):
     records.append({})
     records[-1]["fp_name"] = fp_name
     print(fp_name, "Fingerprint")

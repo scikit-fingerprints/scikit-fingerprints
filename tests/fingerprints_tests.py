@@ -18,7 +18,7 @@ from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
 
-from featurizers.fingerprints import (
+from skfp import (
     E3FP,
     MHFP,
     AtomPairFingerprint,
@@ -28,7 +28,8 @@ from featurizers.fingerprints import (
     MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
-from featurizers.map4_mhfp_helper_functions import (
+
+from skfp.helpers.map4_mhfp_helpers import (
     get_map4_fingerprint,
     get_mhfp,
 )
