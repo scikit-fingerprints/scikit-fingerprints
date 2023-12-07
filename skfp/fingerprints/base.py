@@ -10,7 +10,18 @@ from rdkit.Chem.rdchem import Mol
 from sklearn.base import BaseEstimator, TransformerMixin
 from tqdm import tqdm
 
-from utils.logger import tqdm_joblib
+from skfp.utils.logger import tqdm_joblib
+
+"""
+If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside
+worker function! (That error isn't very informative and this tip might save you a lot of time)
+"""
+
+"""
+fp_descriptors need to be inside _calculate_fingerprint() of a specific class (cannot be defined inside the __init__() of
+that class), otherwise pickle gets angry:
+TypeError: cannot pickle 'Boost.Python.function' object
+"""
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
@@ -46,7 +57,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             batch_size = max(len(X) // self.n_jobs, 1)
 
             args = (
-                X[i: i + batch_size] for i in range(0, len(X), batch_size)
+                X[i : i + batch_size] for i in range(0, len(X), batch_size)
             )
 
             if self.verbose > 0:

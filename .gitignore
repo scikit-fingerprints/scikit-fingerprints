@@ -2,6 +2,7 @@
 data
 dataset
 .ipynb_checkpoints
+.pytest_cache
 __pycache__
 *.png
 *.npy
