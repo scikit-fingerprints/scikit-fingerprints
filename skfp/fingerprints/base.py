@@ -10,7 +10,7 @@ from rdkit.Chem.rdchem import Mol
 from sklearn.base import BaseEstimator, TransformerMixin
 from tqdm import tqdm
 
-from utils.logger import tqdm_joblib
+from skfp.utils.logger import tqdm_joblib
 
 """
 If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside

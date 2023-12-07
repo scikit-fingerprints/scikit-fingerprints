@@ -7,7 +7,7 @@ import scipy.sparse as spsparse
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class AtomPairFingerprint(FingerprintTransformer):
+class AtomPairsFingerprint(FingerprintTransformer):
     def __init__(
         self,
         min_distance: int = 1,

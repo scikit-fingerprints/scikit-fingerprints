@@ -1,5 +1,5 @@
 from skfp.fingerprints.morgan import MorganFingerprint
-from skfp.fingerprints.atom_pair import AtomPairFingerprint
+from skfp.fingerprints.atom_pairs import AtomPairsFingerprint
 from skfp.fingerprints.topological_torsion import TopologicalTorsionFingerprint
 from skfp.fingerprints.maccs_keys import MACCSKeysFingerprint
 from skfp.fingerprints.erg import ERGFingerprint

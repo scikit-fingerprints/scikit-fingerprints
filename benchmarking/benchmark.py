@@ -26,7 +26,7 @@ from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from skfp.fingerprints.base import FingerprintTransformer
 from skfp import (
     MHFP,
-    AtomPairFingerprint,
+    AtomPairsFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
@@ -340,15 +340,15 @@ if __name__ == "__main__":
     )
 
     # ATOM PAIR FINGERPRINT
-    print("Atom Pair")
-    atom_pair_emf_times = get_all_times_emf(X, AtomPairFingerprint)
+    print("Atom Pairs")
+    atom_pairs_emf_times = get_all_times_emf(X, AtomPairsFingerprint)
     generator = fpgens.GetAtomPairGenerator()
-    atom_pair_rdkit_times = get_all_generator_times_rdkit(X, generator)
+    atom_pairs_rdkit_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
-        atom_pair_emf_times,
-        atom_pair_rdkit_times,
+        atom_pairs_emf_times,
+        atom_pairs_rdkit_times,
         n_molecules,
-        "Atom Pair Fingerprint",
+        "Atom Pairs Fingerprint",
         True,
     )
 

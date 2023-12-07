@@ -10,7 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
     MHFP,
-    AtomPairFingerprint,
+    AtomPairsFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
@@ -38,7 +38,7 @@ records = []
 
 fp_names = [
     "Morgan",
-    "Atom Pair",
+    "Atom Pairs",
     "Topological Torsion",
     "MACCS Keys",
     "ERG",
@@ -47,7 +47,7 @@ fp_names = [
 ]
 fprints = [
     MorganFingerprint,
-    AtomPairFingerprint,
+    AtomPairsFingerprint,
     TopologicalTorsionFingerprint,
     MACCSKeysFingerprint,
     ERGFingerprint,
