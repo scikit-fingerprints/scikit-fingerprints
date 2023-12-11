@@ -56,7 +56,7 @@ PLOT_DIR = "./benchmark_times_plotted"
 SCORE_DIR = "./benchmark_times_saved"
 
 
-def get_times_emf(
+def get_times_skfp(
     X: pd.DataFrame, transformer_function: FingerprintTransformer, **kwargs
 ):
     if "count" in kwargs:
@@ -67,7 +67,7 @@ def get_times_emf(
     print(f" - - n_jobs: {n_jobs}")
 
     n_molecules = X.shape[0]
-    emf_transformer = transformer_function(**kwargs)
+    skfp_transformer = transformer_function(**kwargs)
 
     # testing for different sizes of input datasets
     result = []
@@ -80,18 +80,18 @@ def get_times_emf(
         for i in range(N_REPEATS):
             print(f" - - - - repeat: {i}/{N_REPEATS-1}")
             start = time()
-            X_transformed = emf_transformer.transform(subset)
+            X_transformed = skfp_transformer.transform(subset)
             end = time()
             times[i] = end - start
         result.append(np.mean(times))
     return np.array(result)
 
 
-def get_all_times_emf(X, fingerprint_transformer, use_count: bool = True):
+def get_all_times_skfp(X, fingerprint_transformer, use_count: bool = True):
     print(" - skfp")
     times = [
         [
-            get_times_emf(
+            get_times_skfp(
                 X,
                 fingerprint_transformer,
                 count=count,
@@ -106,7 +106,7 @@ def get_all_times_emf(X, fingerprint_transformer, use_count: bool = True):
     return times[0]
 
 
-def get_generator_times_rdkit(X: pd.DataFrame, generator: object, count: bool):
+def get_generator_times_sequential(X: pd.DataFrame, generator: object, count: bool):
     print(f" - - count: {count}")
     n_molecules = X.shape[0]
     if count:
@@ -137,7 +137,7 @@ def get_generator_times_rdkit(X: pd.DataFrame, generator: object, count: bool):
 def get_all_generator_times_rdkit(X, generator):
     print(" - generator")
     return [
-        get_generator_times_rdkit(
+        get_generator_times_sequential(
             X,
             generator,
             count=count,
@@ -241,8 +241,8 @@ def get_times_e3fp(X: pd.DataFrame):
 
 def save_results(
     n_molecules: int,
-    y_emf: List,
-    y_rdkit: List,
+    y_skfp: List,
+    y_sequential: List,
     title: str = "",
     count: bool = None,
     save: bool = True,
@@ -259,10 +259,10 @@ def save_results(
     ax1 = fig.add_subplot()
     ax1.set_title(title)
 
-    for i, y in zip(N_CORES, y_emf):
-        ax1.plot(X, y, label=f"skfp time - {i} cores")
+    for i, y in zip(N_CORES, y_skfp):
+        ax1.plot(X, y, label=f"our time - {i} cores")
 
-    ax1.plot(X, y_rdkit, label="sequential time")
+    ax1.plot(X, y_sequential, label="sequential time")
 
     ax1.set_ylabel("Time of computation [s]")
     ax1.set_xlabel("Number of fingerprints")
@@ -270,10 +270,12 @@ def save_results(
     ax1.set_xlim(n_molecules * 0.1, n_molecules * 1.1)
     ax1.set_ylim(bottom=0)
 
-    plt.legend(loc="upper left", fontsize="8")
+    plt.legend(loc="upper left", fontsize="14")
 
-    to_save = np.object_([y_rdkit, y_emf])
+    to_save = np.object_([y_sequential, y_skfp])
     np.save(SCORE_DIR + "/" + title.replace(" ", "_") + ".npy", to_save)
+
+    fig.tight_layout()
 
     if save:
         plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".png")
@@ -283,7 +285,7 @@ def save_results(
 
 
 def save_all_results(
-    scores_emf: List,
+    scores_skfp: List,
     scores_seq: List,
     n_molecules: int,
     title: str,
@@ -293,7 +295,7 @@ def save_all_results(
         for i, count in enumerate(COUNT_TYPES):
             save_results(
                 n_molecules,
-                scores_emf[i],
+                scores_skfp[i],
                 scores_seq[i],
                 title=title,
                 count=count,
@@ -301,7 +303,7 @@ def save_all_results(
     else:
         save_results(
             n_molecules,
-            scores_emf,
+            scores_skfp,
             scores_seq,
             title=title,
             count=None,
@@ -326,14 +328,16 @@ if __name__ == "__main__":
 
     n_molecules = X.shape[0]
 
+    print(n_molecules)
+
     # MORGAN FINGERPRINT
     print("Morgan")
-    morgan_emf_times = get_all_times_emf(X, MorganFingerprint)
+    morgan_skfp_times = get_all_times_skfp(X, MorganFingerprint)
     generator = fpgens.GetMorganGenerator()
-    morgan_rdkit_times = get_all_generator_times_rdkit(X, generator)
+    morgan_sequential_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
-        morgan_emf_times,
-        morgan_rdkit_times,
+        morgan_skfp_times,
+        morgan_sequential_times,
         n_molecules,
         "Morgan Fingerprint",
         True,
@@ -341,12 +345,12 @@ if __name__ == "__main__":
 
     # ATOM PAIR FINGERPRINT
     print("Atom Pairs")
-    atom_pairs_emf_times = get_all_times_emf(X, AtomPairsFingerprint)
+    atom_pairs_skfp_times = get_all_times_skfp(X, AtomPairsFingerprint)
     generator = fpgens.GetAtomPairGenerator()
-    atom_pairs_rdkit_times = get_all_generator_times_rdkit(X, generator)
+    atom_pairs_sequential_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
-        atom_pairs_emf_times,
-        atom_pairs_rdkit_times,
+        atom_pairs_skfp_times,
+        atom_pairs_sequential_times,
         n_molecules,
         "Atom Pairs Fingerprint",
         True,
@@ -354,16 +358,16 @@ if __name__ == "__main__":
 
     # TOPOLOGICAL TORSION FINGERPRINT
     print("Topological Torsion")
-    topological_torsion_emf_times = get_all_times_emf(
+    topological_torsion_skfp_times = get_all_times_skfp(
         X, TopologicalTorsionFingerprint
     )
     generator = fpgens.GetTopologicalTorsionGenerator()
-    topological_torsion_rdkit_times = get_all_generator_times_rdkit(
+    topological_torsion_sequential_times = get_all_generator_times_rdkit(
         X, generator
     )
     save_all_results(
-        topological_torsion_emf_times,
-        topological_torsion_rdkit_times,
+        topological_torsion_skfp_times,
+        topological_torsion_sequential_times,
         n_molecules,
         "Topological Torsion Fingerprint",
         True,
@@ -371,13 +375,13 @@ if __name__ == "__main__":
 
     # MACCS KEYS FINGERPRINT
     print("MACCS Keys")
-    MACCSKeys_emf_times = get_all_times_emf(X, MACCSKeysFingerprint, False)
-    MACCSKeys_rdkit_times = get_all_sequential_times(
+    MACCSKeys_skfp_times = get_all_times_skfp(X, MACCSKeysFingerprint, False)
+    MACCSKeys_sequential_times = get_all_sequential_times(
         X, GetMACCSKeysFingerprint, False
     )
     save_all_results(
-        MACCSKeys_emf_times,
-        MACCSKeys_rdkit_times,
+        MACCSKeys_skfp_times,
+        MACCSKeys_sequential_times,
         n_molecules,
         "MACCS Keys fingerprint",
         False,
@@ -385,18 +389,18 @@ if __name__ == "__main__":
 
     # ERG FINGERPRINT
     print("ERG")
-    ERG_emf_times = get_all_times_emf(X, ERGFingerprint, False)
-    ERG_rdkit_times = get_all_sequential_times(X, GetErGFingerprint, False)
+    ERG_skfp_times = get_all_times_skfp(X, ERGFingerprint, False)
+    ERG_sequential_times = get_all_sequential_times(X, GetErGFingerprint, False)
     save_all_results(
-        ERG_emf_times, ERG_rdkit_times, n_molecules, "ERG fingerprint", False
+        ERG_skfp_times, ERG_sequential_times, n_molecules, "ERG fingerprint", False
     )
 
     # MAP4 FINGERPRINT
     print("MAP4")
-    MAP4_emf_times = get_all_times_emf(X, MAP4Fingerprint)
+    MAP4_skfp_times = get_all_times_skfp(X, MAP4Fingerprint)
     MAP4_sequential_times = get_all_sequential_times(X, get_map4_fingerprint)
     save_all_results(
-        MAP4_emf_times,
+        MAP4_skfp_times,
         MAP4_sequential_times,
         n_molecules,
         "MAP4 fingerprint",
@@ -405,19 +409,19 @@ if __name__ == "__main__":
 
     # MHFP FINGERPRINT
     print("MHFP")
-    MHFP_emf_times = get_all_times_emf(X, MHFP)
+    MHFP_skfp_times = get_all_times_skfp(X, MHFP)
     MHFP_sequential_times = get_all_sequential_times(X, get_mhfp)
     save_all_results(
-        MHFP_emf_times, MHFP_sequential_times, n_molecules, "MHFP", True
+        MHFP_skfp_times, MHFP_sequential_times, n_molecules, "MHFP", True
     )
 
-    # E3FP_emf_times = get_all_times_emf(X, E3FP, False)
+    # E3FP_skfp_times = get_all_times_skfp(X, E3FP, False)
     # E3FP_sequential_times = [
     #     get_times_e3fp(X, sparse=sparse) for sparse in SPARSE_TYPES
     # ]
     #
     # save_all_results(
-    #     E3FP_emf_times,
+    #     E3FP_skfp_times,
     #     E3FP_sequential_times,
     #     n_molecules,
     #     "E3FP fingerprint",
