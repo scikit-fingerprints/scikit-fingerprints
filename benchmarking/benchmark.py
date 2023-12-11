@@ -106,7 +106,9 @@ def get_all_times_skfp(X, fingerprint_transformer, use_count: bool = True):
     return times[0]
 
 
-def get_generator_times_sequential(X: pd.DataFrame, generator: object, count: bool):
+def get_generator_times_sequential(
+    X: pd.DataFrame, generator: object, count: bool
+):
     print(f" - - count: {count}")
     n_molecules = X.shape[0]
     if count:
@@ -390,9 +392,15 @@ if __name__ == "__main__":
     # ERG FINGERPRINT
     print("ERG")
     ERG_skfp_times = get_all_times_skfp(X, ERGFingerprint, False)
-    ERG_sequential_times = get_all_sequential_times(X, GetErGFingerprint, False)
+    ERG_sequential_times = get_all_sequential_times(
+        X, GetErGFingerprint, False
+    )
     save_all_results(
-        ERG_skfp_times, ERG_sequential_times, n_molecules, "ERG fingerprint", False
+        ERG_skfp_times,
+        ERG_sequential_times,
+        n_molecules,
+        "ERG fingerprint",
+        False,
     )
 
     # MAP4 FINGERPRINT
