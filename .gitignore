@@ -3,6 +3,7 @@ dataset
 .ipynb_checkpoints
 .pytest_cache
 __pycache__
+.coverage
 *.png
 *.npy
 *.csv
