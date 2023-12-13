@@ -18,7 +18,7 @@ from skfp.fingerprints.base import FingerprintTransformer
 class E3FP(FingerprintTransformer):
     def __init__(
         self,
-        bits: int = 4090,
+        bits: int = 4096,
         radius_multiplier: float = 1.5,
         rdkit_invariants: bool = True,
         first: int = 1,
@@ -90,15 +90,20 @@ class E3FP(FingerprintTransformer):
             mol.SetProp("_SMILES", smiles)
 
             # Generating conformers. Only few first conformers with lowest energy are used - specified by self.first
-            mol, values = conf_gen.generate_conformers(mol)
-            fps = fprints_from_mol(
-                mol,
-                fprint_params={
-                    "bits": self.bits,
-                    "radius_multiplier": self.radius_multiplier,
-                    "rdkit_invariants": self.rdkit_invariants,
-                },
-            )
+            # TODO: it appears, that for some molecules conformers are not properly generated - returns an empty list
+            #  and throws RuntimeError
+            try:
+                mol, values = conf_gen.generate_conformers(mol)
+                fps = fprints_from_mol(
+                    mol,
+                    fprint_params={
+                        "bits": self.bits,
+                        "radius_multiplier": self.radius_multiplier,
+                        "rdkit_invariants": self.rdkit_invariants,
+                    },
+                )
+            except RuntimeError:
+                return np.full(shape=self.bits, fill_value=-1)
 
             # TODO: in future - add other aggregation types
             if self.aggregation_type == "min_energy":
