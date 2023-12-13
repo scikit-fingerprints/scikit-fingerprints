@@ -1,16 +1,17 @@
+from time import time
+
+import lightgbm as lgb
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
-import lightgbm as lgb
-from time import time
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
     MHFP,
-    AtomPairsFingerprint,
+    AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
@@ -47,7 +48,7 @@ fp_names = [
 ]
 fprints = [
     MorganFingerprint,
-    AtomPairsFingerprint,
+    AtomPairFingerprint,
     TopologicalTorsionFingerprint,
     MACCSKeysFingerprint,
     ERGFingerprint,
