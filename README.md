@@ -42,7 +42,7 @@ The primary goal of this project is to develop a Python library that simplifies 
 You can install the library using pip:
 
 ```bash
-pip install skfp
+pip install scikit-fingerprints
 ```
 
 

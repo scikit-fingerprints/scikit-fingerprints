@@ -4,5 +4,5 @@ from skfp.fingerprints.erg import ERGFingerprint
 from skfp.fingerprints.maccs_keys import MACCSKeysFingerprint
 from skfp.fingerprints.map4 import MAP4Fingerprint
 from skfp.fingerprints.mhfp import MHFP
-from skfp.fingerprints.morgan import MorganFingerprint
+from skfp.fingerprints.ECFP import ECFP
 from skfp.fingerprints.topological_torsion import TopologicalTorsionFingerprint

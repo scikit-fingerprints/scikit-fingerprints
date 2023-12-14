@@ -25,7 +25,7 @@ from skfp import (
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    MorganFingerprint,
+    ECFP,
     TopologicalTorsionFingerprint,
 )
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
@@ -48,35 +48,35 @@ def rdkit_example_molecules():
     return [Chem.MolFromSmiles(x) for x in smiles_data]
 
 
-def test_morgan_bit_fingerprint(example_molecules, rdkit_example_molecules):
+def test_ECFP_bit_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(n_jobs=-1, sparse=False, count=False)
-    X_emf = morgan.transform(X)
+    ecfp = ECFP(n_jobs=-1, sparse=False, count=False)
+    X_emf = ecfp.transform(X)
     X_rdkit = np.array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
     if not np.all(X_emf == X_rdkit):
         raise AssertionError
 
 
 # WARNING - in case of failure it will try to overload memory and result in error
-def test_morgan_sparse_fingerprint(example_molecules, rdkit_example_molecules):
+def test_ECFP_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(n_jobs=-1, sparse=True, count=False)
-    X_emf = morgan.transform(X)
+    ecfp = ECFP(n_jobs=-1, sparse=True, count=False)
+    X_emf = ecfp.transform(X)
     X_rdkit = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
         raise AssertionError
 
 
-def test_morgan_count_fingerprint(example_molecules, rdkit_example_molecules):
+def test_ECFP_count_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(n_jobs=-1, sparse=False, count=True)
-    X_emf = morgan.transform(X)
+    ecfp = ECFP(n_jobs=-1, sparse=False, count=True)
+    X_emf = ecfp.transform(X)
     X_rdkit = np.array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
     )
@@ -84,14 +84,14 @@ def test_morgan_count_fingerprint(example_molecules, rdkit_example_molecules):
         raise AssertionError
 
 
-def test_morgan_sparse_count_fingerprint(
+def test_ECFP_sparse_count_fingerprint(
     example_molecules, rdkit_example_molecules
 ):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(n_jobs=-1, sparse=True, count=True)
-    X_emf = morgan.transform(X)
+    ecfp = ECFP(n_jobs=-1, sparse=True, count=True)
+    X_emf = ecfp.transform(X)
     X_rdkit = csr_array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
     )
@@ -457,7 +457,7 @@ def test_input_validation(example_molecules):
     X_test = X.copy()
 
     rdkit_generator = fpgens.GetMorganGenerator()
-    morgan = MorganFingerprint(n_jobs=-1)
+    ecfp = ECFP(n_jobs=-1)
     fp_function = rdkit_generator.GetFingerprint
 
     X_test = np.array([Chem.MolFromSmiles(x) for x in X_test])
@@ -465,8 +465,8 @@ def test_input_validation(example_molecules):
 
     # 1) Some of the molecules are still given as SMILES
     X = [Chem.MolFromSmiles(x) if i % 2 == 0 else x for i, x in enumerate(X)]
-    X_morgan = morgan.transform(X)
-    if not np.all(X_morgan == X_seq):
+    X_ecfp = ecfp.transform(X)
+    if not np.all(X_ecfp == X_seq):
         raise AssertionError
 
     # 2) There exists an element in the list, which is not a molecule
@@ -474,7 +474,7 @@ def test_input_validation(example_molecules):
     X_2[1] = 1
 
     with pytest.raises(ValueError) as exec_info:
-        X_morgan_2 = morgan.transform(X_2)
+        X_ecfp_2 = ecfp.transform(X_2)
 
     if not (
         str(exec_info.value)
