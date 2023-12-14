@@ -20,12 +20,12 @@ from scipy.sparse import csr_array, vstack
 
 from skfp import (
     E3FP,
+    ECFP,
     MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    ECFP,
     TopologicalTorsionFingerprint,
 )
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp

@@ -24,12 +24,12 @@ from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 from skfp import (
+    ECFP,
     MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    ECFP,
     TopologicalTorsionFingerprint,
 )
 from skfp.fingerprints.base import FingerprintTransformer

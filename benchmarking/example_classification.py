@@ -10,12 +10,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
+    ECFP,
     MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    ECFP,
     TopologicalTorsionFingerprint,
 )
 
