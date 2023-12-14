@@ -37,9 +37,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         self.atom_invariants_generator = atom_invariants_generator
 
     def _get_generator(self):
-        from rdkit.Chem.rdFingerprintGenerator import (
-            GetTopologicalTorsionGenerator,
-        )
+        from rdkit.Chem.rdFingerprintGenerator import GetTopologicalTorsionGenerator
 
         return GetTopologicalTorsionGenerator(
             includeChirality=self.include_chirality,

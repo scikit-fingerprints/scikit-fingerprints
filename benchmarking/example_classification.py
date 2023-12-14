@@ -10,12 +10,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
+    ECFP,
     MHFP,
     AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
 
@@ -38,7 +38,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 records = []
 
 fp_names = [
-    "Morgan",
+    "ECFP",
     "Atom Pairs",
     "Topological Torsion",
     "MACCS Keys",
@@ -47,7 +47,7 @@ fp_names = [
     "MHFP",
 ]
 fprints = [
-    MorganFingerprint,
+    ECFP,
     AtomPairFingerprint,
     TopologicalTorsionFingerprint,
     MACCSKeysFingerprint,

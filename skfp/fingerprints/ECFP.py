@@ -7,7 +7,7 @@ import scipy.sparse as spsparse
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class MorganFingerprint(FingerprintTransformer):
+class ECFP(FingerprintTransformer):
     def __init__(
         self,
         radius: int = 3,
