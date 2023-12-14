@@ -1,10 +1,14 @@
 [tool.poetry]
 name = "scikit-fingerprints"
-version = "1.0.0"
+version = "1.1.0"
 description = "Library for effective molecular fingerprints calculation"
-authors = ["Michal Szafarczyk <adammichal657@gmail.com>", "Piotr Ludynia",
-    "Przemyslaw Kukla <przemek.kukla0703@gmail.com>"]
-repository = "https://github.com/Arch4ngel21/emf"
+authors = [
+    "Jakub Adamczyk <jakub.adamczyk10@gmail.com>",
+    "Przemyslaw Kukla <przemek.kukla0703@gmail.com>",
+    "Piotr Ludynia",
+    "Michal Szafarczyk <adammichal657@gmail.com>", 
+]
+repository = "https://github.com/Arch4ngel21/scikit-fingerprints"
 license = "MIT"
 packages = [
     { include = "skfp" }
@@ -14,35 +18,21 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+
+datasketch = "*"
+e3fp = "*"
+joblib = "*"
+mhfp = "*"
 numpy = "^1.20.0"
 pandas = "*"
-scipy = "*"
-joblib = "*"
 rdkit = "*"
-e3fp = "*"
-ogb = "*"
-datasketch = "*"
-mhfp = "*"
+scikit-learn = "*"
+scipy = "*"
 tqdm = "*"
-lightgbm = "*"
-matplotlib = "*"
-scikit-learn = "*"  # No minimal version specified, will use the latest available
-
-
-[tool.poetry.dev-dependencies]
-pytest = "^7.3.1"
-torch = {version = "^2.0.1+cpu", source = "pytorch"}
-torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
-
-[[tool.poetry.source]]
-name = "pytorch"
-url = "https://download.pytorch.org/whl/cpu"
-priority = "explicit"
-
-
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "^6.1.0"
+flake8 = "*"
+pytest = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
