@@ -1,4 +1,4 @@
-# Scikit Fingerprints
+# scikit-fingerprints
 
 A Python library for efficient computation of molecular fingerprints
 
