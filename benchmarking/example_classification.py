@@ -11,12 +11,12 @@ from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
+    ECFP,
     MHFP,
-    AtomPairsFingerprint,
+    AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
 
@@ -46,7 +46,7 @@ X_valid, y_valid = X[valid_idx], y[valid_idx]
 records = []
 
 fp_names = [
-    "Morgan",
+    "ECFP",
     "Atom Pairs",
     "Topological Torsion",
     "MACCS Keys",
@@ -55,8 +55,8 @@ fp_names = [
     "MHFP",
 ]
 fprints = [
-    MorganFingerprint,
-    AtomPairsFingerprint,
+    ECFP,
+    AtomPairFingerprint,
     TopologicalTorsionFingerprint,
     MACCSKeysFingerprint,
     ERGFingerprint,
