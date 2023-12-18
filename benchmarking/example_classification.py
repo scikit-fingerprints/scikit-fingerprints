@@ -108,7 +108,9 @@ for fingerprint, fp_name in zip(fprints, fp_names):
         scores = []
         scores_valid = []
         for epoch in range(10):
-            clf = classifier(**clf_kwargs)
+            clf = classifier(
+                random_state=np.random.randint(0, 2**31), **clf_kwargs
+            )
             clf.fit(X_fp_train, y_train)
             scores.append(
                 roc_auc_score(y_test, clf.predict_proba(X_fp_test)[:, 1])

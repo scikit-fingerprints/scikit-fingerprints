@@ -6,5 +6,6 @@ __pycache__
 .coverage
 *.png
 *.svg
+*.pdf
 *.npy
 *.csv

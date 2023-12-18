@@ -279,6 +279,7 @@ def save_results(
     if save:
         plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".png")
         plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".svg")
+        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".pdf")
     else:
         plt.show()
     plt.close(fig)
