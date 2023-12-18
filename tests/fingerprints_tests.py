@@ -416,15 +416,19 @@ def test_e3fp_sparse(example_molecules):
         mol = PropertyMol(mol)
         mol.SetProp("_SMILES", smiles)
 
-        # getting a molecule and the fingerprint
-        mol, values = conf_gen.generate_conformers(mol)
-        fps = fprints_from_mol(mol, fprint_params=fprint_params)
+        try:
+            # getting a molecule and the fingerprint
+            mol, values = conf_gen.generate_conformers(mol)
+            fps = fprints_from_mol(mol, fprint_params=fprint_params)
 
-        # chose the fingerprint with the lowest energy
-        energies = values[2]
-        fp = fps[np.argmin(energies)].fold(1024)
+            # chose the fingerprint with the lowest energy
+            energies = values[2]
+            fp = fps[np.argmin(energies)].fold(1024)
 
-        X_seq.append(fp.to_vector())
+            X_seq.append(fp.to_vector())
+        except RuntimeError:
+            X_seq.append(np.full(shape=1024, fill_value=-1))
+
     X_seq = vstack(X_seq)
 
     assert np.all(X_emf.toarray() == X_seq.toarray())

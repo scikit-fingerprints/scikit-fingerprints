@@ -102,20 +102,20 @@ class E3FP(FingerprintTransformer):
                         "rdkit_invariants": self.rdkit_invariants,
                     },
                 )
+
+                # TODO: in future - add other aggregation types
+                if self.aggregation_type == "min_energy":
+                    energies = values[2]
+                    fp = fps[np.argmin(energies)]
+                else:
+                    fp = fps[0]
+
+                if self.is_folded:
+                    fp = fp.fold(self.fold_bits)
+
+                result.append(fp.to_vector())
             except RuntimeError:
-                return np.full(shape=self.bits, fill_value=-1)
-
-            # TODO: in future - add other aggregation types
-            if self.aggregation_type == "min_energy":
-                energies = values[2]
-                fp = fps[np.argmin(energies)]
-            else:
-                fp = fps[0]
-
-            if self.is_folded:
-                fp = fp.fold(self.fold_bits)
-
-            result.append(fp.to_vector())
+                result.append(np.full(shape=self.bits, fill_value=-1))
 
         if self.sparse:
             return spsparse.vstack(result)
