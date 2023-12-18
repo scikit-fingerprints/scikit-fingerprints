@@ -6,7 +6,6 @@
 - [General Project Vision](#general-project-vision)
 - [Library Description](#library-description)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Technologies Used](#technologies-used)
 - [Contributing](#contributing)
 - [License](#license)
@@ -57,6 +56,8 @@ Our project leverages the following technologies:
 - [Joblib](https://joblib.readthedocs.io): Used for parallel computing.
 
 - [Rdkit](https://www.rdkit.org/): Open-Source Cheminformatics Software.
+
+- [Poetry](https://python-poetry.org/): Tool for dependency management.
 
 ---
 

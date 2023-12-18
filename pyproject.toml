@@ -30,7 +30,6 @@ scikit-learn = "*"  # No minimal version specified, will use the latest availabl
 
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.3.1"
 torch = {version = "^2.0.1+cpu", source = "pytorch"}
 torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
 
@@ -43,6 +42,8 @@ priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.1.0"
+pytest = "^7.3.1"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
