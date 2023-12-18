@@ -1,11 +1,13 @@
+import os
+from time import time
+
+import lightgbm as lgb
+import numpy as np
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import train_test_split
-import lightgbm as lgb
-from time import time
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
@@ -19,20 +21,27 @@ from skfp import (
 )
 
 dataset_name = "ogbg-molhiv"
-GraphPropPredDataset(name=dataset_name, root="../dataset")
-dataset = pd.read_csv(
+dataset = GraphPropPredDataset(name=dataset_name, root="../dataset")
+split_idx = dataset.get_idx_split()
+train_idx = np.array(split_idx["train"])
+valid_idx = np.array(split_idx["valid"])
+test_idx = np.array(split_idx["test"])
+
+dataframe = pd.read_csv(
     f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
 )
 
-X = dataset["smiles"]
-y = dataset["HIV_active"]
+X = dataframe["smiles"]
+y = dataframe["HIV_active"]
+
+y.hist(column="count")
 
 n_molecules = X.shape[0]
 print("Number of molecules:", n_molecules)
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, shuffle=True
-)
+X_train, y_train = X[train_idx], y[train_idx]
+X_test, y_test = X[test_idx], y[test_idx]
+X_valid, y_valid = X[valid_idx], y[valid_idx]
 
 records = []
 
@@ -58,17 +67,16 @@ fprints = [
 clf_names = ["RF", "LogReg", "LGBM"]
 classifiers = [RandomForestClassifier, LogisticRegression, lgb.LGBMClassifier]
 classifier_kwargs = [
-    {"random_state": 42, "n_jobs": -1},
+    {"n_jobs": -1},
     {
-        "random_state": 42,
         "class_weight": "balanced",
-        "max_iter": 1000,
         "penalty": None,
         "n_jobs": -1,
     },
-    {"random_state": 42, "n_jobs": -1, "verbose": 0},
+    {"n_jobs": -1, "verbose": 0},
 ]
 
+np.random.seed(42)
 
 for fingerprint, fp_name in zip(fprints, fp_names):
     records.append({})
@@ -77,10 +85,12 @@ for fingerprint, fp_name in zip(fprints, fp_names):
     start = time()
     fp_transformer = fingerprint(n_jobs=-1)
     X_fp_train = fp_transformer.transform(X_train)
+    X_fp_valid = fp_transformer.transform(X_valid)
     X_fp_test = fp_transformer.transform(X_test)
 
     scaler = MinMaxScaler()
     X_fp_train = scaler.fit_transform(X_fp_train)
+    X_fp_valid = scaler.fit_transform(X_fp_valid)
     X_fp_test = scaler.transform(X_fp_test)
 
     end = time()
@@ -90,11 +100,30 @@ for fingerprint, fp_name in zip(fprints, fp_names):
     for classifier, clf_name, clf_kwargs in zip(
         classifiers, clf_names, classifier_kwargs
     ):
-        clf = classifier(**clf_kwargs)
-        clf.fit(X_fp_train, y_train)
-        score = roc_auc_score(y_test, clf.predict_proba(X_fp_test)[:, 1])
+        scores = []
+        scores_valid = []
+        for epoch in range(10):
+            clf = classifier(**clf_kwargs)
+            clf.fit(X_fp_train, y_train)
+            scores.append(
+                roc_auc_score(y_test, clf.predict_proba(X_fp_test)[:, 1])
+            )
+            scores_valid.append(
+                roc_auc_score(y_valid, clf.predict_proba(X_fp_valid)[:, 1])
+            )
+        score = np.average(scores)
+        std = np.std(scores)
+        score_valid = np.average(scores_valid)
+        std_valid = np.std(scores_valid)
+
         print(f" - - ROC AUC score for {clf_name} : {int(100*score)}%")
-        records[-1][clf_name] = score
+        records[-1][clf_name + "_mean"] = score
+        records[-1][clf_name + "_std"] = std
+        records[-1][clf_name + "_valid_mean"] = score_valid
+        records[-1][clf_name + "_valid_std"] = std_valid
+
 
 df = pd.DataFrame.from_records(records)
+if os.path.exists("classification_scores.csv"):
+    os.remove("classification_scores.csv")
 df.to_csv("classification_scores.csv")
