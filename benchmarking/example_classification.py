@@ -2,6 +2,7 @@ import os
 from time import time
 
 import lightgbm as lgb
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
@@ -34,7 +35,11 @@ dataframe = pd.read_csv(
 X = dataframe["smiles"]
 y = dataframe["HIV_active"]
 
-y.hist(column="count")
+plt.tight_layout()
+ax = y.value_counts().plot.bar()
+fig = ax.get_figure()
+fig.savefig("HIV_classes.svg")
+plt.close()
 
 n_molecules = X.shape[0]
 print("Number of molecules:", n_molecules)

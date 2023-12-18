@@ -259,7 +259,7 @@ def save_results(
     ax1.set_title(title)
 
     for i, y in zip(N_CORES, y_skfp):
-        ax1.plot(X, y, label=f"our time - {i} cores")
+        ax1.plot(X, y, label=f"our time - # cores: {i}")
 
     ax1.plot(X, y_sequential, label="sequential time")
 
@@ -278,6 +278,7 @@ def save_results(
 
     if save:
         plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".png")
+        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".svg")
     else:
         plt.show()
     plt.close(fig)
