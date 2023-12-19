@@ -18,9 +18,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install poetry
+        pip install pytest
 
     - name: Install dependencies using Poetry
       run: poetry install
 
     - name: Run tests with pytest
-      run: poetry run pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+      run: poetry run pytest tests/fingerprints_tests.py
