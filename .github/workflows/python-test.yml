@@ -25,3 +25,4 @@ jobs:
 
     - name: Run tests with pytest
       run: poetry run pytest tests/fingerprints_tests.py
+
