@@ -21,11 +21,13 @@ from skfp import (
     TopologicalTorsionFingerprint,
 )
 
-# dataset_names = ["ogbg-molhiv", "ogbg-molbace", "ogbg-bbbp",]
-# property_names = ["HIV_active","Class","p_np",]
-
-dataset_names = ["ogbg-molbace", "ogbg-molbbbp"]
+dataset_names = [
+    "ogbg-molhiv",
+    "ogbg-molbace",
+    "ogbg-bbbp",
+]
 property_names = [
+    "HIV_active",
     "Class",
     "p_np",
 ]
