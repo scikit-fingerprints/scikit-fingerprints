@@ -2,7 +2,6 @@ import os
 from time import time
 
 import lightgbm as lgb
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
