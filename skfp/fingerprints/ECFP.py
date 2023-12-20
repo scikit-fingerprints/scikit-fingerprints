@@ -17,7 +17,7 @@ class ECFP(FingerprintTransformer):
         include_ring_membership: bool = True,
         count_bounds: Optional[List] = None,
         fp_size: int = 2048,
-        n_jobs: int = 1,
+        n_jobs: int = None,
         sparse: bool = False,
         count: bool = False,
         verbose: int = 0,

@@ -11,7 +11,7 @@ class MACCSKeysFingerprint(FingerprintTransformer):
     def __init__(
         self,
         sparse: bool = False,
-        n_jobs: int = 1,
+        n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
         count: bool = False,  # unused

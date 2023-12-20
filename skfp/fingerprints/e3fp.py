@@ -19,7 +19,7 @@ from skfp.fingerprints.base import FingerprintTransformer
 class E3FP(FingerprintTransformer):
     def __init__(
         self,
-        bits: int = 4090,
+        bits: int = 4096,
         radius_multiplier: float = 1.5,
         rdkit_invariants: bool = True,
         first: int = 1,
@@ -32,7 +32,7 @@ class E3FP(FingerprintTransformer):
         is_folded: bool = False,
         fold_bits: int = 1024,
         sparse: bool = False,
-        n_jobs: int = 1,
+        n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
         aggregation_type: str = "min_energy",
@@ -76,9 +76,7 @@ class E3FP(FingerprintTransformer):
             seed=self.random_state,
         )
 
-        result = []
-
-        for x in X:
+        def e3fp_function(x):
             if isinstance(x, Mol):
                 smiles = MolToSmiles(x)
                 mol = x
@@ -89,30 +87,37 @@ class E3FP(FingerprintTransformer):
             mol.SetProp("_Name", smiles)
             mol = PropertyMol(mol)
             mol.SetProp("_SMILES", smiles)
-
             # Generating conformers. Only few first conformers with lowest energy are used - specified by self.first
-            mol, values = conf_gen.generate_conformers(mol)
-            fps = fprints_from_mol(
-                mol,
-                fprint_params={
-                    "bits": self.bits,
-                    "radius_multiplier": self.radius_multiplier,
-                    "rdkit_invariants": self.rdkit_invariants,
-                },
-            )
+            # TODO: it appears, that for some molecules conformers are not properly generated - returns an empty list
+            #  and throws RuntimeError
+            try:
+                mol, values = conf_gen.generate_conformers(mol)
+                fps = fprints_from_mol(
+                    mol,
+                    fprint_params={
+                        "bits": self.bits,
+                        "radius_multiplier": self.radius_multiplier,
+                        "rdkit_invariants": self.rdkit_invariants,
+                    },
+                )
 
-            # TODO: in future - add other aggregation types
-            if self.aggregation_type == "min_energy":
-                energies = values[2]
-                fp = fps[np.argmin(energies)]
-            else:
-                fp = fps[0]
+                # TODO: in future - add other aggregation types
+                if self.aggregation_type == "min_energy":
+                    energies = values[2]
+                    fp = fps[np.argmin(energies)]
+                else:
+                    fp = fps[0]
 
-            if self.is_folded:
-                fp = fp.fold(self.fold_bits)
+                if self.is_folded:
+                    fp = fp.fold(self.fold_bits)
 
-            result.append(fp.to_vector())
+                return fp.to_vector()
+            except RuntimeError:
+                return spsparse.csr_array(
+                    np.full(shape=self.bits, fill_value=-1)
+                )
 
+        result = [e3fp_function(x) for x in X]
         if self.sparse:
             return spsparse.vstack(result)
         else:
