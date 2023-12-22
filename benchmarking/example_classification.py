@@ -23,7 +23,7 @@ from skfp import (
 dataset_names = [
     "ogbg-molhiv",
     "ogbg-molbace",
-    "ogbg-bbbp",
+    "ogbg-molbbbp",
 ]
 property_names = [
     "HIV_active",
@@ -82,13 +82,13 @@ for dataset_name, property_name in zip(dataset_names, property_names):
         lgb.LGBMClassifier,
     ]
     classifier_kwargs = [
-        {"n_jobs": -1},
+        {"n_jobs": -1, "class_weight": "balanced"},
         {
             "class_weight": "balanced",
             "penalty": None,
             "n_jobs": -1,
         },
-        {"n_jobs": -1, "verbose": 0},
+        {"n_jobs": -1, "class_weight": "balanced", "verbose": 0},
     ]
 
     np.random.seed(42)
@@ -120,9 +120,7 @@ for dataset_name, property_name in zip(dataset_names, property_names):
             scores = []
             scores_valid = []
             for epoch in range(10):
-                clf = classifier(
-                    random_state=np.random.randint(0, 2**31), **clf_kwargs
-                )
+                clf = classifier(random_state=epoch, **clf_kwargs)
                 clf.fit(X_fp_train, y_train)
                 scores.append(
                     roc_auc_score(y_test, clf.predict_proba(X_fp_test)[:, 1])

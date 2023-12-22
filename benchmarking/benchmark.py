@@ -189,7 +189,7 @@ def get_all_sequential_times(
 def get_times_e3fp(X: pd.DataFrame):
     confgen_params = {
         "first": 1,
-        "num_conf": NUM_CONF_DEF,
+        "num_conf": 3,
         "pool_multiplier": POOL_MULTIPLIER_DEF,
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
@@ -392,7 +392,7 @@ if __name__ == "__main__":
     )
 
     # ERG FINGERPRINT
-    print("ERG")
+    print("ErG")
     ERG_skfp_times = get_all_times_skfp(X, ERGFingerprint, False)
     ERG_sequential_times = get_all_sequential_times(
         X, GetErGFingerprint, False
@@ -401,7 +401,7 @@ if __name__ == "__main__":
         ERG_skfp_times,
         ERG_sequential_times,
         n_molecules,
-        "ERG fingerprint",
+        "ErG fingerprint",
         False,
     )
 

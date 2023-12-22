@@ -6,7 +6,6 @@ import scipy.sparse as spsparse
 from e3fp.conformer.generate import (
     FORCEFIELD_DEF,
     MAX_ENERGY_DIFF_DEF,
-    NUM_CONF_DEF,
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
@@ -23,7 +22,7 @@ class E3FP(FingerprintTransformer):
         radius_multiplier: float = 1.5,
         rdkit_invariants: bool = True,
         first: int = 1,
-        num_conf: int = NUM_CONF_DEF,
+        num_conf: int = 3,
         pool_multiplier: float = POOL_MULTIPLIER_DEF,
         rmsd_cutoff: float = RMSD_CUTOFF_DEF,
         max_energy_diff: float = MAX_ENERGY_DIFF_DEF,

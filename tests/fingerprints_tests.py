@@ -5,7 +5,6 @@ import rdkit.Chem.rdFingerprintGenerator as fpgens
 from e3fp.conformer.generate import (
     FORCEFIELD_DEF,
     MAX_ENERGY_DIFF_DEF,
-    NUM_CONF_DEF,
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
@@ -363,7 +362,7 @@ def test_e3fp(example_molecules):
 
     confgen_params = {
         "first": 1,
-        "num_conf": NUM_CONF_DEF,
+        "num_conf": 3,
         "pool_multiplier": POOL_MULTIPLIER_DEF,
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
@@ -421,7 +420,7 @@ def test_e3fp_sparse(example_molecules):
 
     confgen_params = {
         "first": 1,
-        "num_conf": NUM_CONF_DEF,
+        "num_conf": 3,
         "pool_multiplier": POOL_MULTIPLIER_DEF,
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
