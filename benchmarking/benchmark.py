@@ -32,6 +32,7 @@ from skfp import (
     MAP4Fingerprint,
     MorganFingerprint,
     TopologicalTorsionFingerprint,
+    RDKFingerprint,
 )
 from skfp.helpers.map4_mhfp_helpers import (
     get_map4_fingerprint,
@@ -439,6 +440,19 @@ if __name__ == "__main__":
     #     "E3FP fingerprint",
     #     False,
     # )
+
+    # RDK FINGERPRINT
+    print("RDK Fingerprint")
+    rdk_skfp_times = get_all_times_skfp(X, RDKFingerprint)
+    generator = fpgens.GetRDKitFPGenerator()
+    rdk_sequential_times = get_all_generator_times_rdkit(X, generator)
+    save_all_results(
+        rdk_skfp_times,
+        rdk_sequential_times,
+        n_molecules,
+        "RDK Fingerprint",
+        True,
+    )
 
     full_time_end = time()
     print("Time of execution: ", full_time_end - full_time_start, "s")
