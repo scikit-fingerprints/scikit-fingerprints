@@ -27,6 +27,7 @@ from skfp import (
     MAP4Fingerprint,
     MorganFingerprint,
     TopologicalTorsionFingerprint,
+    RDKFingerprint,
 )
 
 from skfp.helpers.map4_mhfp_helpers import (
@@ -432,6 +433,54 @@ def test_e3fp_sparse(example_molecules):
     X_seq = vstack(X_seq)
 
     assert np.all(X_emf.toarray() == X_seq.toarray())
+
+
+def test_rdk_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_gen = fpgens.GetRDKitFPGenerator()
+    rdk = RDKFingerprint(random_state=0, n_jobs=-1, sparse=False, count=False)
+    X_emf = rdk.transform(X)
+    X_rdkit = np.array(
+        [fp_gen.GetFingerprint(x).ToList() for x in X_for_rdkit]
+    )
+    assert np.all(X_emf == X_rdkit)
+
+
+def test_rdk_count_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_gen = fpgens.GetRDKitFPGenerator()
+    rdk = RDKFingerprint(random_state=0, n_jobs=-1, sparse=False, count=True)
+    X_emf = rdk.transform(X)
+    X_rdkit = np.array(
+        [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
+    )
+    assert np.all(X_emf == X_rdkit)
+
+
+def test_rdk_sparse_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_gen = fpgens.GetRDKitFPGenerator()
+    rdk = RDKFingerprint(random_state=0, n_jobs=-1, sparse=True, count=False)
+    X_emf = rdk.transform(X)
+    X_rdkit = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
+    assert np.all(X_emf.toarray() == X_rdkit.toarray())
+
+
+def test_rdk_sparse_count_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_gen = fpgens.GetRDKitFPGenerator()
+    rdk = RDKFingerprint(random_state=0, n_jobs=-1, sparse=True, count=True)
+    X_emf = rdk.transform(X)
+    X_rdkit = csr_array(
+        [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
+    )
+    assert np.all(X_emf.toarray() == X_rdkit.toarray())
 
 
 def test_input_validation(example_molecules):
