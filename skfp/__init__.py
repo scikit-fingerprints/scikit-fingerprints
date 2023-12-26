@@ -6,4 +6,4 @@ from skfp.fingerprints.erg import ERGFingerprint
 from skfp.fingerprints.map4 import MAP4Fingerprint
 from skfp.fingerprints.mhfp import MHFP
 from skfp.fingerprints.e3fp import E3FP
-from skfp.fingerprints.rdk import RDKFingerprint
+from skfp.fingerprints.rdk import RDKitFingerprint
