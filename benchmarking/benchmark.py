@@ -31,7 +31,7 @@ from skfp import (
     MACCSKeysFingerprint,
     MAP4Fingerprint,
     TopologicalTorsionFingerprint,
-    RDKFingerprint,
+    RDKitFingerprint,
 )
 from skfp.fingerprints.base import FingerprintTransformer
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
@@ -440,7 +440,7 @@ if __name__ == "__main__":
 
     # RDK FINGERPRINT
     print("RDK Fingerprint")
-    rdk_skfp_times = get_all_times_skfp(X, RDKFingerprint)
+    rdk_skfp_times = get_all_times_skfp(X, RDKitFingerprint)
     generator = fpgens.GetRDKitFPGenerator()
     rdk_sequential_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
