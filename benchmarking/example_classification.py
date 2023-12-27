@@ -1,20 +1,21 @@
+from time import time
+
+import lightgbm as lgb
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
-import lightgbm as lgb
-from time import time
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
+    ECFP,
     MHFP,
-    AtomPairsFingerprint,
+    AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    MorganFingerprint,
     TopologicalTorsionFingerprint,
 )
 
@@ -37,7 +38,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 records = []
 
 fp_names = [
-    "Morgan",
+    "ECFP",
     "Atom Pairs",
     "Topological Torsion",
     "MACCS Keys",
@@ -46,8 +47,8 @@ fp_names = [
     "MHFP",
 ]
 fprints = [
-    MorganFingerprint,
-    AtomPairsFingerprint,
+    ECFP,
+    AtomPairFingerprint,
     TopologicalTorsionFingerprint,
     MACCSKeysFingerprint,
     ERGFingerprint,

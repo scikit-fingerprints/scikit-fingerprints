@@ -21,21 +21,30 @@ We encourage you to submit pull requests (PRs) to improve our project. To do so,
    ```bash
    git clone https://github.com/Arch4ngel21/emf.git
 
-3. Create a new branch for your feature or bug fix:
+3. If you don't have it, install poetry:
+   ```bash
+   pip install poetry
+
+4. Install dependencies in the main directory of the repository:
+   ```bash
+   poetry install
+
+5. Create a new branch for your feature or bug fix:
 
     ```bash
     git checkout -b my-feature
-4. Make your changes and commit them with clear and concise commit messages.
+   
+6. Make your changes and commit them with clear and concise commit messages.
 
-5. Push your changes to your forked repository:
+7. Push your changes to your forked repository:
 
     ```bash
     git push origin my-feature
-6. Open a pull request on our GitHub repository and provide a detailed description of your changes.
+8. Open a pull request on our GitHub repository and provide a detailed description of your changes.
 
-7. Ensure that your PR follows our coding style and conventions.
+9. Ensure that your PR follows our coding style and conventions.
 
-8. Participate in the review process by addressing any feedback or comments on your PR.
+10. Participate in the review process by addressing any feedback or comments on your PR.
 
 ### Development Setup
 To set up a development environment for Effective Molecule Fingerprints library, follow the installation instructions in the README.

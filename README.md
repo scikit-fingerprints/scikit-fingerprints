@@ -1,4 +1,6 @@
-# Effective Molecule Fingerprints library
+# scikit-fingerprints
+
+A Python library for efficient computation of molecular fingerprints
 
 
 ## Table of Contents
@@ -17,50 +19,32 @@
 
 Molecular fingerprints are crucial in various scientific fields, including drug discovery, materials science, and chemical analysis. However, existing Python libraries for computing molecular fingerprints often lack performance, user-friendliness, and support for modern programming standards. This project aims to address these shortcomings by creating an efficient and accessible Python library for molecular fingerprint computation.
 
-## General Project Vision
- 
-The primary goal of this project is to develop a Python library that simplifies the computation of widely-used molecular fingerprints, such as Morgan's fingerprint, MACCS fingerprint, and others. This library will have the following key features:
-
-- **User-Friendly Interface:** The library will provide an intuitive interface, making it easy to integrate into machine learning workflows.
-
-- **Performance Optimization:** We will implement molecular fingerprint computation algorithms using concurrent programming techniques to maximize performance. Large datasets of molecules will be processed in parallel for improved efficiency.
-
-- **Compatibility:** The library's interface will be inspired by popular data science libraries like Scikit-Learn, ensuring compatibility and familiarity for users familiar with these tools.
-
-- **Extensibility:** Users will be able to customize and extend the library to suit their specific needs.
-
-## Library Description
-
-- The library will offer various functions that accept molecule descriptors (e.g., SMILES) and fingerprint parameters, returning the specified fingerprints.
-- It will be open-source and available for installation via pip.
-- Automated testing will be implemented to support continuous development and integration.
-- The library will be designed for ease of use, minimizing the need for extensive training.
-- Compatibility with the standard Python ML stack, based on Scikit-Learn interfaces, will be a top priority.
-
 ## Installation
 
 You can install the library using pip:
 
 ```bash
-pip install skfp
+pip install scikit-fingerprints
 ```
 
+## General Project Vision
+ 
+The primary goal of this project was to develop a Python library that simplifies the computation of widely-used molecular fingerprints, such as Morgan's fingerprint, MACCS fingerprint, and others. This library has the following key features:
 
-## Technologies Used
+- **User-Friendly Interface:** The library was designed to provide an intuitive interface, making it easy to integrate into machine learning workflows.
 
-Our project leverages the following technologies:
+- **Performance Optimization:** We implemented molecular fingerprint computation algorithms using concurrent programming techniques to maximize performance. Large datasets of molecules are processed in parallel for improved efficiency.
 
-- [Scikit-learn](https://scikit-learn.org): A Python library for machine learning and data analysis.
+- **Compatibility:** The library's interface was inspired by popular data science libraries like Scikit-Learn, ensuring compatibility and familiarity for users familiar with these tools.
 
-- [NumPy](https://numpy.org): A library for numerical and scientific computing.
+- **Extensibility:** Users should be able to customize and extend the library to suit their specific needs.
 
-- [Joblib](https://joblib.readthedocs.io): Used for parallel computing.
+## Library Description
 
-- [Rdkit](https://www.rdkit.org/): Open-Source Cheminformatics Software.
-
----
-
-By contributing to this project, you can help advance the fields of chemistry and cheminformatics by providing scientists with a powerful tool for molecular structure analysis. We welcome your collaboration and feedback.
+- The library offers various functions that accept molecule descriptors (e.g., SMILES) and fingerprint parameters, returning the specified fingerprints.
+- It's open-source and available for installation via pip.
+- The library has been designed for ease of use, minimizing the need for extensive training.
+- Compatibility with the standard Python ML stack, based on Scikit-Learn interfaces, has been a top priority.
 
 ## Contributing
 

@@ -23,21 +23,18 @@ from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp import (
+    ECFP,
     MHFP,
-    AtomPairsFingerprint,
+    AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    MorganFingerprint,
     TopologicalTorsionFingerprint,
     RDKitFingerprint,
 )
-from skfp.helpers.map4_mhfp_helpers import (
-    get_map4_fingerprint,
-    get_mhfp,
-)
+from skfp.fingerprints.base import FingerprintTransformer
+from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
 
 dataset_name = "ogbg-molhiv"
 
@@ -337,22 +334,22 @@ if __name__ == "__main__":
 
     print(n_molecules)
 
-    # MORGAN FINGERPRINT
-    print("Morgan")
-    morgan_skfp_times = get_all_times_skfp(X, MorganFingerprint)
+    # ECFP
+    print("ECFP")
+    ECFP_skfp_times = get_all_times_skfp(X, ECFP)
     generator = fpgens.GetMorganGenerator()
-    morgan_sequential_times = get_all_generator_times_rdkit(X, generator)
+    ECFP_sequential_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
-        morgan_skfp_times,
-        morgan_sequential_times,
+        ECFP_skfp_times,
+        ECFP_sequential_times,
         n_molecules,
-        "Morgan Fingerprint",
+        "ECFP",
         True,
     )
 
     # ATOM PAIR FINGERPRINT
     print("Atom Pairs")
-    atom_pairs_skfp_times = get_all_times_skfp(X, AtomPairsFingerprint)
+    atom_pairs_skfp_times = get_all_times_skfp(X, AtomPairFingerprint)
     generator = fpgens.GetAtomPairGenerator()
     atom_pairs_sequential_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
