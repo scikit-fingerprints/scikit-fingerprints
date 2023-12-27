@@ -31,6 +31,7 @@ from skfp import (
     MACCSKeysFingerprint,
     MAP4Fingerprint,
     TopologicalTorsionFingerprint,
+    RDKFingerprint,
 )
 from skfp.fingerprints.base import FingerprintTransformer
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
@@ -222,15 +223,19 @@ def get_times_e3fp(X: pd.DataFrame):
                 mol = PropertyMol(mol)
                 mol.SetProp("_SMILES", smiles)
 
-                # getting a molecule and the fingerprint
-                mol, values = conf_gen.generate_conformers(mol)
-                fps = fprints_from_mol(mol, fprint_params=fprint_params)
+                try:
+                    # getting a molecule and the fingerprint
+                    mol, values = conf_gen.generate_conformers(mol)
+                    fps = fprints_from_mol(mol, fprint_params=fprint_params)
 
-                # chose the fingerprint with the lowest energy
-                energies = values[2]
-                fp = fps[np.argmin(energies)].fold(1024)
+                    # chose the fingerprint with the lowest energy
+                    energies = values[2]
+                    fp = fps[np.argmin(energies)].fold(1024)
 
-                X_seq.append(fp.to_vector())
+                    X_seq.append(fp.to_vector())
+                except RuntimeError:
+                    X_seq.append(np.full(shape=1024, fill_value=-1))
+
             X_seq = np.array([fp.toarray().squeeze() for fp in X_seq])
             end = time()
             times[i] = end - start
@@ -432,6 +437,19 @@ if __name__ == "__main__":
     #     "E3FP fingerprint",
     #     False,
     # )
+
+    # RDK FINGERPRINT
+    print("RDK Fingerprint")
+    rdk_skfp_times = get_all_times_skfp(X, RDKFingerprint)
+    generator = fpgens.GetRDKitFPGenerator()
+    rdk_sequential_times = get_all_generator_times_rdkit(X, generator)
+    save_all_results(
+        rdk_skfp_times,
+        rdk_sequential_times,
+        n_molecules,
+        "RDK Fingerprint",
+        True,
+    )
 
     full_time_end = time()
     print("Time of execution: ", full_time_end - full_time_start, "s")
