@@ -7,14 +7,14 @@ import scipy.sparse as spsparse
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class AtomPairsFingerprint(FingerprintTransformer):
+class ECFP(FingerprintTransformer):
     def __init__(
         self,
-        min_distance: int = 1,
-        max_distance: int = 30,
+        radius: int = 3,
         include_chirality: bool = False,
-        use_2D: bool = True,
-        count_simulation: bool = True,
+        use_bond_types: bool = True,
+        only_nonzero_invariants: bool = False,
+        include_ring_membership: bool = True,
         count_bounds: Optional[List] = None,
         fp_size: int = 2048,
         n_jobs: int = 1,
@@ -30,23 +30,25 @@ class AtomPairsFingerprint(FingerprintTransformer):
             verbose=verbose,
             random_state=random_state,
         )
-        self.min_distance = min_distance
-        self.max_distance = max_distance
+        self.radius = radius
         self.include_chirality = include_chirality
-        self.use_2D = use_2D
-        self.count_simulation = count_simulation
+        self.radius = radius
+        self.include_chirality = include_chirality
+        self.use_bond_types = use_bond_types
+        self.only_nonzero_invariants = only_nonzero_invariants
+        self.include_ring_membership = include_ring_membership
         self.count_bounds = count_bounds
         self.fp_size = fp_size
 
     def _get_generator(self):
-        from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
+        from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
 
-        return GetAtomPairGenerator(
-            minDistance=self.min_distance,
-            maxDistance=self.max_distance,
+        return GetMorganGenerator(
+            radius=self.radius,
             includeChirality=self.include_chirality,
-            use2D=self.use_2D,
-            countSimulation=self.count_simulation,
+            useBondTypes=self.use_bond_types,
+            onlyNonzeroInvariants=self.only_nonzero_invariants,
+            includeRingMembership=self.include_ring_membership,
             countBounds=self.count_bounds,
             fpSize=self.fp_size,
         )
