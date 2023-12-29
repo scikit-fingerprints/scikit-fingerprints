@@ -6,7 +6,6 @@ import scipy.sparse as spsparse
 from e3fp.conformer.generate import (
     FORCEFIELD_DEF,
     MAX_ENERGY_DIFF_DEF,
-    NUM_CONF_DEF,
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
@@ -23,7 +22,7 @@ class E3FP(FingerprintTransformer):
         radius_multiplier: float = 1.5,
         rdkit_invariants: bool = True,
         first: int = 1,
-        num_conf: int = NUM_CONF_DEF,
+        num_conf: int = 3,
         pool_multiplier: float = POOL_MULTIPLIER_DEF,
         rmsd_cutoff: float = RMSD_CUTOFF_DEF,
         max_energy_diff: float = MAX_ENERGY_DIFF_DEF,
@@ -32,7 +31,7 @@ class E3FP(FingerprintTransformer):
         is_folded: bool = False,
         fold_bits: int = 1024,
         sparse: bool = False,
-        n_jobs: int = 1,
+        n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
         aggregation_type: str = "min_energy",
@@ -76,9 +75,7 @@ class E3FP(FingerprintTransformer):
             seed=self.random_state,
         )
 
-        result = []
-
-        for x in X:
+        def e3fp_function(x):
             if isinstance(x, Mol):
                 smiles = MolToSmiles(x)
                 mol = x
@@ -89,7 +86,6 @@ class E3FP(FingerprintTransformer):
             mol.SetProp("_Name", smiles)
             mol = PropertyMol(mol)
             mol.SetProp("_SMILES", smiles)
-
             # Generating conformers. Only few first conformers with lowest energy are used - specified by self.first
             # TODO: it appears, that for some molecules conformers are not properly generated - returns an empty list
             #  and throws RuntimeError
@@ -114,10 +110,13 @@ class E3FP(FingerprintTransformer):
                 if self.is_folded:
                     fp = fp.fold(self.fold_bits)
 
-                result.append(fp.to_vector())
+                return fp.to_vector()
             except RuntimeError:
-                result.append(np.full(shape=self.bits, fill_value=-1))
+                return spsparse.csr_array(
+                    np.full(shape=self.bits, fill_value=-1)
+                )
 
+        result = [e3fp_function(x) for x in X]
         if self.sparse:
             return spsparse.vstack(result)
         else:

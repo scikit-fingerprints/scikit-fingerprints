@@ -30,8 +30,8 @@ from skfp import (
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    TopologicalTorsionFingerprint,
     RDKitFingerprint,
+    TopologicalTorsionFingerprint,
 )
 from skfp.fingerprints.base import FingerprintTransformer
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
@@ -190,7 +190,7 @@ def get_all_sequential_times(
 def get_times_e3fp(X: pd.DataFrame):
     confgen_params = {
         "first": 1,
-        "num_conf": NUM_CONF_DEF,
+        "num_conf": 3,
         "pool_multiplier": POOL_MULTIPLIER_DEF,
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
@@ -264,7 +264,7 @@ def save_results(
     ax1.set_title(title)
 
     for i, y in zip(N_CORES, y_skfp):
-        ax1.plot(X, y, label=f"our time - {i} cores")
+        ax1.plot(X, y, label=f"our time - # cores: {i}")
 
     ax1.plot(X, y_sequential, label="sequential time")
 
@@ -283,6 +283,8 @@ def save_results(
 
     if save:
         plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".png")
+        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".svg")
+        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".pdf")
     else:
         plt.show()
     plt.close(fig)
@@ -392,7 +394,7 @@ if __name__ == "__main__":
     )
 
     # ERG FINGERPRINT
-    print("ERG")
+    print("ErG")
     ERG_skfp_times = get_all_times_skfp(X, ERGFingerprint, False)
     ERG_sequential_times = get_all_sequential_times(
         X, GetErGFingerprint, False
@@ -401,7 +403,7 @@ if __name__ == "__main__":
         ERG_skfp_times,
         ERG_sequential_times,
         n_molecules,
-        "ERG fingerprint",
+        "ErG fingerprint",
         False,
     )
 

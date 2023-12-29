@@ -5,7 +5,6 @@ import rdkit.Chem.rdFingerprintGenerator as fpgens
 from e3fp.conformer.generate import (
     FORCEFIELD_DEF,
     MAX_ENERGY_DIFF_DEF,
-    NUM_CONF_DEF,
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
@@ -26,8 +25,8 @@ from skfp import (
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
-    TopologicalTorsionFingerprint,
     RDKitFingerprint,
+    TopologicalTorsionFingerprint,
 )
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
 
@@ -345,7 +344,8 @@ def test_mhfp_sparse_count_fingerprint(
     mhfp = MHFP(random_state=0, n_jobs=-1, sparse=True, count=True)
     X_emf = mhfp.transform(X)
     X_rdkit = csr_array([get_mhfp(x, count=True) for x in X_for_rdkit])
-    assert np.all(X_emf.toarray() == X_rdkit.toarray())
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
 
 
 def test_e3fp(example_molecules):
@@ -363,7 +363,7 @@ def test_e3fp(example_molecules):
 
     confgen_params = {
         "first": 1,
-        "num_conf": NUM_CONF_DEF,
+        "num_conf": 3,
         "pool_multiplier": POOL_MULTIPLIER_DEF,
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
@@ -376,26 +376,34 @@ def test_e3fp(example_molecules):
         "radius_multiplier": 1.5,
         "rdkit_invariants": True,
     }
-    X_seq = []
+
     conf_gen = ConformerGenerator(**confgen_params)
-    for smiles in X:
+
+    def e3fp_func(smiles):
         # creating molecule object
         mol = Chem.MolFromSmiles(smiles)
         mol.SetProp("_Name", smiles)
         mol = PropertyMol(mol)
         mol.SetProp("_SMILES", smiles)
 
-        # getting a molecule and the fingerprint
-        mol, values = conf_gen.generate_conformers(mol)
-        fps = fprints_from_mol(mol, fprint_params=fprint_params)
+        try:
+            # getting a molecule and the fingerprint
+            mol, values = conf_gen.generate_conformers(mol)
+            fps = fprints_from_mol(mol, fprint_params=fprint_params)
 
-        # chose the fingerprint with the lowest energy
-        energies = values[2]
-        fp = fps[np.argmin(energies)].fold(1024)
+            # chose the fingerprint with the lowest energy
+            energies = values[2]
+            fp = fps[np.argmin(energies)].fold(1024)
 
-        X_seq.append(fp.to_vector())
+            return fp.to_vector()
+        except RuntimeError:
+            return np.full(shape=1024, fill_value=-1)
+
+    X_seq = [e3fp_func(smiles) for smiles in X]
+
     X_seq = np.array([fp.toarray().squeeze() for fp in X_seq])
-    assert np.all(X_emf == X_seq)
+    if not np.all(X_emf == X_seq):
+        raise AssertionError
 
 
 def test_e3fp_sparse(example_molecules):
@@ -413,7 +421,7 @@ def test_e3fp_sparse(example_molecules):
 
     confgen_params = {
         "first": 1,
-        "num_conf": NUM_CONF_DEF,
+        "num_conf": 3,
         "pool_multiplier": POOL_MULTIPLIER_DEF,
         "rmsd_cutoff": RMSD_CUTOFF_DEF,
         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
@@ -426,9 +434,10 @@ def test_e3fp_sparse(example_molecules):
         "radius_multiplier": 1.5,
         "rdkit_invariants": True,
     }
-    X_seq = []
+
     conf_gen = ConformerGenerator(**confgen_params)
-    for smiles in X:
+
+    def e3fp_func(smiles):
         # creating molecule object
         mol = Chem.MolFromSmiles(smiles)
         mol.SetProp("_Name", smiles)
@@ -444,13 +453,16 @@ def test_e3fp_sparse(example_molecules):
             energies = values[2]
             fp = fps[np.argmin(energies)].fold(1024)
 
-            X_seq.append(fp.to_vector())
+            return fp.to_vector()
         except RuntimeError:
-            X_seq.append(np.full(shape=1024, fill_value=-1))
+            return np.full(shape=1024, fill_value=-1)
+
+    X_seq = [e3fp_func(smiles) for smiles in X]
 
     X_seq = vstack(X_seq)
 
-    assert np.all(X_emf.toarray() == X_seq.toarray())
+    if not np.all(X_emf.toarray() == X_seq.toarray()):
+        raise AssertionError
 
 
 def test_rdk_fingerprint(example_molecules, rdkit_example_molecules):
@@ -461,10 +473,9 @@ def test_rdk_fingerprint(example_molecules, rdkit_example_molecules):
         random_state=0, n_jobs=-1, sparse=False, count=False
     )
     X_emf = rdk.transform(X)
-    X_rdkit = np.array(
-        [fp_gen.GetFingerprint(x).ToList() for x in X_for_rdkit]
-    )
-    assert np.all(X_emf == X_rdkit)
+    X_seq = np.array([fp_gen.GetFingerprint(x).ToList() for x in X_for_rdkit])
+    if not np.all(X_emf == X_seq):
+        raise AssertionError
 
 
 def test_rdk_count_fingerprint(example_molecules, rdkit_example_molecules):
@@ -473,10 +484,11 @@ def test_rdk_count_fingerprint(example_molecules, rdkit_example_molecules):
     fp_gen = fpgens.GetRDKitFPGenerator()
     rdk = RDKitFingerprint(random_state=0, n_jobs=-1, sparse=False, count=True)
     X_emf = rdk.transform(X)
-    X_rdkit = np.array(
+    X_seq = np.array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
     )
-    assert np.all(X_emf == X_rdkit)
+    if not np.all(X_emf == X_seq):
+        raise AssertionError
 
 
 def test_rdk_sparse_fingerprint(example_molecules, rdkit_example_molecules):
@@ -485,8 +497,9 @@ def test_rdk_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     fp_gen = fpgens.GetRDKitFPGenerator()
     rdk = RDKitFingerprint(random_state=0, n_jobs=-1, sparse=True, count=False)
     X_emf = rdk.transform(X)
-    X_rdkit = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
-    assert np.all(X_emf.toarray() == X_rdkit.toarray())
+    X_seq = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
+    if not np.all(X_emf.toarray() == X_seq.toarray()):
+        raise AssertionError
 
 
 def test_rdk_sparse_count_fingerprint(
@@ -497,10 +510,11 @@ def test_rdk_sparse_count_fingerprint(
     fp_gen = fpgens.GetRDKitFPGenerator()
     rdk = RDKitFingerprint(random_state=0, n_jobs=-1, sparse=True, count=True)
     X_emf = rdk.transform(X)
-    X_rdkit = csr_array(
+    X_seq = csr_array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
     )
-    assert np.all(X_emf.toarray() == X_rdkit.toarray())
+    if not np.all(X_emf.toarray() == X_seq.toarray()):
+        raise AssertionError
 
 
 def test_input_validation(example_molecules):

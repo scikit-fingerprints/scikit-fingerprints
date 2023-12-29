@@ -5,5 +5,7 @@ dataset
 __pycache__
 .coverage
 *.png
+*.svg
+*.pdf
 *.npy
 *.csv
