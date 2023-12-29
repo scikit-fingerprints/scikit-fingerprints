@@ -30,6 +30,7 @@ from skfp import (
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
+    RDKitFingerprint,
     TopologicalTorsionFingerprint,
 )
 from skfp.fingerprints.base import FingerprintTransformer
@@ -234,6 +235,7 @@ def get_times_e3fp(X: pd.DataFrame):
                     X_seq.append(fp.to_vector())
                 except RuntimeError:
                     X_seq.append(np.full(shape=1024, fill_value=-1))
+
             X_seq = np.array([fp.toarray().squeeze() for fp in X_seq])
             end = time()
             times[i] = end - start
@@ -437,6 +439,19 @@ if __name__ == "__main__":
     #     "E3FP fingerprint",
     #     False,
     # )
+
+    # RDK FINGERPRINT
+    print("RDK Fingerprint")
+    rdk_skfp_times = get_all_times_skfp(X, RDKitFingerprint)
+    generator = fpgens.GetRDKitFPGenerator()
+    rdk_sequential_times = get_all_generator_times_rdkit(X, generator)
+    save_all_results(
+        rdk_skfp_times,
+        rdk_sequential_times,
+        n_molecules,
+        "RDK Fingerprint",
+        True,
+    )
 
     full_time_end = time()
     print("Time of execution: ", full_time_end - full_time_start, "s")
