@@ -26,7 +26,7 @@ You can install the library using pip:
 ```bash
 pip install scikit-fingerprints
 ```
-
+ 
 ## General Project Vision
  
 The primary goal of this project was to develop a Python library that simplifies the computation of widely-used molecular fingerprints, such as Morgan's fingerprint, MACCS fingerprint, and others. This library has the following key features:
