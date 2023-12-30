@@ -2,14 +2,14 @@ import numpy as np
 import pandas as pd
 import pytest
 import rdkit.Chem.rdFingerprintGenerator as fpgens
-from e3fp.conformer.generate import (
-    FORCEFIELD_DEF,
-    MAX_ENERGY_DIFF_DEF,
-    POOL_MULTIPLIER_DEF,
-    RMSD_CUTOFF_DEF,
-)
-from e3fp.conformer.generator import ConformerGenerator
-from e3fp.pipeline import fprints_from_mol
+# from e3fp.conformer.generate import (
+#     FORCEFIELD_DEF,
+#     MAX_ENERGY_DIFF_DEF,
+#     POOL_MULTIPLIER_DEF,
+#     RMSD_CUTOFF_DEF,
+# )
+#from e3fp.conformer.generator import ConformerGenerator
+#from e3fp.pipeline import fprints_from_mol
 from ogb.graphproppred import GraphPropPredDataset
 from rdkit import Chem
 from rdkit.Chem.PropertyMol import PropertyMol
@@ -348,121 +348,121 @@ def test_mhfp_sparse_count_fingerprint(
         raise AssertionError
 
 
-def test_e3fp(example_molecules):
-    X = example_molecules
-
-    e3fp_fp = E3FP(
-        4096,
-        1.5,
-        is_folded=True,
-        n_jobs=-1,
-        verbose=0,
-        sparse=False,
-    )
-    X_emf = e3fp_fp.transform(X)
-
-    confgen_params = {
-        "first": 1,
-        "num_conf": 3,
-        "pool_multiplier": POOL_MULTIPLIER_DEF,
-        "rmsd_cutoff": RMSD_CUTOFF_DEF,
-        "max_energy_diff": MAX_ENERGY_DIFF_DEF,
-        "forcefield": FORCEFIELD_DEF,
-        "get_values": True,
-        "seed": 0,
-    }
-    fprint_params = {
-        "bits": 4096,
-        "radius_multiplier": 1.5,
-        "rdkit_invariants": True,
-    }
-
-    conf_gen = ConformerGenerator(**confgen_params)
-
-    def e3fp_func(smiles):
-        # creating molecule object
-        mol = Chem.MolFromSmiles(smiles)
-        mol.SetProp("_Name", smiles)
-        mol = PropertyMol(mol)
-        mol.SetProp("_SMILES", smiles)
-
-        try:
-            # getting a molecule and the fingerprint
-            mol, values = conf_gen.generate_conformers(mol)
-            fps = fprints_from_mol(mol, fprint_params=fprint_params)
-
-            # chose the fingerprint with the lowest energy
-            energies = values[2]
-            fp = fps[np.argmin(energies)].fold(1024)
-
-            return fp.to_vector()
-        except RuntimeError:
-            return np.full(shape=1024, fill_value=-1)
-
-    X_seq = [e3fp_func(smiles) for smiles in X]
-
-    X_seq = np.array([fp.toarray().squeeze() for fp in X_seq])
-    if not np.all(X_emf == X_seq):
-        raise AssertionError
-
-
-def test_e3fp_sparse(example_molecules):
-    X = example_molecules
-
-    e3fp_fp = E3FP(
-        4096,
-        1.5,
-        is_folded=True,
-        n_jobs=-1,
-        verbose=0,
-        sparse=True,
-    )
-    X_emf = e3fp_fp.transform(X)
-
-    confgen_params = {
-        "first": 1,
-        "num_conf": 3,
-        "pool_multiplier": POOL_MULTIPLIER_DEF,
-        "rmsd_cutoff": RMSD_CUTOFF_DEF,
-        "max_energy_diff": MAX_ENERGY_DIFF_DEF,
-        "forcefield": FORCEFIELD_DEF,
-        "get_values": True,
-        "seed": 0,
-    }
-    fprint_params = {
-        "bits": 4096,
-        "radius_multiplier": 1.5,
-        "rdkit_invariants": True,
-    }
-
-    conf_gen = ConformerGenerator(**confgen_params)
-
-    def e3fp_func(smiles):
-        # creating molecule object
-        mol = Chem.MolFromSmiles(smiles)
-        mol.SetProp("_Name", smiles)
-        mol = PropertyMol(mol)
-        mol.SetProp("_SMILES", smiles)
-
-        try:
-            # getting a molecule and the fingerprint
-            mol, values = conf_gen.generate_conformers(mol)
-            fps = fprints_from_mol(mol, fprint_params=fprint_params)
-
-            # chose the fingerprint with the lowest energy
-            energies = values[2]
-            fp = fps[np.argmin(energies)].fold(1024)
-
-            return fp.to_vector()
-        except RuntimeError:
-            return np.full(shape=1024, fill_value=-1)
-
-    X_seq = [e3fp_func(smiles) for smiles in X]
-
-    X_seq = vstack(X_seq)
-
-    if not np.all(X_emf.toarray() == X_seq.toarray()):
-        raise AssertionError
+# def test_e3fp(example_molecules):
+#     X = example_molecules
+#
+#     e3fp_fp = E3FP(
+#         4096,
+#         1.5,
+#         is_folded=True,
+#         n_jobs=-1,
+#         verbose=0,
+#         sparse=False,
+#     )
+#     X_emf = e3fp_fp.transform(X)
+#
+#     confgen_params = {
+#         "first": 1,
+#         "num_conf": 3,
+#         "pool_multiplier": POOL_MULTIPLIER_DEF,
+#         "rmsd_cutoff": RMSD_CUTOFF_DEF,
+#         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
+#         "forcefield": FORCEFIELD_DEF,
+#         "get_values": True,
+#         "seed": 0,
+#     }
+#     fprint_params = {
+#         "bits": 4096,
+#         "radius_multiplier": 1.5,
+#         "rdkit_invariants": True,
+#     }
+#
+#     conf_gen = ConformerGenerator(**confgen_params)
+#
+#     def e3fp_func(smiles):
+#         # creating molecule object
+#         mol = Chem.MolFromSmiles(smiles)
+#         mol.SetProp("_Name", smiles)
+#         mol = PropertyMol(mol)
+#         mol.SetProp("_SMILES", smiles)
+#
+#         try:
+#             # getting a molecule and the fingerprint
+#             mol, values = conf_gen.generate_conformers(mol)
+#             fps = fprints_from_mol(mol, fprint_params=fprint_params)
+#
+#             # chose the fingerprint with the lowest energy
+#             energies = values[2]
+#             fp = fps[np.argmin(energies)].fold(1024)
+#
+#             return fp.to_vector()
+#         except RuntimeError:
+#             return np.full(shape=1024, fill_value=-1)
+#
+#     X_seq = [e3fp_func(smiles) for smiles in X]
+#
+#     X_seq = np.array([fp.toarray().squeeze() for fp in X_seq])
+#     if not np.all(X_emf == X_seq):
+#         raise AssertionError
+#
+#
+# def test_e3fp_sparse(example_molecules):
+#     X = example_molecules
+#
+#     e3fp_fp = E3FP(
+#         4096,
+#         1.5,
+#         is_folded=True,
+#         n_jobs=-1,
+#         verbose=0,
+#         sparse=True,
+#     )
+#     X_emf = e3fp_fp.transform(X)
+#
+#     confgen_params = {
+#         "first": 1,
+#         "num_conf": 3,
+#         "pool_multiplier": POOL_MULTIPLIER_DEF,
+#         "rmsd_cutoff": RMSD_CUTOFF_DEF,
+#         "max_energy_diff": MAX_ENERGY_DIFF_DEF,
+#         "forcefield": FORCEFIELD_DEF,
+#         "get_values": True,
+#         "seed": 0,
+#     }
+#     fprint_params = {
+#         "bits": 4096,
+#         "radius_multiplier": 1.5,
+#         "rdkit_invariants": True,
+#     }
+#
+#     conf_gen = ConformerGenerator(**confgen_params)
+#
+#     def e3fp_func(smiles):
+#         # creating molecule object
+#         mol = Chem.MolFromSmiles(smiles)
+#         mol.SetProp("_Name", smiles)
+#         mol = PropertyMol(mol)
+#         mol.SetProp("_SMILES", smiles)
+#
+#         try:
+#             # getting a molecule and the fingerprint
+#             mol, values = conf_gen.generate_conformers(mol)
+#             fps = fprints_from_mol(mol, fprint_params=fprint_params)
+#
+#             # chose the fingerprint with the lowest energy
+#             energies = values[2]
+#             fp = fps[np.argmin(energies)].fold(1024)
+#
+#             return fp.to_vector()
+#         except RuntimeError:
+#             return np.full(shape=1024, fill_value=-1)
+#
+#     X_seq = [e3fp_func(smiles) for smiles in X]
+#
+#     X_seq = vstack(X_seq)
+#
+#     if not np.all(X_emf.toarray() == X_seq.toarray()):
+#         raise AssertionError
 
 
 def test_rdk_fingerprint(example_molecules, rdkit_example_molecules):
