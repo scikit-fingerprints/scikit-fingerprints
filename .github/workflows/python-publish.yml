@@ -29,7 +29,9 @@ jobs:
     - name: Configure poetry for PyPI
       run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
     - name: Configure poetry for TestPyPI
-      run: poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+      run: >-
+        poetry config repositories.testpypi https://test.pypi.org/legacy/
+        && poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_API_TOKEN }}
     - name: Build and publish to TestPyPI
       run: >-
         poetry build
