@@ -9,7 +9,7 @@ Before you start contributing, please take a moment to review the following guid
 
 ### Reporting Issues
 
-If you find a bug, have a question, or want to propose a new feature, please open an issue on our [GitHub repository](https://github.com/Arch4ngel21/emf). Be sure to include as much detail as possible, such as a clear description, steps to reproduce the issue, and any relevant screenshots or error messages.
+If you find a bug, have a question, or want to propose a new feature, please open an issue on our [GitHub repository](https://github.com/Arch4ngel21/scikit-fingerprints.git). Be sure to include as much detail as possible, such as a clear description, steps to reproduce the issue, and any relevant screenshots or error messages.
 
 ### Pull Requests
 
@@ -19,7 +19,7 @@ We encourage you to submit pull requests (PRs) to improve our project. To do so,
 
 2. Clone your forked repository to your local machine:
    ```bash
-   git clone https://github.com/Arch4ngel21/emf.git
+   git clone https://github.com/Arch4ngel21/scikit-fingerprints.git
 
 3. If you don't have it, install poetry:
    ```bash
