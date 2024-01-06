@@ -13,13 +13,13 @@ import rdkit.Chem.rdFingerprintGenerator as fpgens
 # from e3fp.pipeline import fprints_from_mol
 from ogb.graphproppred import GraphPropPredDataset
 from rdkit import Chem
-from rdkit.Chem.PropertyMol import PropertyMol
+
+# from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
 
-from skfp import (
-    E3FP,
+from skfp import (  # E3FP,
     ECFP,
     MHFP,
     AtomPairFingerprint,
