@@ -1,4 +1,5 @@
 from skfp.fingerprints.atom_pair import AtomPairFingerprint
+from skfp.fingerprints.avalon import AvalonFingerprint
 from skfp.fingerprints.e3fp import E3FP
 from skfp.fingerprints.ecfp import ECFP
 from skfp.fingerprints.erg import ERGFingerprint
