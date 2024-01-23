@@ -11,6 +11,7 @@ class ECFP(FingerprintTransformer):
     def __init__(
         self,
         radius: int = 3,
+        use_fcfp: bool = False,
         include_chirality: bool = False,
         use_bond_types: bool = True,
         only_nonzero_invariants: bool = False,
@@ -31,6 +32,7 @@ class ECFP(FingerprintTransformer):
             random_state=random_state,
         )
         self.radius = radius
+        self.use_fcfp = use_fcfp
         self.include_chirality = include_chirality
         self.radius = radius
         self.include_chirality = include_chirality
@@ -41,7 +43,14 @@ class ECFP(FingerprintTransformer):
         self.fp_size = fp_size
 
     def _get_generator(self):
-        from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
+        from rdkit.Chem.rdFingerprintGenerator import (
+            GetMorganFeatureAtomInvGen,
+            GetMorganGenerator,
+        )
+
+        invgen = None
+        if self.use_fcfp:
+            invgen = GetMorganFeatureAtomInvGen()
 
         return GetMorganGenerator(
             radius=self.radius,
@@ -51,6 +60,7 @@ class ECFP(FingerprintTransformer):
             includeRingMembership=self.include_ring_membership,
             countBounds=self.count_bounds,
             fpSize=self.fp_size,
+            atomInvariantsGenerator=invgen,
         )
 
     def _calculate_fingerprint(

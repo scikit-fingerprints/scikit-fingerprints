@@ -2,23 +2,24 @@ import numpy as np
 import pandas as pd
 import pytest
 import rdkit.Chem.rdFingerprintGenerator as fpgens
+
 # from e3fp.conformer.generate import (
 #     FORCEFIELD_DEF,
 #     MAX_ENERGY_DIFF_DEF,
 #     POOL_MULTIPLIER_DEF,
 #     RMSD_CUTOFF_DEF,
 # )
-#from e3fp.conformer.generator import ConformerGenerator
-#from e3fp.pipeline import fprints_from_mol
+# from e3fp.conformer.generator import ConformerGenerator
+# from e3fp.pipeline import fprints_from_mol
 from ogb.graphproppred import GraphPropPredDataset
 from rdkit import Chem
-from rdkit.Chem.PropertyMol import PropertyMol
+
+# from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
 
-from skfp import (
-    E3FP,
+from skfp import (  # E3FP,
     ECFP,
     MHFP,
     AtomPairFingerprint,
@@ -59,7 +60,6 @@ def test_ECFP_bit_fingerprint(example_molecules, rdkit_example_molecules):
         raise AssertionError
 
 
-# WARNING - in case of failure it will try to overload memory and result in error
 def test_ECFP_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
@@ -91,6 +91,60 @@ def test_ECFP_sparse_count_fingerprint(
     X_for_rdkit = rdkit_example_molecules
     fp_gen = fpgens.GetMorganGenerator()
     ecfp = ECFP(n_jobs=-1, sparse=True, count=True)
+    X_emf = ecfp.transform(X)
+    X_rdkit = csr_array(
+        [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
+    )
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_FCFP_bit_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    invgen = fpgens.GetMorganFeatureAtomInvGen()
+    fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
+    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=False, count=False)
+    X_emf = ecfp.transform(X)
+    X_rdkit = np.array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_FCFP_sparse_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    invgen = fpgens.GetMorganFeatureAtomInvGen()
+    fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
+    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=True, count=False)
+    X_emf = ecfp.transform(X)
+    X_rdkit = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_FCFP_count_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    invgen = fpgens.GetMorganFeatureAtomInvGen()
+    fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
+    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=False, count=True)
+    X_emf = ecfp.transform(X)
+    X_rdkit = np.array(
+        [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
+    )
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_FCFP_sparse_count_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    invgen = fpgens.GetMorganFeatureAtomInvGen()
+    fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
+    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=True, count=True)
     X_emf = ecfp.transform(X)
     X_rdkit = csr_array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
