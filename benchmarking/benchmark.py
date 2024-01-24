@@ -439,7 +439,7 @@ if __name__ == "__main__":
         Avalon_skfp_times_count,
         Avalon_sequential_times,
         n_molecules,
-        "ErG fingerprint",
+        "Avalon Fingerprint",
         False,
     )
 

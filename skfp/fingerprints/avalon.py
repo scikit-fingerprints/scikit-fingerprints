@@ -10,10 +10,10 @@ from skfp.fingerprints.base import FingerprintTransformer
 class AvalonFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        nBits=512,
-        isQuery: bool = False,
-        bitFlags: int = 15761407,
-        resetVect: bool = False,
+        n_bits: int = 512,
+        is_query: bool = False,
+        bit_flags: int = 15761407,
+        reset_vect: bool = False,
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
@@ -27,10 +27,10 @@ class AvalonFingerprint(FingerprintTransformer):
             random_state=random_state,
             count=count,
         )
-        self.nBits = nBits
-        self.isQuery = isQuery
-        self.bitFlags = bitFlags
-        self.resetVect = resetVect
+        self.n_bits = n_bits
+        self.is_query = is_query
+        self.bit_flags = bit_flags
+        self.reset_vect = reset_vect
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, list[str]]
@@ -42,9 +42,9 @@ class AvalonFingerprint(FingerprintTransformer):
             X = [
                 GetAvalonCountFP(
                     x,
-                    nBits=self.nBits,
-                    isQuery=self.isQuery,
-                    bitFlags=self.bitFlags,
+                    nBits=self.n_bits,
+                    isQuery=self.is_query,
+                    bitFlags=self.bit_flags,
                 ).ToList()  # should be sparse or numpy
                 for x in X
             ]
@@ -52,10 +52,10 @@ class AvalonFingerprint(FingerprintTransformer):
             X = [
                 GetAvalonFP(
                     x,
-                    nBits=self.nBits,
-                    isQuery=self.isQuery,
-                    bitFlags=self.bitFlags,
-                    resetVect=self.resetVect,
+                    nBits=self.n_bits,
+                    isQuery=self.is_query,
+                    bitFlags=self.bit_flags,
+                    resetVect=self.reset_vect,
                 )
                 for x in X
             ]
