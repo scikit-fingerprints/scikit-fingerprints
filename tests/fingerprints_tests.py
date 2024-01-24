@@ -443,7 +443,9 @@ def test_avalon_sparse_count_fingerprint(
         sparse=True, count=True, random_state=0, n_jobs=-1
     )
     X_emf = fp_transformer.transform(X)
-    X_rdkit = vstack([csr_array(GetAvalonCountFP(x)) for x in X_for_rdkit])
+    X_rdkit = vstack(
+        [csr_array(GetAvalonCountFP(x).ToList()) for x in X_for_rdkit]
+    )
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
         raise AssertionError
 
