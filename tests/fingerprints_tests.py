@@ -15,15 +15,17 @@ from ogb.graphproppred import GraphPropPredDataset
 from rdkit import Chem
 
 # from rdkit.Chem.PropertyMol import PropertyMol
+from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
 
-from skfp import (  # E3FP,
+from skfp import ERGFingerprint  # E3FP,
+from skfp import (
     ECFP,
     MHFP,
     AtomPairFingerprint,
-    ERGFingerprint,
+    AvalonFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
     RDKitFingerprint,
@@ -398,6 +400,52 @@ def test_mhfp_sparse_count_fingerprint(
     mhfp = MHFP(random_state=0, n_jobs=-1, sparse=True, count=True)
     X_emf = mhfp.transform(X)
     X_rdkit = csr_array([get_mhfp(x, count=True) for x in X_for_rdkit])
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_avalon_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_transformer = AvalonFingerprint(random_state=0, n_jobs=-1)
+    X_emf = fp_transformer.transform(X)
+    X_rdkit = np.stack([GetAvalonFP(x) for x in X_for_rdkit])
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_avalon_sparse_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_transformer = AvalonFingerprint(sparse=True, random_state=0, n_jobs=-1)
+    X_emf = fp_transformer.transform(X)
+    X_rdkit = vstack([csr_array(GetAvalonFP(x)) for x in X_for_rdkit])
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_avalon_count_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_transformer = AvalonFingerprint(count=True, random_state=0, n_jobs=-1)
+    X_emf = fp_transformer.transform(X)
+    X_rdkit = np.stack([GetAvalonCountFP(x).ToList() for x in X_for_rdkit])
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_avalon_sparse_count_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    fp_transformer = AvalonFingerprint(
+        sparse=True, count=True, random_state=0, n_jobs=-1
+    )
+    X_emf = fp_transformer.transform(X)
+    X_rdkit = vstack(
+        [csr_array(GetAvalonCountFP(x).ToList()) for x in X_for_rdkit]
+    )
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
         raise AssertionError
 

@@ -9,7 +9,6 @@ import rdkit.Chem.rdFingerprintGenerator as fpgens
 from e3fp.conformer.generate import (
     FORCEFIELD_DEF,
     MAX_ENERGY_DIFF_DEF,
-    NUM_CONF_DEF,
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
@@ -18,6 +17,7 @@ from e3fp.pipeline import fprints_from_mol
 from joblib import cpu_count
 from ogb.graphproppred import GraphPropPredDataset
 from rdkit import Chem
+from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
@@ -27,6 +27,7 @@ from skfp import (
     ECFP,
     MHFP,
     AtomPairFingerprint,
+    AvalonFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
@@ -425,6 +426,21 @@ if __name__ == "__main__":
     MHFP_sequential_times = get_all_sequential_times(X, get_mhfp)
     save_all_results(
         MHFP_skfp_times, MHFP_sequential_times, n_molecules, "MHFP", True
+    )
+
+    # Avalon FINGERPRINT
+    print("Avalon")
+    Avalon_skfp_times_count = get_all_times_skfp(X, AvalonFingerprint, True)
+    Avalon_sequential_times = [
+        get_all_sequential_times(X, GetAvalonFP, False),
+        get_all_sequential_times(X, GetAvalonCountFP, False),
+    ]
+    save_all_results(
+        Avalon_skfp_times_count,
+        Avalon_sequential_times,
+        n_molecules,
+        "Avalon Fingerprint",
+        False,
     )
 
     # E3FP_skfp_times = get_all_times_skfp(X, E3FP, False)
