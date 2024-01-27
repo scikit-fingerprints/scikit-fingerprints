@@ -465,7 +465,7 @@ def test_estate_sum_fingerprint(example_molecules, rdkit_example_molecules):
 def test_estate_count_fingerprint(example_molecules, rdkit_example_molecules):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
-    estate = EStateFingerprint(n_jobs=-1, variant="count")
+    estate = EStateFingerprint(n_jobs=-1, variant="binary", count=True)
     X_emf = estate.transform(X)
     X_rdkit = np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 0]
     if not np.all(X_emf == X_rdkit):
@@ -501,7 +501,9 @@ def test_estate_sparse_count_fingerprint(
 ):
     X = example_molecules
     X_for_rdkit = rdkit_example_molecules
-    estate = EStateFingerprint(n_jobs=-1, sparse=True, variant="count")
+    estate = EStateFingerprint(
+        n_jobs=-1, sparse=True, variant="binary", count=True
+    )
     X_emf = estate.transform(X)
     X_rdkit = csr_array(
         np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 0]

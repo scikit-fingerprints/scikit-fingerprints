@@ -8,11 +8,6 @@ from skfp.fingerprints.base import FingerprintTransformer
 
 
 class EStateFingerprint(FingerprintTransformer):
-    """this fingerprint returns 2 arrays:
-    The first (of ints) contains the number of times each possible atom type is hit
-     The second (of floats) contains the sum of the EState indices for atoms of
-    """
-
     def __init__(
         self,
         variant: str = "sum",
@@ -22,9 +17,7 @@ class EStateFingerprint(FingerprintTransformer):
         random_state: int = 0,
         count: bool = False,
     ):
-        """'variant' argument determines the output type. It can be one of:
-        'sum', 'count' or 'binary'
-        """
+        """'variant' argument determines the output type. It can be one 'sum', or 'binary'"""
         super().__init__(
             n_jobs=n_jobs,
             sparse=sparse,
@@ -32,6 +25,12 @@ class EStateFingerprint(FingerprintTransformer):
             random_state=random_state,
             count=count,
         )
+        if variant not in ["sum", "binary"]:
+            raise ValueError("variant must be 'sum' or 'binary'")
+        if self.count and variant == "sum":
+            raise ValueError(
+                "count fingerprint only available with 'binary' variant"
+            )
         self.variant = variant
 
     def _calculate_fingerprint(
@@ -41,12 +40,12 @@ class EStateFingerprint(FingerprintTransformer):
         from rdkit.Chem.EState.Fingerprinter import FingerprintMol
 
         X = np.array([FingerprintMol(x) for x in X])
-        if self.variant == "sum":
-            X = X[:, 1]
-        elif self.variant == "count":
+        if self.count:
             X = X[:, 0]
-        else:
+        elif self.variant == "binary":
             X = X[:, 0] > 0
+        else:
+            X = X[:, 1]
 
         if self.sparse:
             return spsparse.csr_array(X)
