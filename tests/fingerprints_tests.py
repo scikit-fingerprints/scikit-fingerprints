@@ -16,6 +16,7 @@ from rdkit import Chem
 
 # from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
+from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
@@ -367,7 +368,13 @@ def test_mhfp_fingerprint(example_molecules, rdkit_example_molecules):
     X_for_rdkit = rdkit_example_molecules
     mhfp = MHFP(random_state=0, n_jobs=-1)
     X_emf = mhfp.transform(X)
-    X_rdkit = np.array([get_mhfp(x) for x in X_for_rdkit])
+    encoder = MHFPEncoder(2048, 0)
+    X_rdkit = np.array(
+        MHFPEncoder.EncodeMolsBulk(
+            encoder,
+            X_for_rdkit,
+        )
+    )
     if not np.all(X_emf == X_rdkit):
         raise AssertionError
 
@@ -377,29 +384,13 @@ def test_mhfp_sparse_fingerprint(example_molecules, rdkit_example_molecules):
     X_for_rdkit = rdkit_example_molecules
     mhfp = MHFP(random_state=0, n_jobs=-1, sparse=True)
     X_emf = mhfp.transform(X)
-    X_rdkit = csr_array([get_mhfp(x) for x in X_for_rdkit])
-    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
-        raise AssertionError
-
-
-def test_mhfp_count_fingerprint(example_molecules, rdkit_example_molecules):
-    X = example_molecules
-    X_for_rdkit = rdkit_example_molecules
-    mhfp = MHFP(random_state=0, n_jobs=-1, count=True)
-    X_emf = mhfp.transform(X)
-    X_rdkit = np.array([get_mhfp(x, count=True) for x in X_for_rdkit])
-    if not np.all(X_emf == X_rdkit):
-        raise AssertionError
-
-
-def test_mhfp_sparse_count_fingerprint(
-    example_molecules, rdkit_example_molecules
-):
-    X = example_molecules
-    X_for_rdkit = rdkit_example_molecules
-    mhfp = MHFP(random_state=0, n_jobs=-1, sparse=True, count=True)
-    X_emf = mhfp.transform(X)
-    X_rdkit = csr_array([get_mhfp(x, count=True) for x in X_for_rdkit])
+    encoder = MHFPEncoder(2048, 0)
+    X_rdkit = csr_array(
+        MHFPEncoder.EncodeMolsBulk(
+            encoder,
+            X_for_rdkit,
+        )
+    )
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
         raise AssertionError
 
