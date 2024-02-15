@@ -6,6 +6,7 @@ import scipy.sparse as spsparse
 
 from skfp.fingerprints.base import FingerprintTransformer
 
+
 class MHFP(FingerprintTransformer):
     def __init__(
         self,
@@ -57,4 +58,3 @@ class MHFP(FingerprintTransformer):
             return spsparse.csr_array(X)
         else:
             return np.array(X)
-
