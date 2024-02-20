@@ -39,6 +39,10 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         self.verbose = verbose
         self.random_state = random_state
 
+        # value that helps to tell apart fingerprint and utility transformers
+        # set as True for util transformers
+        self.fingerprint_transformer = True
+
     def fit(self, X, y=None, **fit_params):
         return self
 
@@ -78,7 +82,9 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                     for X_sub in args
                 )
 
-            if self.sparse:
+            if not self.fingerprint_transformer:
+                return pd.concat(results)
+            elif self.sparse:
                 return spsparse.vstack(results)
             else:
                 return np.vstack(results)
