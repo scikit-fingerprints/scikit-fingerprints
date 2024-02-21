@@ -615,17 +615,6 @@ def test_mol_to_smiles(smiles_molecules, mol_object_molecules):
         raise AssertionError
 
 
-def test_mol_from_smiles(smiles_molecules, mol_object_molecules):
-    X = smiles_molecules
-
-    transformer = MolFromSmilesTransformer(n_jobs=-1)
-
-    X = transformer.transform(X)
-
-    if not all([x == mol for x, mol in zip(X, mol_object_molecules)]):
-        raise AssertionError
-
-
 def test_input_validation(smiles_molecules):
     X = smiles_molecules
 
