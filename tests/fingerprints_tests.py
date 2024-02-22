@@ -17,6 +17,7 @@ from rdkit import Chem
 # from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
 from rdkit.Chem import MolFromSmiles, MolToSmiles
+from rdkit.Chem.EState.Fingerprinter import FingerprintMol
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
@@ -28,6 +29,7 @@ from skfp import (
     MHFP,
     AtomPairFingerprint,
     AvalonFingerprint,
+    EStateFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
     MolFromSmilesTransformer,
@@ -269,22 +271,24 @@ def test_topological_torsion_sparse_count_fingerprint(
         raise AssertionError
 
 
-def test_maccs_keys_fingerprint(smiles_molecules, mol_object_molecules):
-    X = smiles_molecules
-    X_for_rdkit = mol_object_molecules
-    erg = MACCSKeysFingerprint(n_jobs=-1, sparse=False)
-    X_emf = erg.transform(X)
+def test_maccs_keys_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    maccs_keys = MACCSKeysFingerprint(n_jobs=-1, sparse=False)
+    X_emf = maccs_keys.transform(X)
     X_rdkit = np.array([GetMACCSKeysFingerprint(x) for x in X_for_rdkit])
 
     if not np.all(X_emf == X_rdkit):
         raise AssertionError
 
 
-def test_maccs_keys_sparse_fingerprint(smiles_molecules, mol_object_molecules):
-    X = smiles_molecules
-    X_for_rdkit = mol_object_molecules
-    erg = MACCSKeysFingerprint(n_jobs=-1, sparse=True)
-    X_emf = erg.transform(X)
+def test_maccs_keys_sparse_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    maccs_keys = MACCSKeysFingerprint(n_jobs=-1, sparse=True)
+    X_emf = maccs_keys.transform(X)
     X_rdkit = csr_array([GetMACCSKeysFingerprint(x) for x in X_for_rdkit])
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
         raise AssertionError
@@ -427,6 +431,80 @@ def test_avalon_sparse_count_fingerprint(
     X_emf = fp_transformer.transform(X)
     X_rdkit = vstack(
         [csr_array(GetAvalonCountFP(x).ToList()) for x in X_for_rdkit]
+    )
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_estate_sum_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    estate = EStateFingerprint(n_jobs=-1, sparse=False)
+    X_emf = estate.transform(X)
+    X_rdkit = np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 1]
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_estate_count_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    estate = EStateFingerprint(n_jobs=-1, variant="binary", count=True)
+    X_emf = estate.transform(X)
+    X_rdkit = np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 0]
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_estate_binary_fingerprint(example_molecules, rdkit_example_molecules):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    estate = EStateFingerprint(n_jobs=-1, variant="binary")
+    X_emf = estate.transform(X)
+    X_rdkit = np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 0] > 0
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_estate_sparse_sum_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    estate = EStateFingerprint(n_jobs=-1, sparse=True)
+    X_emf = estate.transform(X)
+    X_rdkit = csr_array(
+        np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 1]
+    )
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_estate_sparse_count_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    estate = EStateFingerprint(
+        n_jobs=-1, sparse=True, variant="binary", count=True
+    )
+    X_emf = estate.transform(X)
+    X_rdkit = csr_array(
+        np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 0]
+    )
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_estate_sparse_binary_fingerprint(
+    example_molecules, rdkit_example_molecules
+):
+    X = example_molecules
+    X_for_rdkit = rdkit_example_molecules
+    estate = EStateFingerprint(n_jobs=-1, sparse=True, variant="binary")
+    X_emf = estate.transform(X)
+    X_rdkit = csr_array(
+        np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 0] > 0
     )
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
         raise AssertionError
