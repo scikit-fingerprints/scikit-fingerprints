@@ -680,11 +680,11 @@ def test_rdk_sparse_count_fingerprint(smiles_molecules, mol_object_molecules):
 def test_mol_to_smiles(smiles_molecules, mol_object_molecules):
     X_smiles = smiles_molecules
 
-    transformer_to_mol = MolFromSmilesTransformer(n_jobs=-1)
+    transformer_to_mol = MolFromSmilesTransformer()
     X_mols = transformer_to_mol.transform(X_smiles)
     X_mols_rdkit = [MolFromSmiles(x) for x in X_smiles]
 
-    transformer_to_smiles = MolToSmilesTransformer(n_jobs=-1)
+    transformer_to_smiles = MolToSmilesTransformer()
     X_new_smiles = transformer_to_smiles.transform(X_mols)
     X_new_smiles_rdkit = [MolToSmiles(x) for x in X_mols_rdkit]
     if not all(
