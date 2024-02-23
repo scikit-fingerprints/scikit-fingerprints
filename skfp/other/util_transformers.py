@@ -1,5 +1,4 @@
 from rdkit.Chem import MolFromSmiles, MolToSmiles
-from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class MolFromSmilesTransformer:
