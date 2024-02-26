@@ -180,9 +180,13 @@ def get_all_sequential_times(
 ):
     print(" - sequential")
     times = [
-        get_times_sequential(X, fingerprint_function, count=count, **kwargs)
-        if use_count
-        else get_times_sequential(X, fingerprint_function, **kwargs)
+        (
+            get_times_sequential(
+                X, fingerprint_function, count=count, **kwargs
+            )
+            if use_count
+            else get_times_sequential(X, fingerprint_function, **kwargs)
+        )
         for count in (COUNT_TYPES if use_count else [None])
     ]
     if use_count:
