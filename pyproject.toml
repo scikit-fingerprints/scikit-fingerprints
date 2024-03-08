@@ -31,8 +31,23 @@ scikit-learn = "*"
 scipy = "*"
 tqdm = "*"
 
+[tool.poetry.group.dev]
+optional = true
+
 [tool.poetry.group.dev.dependencies]
 flake8 = "*"
+pytest = "*"
+pre-commit = "*"
+black = "*"
+isort = "*"
+mypy = "*"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+# It's a heavy dependency, do not install unless needed
+ogb = "*"
 pytest = "*"
 
 [build-system]
