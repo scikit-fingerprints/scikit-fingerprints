@@ -21,30 +21,35 @@ We encourage you to submit pull requests (PRs) to improve our project. To do so,
    ```bash
    git clone https://github.com/Arch4ngel21/scikit-fingerprints.git
 
-3. If you don't have it, install poetry:
+3. If you don't have it, install poetry (preferably with pipx):
    ```bash
-   pip install poetry
+   pipx install poetry
 
-4. Install dependencies in the main directory of the repository:
+4. Install dev dependencies in the main directory of the repository:
    ```bash
-   poetry install
+   poetry install --with dev
+   
+5. Install pre-commit hooks
+   ```bash
+   poetry run pre-commit install
+   ```
 
-5. Create a new branch for your feature or bug fix:
+6. Create a new branch for your feature or bug fix:
 
     ```bash
     git checkout -b my-feature
    
-6. Make your changes and commit them with clear and concise commit messages.
+7. Make your changes and commit them with clear and concise commit messages.
 
-7. Push your changes to your forked repository:
+8. Push your changes to your forked repository:
 
     ```bash
     git push origin my-feature
-8. Open a pull request on our GitHub repository and provide a detailed description of your changes.
+9. Open a pull request on our GitHub repository and provide a detailed description of your changes.
 
-9. Ensure that your PR follows our coding style and conventions.
+10. Ensure that your PR follows our coding style and conventions.
 
-10. Participate in the review process by addressing any feedback or comments on your PR.
+11. Participate in the review process by addressing any feedback or comments on your PR.
 
 ### Development Setup
 To set up a development environment for Effective Molecule Fingerprints library, follow the installation instructions in the README.
