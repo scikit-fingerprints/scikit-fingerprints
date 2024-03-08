@@ -4,6 +4,7 @@ on: [pull_request]
 
 env:
   POETRY_VENV: poetry_venv
+  POETRY: poetry_venv/bin/poetry
 
 jobs:
   test:
@@ -24,8 +25,8 @@ jobs:
         $POETRY_VENV/bin/pip install poetry
 
     - name: Install dependencies using Poetry
-      run: poetry install --with test
+      run: $POETRY install --with test
 
     - name: Run tests with pytest
-      run: poetry run pytest tests/fingerprints_tests.py
+      run: $POETRY run pytest tests/fingerprints_tests.py
 
