@@ -1,6 +1,6 @@
 name: Python package workflow
 
-on: [pull_request]
+on: [push]
 
 env:
   POETRY_VENV: poetry_venv
@@ -26,6 +26,6 @@ jobs:
     - name: Install dependencies using Poetry
       run: poetry install --with test
 
-    - name: Run tests with pytest
-      run: poetry run pytest tests/fingerprints_tests.py
+    - name: Run light tests with pytest
+      run: poetry run pytest tests/fingerprints_tests_light.py
 
