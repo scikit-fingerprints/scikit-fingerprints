@@ -1,6 +1,11 @@
 name: Python light tests
 
-on: [push]
+on:
+  push:
+    paths:
+      - ".github/**"
+      - "skfp/**"
+      - "tests/**"
 
 env:
   POETRY_VENV: poetry_venv
