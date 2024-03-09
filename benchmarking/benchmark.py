@@ -19,6 +19,7 @@ from ogb.graphproppred import GraphPropPredDataset
 from rdkit import Chem
 from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
 from rdkit.Chem import MolFromSmiles
+from rdkit.Chem.EState.Fingerprinter import FingerprintMol
 from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
@@ -29,6 +30,7 @@ from skfp import (
     AtomPairFingerprint,
     AvalonFingerprint,
     ERGFingerprint,
+    EStateFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
     RDKitFingerprint,
@@ -178,9 +180,13 @@ def get_all_sequential_times(
 ):
     print(" - sequential")
     times = [
-        get_times_sequential(X, fingerprint_function, count=count, **kwargs)
-        if use_count
-        else get_times_sequential(X, fingerprint_function, **kwargs)
+        (
+            get_times_sequential(
+                X, fingerprint_function, count=count, **kwargs
+            )
+            if use_count
+            else get_times_sequential(X, fingerprint_function, **kwargs)
+        )
         for count in (COUNT_TYPES if use_count else [None])
     ]
     if use_count:
@@ -440,6 +446,20 @@ if __name__ == "__main__":
         Avalon_sequential_times,
         n_molecules,
         "Avalon Fingerprint",
+        False,
+    )
+
+    # EState FINGERPRINT
+    print("EState")
+    EState_skfp_times_count = get_all_times_skfp(X, EStateFingerprint, False)
+    EState_sequential_times = get_all_sequential_times(
+        X, FingerprintMol, False
+    )
+    save_all_results(
+        EState_skfp_times_count,
+        EState_sequential_times,
+        n_molecules,
+        "EState Fingerprint",
         False,
     )
 

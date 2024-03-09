@@ -3,6 +3,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import scipy.sparse as spsparse
+from rdkit.Chem import AddHs
 
 from skfp.fingerprints.base import FingerprintTransformer
 
@@ -24,6 +25,8 @@ class PharmacophoreFingerprint(FingerprintTransformer):
             verbose=verbose,
             random_state=random_state,
         )
+
+        # the three-dimensional variant of the fingerprint might not work correctly
         self.three_dimensional = three_dimensional
 
     def _calculate_fingerprint(
@@ -35,6 +38,8 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         from rdkit.Chem.AllChem import EmbedMolecule
         from rdkit.Chem.Pharm2D import Gobbi_Pharm2D
         from rdkit.Chem.Pharm2D.Generate import Gen2DFingerprint
+
+        X = [AddHs(x) for x in X]
 
         factory = Gobbi_Pharm2D.factory
 
