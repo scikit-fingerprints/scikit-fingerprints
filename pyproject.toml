@@ -35,12 +35,12 @@ tqdm = "*"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "*"
-pytest = "*"
-pre-commit = "*"
 black = "*"
+flake8 = "*"
 isort = "*"
 mypy = "*"
+pre-commit = "*"
+pytest = "*"
 
 [tool.poetry.group.test]
 optional = true
