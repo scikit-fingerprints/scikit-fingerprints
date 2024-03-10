@@ -11,7 +11,6 @@ import rdkit.Chem.rdFingerprintGenerator as fpgens
 # )
 # from e3fp.conformer.generator import ConformerGenerator
 # from e3fp.pipeline import fprints_from_mol
-from ogb.graphproppred import GraphPropPredDataset
 from rdkit import Chem
 
 # from rdkit.Chem.PropertyMol import PropertyMol
@@ -37,16 +36,9 @@ from skfp import (
     RDKitFingerprint,
     TopologicalTorsionFingerprint,
 )
-from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
+from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint
 
-dataset_name = "ogbg-molhiv"
-GraphPropPredDataset(name=dataset_name, root="../dataset")
-dataset = pd.read_csv(
-    f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-)
-smiles_data = dataset["smiles"]
-
-smiles_data = smiles_data.head(20)
+smiles_data = pd.read_csv("tests/hiv_mol.csv.zip", nrows=100)["smiles"]
 
 
 @pytest.fixture

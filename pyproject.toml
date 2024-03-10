@@ -46,8 +46,6 @@ pytest = "*"
 optional = true
 
 [tool.poetry.group.test.dependencies]
-# It's a heavy dependency, do not install unless needed
-ogb = "*"
 pytest = "*"
 
 [build-system]
