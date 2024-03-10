@@ -21,9 +21,7 @@ We encourage you to submit pull requests (PRs) to improve our project. To do so,
    ```bash
    git clone https://github.com/Arch4ngel21/scikit-fingerprints.git
 
-3. If you don't have it, install poetry (preferably with pipx):
-   ```bash
-   pipx install poetry
+3. If you don't have it, install [Poetry](https://python-poetry.org/):
 
 4. Install dev dependencies in the main directory of the repository:
    ```bash
