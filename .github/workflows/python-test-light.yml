@@ -1,6 +1,11 @@
-name: Python package workflow
+name: Python light tests
 
-on: [pull_request]
+on:
+  push:
+    paths:
+      - ".github/**"
+      - "skfp/**"
+      - "tests/**"
 
 env:
   POETRY_VENV: poetry_venv
@@ -27,6 +32,6 @@ jobs:
     - name: Install dependencies using Poetry
       run: $POETRY install --with test
 
-    - name: Run tests with pytest
-      run: $POETRY run pytest tests/fingerprints_tests.py
+    - name: Run light tests with pytest
+      run: $POETRY run pytest tests/fingerprints_tests_light.py
 

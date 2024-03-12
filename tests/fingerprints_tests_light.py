@@ -36,9 +36,9 @@ from skfp import (
     RDKitFingerprint,
     TopologicalTorsionFingerprint,
 )
-from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
+from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint
 
-smiles_data = pd.read_csv("tests/hiv_mol.csv.zip")["smiles"]
+smiles_data = pd.read_csv("tests/hiv_mol.csv.zip", nrows=100)["smiles"]
 
 
 @pytest.fixture
