@@ -1,60 +1,61 @@
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as spsparse
+from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class MHFP(FingerprintTransformer):
+class MHFPFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        n_permutations: int = 2048,
+        fp_size: int = 2048,
         radius: int = 3,
+        min_radius: int = 1,
         rings: bool = True,
         isomeric: bool = False,
         kekulize: bool = True,
-        min_radius: int = 1,
-        random_state: int = 0,
         sparse: bool = False,
         count: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
+        random_state: int = 0,
     ):
-        self.n_permutations = n_permutations
-        self.radius = radius
-        self.rings = rings
-        self.isomeric = isomeric
-        self.kekulize = kekulize
-        self.min_radius = min_radius
         super().__init__(
-            n_jobs=n_jobs,
             sparse=sparse,
             count=count,
+            n_jobs=n_jobs,
             verbose=verbose,
             random_state=random_state,
         )
+        self.fp_size = fp_size
+        self.radius = radius
+        self.min_radius = min_radius
+        self.rings = rings
+        self.isomeric = isomeric
+        self.kekulize = kekulize
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
-        X = self._validate_input(X)
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 
-        encoder = MHFPEncoder(self.n_permutations, self.random_state)
+        X = self._validate_input(X)
+
+        encoder = MHFPEncoder(self.fp_size, self.random_state)
 
         X = MHFPEncoder.EncodeMolsBulk(
             encoder,
             X,
             radius=self.radius,
+            min_radius=self.min_radius,
             rings=self.rings,
             isomeric=self.isomeric,
             kekulize=self.kekulize,
-            min_radius=self.min_radius,
         )
 
         if self.sparse:
-            return spsparse.csr_array(X)
+            return csr_array(X)
         else:
             return np.array(X)

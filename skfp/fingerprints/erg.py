@@ -1,8 +1,8 @@
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as spsparse
+from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
@@ -18,14 +18,12 @@ class ERGFingerprint(FingerprintTransformer):
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
-        count: bool = False,  # unused
     ):
         super().__init__(
-            n_jobs=n_jobs,
             sparse=sparse,
+            n_jobs=n_jobs,
             verbose=verbose,
             random_state=random_state,
-            count=count,
         )
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
@@ -33,10 +31,11 @@ class ERGFingerprint(FingerprintTransformer):
         self.max_path = max_path
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
-        X = self._validate_input(X)
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
+
+        X = self._validate_input(X)
 
         X = [
             GetErGFingerprint(
@@ -50,6 +49,6 @@ class ERGFingerprint(FingerprintTransformer):
         ]
 
         if self.sparse:
-            return spsparse.csr_array(X)
+            return csr_array(X)
         else:
             return np.array(X)

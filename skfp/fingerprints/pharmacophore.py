@@ -1,9 +1,9 @@
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as spsparse
 from rdkit.Chem import AddHs
+from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
@@ -11,12 +11,12 @@ from skfp.fingerprints.base import FingerprintTransformer
 class PharmacophoreFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        three_dimensional: bool = False,
-        random_state: int = 0,
+        use_3D: bool = False,
         sparse: bool = False,
         count: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
+        random_state: int = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -25,13 +25,11 @@ class PharmacophoreFingerprint(FingerprintTransformer):
             verbose=verbose,
             random_state=random_state,
         )
-
-        # the three-dimensional variant of the fingerprint might not work correctly
-        self.three_dimensional = three_dimensional
+        self.use_3D = use_3D
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         X = self._validate_input(X)
 
         from rdkit.Chem import Get3DDistanceMatrix
@@ -43,7 +41,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
 
         factory = Gobbi_Pharm2D.factory
 
-        if self.three_dimensional:
+        if self.use_3D:
             for x in X:
                 EmbedMolecule(x)
             X = [
@@ -54,6 +52,6 @@ class PharmacophoreFingerprint(FingerprintTransformer):
             X = [Gen2DFingerprint(x, factory) for x in X]
 
         if self.sparse:
-            return spsparse.csr_array(X)
+            return csr_array(X)
         else:
             return np.array(X)

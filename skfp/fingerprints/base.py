@@ -3,14 +3,14 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as spsparse
+import scipy.sparse
 from joblib import Parallel, delayed, effective_n_jobs
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
+from scipy.sparse import csr_array
 from sklearn.base import BaseEstimator, TransformerMixin
-from tqdm import tqdm
 
-from skfp.utils.logger import tqdm_joblib
+from skfp.utils import ProgressParallel
 
 """
 If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside
@@ -27,9 +27,9 @@ TypeError: cannot pickle 'Boost.Python.function' object
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def __init__(
         self,
-        n_jobs: Optional[int] = None,
         sparse: bool = False,
         count: bool = False,
+        n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
@@ -45,7 +45,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X: Union[pd.DataFrame, np.ndarray, list[str]]):
+    def transform(self, X: Union[pd.DataFrame, np.ndarray, List[str]]):
         """
         :param X: np.array or DataFrame of rdkit.Mol objects
         :return: np.array or sparse array of calculated fingerprints for each molecule
@@ -61,65 +61,50 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             )
 
             if self.verbose > 0:
-                total_batches = min(self.n_jobs, len(X))
-
-                with tqdm_joblib(
-                    tqdm(
-                        desc="Calculating fingerprints...", total=total_batches
-                    )
-                ) as progress_bar:
-                    results = Parallel(n_jobs=self.n_jobs)(
-                        delayed(self._calculate_fingerprint)(X_sub)
-                        for X_sub in args
-                    )
+                total = min(self.n_jobs, len(X))
+                parallel = ProgressParallel(n_jobs=self.n_jobs, total=total)
             else:
-                results = Parallel(n_jobs=self.n_jobs)(
-                    delayed(self._calculate_fingerprint)(X_sub)
-                    for X_sub in args
-                )
+                parallel = Parallel(n_jobs=self.n_jobs)
+
+            results = parallel(
+                delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
+            )
 
             if self.sparse:
-                return spsparse.vstack(results)
+                return scipy.sparse.vstack(results)
             else:
                 return np.vstack(results)
 
     @abstractmethod
     def _calculate_fingerprint(
         self, X: Union[np.ndarray]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
+    ) -> Union[np.ndarray, csr_array]:
         """
-        Helper function to be executed in each sub-process.
+        Calculate fingerprints for a given input batch.
 
         :param X: subset of original X data
-        :return: np.array containing calculated fingerprints for each molecule
+        :return: array containing calculated fingerprints for each molecule
         """
         pass
 
-    def _validate_input(self, X: List):
-        if not all(
-            [
-                isinstance(molecule, Mol) or type(molecule) == str
-                for molecule in X
-            ]
-        ):
+    def _validate_input(self, X: List) -> List[Mol]:
+        if not all(isinstance(x, Mol) or isinstance(x, str) for x in X):
             raise ValueError(
                 "Passed value is neither rdkit.Chem.rdChem.Mol nor SMILES"
             )
 
-        X = [MolFromSmiles(x) if type(x) == str else x for x in X]
+        X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
         return X
 
     def _get_generator(self):
         """
-        Function that creates a generator object in each sub-process.
-
-        :return: rdkit fingerprint generator for current fp_generator_kwargs parameter
+        Creates an RDKit generator object in each sub-process.
         """
         pass
 
     def _generate_fingerprints(
-        self, X: Union[pd.DataFrame, np.ndarray]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
+        self, X: Union[pd.DataFrame, np.ndarray, List[Mol]]
+    ) -> Union[np.ndarray, csr_array]:
         fp_generator = self._get_generator()
 
         if self.count:
@@ -128,6 +113,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             X = [fp_generator.GetFingerprintAsNumPy(x) for x in X]
 
         if self.sparse:
-            return spsparse.csr_array(X)
+            return csr_array(X)
         else:
             return np.array(X)
