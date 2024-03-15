@@ -17,13 +17,11 @@ class ERGFingerprint(FingerprintTransformer):
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
-        random_state: int = 0,
     ):
         super().__init__(
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
-            random_state=random_state,
         )
         self.atom_types = atom_types
         self.fuzz_increment = fuzz_increment
