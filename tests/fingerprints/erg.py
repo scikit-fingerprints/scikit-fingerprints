@@ -2,8 +2,8 @@ import numpy as np
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array
 
-from helpers import sparse_equal
-from skfp import ERGFingerprint
+from utils import sparse_equal
+from skfp.fingerprints import ERGFingerprint
 
 
 def test_erg_bit_fingerprint(smiles_list, mols_list):

@@ -11,15 +11,15 @@ class AvalonFingerprint(FingerprintTransformer):
     def __init__(
         self,
         fp_size: int = 512,
-        sparse: bool = False,
         count: bool = False,
+        sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
         super().__init__(
-            sparse=sparse,
             count=count,
+            sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
             random_state=random_state,

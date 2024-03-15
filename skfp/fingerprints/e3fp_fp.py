@@ -16,6 +16,11 @@ from scipy.sparse import csr_array
 from skfp.fingerprints.base import FingerprintTransformer
 
 
+"""
+Note that this file cannot have the "e3fp.py" name due to conflict with E3FP library.
+"""
+
+
 class E3FPFingerprint(FingerprintTransformer):
     def __init__(
         self,

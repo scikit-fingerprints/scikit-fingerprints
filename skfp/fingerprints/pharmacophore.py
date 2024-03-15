@@ -13,15 +13,13 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         self,
         use_3D: bool = False,
         sparse: bool = False,
-        count: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs,
             sparse=sparse,
-            count=count,
+            n_jobs=n_jobs,
             verbose=verbose,
             random_state=random_state,
         )
@@ -30,13 +28,12 @@ class PharmacophoreFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
-        X = self._validate_input(X)
-
         from rdkit.Chem import Get3DDistanceMatrix
         from rdkit.Chem.AllChem import EmbedMolecule
         from rdkit.Chem.Pharm2D import Gobbi_Pharm2D
         from rdkit.Chem.Pharm2D.Generate import Gen2DFingerprint
 
+        X = self._validate_input(X)
         X = [AddHs(x) for x in X]
 
         factory = Gobbi_Pharm2D.factory

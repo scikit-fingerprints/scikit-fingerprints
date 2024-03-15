@@ -16,15 +16,15 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         count_simulation: bool = True,
         count_bounds: Optional[List] = None,
         atom_invariants_generator: Optional[List] = None,
-        sparse: bool = False,
         count: bool = False,
+        sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
         super().__init__(
-            sparse=sparse,
             count=count,
+            sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
             random_state=random_state,

@@ -2,8 +2,8 @@ import numpy as np
 from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
 from scipy.sparse import csr_array
 
-from skfp import AvalonFingerprint
-from helpers import sparse_equal
+from utils import sparse_equal
+from skfp.fingerprints import AvalonFingerprint
 
 
 def test_avalon_bit_fingerprint(smiles_list, mols_list):
@@ -33,7 +33,7 @@ def test_avalon_sparse_bit_fingerprint(smiles_list, mols_list):
     X_skfp = avalon_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator()
-    X_rdkit = csr_array([fp_gen.GetFingerprint(mol) for mol in mols_list])
+    X_rdkit = csr_array([fp_gen.GetFingerprint(mol) for mol in mols_list], dtype=np.uint32)
 
     assert sparse_equal(X_skfp, X_rdkit)
 
@@ -43,6 +43,6 @@ def test_avalon_sparse_count_fingerprint(smiles_list, mols_list):
     X_skfp = avalon_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator()
-    X_rdkit = csr_array([fp_gen.GetFingerprint(mol) for mol in mols_list])
+    X_rdkit = csr_array([fp_gen.GetFingerprint(mol) for mol in mols_list], dtype=np.uint32)
 
     assert sparse_equal(X_skfp, X_rdkit)

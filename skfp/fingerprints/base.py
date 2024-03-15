@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -27,15 +27,15 @@ TypeError: cannot pickle 'Boost.Python.function' object
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def __init__(
         self,
-        sparse: bool = False,
         count: bool = False,
+        sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
-        self.n_jobs = effective_n_jobs(n_jobs)
-        self.sparse = sparse
         self.count = count
+        self.sparse = sparse
+        self.n_jobs = effective_n_jobs(n_jobs)
         self.verbose = verbose
         self.random_state = random_state
 

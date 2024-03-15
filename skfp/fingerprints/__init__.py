@@ -1,6 +1,6 @@
 from .atom_pair import AtomPairFingerprint
 from .avalon import AvalonFingerprint
-from .e3fp import E3FPFingerprint
+from .e3fp_fp import E3FPFingerprint
 from .ecfp import ECFPFingerprint
 from .erg import ERGFingerprint
 from .estate import EStateFingerprint
