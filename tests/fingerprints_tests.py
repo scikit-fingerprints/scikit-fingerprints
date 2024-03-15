@@ -15,28 +15,17 @@ from rdkit import Chem
 
 # from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
-from rdkit.Chem import MolFromSmiles, MolToSmiles
+from rdkit.Chem import Get3DDistanceMatrix, MolFromSmiles, MolToSmiles
+from rdkit.Chem.AllChem import EmbedMolecule
 from rdkit.Chem.EState.Fingerprinter import FingerprintMol
+from rdkit.Chem.Pharm2D import Generate, Gobbi_Pharm2D
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
 
-from skfp import ERGFingerprint  # E3FP,
-from skfp import (
-    ECFP,
-    MHFP,
-    AtomPairFingerprint,
-    AvalonFingerprint,
-    EStateFingerprint,
-    MACCSKeysFingerprint,
-    MAP4Fingerprint,
-    MolFromSmilesTransformer,
-    MolToSmilesTransformer,
-    RDKitFingerprint,
-    TopologicalTorsionFingerprint,
-)
-from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint, get_mhfp
+from skfp import *
+from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint
 
 smiles_data = pd.read_csv("tests/hiv_mol.csv.zip")["smiles"]
 

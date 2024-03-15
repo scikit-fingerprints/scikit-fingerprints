@@ -7,6 +7,7 @@ from skfp.fingerprints.erg import ERGFingerprint
 from skfp.fingerprints.maccs_keys import MACCSKeysFingerprint
 from skfp.fingerprints.map4 import MAP4Fingerprint
 from skfp.fingerprints.mhfp import MHFP
+from skfp.fingerprints.pharmacophore import PharmacophoreFingerprint
 from skfp.fingerprints.rdk import RDKitFingerprint
 from skfp.fingerprints.topological_torsion import TopologicalTorsionFingerprint
 from skfp.other.util_transformers import (
