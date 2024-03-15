@@ -417,24 +417,6 @@ def test_avalon_sparse_count_fingerprint(
         raise AssertionError
 
 
-# def test_pharmacophore_fingerprint(
-#     example_molecules, rdkit_example_molecules
-# ):
-#     X = example_molecules
-#     X_for_rdkit = rdkit_example_molecules
-#
-#     fp_transformer = PharmacophoreFingerprint(n_jobs=-1)
-#     X_emf = fp_transformer.transform(X)
-#
-#     print(X_emf)
-#     factory = Gobbi_Pharm2D.factory
-#     X_rdkit = np.array(
-#         [Generate.Gen2DFingerprint(x, factory) for x in X_for_rdkit]
-#     )
-#     if not np.all(X_emf == X_rdkit):
-#         raise AssertionError
-
-
 def test_estate_sum_fingerprint(smiles_molecules, mol_object_molecules):
     X = smiles_molecules
     X_for_rdkit = mol_object_molecules

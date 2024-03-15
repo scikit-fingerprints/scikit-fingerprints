@@ -15,30 +15,20 @@ from rdkit import Chem
 
 # from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
-from rdkit.Chem import MolFromSmiles, MolToSmiles
+from rdkit.Chem import AddHs, MolFromSmiles, MolToSmiles
 from rdkit.Chem.EState.Fingerprinter import FingerprintMol
+from rdkit.Chem.Pharm2D import Generate, Gobbi_Pharm2D
+from rdkit.Chem.Pharm2D.Generate import Gen2DFingerprint
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array, vstack
 
+from skfp import *
 from skfp import ERGFingerprint  # E3FP,
-from skfp import (
-    ECFP,
-    MHFP,
-    AtomPairFingerprint,
-    AvalonFingerprint,
-    EStateFingerprint,
-    MACCSKeysFingerprint,
-    MAP4Fingerprint,
-    MolFromSmilesTransformer,
-    MolToSmilesTransformer,
-    RDKitFingerprint,
-    TopologicalTorsionFingerprint,
-)
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint
 
-smiles_data = pd.read_csv("tests/hiv_mol.csv.zip", nrows=100)["smiles"]
+smiles_data = pd.read_csv("./hiv_mol.csv.zip", nrows=100)["smiles"]
 
 
 @pytest.fixture
@@ -495,6 +485,43 @@ def test_estate_sparse_binary_fingerprint(
     X_emf = estate.transform(X)
     X_rdkit = csr_array(
         np.array([FingerprintMol(x) for x in X_for_rdkit])[:, 0] > 0
+    )
+    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
+        raise AssertionError
+
+
+def test_pharmacophore_fingerprint(smiles_molecules, mol_object_molecules):
+    X = smiles_molecules
+    X_for_rdkit = mol_object_molecules
+
+    fp_transformer = PharmacophoreFingerprint(n_jobs=-1)
+    X_emf = fp_transformer.transform(X)
+
+    factory = Gobbi_Pharm2D.factory
+
+    X_for_rdkit = [AddHs(x) for x in X_for_rdkit]
+    X_rdkit = np.array(
+        [Generate.Gen2DFingerprint(x, factory) for x in X_for_rdkit]
+    )
+
+    if not np.all(X_emf == X_rdkit):
+        raise AssertionError
+
+
+def test_pharmacophore_sparse_fingerprint(
+    smiles_molecules, mol_object_molecules
+):
+    X = smiles_molecules
+    X_for_rdkit = mol_object_molecules
+
+    fp_transformer = PharmacophoreFingerprint(n_jobs=-1, sparse=True)
+    X_emf = fp_transformer.transform(X)
+
+    factory = Gobbi_Pharm2D.factory
+
+    X_for_rdkit = [AddHs(x) for x in X_for_rdkit]
+    X_rdkit = csr_array(
+        [Generate.Gen2DFingerprint(x, factory) for x in X_for_rdkit]
     )
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
         raise AssertionError
