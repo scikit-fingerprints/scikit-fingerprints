@@ -28,7 +28,7 @@ from skfp import *
 from skfp import ERGFingerprint  # E3FP,
 from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint
 
-smiles_data = pd.read_csv("./hiv_mol.csv.zip", nrows=100)["smiles"]
+smiles_data = pd.read_csv("tests/hiv_mol.csv.zip", nrows=100)["smiles"]
 
 
 @pytest.fixture
