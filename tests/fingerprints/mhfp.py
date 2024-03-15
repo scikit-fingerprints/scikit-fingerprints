@@ -2,7 +2,6 @@ import numpy as np
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from scipy.sparse import csr_array
 
-from utils import sparse_equal
 from skfp.fingerprints import MHFPFingerprint
 
 
@@ -31,4 +30,4 @@ def test_mhfp_sparse_bit_fingerprint(smiles_list, mols_list):
     )
     X_rdkit = csr_array(X_rdkit)
 
-    assert sparse_equal(X_skfp, X_rdkit)
+    assert np.array_equal(X_skfp.data, X_rdkit.data)

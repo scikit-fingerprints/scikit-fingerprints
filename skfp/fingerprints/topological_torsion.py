@@ -13,8 +13,6 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         fp_size: int = 2048,
         include_chirality: bool = False,
         torsion_atom_count: int = 4,
-        count_simulation: bool = True,
-        count_bounds: Optional[List] = None,
         atom_invariants_generator: Optional[List] = None,
         count: bool = False,
         sparse: bool = False,
@@ -32,8 +30,6 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         self.fp_size = fp_size
         self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
-        self.count_simulation = count_simulation
-        self.count_bounds = count_bounds
         self.atom_invariants_generator = atom_invariants_generator
 
     def _get_generator(self):
@@ -44,8 +40,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         return GetTopologicalTorsionGenerator(
             includeChirality=self.include_chirality,
             torsionAtomCount=self.torsion_atom_count,
-            countSimulation=self.count_simulation,
-            countBounds=self.count_bounds,
+            countSimulation=self.count,
             atomInvariantsGenerator=self.atom_invariants_generator,
             fpSize=self.fp_size,
         )

@@ -5,7 +5,6 @@ from rdkit.Chem.Pharm2D.Generate import Gen2DFingerprint
 from rdkit.Chem.rdDistGeom import EmbedMolecule
 from scipy.sparse import csr_array
 
-from utils import sparse_equal
 from skfp.fingerprints import PharmacophoreFingerprint
 
 
@@ -39,7 +38,7 @@ def test_pharmacophore_sparse_bit_fingerprint(smiles_list, mols_list):
     factory = Gobbi_Pharm2D.factory
     X_rdkit = csr_array([Gen2DFingerprint(mol, factory) for mol in mols_list])
 
-    assert sparse_equal(X_skfp, X_rdkit)
+    assert np.array_equal(X_skfp.data, X_rdkit.data)
 
 
 def test_3D_pharmacophore_sparse_bit_fingerprint(smiles_list, mols_list):
@@ -59,4 +58,4 @@ def test_3D_pharmacophore_sparse_bit_fingerprint(smiles_list, mols_list):
         ]
     )
 
-    assert sparse_equal(X_skfp, X_rdkit)
+    assert np.array_equal(X_skfp.data, X_rdkit.data)

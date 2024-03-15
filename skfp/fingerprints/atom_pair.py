@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -15,8 +15,6 @@ class AtomPairFingerprint(FingerprintTransformer):
         max_distance: int = 30,
         include_chirality: bool = False,
         use_2D: bool = True,
-        count_simulation: bool = True,
-        count_bounds: Optional[List] = None,
         count: bool = False,
         sparse: bool = False,
         n_jobs: int = None,
@@ -35,20 +33,17 @@ class AtomPairFingerprint(FingerprintTransformer):
         self.max_distance = max_distance
         self.include_chirality = include_chirality
         self.use_2D = use_2D
-        self.count_simulation = count_simulation
-        self.count_bounds = count_bounds
 
     def _get_generator(self):
         from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
 
         return GetAtomPairGenerator(
+            fpSize=self.fp_size,
             minDistance=self.min_distance,
             maxDistance=self.max_distance,
             includeChirality=self.include_chirality,
             use2D=self.use_2D,
-            countSimulation=self.count_simulation,
-            countBounds=self.count_bounds,
-            fpSize=self.fp_size,
+            countSimulation=self.count,
         )
 
     def _calculate_fingerprint(

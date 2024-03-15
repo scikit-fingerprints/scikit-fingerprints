@@ -2,7 +2,6 @@ import numpy as np
 import scipy.sparse
 from rdkit.Chem.EState.Fingerprinter import FingerprintMol
 
-from utils import sparse_equal
 from skfp.fingerprints import EStateFingerprint
 
 
@@ -43,7 +42,7 @@ def test_estate_sparse_bit_fingerprint(smiles_list, mols_list):
     X_rdkit = scipy.sparse.vstack([FingerprintMol(mol) for mol in mols_list])
     X_rdkit = X_rdkit[:, 0] > 0
 
-    assert sparse_equal(X_skfp, X_rdkit)
+    assert np.array_equal(X_skfp.data, X_rdkit.data)
 
 
 def test_estate_sparse_count_fingerprint(smiles_list, mols_list):
@@ -53,7 +52,7 @@ def test_estate_sparse_count_fingerprint(smiles_list, mols_list):
     X_rdkit = scipy.sparse.vstack([FingerprintMol(mol) for mol in mols_list])
     X_rdkit = X_rdkit[:, 0]
 
-    assert sparse_equal(X_skfp, X_rdkit)
+    assert np.array_equal(X_skfp.data, X_rdkit.data)
 
 
 def test_estate_sparse_sum_fingerprint(smiles_list, mols_list):
@@ -63,4 +62,4 @@ def test_estate_sparse_sum_fingerprint(smiles_list, mols_list):
     X_rdkit = scipy.sparse.vstack([FingerprintMol(mol) for mol in mols_list])
     X_rdkit = X_rdkit[:, 1]
 
-    assert sparse_equal(X_skfp, X_rdkit)
+    assert np.array_equal(X_skfp.data, X_rdkit.data)

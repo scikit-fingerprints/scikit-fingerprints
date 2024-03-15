@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.sparse
 
-from utils import sparse_equal
 from skfp.fingerprints import MAP4Fingerprint
 
 
@@ -59,7 +58,7 @@ def test_map4_sparse_bit_fingerprint(smiles_list, mols_list):
         ]
     )
 
-    assert sparse_equal(X_skfp, X_map4)
+    assert np.array_equal(X_skfp.data, X_map4.data)
 
 
 def test_map4_sparse_count_fingerprint(smiles_list, mols_list):
@@ -78,4 +77,4 @@ def test_map4_sparse_count_fingerprint(smiles_list, mols_list):
         ]
     )
 
-    assert sparse_equal(X_skfp, X_map4)
+    assert np.array_equal(X_skfp.data, X_map4.data)

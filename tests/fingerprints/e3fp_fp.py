@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.sparse
 
-from utils import sparse_equal
 from skfp.fingerprints import E3FPFingerprint
 
 
@@ -32,4 +31,4 @@ def test_e3fp_sparse_bit_fingerprint(smiles_list):
         [e3fp_fp._calculate_single_mol_fingerprint(smi) for smi in smiles_list]
     )
 
-    assert sparse_equal(X_skfp, X_e3fp)
+    assert np.array_equal(X_skfp.data, X_e3fp.data)

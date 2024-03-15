@@ -2,7 +2,6 @@ import numpy as np
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 from scipy.sparse import csr_array
 
-from utils import sparse_equal
 from skfp.fingerprints import ERGFingerprint
 
 
@@ -21,4 +20,4 @@ def test_erg_sparse_bit_fingerprint(smiles_list, mols_list):
 
     X_rdkit = csr_array([GetErGFingerprint(mol) for mol in mols_list])
 
-    assert sparse_equal(X_skfp, X_rdkit)
+    assert np.array_equal(X_skfp.data, X_rdkit.data)

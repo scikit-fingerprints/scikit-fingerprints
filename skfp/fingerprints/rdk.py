@@ -15,8 +15,6 @@ class RDKitFingerprint(FingerprintTransformer):
         max_path: int = 7,
         use_hs: bool = True,
         use_bond_order: bool = True,
-        count_simulation: bool = False,
-        count_bounds: Optional[List] = None,
         num_bits_per_feature: int = 2,
         count: bool = False,
         sparse: bool = False,
@@ -36,8 +34,6 @@ class RDKitFingerprint(FingerprintTransformer):
         self.max_path = max_path
         self.use_hs = use_hs
         self.use_bond_order = use_bond_order
-        self.count_simulation = count_simulation
-        self.count_bounds = count_bounds
         self.num_bits_per_feature = num_bits_per_feature
 
     def _get_generator(self):
@@ -48,8 +44,7 @@ class RDKitFingerprint(FingerprintTransformer):
             maxPath=self.max_path,
             useHs=self.use_hs,
             useBondOrder=self.use_bond_order,
-            countSimulation=self.count_simulation,
-            countBounds=self.count_bounds,
+            countSimulation=self.count,
             fpSize=self.fp_size,
             numBitsPerFeature=self.num_bits_per_feature,
         )
