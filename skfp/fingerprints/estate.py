@@ -12,21 +12,16 @@ class EStateFingerprint(FingerprintTransformer):
         self,
         variant: str = "sum",
         sparse: bool = False,
-        count: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
     ):
-        if variant not in ["sum", "binary"]:
-            raise ValueError("Variant must be 'sum' or 'binary'")
-
-        if self.count and variant == "sum":
-            raise ValueError("Count version only available with 'sum' variant")
+        if variant not in ["bit", "count", "sum"]:
+            raise ValueError("Variant must be one of: 'bit', 'count', 'sum'")
 
         super().__init__(
             n_jobs=n_jobs,
             sparse=sparse,
             verbose=verbose,
-            count=count,
         )
         self.variant = variant
 
@@ -38,11 +33,11 @@ class EStateFingerprint(FingerprintTransformer):
         X = self._validate_input(X)
 
         X = np.array([FingerprintMol(x) for x in X])
-        if self.count:
-            X = X[:, 0]
-        elif self.variant == "binary":
+        if self.variant == "bit":
             X = X[:, 0] > 0
-        else:
+        elif self.variant == "count":
+            X = X[:, 0]
+        else:  # "sum" variant
             X = X[:, 1]
 
         if self.sparse:

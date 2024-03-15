@@ -25,8 +25,8 @@ from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 from skfp import (
-    ECFP,
-    MHFP,
+    ECFPFingerprint,
+    MHFPFingerprint,
     AtomPairFingerprint,
     AvalonFingerprint,
     ERGFingerprint,
@@ -345,7 +345,7 @@ if __name__ == "__main__":
 
     # ECFP
     print("ECFP")
-    ECFP_skfp_times = get_all_times_skfp(X, ECFP)
+    ECFP_skfp_times = get_all_times_skfp(X, ECFPFingerprint)
     generator = fpgens.GetMorganGenerator()
     ECFP_sequential_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
@@ -428,7 +428,7 @@ if __name__ == "__main__":
 
     # MHFP FINGERPRINT
     print("MHFP")
-    MHFP_skfp_times = get_all_times_skfp(X, MHFP)
+    MHFP_skfp_times = get_all_times_skfp(X, MHFPFingerprint)
     MHFP_sequential_times = get_all_sequential_times(X, get_mhfp)
     save_all_results(
         MHFP_skfp_times, MHFP_sequential_times, n_molecules, "MHFP", True

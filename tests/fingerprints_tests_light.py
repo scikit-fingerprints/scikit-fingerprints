@@ -26,7 +26,6 @@ from scipy.sparse import csr_array, vstack
 
 from skfp import *
 from skfp import ERGFingerprint  # E3FP,
-from skfp.helpers.map4_mhfp_helpers import get_map4_fingerprint
 
 smiles_data = pd.read_csv("tests/hiv_mol.csv.zip", nrows=100)["smiles"]
 
@@ -45,7 +44,7 @@ def test_ECFP_bit_fingerprint(smiles_molecules, mol_object_molecules):
     X = smiles_molecules
     X_for_rdkit = mol_object_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    ecfp = ECFP(n_jobs=-1, sparse=False, count=False)
+    ecfp = ECFPFingerprint(n_jobs=-1, sparse=False, count=False)
     X_emf = ecfp.transform(X)
     X_rdkit = np.array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
     if not np.all(X_emf == X_rdkit):
@@ -56,7 +55,7 @@ def test_ECFP_sparse_fingerprint(smiles_molecules, mol_object_molecules):
     X = smiles_molecules
     X_for_rdkit = mol_object_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    ecfp = ECFP(n_jobs=-1, sparse=True, count=False)
+    ecfp = ECFPFingerprint(n_jobs=-1, sparse=True, count=False)
     X_emf = ecfp.transform(X)
     X_rdkit = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
@@ -67,7 +66,7 @@ def test_ECFP_count_fingerprint(smiles_molecules, mol_object_molecules):
     X = smiles_molecules
     X_for_rdkit = mol_object_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    ecfp = ECFP(n_jobs=-1, sparse=False, count=True)
+    ecfp = ECFPFingerprint(n_jobs=-1, sparse=False, count=True)
     X_emf = ecfp.transform(X)
     X_rdkit = np.array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
@@ -80,7 +79,7 @@ def test_ECFP_sparse_count_fingerprint(smiles_molecules, mol_object_molecules):
     X = smiles_molecules
     X_for_rdkit = mol_object_molecules
     fp_gen = fpgens.GetMorganGenerator()
-    ecfp = ECFP(n_jobs=-1, sparse=True, count=True)
+    ecfp = ECFPFingerprint(n_jobs=-1, sparse=True, count=True)
     X_emf = ecfp.transform(X)
     X_rdkit = csr_array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
@@ -94,7 +93,7 @@ def test_FCFP_bit_fingerprint(smiles_molecules, mol_object_molecules):
     X_for_rdkit = mol_object_molecules
     invgen = fpgens.GetMorganFeatureAtomInvGen()
     fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
-    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=False, count=False)
+    ecfp = ECFPFingerprint(use_fcfp=True, n_jobs=-1, sparse=False, count=False)
     X_emf = ecfp.transform(X)
     X_rdkit = np.array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
     if not np.all(X_emf == X_rdkit):
@@ -106,7 +105,7 @@ def test_FCFP_sparse_fingerprint(smiles_molecules, mol_object_molecules):
     X_for_rdkit = mol_object_molecules
     invgen = fpgens.GetMorganFeatureAtomInvGen()
     fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
-    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=True, count=False)
+    ecfp = ECFPFingerprint(use_fcfp=True, n_jobs=-1, sparse=True, count=False)
     X_emf = ecfp.transform(X)
     X_rdkit = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
     if not np.all(X_emf.toarray() == X_rdkit.toarray()):
@@ -118,7 +117,7 @@ def test_FCFP_count_fingerprint(smiles_molecules, mol_object_molecules):
     X_for_rdkit = mol_object_molecules
     invgen = fpgens.GetMorganFeatureAtomInvGen()
     fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
-    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=False, count=True)
+    ecfp = ECFPFingerprint(use_fcfp=True, n_jobs=-1, sparse=False, count=True)
     X_emf = ecfp.transform(X)
     X_rdkit = np.array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
@@ -132,58 +131,8 @@ def test_FCFP_sparse_count_fingerprint(smiles_molecules, mol_object_molecules):
     X_for_rdkit = mol_object_molecules
     invgen = fpgens.GetMorganFeatureAtomInvGen()
     fp_gen = fpgens.GetMorganGenerator(atomInvariantsGenerator=invgen)
-    ecfp = ECFP(use_fcfp=True, n_jobs=-1, sparse=True, count=True)
+    ecfp = ECFPFingerprint(use_fcfp=True, n_jobs=-1, sparse=True, count=True)
     X_emf = ecfp.transform(X)
-    X_rdkit = csr_array(
-        [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
-    )
-    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
-        raise AssertionError
-
-
-def test_atom_pair_bit_fingerprint(smiles_molecules, mol_object_molecules):
-    X = smiles_molecules
-    X_for_rdkit = mol_object_molecules
-    fp_gen = fpgens.GetAtomPairGenerator()
-    atom_pair = AtomPairFingerprint(n_jobs=-1, sparse=False, count=False)
-    X_emf = atom_pair.transform(X)
-    X_rdkit = np.array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
-    if not np.all(X_emf == X_rdkit):
-        raise AssertionError
-
-
-def test_atom_pair_sparse_fingerprint(smiles_molecules, mol_object_molecules):
-    X = smiles_molecules
-    X_for_rdkit = mol_object_molecules
-    fp_gen = fpgens.GetAtomPairGenerator()
-    atom_pair = AtomPairFingerprint(n_jobs=-1, sparse=True, count=False)
-    X_emf = atom_pair.transform(X)
-    X_rdkit = csr_array([fp_gen.GetFingerprint(x) for x in X_for_rdkit])
-    if not np.all(X_emf.toarray() == X_rdkit.toarray()):
-        raise AssertionError
-
-
-def test_atom_pair_cound_fingerprint(smiles_molecules, mol_object_molecules):
-    X = smiles_molecules
-    X_for_rdkit = mol_object_molecules
-    fp_gen = fpgens.GetAtomPairGenerator()
-    atom_pair = AtomPairFingerprint(n_jobs=-1, sparse=False, count=True)
-    X_emf = atom_pair.transform(X)
-    X_rdkit = np.array(
-        [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
-    )
-    if not np.all(X_emf == X_rdkit):
-        raise AssertionError
-
-
-def test_atom_pair_sparse_count_fingerprint(
-    smiles_molecules, mol_object_molecules
-):
-    X = smiles_molecules
-    X_for_rdkit = mol_object_molecules
-    fp_gen = fpgens.GetAtomPairGenerator()
-    atom_pair = AtomPairFingerprint(n_jobs=-1, sparse=True, count=True)
-    X_emf = atom_pair.transform(X)
     X_rdkit = csr_array(
         [fp_gen.GetCountFingerprint(x).ToList() for x in X_for_rdkit]
     )
@@ -343,7 +292,7 @@ def test_map4_sparse_count_fingerprint(smiles_molecules, mol_object_molecules):
 def test_mhfp_fingerprint(smiles_molecules, mol_object_molecules):
     X = smiles_molecules
     X_for_rdkit = mol_object_molecules
-    mhfp = MHFP(random_state=0, n_jobs=-1)
+    mhfp = MHFPFingerprint(random_state=0, n_jobs=-1)
     X_emf = mhfp.transform(X)
     encoder = MHFPEncoder(2048, 0)
     X_rdkit = np.array(
@@ -359,7 +308,7 @@ def test_mhfp_fingerprint(smiles_molecules, mol_object_molecules):
 def test_mhfp_sparse_fingerprint(smiles_molecules, mol_object_molecules):
     X = smiles_molecules
     X_for_rdkit = mol_object_molecules
-    mhfp = MHFP(random_state=0, n_jobs=-1, sparse=True)
+    mhfp = MHFPFingerprint(random_state=0, n_jobs=-1, sparse=True)
     X_emf = mhfp.transform(X)
     encoder = MHFPEncoder(2048, 0)
     X_rdkit = csr_array(
@@ -718,7 +667,7 @@ def test_input_validation(smiles_molecules):
     X_test = X.copy()
 
     rdkit_generator = fpgens.GetMorganGenerator()
-    ecfp = ECFP(n_jobs=-1)
+    ecfp = ECFPFingerprint(n_jobs=-1)
     fp_function = rdkit_generator.GetFingerprint
 
     X_test = np.array([Chem.MolFromSmiles(x) for x in X_test])

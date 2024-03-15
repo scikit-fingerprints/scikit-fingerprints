@@ -11,8 +11,8 @@ from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
-    ECFP,
-    MHFP,
+    ECFPFingerprint,
+    MHFPFingerprint,
     AtomPairFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
@@ -66,13 +66,13 @@ for dataset_name, property_name in zip(dataset_names, property_names):
         "MHFP",
     ]
     fprints = [
-        ECFP,
+        ECFPFingerprint,
         AtomPairFingerprint,
         TopologicalTorsionFingerprint,
         MACCSKeysFingerprint,
         ERGFingerprint,
         MAP4Fingerprint,
-        MHFP,
+        MHFPFingerprint,
     ]
 
     clf_names = ["RF", "LogReg", "LGBM"]

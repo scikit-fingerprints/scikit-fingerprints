@@ -7,7 +7,7 @@ from scipy.sparse import csr_array
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class ECFP(FingerprintTransformer):
+class ECFPFingerprint(FingerprintTransformer):
     def __init__(
         self,
         fp_size: int = 2048,
