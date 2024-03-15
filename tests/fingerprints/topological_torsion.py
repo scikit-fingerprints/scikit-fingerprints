@@ -22,7 +22,9 @@ def test_topological_torsion_count_fingerprint(smiles_list, mols_list):
     X_skfp = tt_fp.transform(smiles_list)
 
     fp_gen = GetTopologicalTorsionGenerator(countSimulation=True)
-    X_rdkit = np.array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
+    X_rdkit = np.array(
+        [fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list]
+    )
 
     assert np.array_equal(X_skfp, X_rdkit)
 

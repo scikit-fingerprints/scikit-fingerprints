@@ -10,10 +10,10 @@ def smiles_list() -> list[str]:
 
 
 @pytest.fixture(scope="session")
-def smiles_list_short() -> list[str]:
-    # shorter list of small molecules, for computationally demanding fingerprints
+def smallest_mols_smiles_list() -> list[str]:
+    # list of smallest molecules, for computationally demanding fingerprints
     smiles = pd.read_csv("tests/hiv_mol.csv.zip")["smiles"]
-    smiles = smiles.sort_values(by=lambda smi: len(smi))
+    smiles = smiles.sort_values(key=lambda smi: smi.str.len())
     return smiles.tolist()[:100]
 
 

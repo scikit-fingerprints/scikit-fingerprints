@@ -9,8 +9,8 @@ from e3fp.conformer.generate import (
     POOL_MULTIPLIER_DEF,
     RMSD_CUTOFF_DEF,
 )
-from rdkit.Chem import MolFromSmiles
-from rdkit.Chem.PropertyMol import PropertyMol
+from e3fp.conformer.generator import ConformerGenerator
+from e3fp.pipeline import fprints_from_mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
@@ -47,7 +47,7 @@ class E3FPFingerprint(FingerprintTransformer):
             sparse=sparse,
             random_state=random_state,
         )
-        self.fold_bits = fp_size
+        self.fp_size = fp_size
         self.n_bits_before_hash = n_bits_before_hash
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
@@ -70,13 +70,13 @@ class E3FPFingerprint(FingerprintTransformer):
         if self.sparse:
             return scipy.sparse.vstack(result)
         else:
-            return np.array([fp.toarray().squeeze() for fp in result])
+            return np.stack(result)
 
     def _calculate_single_mol_fingerprint(
         self, smiles: str
     ) -> Union[np.ndarray, csr_array]:
-        from e3fp.conformer.generator import ConformerGenerator
-        from e3fp.pipeline import fprints_from_mol
+        from rdkit.Chem import MolFromSmiles
+        from rdkit.Chem.PropertyMol import PropertyMol
 
         conf_gen = ConformerGenerator(
             first=self.num_conf_used,
@@ -114,9 +114,8 @@ class E3FPFingerprint(FingerprintTransformer):
             else:
                 fp = fps[0]
 
-            fp = fp.fold(self.fold_bits)
+            fp = fp.fold(self.fp_size)
             return fp.to_vector(sparse=self.sparse)
         except RuntimeError:
-            return csr_array(
-                np.full(shape=self.n_bits_before_hash, fill_value=-1)
-            )
+            fp = np.full(shape=self.fp_size, fill_value=-1)
+            return csr_array(fp) if self.sparse else fp

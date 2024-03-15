@@ -10,7 +10,9 @@ def test_atom_pair_bit_fingerprint(smiles_list, mols_list):
     X_skfp = atom_pair_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator(countSimulation=False)
-    X_rdkit = np.array([fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list])
+    X_rdkit = np.array(
+        [fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list]
+    )
 
     assert np.array_equal(X_skfp, X_rdkit)
 
@@ -20,7 +22,9 @@ def test_atom_pair_count_fingerprint(smiles_list, mols_list):
     X_skfp = atom_pair_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator(countSimulation=True)
-    X_rdkit = np.array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
+    X_rdkit = np.array(
+        [fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list]
+    )
 
     assert np.array_equal(X_skfp, X_rdkit)
 
@@ -30,7 +34,9 @@ def test_atom_pair_sparse_bit_fingerprint(smiles_list, mols_list):
     X_skfp = atom_pair_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator(countSimulation=False)
-    X_rdkit = csr_array([fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list])
+    X_rdkit = csr_array(
+        [fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list]
+    )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
 
@@ -40,6 +46,8 @@ def test_atom_pair_sparse_count_fingerprint(smiles_list, mols_list):
     X_skfp = atom_pair_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator(countSimulation=True)
-    X_rdkit = csr_array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
+    X_rdkit = csr_array(
+        [fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list]
+    )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)

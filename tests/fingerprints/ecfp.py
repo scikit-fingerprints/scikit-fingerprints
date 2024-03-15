@@ -22,7 +22,9 @@ def test_ecfp_count_fingerprint(smiles_list, mols_list):
     X_skfp = ecfp_fp.transform(smiles_list)
 
     fp_gen = GetMorganGenerator()
-    X_rdkit = np.array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
+    X_rdkit = np.array(
+        [fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list]
+    )
 
     assert np.array_equal(X_skfp, X_rdkit)
 
