@@ -10,6 +10,7 @@ from skfp.fingerprints.base import FingerprintTransformer
 class AutocorrFingerprint(FingerprintTransformer):
     def __init__(
         self,
+        use_3D: bool = False,
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
@@ -19,12 +20,18 @@ class AutocorrFingerprint(FingerprintTransformer):
             n_jobs=n_jobs,
             verbose=verbose,
         )
+        self.use_3D = use_3D
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem.rdMolDescriptors import CalcAUTOCORR2D
+        from rdkit.Chem.rdMolDescriptors import CalcAUTOCORR2D, CalcAUTOCORR3D
 
-        X = self._validate_input(X)
-        X = [CalcAUTOCORR2D(x) for x in X]
+        if not self.use_3D:
+            X = self._validate_input(X)
+            X = [CalcAUTOCORR2D(mol) for mol in X]
+        else:
+            X = self._validate_input(X, require_conf_ids=True)
+            X = [CalcAUTOCORR3D(mol, confId=mol.conf_id) for mol in X]
+
         return csr_array(X) if self.sparse else np.array(X)

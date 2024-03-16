@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
-from rdkit.Chem import MolFromSmiles, Mol
+from preprocessing import ConformerGenerator
+from rdkit.Chem import Mol, MolFromSmiles
 
 
 @pytest.fixture(scope="session")
@@ -33,3 +34,9 @@ def smallest_smiles_list() -> list[str]:
 def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
     # list of smallest molecules, for computationally demanding fingerprints
     return [MolFromSmiles(smi) for smi in smallest_smiles_list]
+
+
+@pytest.fixture(scope="session")
+def mols_conformers_list(smallest_mols_list) -> list[Mol]:
+    conf_gen = ConformerGenerator()
+    return conf_gen.transform(smallest_mols_list)

@@ -25,6 +25,6 @@ class GETAWAYFingerprint(FingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import CalcGETAWAY
 
-        X = self._validate_input(X, require_conf_ids=True, mol_from_smiles=False)
+        X = self._validate_input(X, require_conf_ids=True)
         X = [CalcGETAWAY(mol, confId=mol.conf_id) for mol in X]
         return csr_array(X) if self.sparse else np.array(X)
