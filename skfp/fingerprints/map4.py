@@ -23,6 +23,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         self,
         fp_size: int = 1024,
         radius: int = 2,
+        output_raw_hashes: bool = False,
         sparse: bool = False,
         count: bool = False,
         n_jobs: int = None,
@@ -36,55 +37,60 @@ class MAP4Fingerprint(FingerprintTransformer):
             verbose=verbose,
             random_state=random_state,
         )
-        self.dimensions = fp_size
+        self.fp_size = fp_size
         self.radius = radius
+        self.output_raw_hashes = output_raw_hashes
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
         X = self._validate_input(X)
-        X = [
-            self._calculate_single_mol_fingerprint(
-                x,
-                dimensions=self.dimensions,
-                radius=self.radius,
-                count=self.count,
-                random_state=self.random_state,
-            )
-            for x in X
-        ]
+        X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
+
+        if not self.output_raw_hashes:
+            X = np.mod(X, self.fp_size)
+            X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
+            if not self.count:
+                X = (X > 0).astype(int)
 
         if self.sparse:
             return csr_array(np.stack(X))
         else:
             return np.stack(X)
 
-    def _calculate_single_mol_fingerprint(
-        self,
-        mol: Mol,
-        dimensions: int = 1024,
-        radius: int = 2,
-        count: bool = False,
-        random_state: int = 0,
-    ):
+    def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
         # TODO: does not work for some molecules, for now handled by try/except
         try:
-            atoms_envs = self._get_atom_envs(mol, radius)
-            atom_env_pairs = self._get_atom_pair_shingles(
-                mol, atoms_envs, radius, count
-            )
-            encoder = MinHash(num_perm=dimensions, seed=random_state)
+            atoms_envs = self._get_atom_envs(mol)
+            atom_env_pairs = self._get_atom_pair_shingles(mol, atoms_envs)
+            encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
             encoder.update_batch(atom_env_pairs)
-            return encoder.digest()
+            fp = encoder.digest()
+            return fp
         except ValueError:
-            return np.full(shape=dimensions, fill_value=-1)
+            return np.full(shape=self.fp_size, fill_value=-1)
 
-    def _find_neighborhood(self, mol: Mol, idx: int, radius: int) -> str:
+    def _get_atom_envs(self, mol: Mol) -> dict:
+        """
+        For each atom get its environment, i.e. radius-hop neighborhood.
+        """
+        atoms_env = defaultdict(list)
+        for atom in mol.GetAtoms():
+            idx = atom.GetIdx()
+            new_values = [
+                self._find_neighborhood(mol, idx, r)
+                for r in range(1, self.radius + 1)
+            ]
+            atoms_env[idx].extend(new_values)
+
+        return atoms_env
+
+    def _find_neighborhood(self, mol: Mol, idx: int, n_radius: int) -> str:
         """
         Function for getting the neighborhood for given atom, i.e. structures
         adjacent to it.
         """
-        env = FindAtomEnvironmentOfRadiusN(mol, idx, radius)
+        env = FindAtomEnvironmentOfRadiusN(mol, idx, n_radius)
         atom_map = {}
 
         submol = PathToSubmol(mol, env, atomMap=atom_map)
@@ -100,24 +106,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         else:
             return ""
 
-    def _get_atom_envs(self, mol: Mol, radius: int) -> dict:
-        """
-        For each atom get its environment, i.e. radius-hop neighborhood.
-        """
-        atoms_env = defaultdict(list)
-        for atom in mol.GetAtoms():
-            idx = atom.GetIdx()
-            new_values = [
-                self._find_neighborhood(mol, idx, r)
-                for r in range(1, radius + 1)
-            ]
-            atoms_env[idx].extend(new_values)
-
-        return atoms_env
-
-    def _get_atom_pair_shingles(
-        self, mol: Mol, atoms_envs: dict, radius: int, count: bool
-    ) -> List[str]:
+    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> List[str]:
         """
         Gets a list of atom-pair molecular shingles - circular structures written
         as SMILES, separated by the bond distance between the two atoms along the
@@ -139,7 +128,7 @@ class MAP4Fingerprint(FingerprintTransformer):
             env_a = atoms_envs[idx_1]
             env_b = atoms_envs[idx_2]
 
-            for i in range(radius):
+            for i in range(self.radius):
                 env_a_radius = env_a[i]
                 env_b_radius = env_b[i]
 
@@ -149,12 +138,12 @@ class MAP4Fingerprint(FingerprintTransformer):
                 ordered = sorted([env_a_radius, env_b_radius])
                 shingle = f"{ordered[0]}|{dist}|{ordered[1]}"
 
-                if count:
+                if self.count:
                     shingle_dict[shingle] += 1
                 else:
                     atom_pairs.append(shingle.encode("utf-8"))
 
-        if count:
+        if self.count:
             # shingle in format:
             # (radius i neighborhood of atom A) | (distance between atoms A and B) | \
             # (radius i neighborhood of atom B) | (shingle count)

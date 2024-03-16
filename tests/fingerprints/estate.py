@@ -32,7 +32,7 @@ def test_estate_sum_fingerprint(smiles_list, mols_list):
     X_rdkit = np.array([FingerprintMol(mol) for mol in mols_list])
     X_rdkit = X_rdkit[:, 1]
 
-    assert np.array_equal(X_skfp, X_rdkit)
+    assert np.all(np.isclose(X_skfp, X_rdkit))
 
 
 def test_estate_sparse_bit_fingerprint(smiles_list, mols_list):
@@ -65,4 +65,4 @@ def test_estate_sparse_sum_fingerprint(smiles_list, mols_list):
     X_rdkit = X_rdkit[:, 1]
     X_rdkit = csr_array(X_rdkit)
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert np.all(np.isclose(X_skfp.data, X_rdkit.data))

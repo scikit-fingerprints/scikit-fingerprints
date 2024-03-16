@@ -16,11 +16,14 @@ class MHFPFingerprint(FingerprintTransformer):
         rings: bool = True,
         isomeric: bool = False,
         kekulize: bool = True,
+        output_raw_hashes: bool = False,
+        count: bool = False,
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
     ):
         super().__init__(
+            count=count,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
@@ -31,6 +34,7 @@ class MHFPFingerprint(FingerprintTransformer):
         self.rings = rings
         self.isomeric = isomeric
         self.kekulize = kekulize
+        self.output_raw_hashes = output_raw_hashes
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
@@ -39,8 +43,8 @@ class MHFPFingerprint(FingerprintTransformer):
 
         X = self._validate_input(X)
 
+        # outputs raw hash values, not feature vectors!
         encoder = MHFPEncoder(self.fp_size, self.random_state)
-
         X = MHFPEncoder.EncodeMolsBulk(
             encoder,
             X,
@@ -50,6 +54,13 @@ class MHFPFingerprint(FingerprintTransformer):
             isomeric=self.isomeric,
             kekulize=self.kekulize,
         )
+        X = np.array(X)
+
+        if not self.output_raw_hashes:
+            X = np.mod(X, self.fp_size)
+            X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
+            if not self.count:
+                X = (X > 0).astype(int)
 
         if self.sparse:
             return csr_array(X)
