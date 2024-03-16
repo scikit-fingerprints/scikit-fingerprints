@@ -11,6 +11,7 @@ from .map4 import MAP4Fingerprint
 from .mhfp import MHFPFingerprint
 from .morse import MORSEFingerprint
 from .pharmacophore import PharmacophoreFingerprint
+from .rdf import RDFFingerprint
 from .rdk import RDKitFingerprint
 from .secfp import SECFPFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
