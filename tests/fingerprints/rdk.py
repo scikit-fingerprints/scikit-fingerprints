@@ -10,9 +10,7 @@ def test_rdkit_bit_fingerprint(smiles_list, mols_list):
     X_skfp = rdkit_fp.transform(smiles_list)
 
     fp_gen = GetRDKitFPGenerator(countSimulation=False)
-    X_rdkit = np.array(
-        [fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list]
-    )
+    X_rdkit = np.array([fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list])
 
     assert np.array_equal(X_skfp, X_rdkit)
 
@@ -22,9 +20,7 @@ def test_rdkit_count_fingerprint(smiles_list, mols_list):
     X_skfp = rdkit_fp.transform(smiles_list)
 
     fp_gen = GetRDKitFPGenerator(countSimulation=True)
-    X_rdkit = np.array(
-        [fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list]
-    )
+    X_rdkit = np.array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
 
     assert np.array_equal(X_skfp, X_rdkit)
 
@@ -34,9 +30,7 @@ def test_rdkit_sparse_bit_fingerprint(smiles_list, mols_list):
     X_skfp = rdkit_fp.transform(smiles_list)
 
     fp_gen = GetRDKitFPGenerator(countSimulation=False)
-    X_rdkit = csr_array(
-        [fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list]
-    )
+    X_rdkit = csr_array([fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list])
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
 
@@ -46,8 +40,6 @@ def test_rdkit_sparse_count_fingerprint(smiles_list, mols_list):
     X_skfp = rdkit_fp.transform(smiles_list)
 
     fp_gen = GetRDKitFPGenerator(countSimulation=True)
-    X_rdkit = csr_array(
-        [fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list]
-    )
+    X_rdkit = csr_array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)

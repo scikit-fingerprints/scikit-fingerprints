@@ -1,6 +1,6 @@
 import itertools
 from collections import defaultdict
-from typing import Union, List
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -78,8 +78,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             new_values = [
-                self._find_neighborhood(mol, idx, r)
-                for r in range(1, self.radius + 1)
+                self._find_neighborhood(mol, idx, r) for r in range(1, self.radius + 1)
             ]
             atoms_env[idx].extend(new_values)
 

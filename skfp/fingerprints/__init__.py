@@ -14,3 +14,4 @@ from .pharmacophore import PharmacophoreFingerprint
 from .rdf import RDFFingerprint
 from .rdk import RDKitFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
+from .whim import WHIMFingerprint

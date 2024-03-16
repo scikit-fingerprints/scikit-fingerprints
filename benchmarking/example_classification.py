@@ -11,12 +11,12 @@ from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import MinMaxScaler
 
 from skfp import (
-    ECFPFingerprint,
-    MHFPFingerprint,
     AtomPairFingerprint,
+    ECFPFingerprint,
     ERGFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
+    MHFPFingerprint,
     TopologicalTorsionFingerprint,
 )
 
@@ -110,9 +110,7 @@ for dataset_name, property_name in zip(dataset_names, property_names):
 
         end = time()
         execution_time = end - start
-        print(
-            f" - Time of fingerprints computing : {round(execution_time,2)}s"
-        )
+        print(f" - Time of fingerprints computing : {round(execution_time,2)}s")
         records[-1]["execution_time"] = execution_time
         for classifier, clf_name, clf_kwargs in zip(
             classifiers, clf_names, classifier_kwargs
@@ -122,9 +120,7 @@ for dataset_name, property_name in zip(dataset_names, property_names):
             for epoch in range(10):
                 clf = classifier(random_state=epoch, **clf_kwargs)
                 clf.fit(X_fp_train, y_train)
-                scores.append(
-                    roc_auc_score(y_test, clf.predict_proba(X_fp_test)[:, 1])
-                )
+                scores.append(roc_auc_score(y_test, clf.predict_proba(X_fp_test)[:, 1]))
                 scores_valid.append(
                     roc_auc_score(y_valid, clf.predict_proba(X_fp_valid)[:, 1])
                 )

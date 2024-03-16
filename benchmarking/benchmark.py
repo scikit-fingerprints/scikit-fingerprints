@@ -25,14 +25,14 @@ from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
 from skfp import (
-    ECFPFingerprint,
-    MHFPFingerprint,
     AtomPairFingerprint,
     AvalonFingerprint,
+    ECFPFingerprint,
     ERGFingerprint,
     EStateFingerprint,
     MACCSKeysFingerprint,
     MAP4Fingerprint,
+    MHFPFingerprint,
     RDKitFingerprint,
     TopologicalTorsionFingerprint,
 )
@@ -107,15 +107,11 @@ def get_all_times_skfp(X, fingerprint_transformer, use_count: bool = True):
     return times[0]
 
 
-def get_generator_times_sequential(
-    X: pd.DataFrame, generator: object, count: bool
-):
+def get_generator_times_sequential(X: pd.DataFrame, generator: object, count: bool):
     print(f" - - count: {count}")
     n_molecules = X.shape[0]
     if count:
-        fp_function = lambda x: generator.GetCountFingerprint(
-            MolFromSmiles(x)
-        ).ToList()
+        fp_function = lambda x: generator.GetCountFingerprint(MolFromSmiles(x)).ToList()
     else:
         fp_function = lambda x: generator.GetFingerprint(MolFromSmiles(x))
 
@@ -166,24 +162,18 @@ def get_times_sequential(X: pd.DataFrame, func: Callable, **kwargs):
         for i in range(N_REPEATS):
             print(f" - - - - repeat: {i}/{N_REPEATS-1}")
             start = time()
-            X_transformed = np.array(
-                [func(MolFromSmiles(x), **kwargs) for x in subset]
-            )
+            X_transformed = np.array([func(MolFromSmiles(x), **kwargs) for x in subset])
             end = time()
             times[i] = end - start
         result.append(np.mean(times))
     return np.array(result)
 
 
-def get_all_sequential_times(
-    X, fingerprint_function, use_count: bool = True, **kwargs
-):
+def get_all_sequential_times(X, fingerprint_function, use_count: bool = True, **kwargs):
     print(" - sequential")
     times = [
         (
-            get_times_sequential(
-                X, fingerprint_function, count=count, **kwargs
-            )
+            get_times_sequential(X, fingerprint_function, count=count, **kwargs)
             if use_count
             else get_times_sequential(X, fingerprint_function, **kwargs)
         )
@@ -375,9 +365,7 @@ if __name__ == "__main__":
         X, TopologicalTorsionFingerprint
     )
     generator = fpgens.GetTopologicalTorsionGenerator()
-    topological_torsion_sequential_times = get_all_generator_times_rdkit(
-        X, generator
-    )
+    topological_torsion_sequential_times = get_all_generator_times_rdkit(X, generator)
     save_all_results(
         topological_torsion_skfp_times,
         topological_torsion_sequential_times,
@@ -403,9 +391,7 @@ if __name__ == "__main__":
     # ERG FINGERPRINT
     print("ErG")
     ERG_skfp_times = get_all_times_skfp(X, ERGFingerprint, False)
-    ERG_sequential_times = get_all_sequential_times(
-        X, GetErGFingerprint, False
-    )
+    ERG_sequential_times = get_all_sequential_times(X, GetErGFingerprint, False)
     save_all_results(
         ERG_skfp_times,
         ERG_sequential_times,
@@ -430,9 +416,7 @@ if __name__ == "__main__":
     print("MHFP")
     MHFP_skfp_times = get_all_times_skfp(X, MHFPFingerprint)
     MHFP_sequential_times = get_all_sequential_times(X, get_mhfp)
-    save_all_results(
-        MHFP_skfp_times, MHFP_sequential_times, n_molecules, "MHFP", True
-    )
+    save_all_results(MHFP_skfp_times, MHFP_sequential_times, n_molecules, "MHFP", True)
 
     # Avalon FINGERPRINT
     print("Avalon")
@@ -452,9 +436,7 @@ if __name__ == "__main__":
     # EState FINGERPRINT
     print("EState")
     EState_skfp_times_count = get_all_times_skfp(X, EStateFingerprint, False)
-    EState_sequential_times = get_all_sequential_times(
-        X, FingerprintMol, False
-    )
+    EState_sequential_times = get_all_sequential_times(X, FingerprintMol, False)
     save_all_results(
         EState_skfp_times_count,
         EState_sequential_times,
