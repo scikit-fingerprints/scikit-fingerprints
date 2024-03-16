@@ -28,5 +28,5 @@ jobs:
       run: $POETRY install --with test
 
     - name: Run tests with pytest
-      run: $POETRY run pytest tests/fingerprints_tests.py
+      run: $POETRY run pytest tests
 
