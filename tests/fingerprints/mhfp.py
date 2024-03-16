@@ -34,8 +34,7 @@ def test_mhfp_sparse_bit_fingerprint(smiles_list, mols_list):
     X_rdkit = np.array(X_rdkit)
     X_rdkit = np.mod(X_rdkit, mhfp_fp.fp_size)
     X_rdkit = csr_array(
-        [(np.bincount(x, minlength=mhfp_fp.fp_size) > 0) for x in X_rdkit],
-        dtype=int,
+        [(np.bincount(x, minlength=mhfp_fp.fp_size) > 0) for x in X_rdkit]
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
