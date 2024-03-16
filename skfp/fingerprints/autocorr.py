@@ -7,7 +7,7 @@ from scipy.sparse import csr_array
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class PharmacophoreFingerprint(FingerprintTransformer):
+class AutocorrFingerprint(FingerprintTransformer):
     def __init__(
         self,
         sparse: bool = False,
@@ -23,16 +23,8 @@ class PharmacophoreFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem.Pharm2D import Gobbi_Pharm2D
-        from rdkit.Chem.Pharm2D.Generate import Gen2DFingerprint
+        from rdkit.Chem.rdMolDescriptors import CalcAUTOCORR2D
 
         X = self._validate_input(X)
-        factory = Gobbi_Pharm2D.factory
-        from rdkit.Chem import Get3DDistanceMatrix
-
-        X = [Gen2DFingerprint(x, factory, dMat=Get3DDistanceMatrix(x)) for x in X]
-
-        if self.sparse:
-            return csr_array(X)
-        else:
-            return np.array(X)
+        X = [CalcAUTOCORR2D(x) for x in X]
+        return csr_array(X) if self.sparse else np.array(X)

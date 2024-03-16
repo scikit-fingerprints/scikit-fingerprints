@@ -56,9 +56,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         else:
             batch_size = max(len(X) // self.n_jobs, 1)
 
-            args = (
-                X[i : i + batch_size] for i in range(0, len(X), batch_size)
-            )
+            args = (X[i : i + batch_size] for i in range(0, len(X), batch_size))
 
             if self.verbose > 0:
                 total = min(self.n_jobs, len(X))
@@ -87,13 +85,23 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         pass
 
-    def _validate_input(self, X: List) -> List[Mol]:
+    def _validate_input(
+        self, X: List, require_conf_ids: bool = False, mol_from_smiles: bool = True
+    ) -> List[Mol]:
         if not all(isinstance(x, Mol) or isinstance(x, str) for x in X):
+            raise ValueError("Passed value is neither rdkit.Chem.rdChem.Mol nor SMILES")
+
+        if require_conf_ids and not all(
+            isinstance(x, Mol) and hasattr(x, "conf_id") for x in X
+        ):
             raise ValueError(
-                "Passed value is neither rdkit.Chem.rdChem.Mol nor SMILES"
+                "Passed data must be molecules (rdkit.Chem.rdChem.Mol instances) and "
+                "must have conf_ids attribute. You can use ConformerGenerator to add them."
             )
 
-        X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
+        if mol_from_smiles:
+            X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
+
         return X
 
     def _get_generator(self):
