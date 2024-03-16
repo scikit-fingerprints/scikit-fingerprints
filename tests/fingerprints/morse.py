@@ -8,7 +8,9 @@ def test_morse_bit_fingerprint(mols_conformers_list):
     morse_fp = MORSEFingerprint(sparse=False, n_jobs=-1)
     X_skfp = morse_fp.transform(mols_conformers_list)
 
-    X_rdkit = np.array([CalcMORSE(mol) for mol in mols_conformers_list])
+    X_rdkit = np.array(
+        [CalcMORSE(mol, confId=mol.conf_id) for mol in mols_conformers_list]
+    )
 
     assert np.all(np.isclose(X_skfp, X_rdkit, atol=1e-1))
 
