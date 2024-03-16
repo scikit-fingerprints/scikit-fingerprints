@@ -1,5 +1,5 @@
 import numpy as np
-from fingerprints.secfp import SECFPFingerprint
+from fingerprints import SECFPFingerprint
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from scipy.sparse import csr_array
 
