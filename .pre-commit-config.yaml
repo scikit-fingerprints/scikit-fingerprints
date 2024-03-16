@@ -1,24 +1,28 @@
 repos:
 -   repo: https://github.com/psf/black
-    rev: 23.11.0
+    rev: 24.3.0
     hooks:
     - id: black
       language_version: python3.10
 
 -   repo: https://github.com/PyCQA/isort
-    rev: 5.13.0
+    rev: 5.13.2
     hooks:
     - id: isort
       args: ["--profile", "black", "--filter-files"]
       language_version: python3.10
 
 -   repo: https://github.com/yunojuno/pre-commit-xenon
-    rev: cc59b0431a5d072786b59430e9b342b2881064f6
+    rev: v0.1
     hooks:
     - id: xenon
       args: ["--max-average=A", "--max-modules=C", "--max-absolute=C"]
 
 -   repo: https://github.com/PyCQA/bandit
-    rev: 1.7.6
+    rev: 1.7.8
     hooks:
       - id: bandit
+        exclude: ^tests/
+        args:
+          - -s
+          - B101
