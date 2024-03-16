@@ -3,6 +3,8 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from rdkit.Chem import Mol, MolFromSmiles
 
+from skfp.preprocessing import ConformerGenerator
+
 
 def pytest_addoption(parser):
     parser.addoption("--num_mols", action="store", default="100")
@@ -51,3 +53,9 @@ def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
     Returns shortest molecules, for use with computationally demanding fingerprints.
     """
     return [MolFromSmiles(smi) for smi in smallest_smiles_list]
+
+
+@pytest.fixture(scope="session")
+def mols_conformers_list(smallest_mols_list) -> list[Mol]:
+    conf_gen = ConformerGenerator()
+    return conf_gen.transform(smallest_mols_list)
