@@ -12,7 +12,7 @@ def test_rdf_bit_fingerprint(mols_conformers_list):
         [CalcRDF(mol, confId=mol.conf_id) for mol in mols_conformers_list]
     )
 
-    assert np.all(np.isclose(X_skfp, X_rdkit, atol=1e-1))
+    assert np.allclose(X_skfp, X_rdkit, atol=1e-1)
 
 
 def test_rdf_sparse_bit_fingerprint(mols_conformers_list):
@@ -23,4 +23,4 @@ def test_rdf_sparse_bit_fingerprint(mols_conformers_list):
         [CalcRDF(mol, confId=mol.conf_id) for mol in mols_conformers_list]
     )
 
-    assert np.all(np.isclose(X_skfp.data, X_rdkit.data, atol=1e-1))
+    assert np.allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
