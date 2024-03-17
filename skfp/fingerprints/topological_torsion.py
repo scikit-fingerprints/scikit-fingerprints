@@ -31,9 +31,6 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         self.atom_invariants_generator = atom_invariants_generator
 
     def _get_generator(self):
-        from rdkit.Chem.rdFingerprintGenerator import (
-            GetTopologicalTorsionGenerator,
-        )
 
         return GetTopologicalTorsionGenerator(
             includeChirality=self.include_chirality,
@@ -46,5 +43,21 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
+        from rdkit.Chem.rdFingerprintGenerator import GetTopologicalTorsionGenerator
+
         X = self._validate_input(X)
-        return self._generate_fingerprints(X)
+
+        gen = GetTopologicalTorsionGenerator(
+            includeChirality=self.include_chirality,
+            torsionAtomCount=self.torsion_atom_count,
+            countSimulation=self.count,
+            atomInvariantsGenerator=self.atom_invariants_generator,
+            fpSize=self.fp_size,
+        )
+
+        if self.count:
+            X = [gen.GetCountFingerprintAsNumPy(x) for x in X]
+        else:
+            X = [gen.GetFingerprintAsNumPy(x) for x in X]
+
+        return csr_array(X) if self.sparse else np.array(X)

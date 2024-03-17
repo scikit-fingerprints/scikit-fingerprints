@@ -62,5 +62,28 @@ class ECFPFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
+        from rdkit.Chem.rdFingerprintGenerator import (
+            GetMorganFeatureAtomInvGen,
+            GetMorganGenerator,
+        )
+
         X = self._validate_input(X)
-        return self._generate_fingerprints(X)
+
+        invgen = GetMorganFeatureAtomInvGen() if self.use_fcfp else None
+        gen = GetMorganGenerator(
+            radius=self.radius,
+            includeChirality=self.include_chirality,
+            useBondTypes=self.use_bond_types,
+            onlyNonzeroInvariants=self.only_nonzero_invariants,
+            includeRingMembership=self.include_ring_membership,
+            countBounds=self.count_bounds,
+            fpSize=self.fp_size,
+            atomInvariantsGenerator=invgen,
+        )
+
+        if self.count:
+            X = [gen.GetCountFingerprintAsNumPy(x) for x in X]
+        else:
+            X = [gen.GetFingerprintAsNumPy(x) for x in X]
+
+        return csr_array(X) if self.sparse else np.array(X)

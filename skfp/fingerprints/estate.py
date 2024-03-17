@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -40,7 +40,4 @@ class EStateFingerprint(FingerprintTransformer):
         else:  # "sum" variant
             X = X[:, 1]
 
-        if self.sparse:
-            return csr_array(X)
-        else:
-            return X
+        return csr_array(X) if self.sparse else np.array(X)

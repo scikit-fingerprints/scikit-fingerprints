@@ -20,9 +20,7 @@ class MolFromSmilesTransformer:
 
     def transform(self, X):
         return [
-            MolFromSmiles(
-                x, sanitize=self.sanitize, replacements=self.replacements
-            )
+            MolFromSmiles(x, sanitize=self.sanitize, replacements=self.replacements)
             for x in X
         ]
 

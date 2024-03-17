@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -34,10 +34,14 @@ class RDKitFingerprint(FingerprintTransformer):
         self.use_bond_order = use_bond_order
         self.num_bits_per_feature = num_bits_per_feature
 
-    def _get_generator(self):
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdFingerprintGenerator import GetRDKitFPGenerator
 
-        return GetRDKitFPGenerator(
+        X = self._validate_input(X)
+
+        gen = GetRDKitFPGenerator(
             minPath=self.min_path,
             maxPath=self.max_path,
             useHs=self.use_hs,
@@ -47,8 +51,9 @@ class RDKitFingerprint(FingerprintTransformer):
             numBitsPerFeature=self.num_bits_per_feature,
         )
 
-    def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
-    ) -> Union[np.ndarray, csr_array]:
-        X = self._validate_input(X)
-        return self._generate_fingerprints(X)
+        if self.count:
+            X = [gen.GetCountFingerprintAsNumPy(x) for x in X]
+        else:
+            X = [gen.GetFingerprintAsNumPy(x) for x in X]
+
+        return csr_array(X) if self.sparse else np.array(X)

@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -46,7 +46,4 @@ class ERGFingerprint(FingerprintTransformer):
             for x in X
         ]
 
-        if self.sparse:
-            return csr_array(X)
-        else:
-            return np.array(X)
+        return csr_array(X) if self.sparse else np.array(X)

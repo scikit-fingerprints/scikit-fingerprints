@@ -32,10 +32,14 @@ class AtomPairFingerprint(FingerprintTransformer):
         self.include_chirality = include_chirality
         self.use_2D = use_2D
 
-    def _get_generator(self):
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
 
-        return GetAtomPairGenerator(
+        X = self._validate_input(X)
+
+        gen = GetAtomPairGenerator(
             fpSize=self.fp_size,
             minDistance=self.min_distance,
             maxDistance=self.max_distance,
@@ -43,9 +47,9 @@ class AtomPairFingerprint(FingerprintTransformer):
             use2D=self.use_2D,
             countSimulation=self.count,
         )
+        if self.count:
+            X = [gen.GetCountFingerprintAsNumPy(x) for x in X]
+        else:
+            X = [gen.GetFingerprintAsNumPy(x) for x in X]
 
-    def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
-    ) -> Union[np.ndarray, csr_array]:
-        X = self._validate_input(X)
-        return self._generate_fingerprints(X)
+        return csr_array(X) if self.sparse else np.array(X)

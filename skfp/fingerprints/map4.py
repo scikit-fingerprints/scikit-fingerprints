@@ -1,6 +1,6 @@
 import itertools
 from collections import defaultdict
-from typing import Union, List
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -53,10 +53,7 @@ class MAP4Fingerprint(FingerprintTransformer):
             if not self.count:
                 X = (X > 0).astype(int)
 
-        if self.sparse:
-            return csr_array(np.stack(X))
-        else:
-            return np.stack(X)
+        return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
         # TODO: does not work for some molecules, for now handled by try/except
@@ -78,8 +75,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             new_values = [
-                self._find_neighborhood(mol, idx, r)
-                for r in range(1, self.radius + 1)
+                self._find_neighborhood(mol, idx, r) for r in range(1, self.radius + 1)
             ]
             atoms_env[idx].extend(new_values)
 
