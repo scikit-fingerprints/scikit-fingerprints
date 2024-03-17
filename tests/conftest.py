@@ -1,15 +1,24 @@
 import pandas as pd
 import pytest
-from rdkit.Chem import MolFromSmiles, Mol
+from _pytest.fixtures import FixtureRequest
+from rdkit.Chem import Mol, MolFromSmiles
+
+
+def pytest_addoption(parser):
+    parser.addoption("--num_mols", action="store", default="100")
 
 
 @pytest.fixture(scope="session")
-def smiles_list() -> list[str]:
+def smiles_list(request: FixtureRequest) -> list[str]:
+    # handle different paths, e.g. from CLI and PyCharm
     try:
         smiles = pd.read_csv("hiv_mol.csv.zip")["smiles"]
     except Exception:
         smiles = pd.read_csv("tests/hiv_mol.csv.zip")["smiles"]
-    return smiles.tolist()[:100]
+
+    smiles = smiles.tolist()
+    smiles = smiles[: int(request.config.getoption("--num_mols"))]
+    return smiles
 
 
 @pytest.fixture(scope="session")
@@ -18,18 +27,27 @@ def mols_list(smiles_list) -> list[Mol]:
 
 
 @pytest.fixture(scope="session")
-def smallest_smiles_list() -> list[str]:
-    # list of shortest SMILES, for computationally demanding fingerprints
+def smallest_smiles_list(request: FixtureRequest) -> list[str]:
+    """
+    Returns shortest SMILES, i.e. for smallest molecules, for use with
+    computationally demanding fingerprints.
+    """
+
+    # handle different paths, e.g. from CLI and PyCharm
     try:
         smiles = pd.read_csv("hiv_mol.csv.zip")["smiles"]
     except Exception:
         smiles = pd.read_csv("tests/hiv_mol.csv.zip")["smiles"]
 
     smiles = smiles.sort_values(key=lambda smi: smi.str.len())
-    return smiles.tolist()[:100]
+    smiles = smiles.tolist()
+    smiles = smiles[: int(request.config.getoption("--num_mols"))]
+    return smiles
 
 
 @pytest.fixture(scope="session")
 def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
-    # list of smallest molecules, for computationally demanding fingerprints
+    """
+    Returns shortest molecules, for use with computationally demanding fingerprints.
+    """
     return [MolFromSmiles(smi) for smi in smallest_smiles_list]
