@@ -30,16 +30,6 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         self.torsion_atom_count = torsion_atom_count
         self.atom_invariants_generator = atom_invariants_generator
 
-    def _get_generator(self):
-
-        return GetTopologicalTorsionGenerator(
-            includeChirality=self.include_chirality,
-            torsionAtomCount=self.torsion_atom_count,
-            countSimulation=self.count,
-            atomInvariantsGenerator=self.atom_invariants_generator,
-            fpSize=self.fp_size,
-        )
-
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
