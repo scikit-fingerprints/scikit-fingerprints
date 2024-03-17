@@ -68,10 +68,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                 delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
             )
 
-            if self.sparse:
-                return scipy.sparse.vstack(results)
-            else:
-                return np.vstack(results)
+            return scipy.sparse.vstack(results) if self.sparse else np.vstack(results)
 
     @abstractmethod
     def _calculate_fingerprint(
@@ -85,7 +82,14 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         pass
 
-    def _validate_input(self, X: List, require_conf_ids: bool = False) -> List[Mol]:
+    def _validate_input(
+        self, X: List, smiles_only: bool = False, require_conf_ids: bool = False
+    ) -> List[Mol]:
+        if smiles_only:
+            if not all(isinstance(x, str) for x in X):
+                raise ValueError("Passed values must be SMILES strings")
+            return X
+
         if require_conf_ids:
             if not all(isinstance(x, Mol) and hasattr(x, "conf_id") for x in X):
                 raise ValueError(
@@ -95,28 +99,9 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             return X
 
         if not all(isinstance(x, Mol) or isinstance(x, str) for x in X):
-            raise ValueError("Passed value is neither rdkit.Chem.rdChem.Mol nor SMILES")
+            raise ValueError(
+                "Passed value must be either rdkit.Chem.rdChem.Mol or SMILES"
+            )
 
         X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
         return X
-
-    def _get_generator(self):
-        """
-        Creates an RDKit generator object in each sub-process.
-        """
-        pass
-
-    def _generate_fingerprints(
-        self, X: Union[pd.DataFrame, np.ndarray, List[Mol]]
-    ) -> Union[np.ndarray, csr_array]:
-        fp_generator = self._get_generator()
-
-        if self.count:
-            X = [fp_generator.GetCountFingerprintAsNumPy(x) for x in X]
-        else:
-            X = [fp_generator.GetFingerprintAsNumPy(x) for x in X]
-
-        if self.sparse:
-            return csr_array(X)
-        else:
-            return np.array(X)

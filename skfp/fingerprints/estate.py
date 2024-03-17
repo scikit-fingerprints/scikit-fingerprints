@@ -40,4 +40,4 @@ class EStateFingerprint(FingerprintTransformer):
         else:  # "sum" variant
             X = X[:, 1]
 
-        return csr_array(X) if self.sparse else X
+        return csr_array(X) if self.sparse else np.array(X)

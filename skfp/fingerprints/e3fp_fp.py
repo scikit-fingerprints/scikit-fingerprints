@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -15,9 +15,8 @@ from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
-
 """
-Note that this file cannot have the "e3fp.py" name due to conflict with E3FP library.
+Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
 """
 
 
@@ -63,14 +62,9 @@ class E3FPFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
-        if not all(isinstance(x, str) for x in X):
-            raise ValueError("E3FP requires SMILES strings as inputs")
-
-        result = [self._calculate_single_mol_fingerprint(smi) for smi in X]
-        if self.sparse:
-            return scipy.sparse.vstack(result)
-        else:
-            return np.stack(result)
+        X = self._validate_input(X, smiles_only=True)
+        X = [self._calculate_single_mol_fingerprint(smi) for smi in X]
+        return scipy.sparse.vstack(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(
         self, smiles: str
