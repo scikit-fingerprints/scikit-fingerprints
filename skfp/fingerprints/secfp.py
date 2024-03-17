@@ -55,9 +55,5 @@ class SECFPFingerprint(FingerprintTransformer):
             )
             for x in X
         ]
-        X = np.array(X)
 
-        if self.sparse:
-            return csr_array(X)
-        else:
-            return np.array(X)
+        return csr_array(X) if self.sparse else np.array(X)
