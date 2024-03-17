@@ -53,10 +53,7 @@ class MAP4Fingerprint(FingerprintTransformer):
             if not self.count:
                 X = (X > 0).astype(int)
 
-        if self.sparse:
-            return csr_array(np.stack(X))
-        else:
-            return np.stack(X)
+        return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
         # TODO: does not work for some molecules, for now handled by try/except
