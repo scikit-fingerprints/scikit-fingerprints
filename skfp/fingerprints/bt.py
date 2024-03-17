@@ -7,7 +7,7 @@ from scipy.sparse import csr_array, dok_array
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class BPFingerprint(FingerprintTransformer):
+class BTFingerprint(FingerprintTransformer):
     def __init__(
         self,
         fp_size: int = 2048,
@@ -27,11 +27,11 @@ class BPFingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem.AtomPairs.Sheridan import GetBTFingerprint
+        from rdkit.Chem.AtomPairs.Sheridan import GetBPFingerprint
 
         X = self._validate_input(X)
 
-        X = [GetBTFingerprint(mol) for mol in X]
+        X = [GetBPFingerprint(mol) for mol in X]
 
         # hash raw fingerprint bits to array values
         shape = (len(X), self.fp_size)
