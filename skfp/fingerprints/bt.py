@@ -2,7 +2,7 @@ from typing import List, Union
 
 import numpy as np
 import pandas as pd
-from scipy.sparse import csr_array, dok_array
+from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
@@ -30,18 +30,5 @@ class BTFingerprint(FingerprintTransformer):
         from rdkit.Chem.AtomPairs.Sheridan import GetBPFingerprint
 
         X = self._validate_input(X)
-
         X = [GetBPFingerprint(mol) for mol in X]
-
-        # hash raw fingerprint bits to array values
-        shape = (len(X), self.fp_size)
-        arr = dok_array(shape, dtype=int) if self.sparse else np.zeros(shape, dtype=int)
-
-        for idx, x in enumerate(X):
-            for fp_bit, count in x.GetNonzeroElements().items():
-                if self.count:
-                    arr[idx, fp_bit % self.fp_size] += count
-                else:
-                    arr[idx, fp_bit % self.fp_size] = 1
-
-        return arr.tocsr() if self.sparse else arr
+        return self._hash_fingerprint_bits(X)
