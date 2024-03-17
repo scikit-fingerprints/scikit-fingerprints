@@ -1,4 +1,4 @@
-from fingerprints import GETAWAYFingerprint
+from skfp.fingerprints import GETAWAYFingerprint
 
 
 def test_getaway_bit_fingerprint(mols_conformers_list):

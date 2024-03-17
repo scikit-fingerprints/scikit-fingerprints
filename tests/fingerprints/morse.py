@@ -1,7 +1,8 @@
 import numpy as np
-from fingerprints import MORSEFingerprint
 from rdkit.Chem.rdMolDescriptors import CalcMORSE
 from scipy.sparse import csr_array
+
+from skfp.fingerprints import MORSEFingerprint
 
 
 def test_morse_bit_fingerprint(mols_conformers_list):

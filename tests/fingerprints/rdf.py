@@ -1,7 +1,8 @@
 import numpy as np
-from fingerprints import RDFFingerprint
 from rdkit.Chem.rdMolDescriptors import CalcRDF
 from scipy.sparse import csr_array
+
+from skfp.fingerprints import RDFFingerprint
 
 
 def test_rdf_bit_fingerprint(mols_conformers_list):

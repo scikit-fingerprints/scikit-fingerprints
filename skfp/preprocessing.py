@@ -1,7 +1,6 @@
 from typing import Optional
 
 from rdkit.Chem import AddHs, MolFromSmiles, MolToSmiles, RemoveHs
-from rdkit.Chem.MolStandardize.rdMolStandardize import LargestFragmentChooser
 from rdkit.Chem.rdDistGeom import EmbedMolecule, ETKDGv3
 
 
@@ -80,10 +79,6 @@ class ConformerGenerator:
         return self.transform(X)
 
     def transform(self, X):
-        # we work only with single component molecules here
-        chooser = LargestFragmentChooser()
-        X = [chooser.choose(mol) for mol in X]
-
         # adding hydrogens is recommended for conformer generation
         X = [AddHs(mol) for mol in X]
 
@@ -112,8 +107,9 @@ class ConformerGenerator:
 
             if conf_id == -1:
                 try:
-                    # additionally turn off chirality
+                    # turn off conditions
                     embed_params.enforceChirality = False
+                    embed_params.ignoreSmoothingFailures = True
                     conf_id = EmbedMolecule(mol, embed_params)
                 except ValueError:
                     pass

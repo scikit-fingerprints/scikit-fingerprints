@@ -1,7 +1,8 @@
 import numpy as np
-from fingerprints import SECFPFingerprint
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from scipy.sparse import csr_array
+
+from skfp.fingerprints import SECFPFingerprint
 
 
 def test_secfp_bit_fingerprint(smiles_list, mols_list):

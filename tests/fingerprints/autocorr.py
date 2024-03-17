@@ -1,7 +1,8 @@
 import numpy as np
-from fingerprints import AutocorrFingerprint
 from rdkit.Chem.rdMolDescriptors import CalcAUTOCORR2D, CalcAUTOCORR3D
 from scipy.sparse import csr_array
+
+from skfp.fingerprints import AutocorrFingerprint
 
 
 def test_autocorr_bit_fingerprint(smiles_list, mols_list):

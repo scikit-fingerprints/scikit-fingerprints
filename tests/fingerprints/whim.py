@@ -1,7 +1,8 @@
 import numpy as np
-from fingerprints import WHIMFingerprint
 from rdkit.Chem.rdMolDescriptors import CalcWHIM
 from scipy.sparse import csr_array
+
+from skfp.fingerprints import WHIMFingerprint
 
 
 def test_whim_bit_fingerprint(mols_conformers_list):
