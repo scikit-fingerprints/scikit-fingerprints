@@ -23,13 +23,16 @@ class MAP4Fingerprint(FingerprintTransformer):
         self,
         fp_size: int = 1024,
         radius: int = 2,
-        output_raw_hashes: bool = False,
+        variant: str = "bit",
         sparse: bool = False,
         count: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
+        if variant not in ["bit", "count", "raw_hashes"]:
+            raise ValueError("Variant must be one of: 'bit', 'count', 'raw_hashes'")
+
         super().__init__(
             sparse=sparse,
             count=count,
@@ -39,7 +42,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         )
         self.fp_size = fp_size
         self.radius = radius
-        self.output_raw_hashes = output_raw_hashes
+        self.variant = variant
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
@@ -47,10 +50,10 @@ class MAP4Fingerprint(FingerprintTransformer):
         X = self._validate_input(X)
         X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
 
-        if not self.output_raw_hashes:
+        if self.variant in ["bit", "count"]:
             X = np.mod(X, self.fp_size)
             X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
-            if not self.count:
+            if self.variant == "bit":
                 X = (X > 0).astype(int)
 
         return csr_array(X) if self.sparse else np.array(X)
