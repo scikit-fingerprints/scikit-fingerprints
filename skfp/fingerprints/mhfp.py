@@ -21,7 +21,7 @@ class MHFPFingerprint(FingerprintTransformer):
         n_jobs: int = None,
         verbose: int = 0,
     ):
-        if variant not in ["bit", "count", "sum"]:
+        if variant not in ["bit", "count", "raw_hashes"]:
             raise ValueError("Variant must be one of: 'bit', 'count', 'raw_hashes'")
 
         super().__init__(
