@@ -16,14 +16,15 @@ class MHFPFingerprint(FingerprintTransformer):
         rings: bool = True,
         isomeric: bool = False,
         kekulize: bool = True,
-        output_raw_hashes: bool = False,
-        count: bool = False,
+        variant: str = "bit",
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
     ):
+        if variant not in ["bit", "count", "sum"]:
+            raise ValueError("Variant must be one of: 'bit', 'count', 'raw_hashes'")
+
         super().__init__(
-            count=count,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
@@ -34,7 +35,7 @@ class MHFPFingerprint(FingerprintTransformer):
         self.rings = rings
         self.isomeric = isomeric
         self.kekulize = kekulize
-        self.output_raw_hashes = output_raw_hashes
+        self.variant = variant
 
     def _calculate_fingerprint(
         self, X: Union[pd.DataFrame, np.ndarray, List[str]]
@@ -56,10 +57,10 @@ class MHFPFingerprint(FingerprintTransformer):
         )
         X = np.array(X)
 
-        if not self.output_raw_hashes:
+        if self.variant in ["bit", "count"]:
             X = np.mod(X, self.fp_size)
             X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
-            if not self.count:
+            if self.variant == "bit":
                 X = (X > 0).astype(int)
 
         return csr_array(X) if self.sparse else np.array(X)
