@@ -1,8 +1,8 @@
-from typing import List, Optional, Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as spsparse
+from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
@@ -10,57 +10,30 @@ from skfp.fingerprints.base import FingerprintTransformer
 class AvalonFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        n_bits: int = 512,
-        is_query: bool = False,
-        bit_flags: int = 15761407,
-        reset_vect: bool = False,
+        fp_size: int = 512,
+        count: bool = False,
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
-        random_state: int = 0,
-        count: bool = False,
     ):
         super().__init__(
-            n_jobs=n_jobs,
-            sparse=sparse,
-            verbose=verbose,
-            random_state=random_state,
             count=count,
+            sparse=sparse,
+            n_jobs=n_jobs,
+            verbose=verbose,
         )
-        self.n_bits = n_bits
-        self.is_query = is_query
-        self.bit_flags = bit_flags
-        self.reset_vect = reset_vect
+        self.fp_size = fp_size
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
-        X = self._validate_input(X)
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
 
-        if self.count:
-            X = [
-                GetAvalonCountFP(
-                    x,
-                    nBits=self.n_bits,
-                    isQuery=self.is_query,
-                    bitFlags=self.bit_flags,
-                ).ToList()  # should be sparse or numpy
-                for x in X
-            ]
-        else:
-            X = [
-                GetAvalonFP(
-                    x,
-                    nBits=self.n_bits,
-                    isQuery=self.is_query,
-                    bitFlags=self.bit_flags,
-                    resetVect=self.reset_vect,
-                )
-                for x in X
-            ]
+        X = self._validate_input(X)
 
-        if self.sparse:
-            return spsparse.csr_array(X)
+        if self.count:
+            X = [GetAvalonCountFP(x, nBits=self.fp_size).ToList() for x in X]
         else:
-            return np.array(X)
+            X = [GetAvalonFP(x, nBits=self.fp_size) for x in X]
+
+        return csr_array(X) if self.sparse else np.array(X)

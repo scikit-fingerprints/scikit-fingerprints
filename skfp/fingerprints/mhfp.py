@@ -1,60 +1,66 @@
-from typing import Union
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as spsparse
+from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
 
-class MHFP(FingerprintTransformer):
+class MHFPFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        n_permutations: int = 2048,
+        fp_size: int = 2048,
         radius: int = 3,
+        min_radius: int = 1,
         rings: bool = True,
         isomeric: bool = False,
         kekulize: bool = True,
-        min_radius: int = 1,
-        random_state: int = 0,
+        variant: str = "bit",
         sparse: bool = False,
-        count: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
     ):
-        self.n_permutations = n_permutations
+        if variant not in ["bit", "count", "raw_hashes"]:
+            raise ValueError("Variant must be one of: 'bit', 'count', 'raw_hashes'")
+
+        super().__init__(
+            sparse=sparse,
+            n_jobs=n_jobs,
+            verbose=verbose,
+        )
+        self.fp_size = fp_size
         self.radius = radius
+        self.min_radius = min_radius
         self.rings = rings
         self.isomeric = isomeric
         self.kekulize = kekulize
-        self.min_radius = min_radius
-        super().__init__(
-            n_jobs=n_jobs,
-            sparse=sparse,
-            count=count,
-            verbose=verbose,
-            random_state=random_state,
-        )
+        self.variant = variant
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
-        X = self._validate_input(X)
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 
-        encoder = MHFPEncoder(self.n_permutations, self.random_state)
+        X = self._validate_input(X)
 
+        # outputs raw hash values, not feature vectors!
+        encoder = MHFPEncoder(self.fp_size, self.random_state)
         X = MHFPEncoder.EncodeMolsBulk(
             encoder,
             X,
             radius=self.radius,
+            min_radius=self.min_radius,
             rings=self.rings,
             isomeric=self.isomeric,
             kekulize=self.kekulize,
-            min_radius=self.min_radius,
         )
+        X = np.array(X)
 
-        if self.sparse:
-            return spsparse.csr_array(X)
-        else:
-            return np.array(X)
+        if self.variant in ["bit", "count"]:
+            X = np.mod(X, self.fp_size)
+            X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
+            if self.variant == "bit":
+                X = (X > 0).astype(int)
+
+        return csr_array(X) if self.sparse else np.array(X)

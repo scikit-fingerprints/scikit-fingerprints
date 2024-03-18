@@ -2,7 +2,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
-import scipy.sparse as spsparse
+from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
 
@@ -10,46 +10,44 @@ from skfp.fingerprints.base import FingerprintTransformer
 class TopologicalTorsionFingerprint(FingerprintTransformer):
     def __init__(
         self,
+        fp_size: int = 2048,
         include_chirality: bool = False,
         torsion_atom_count: int = 4,
-        count_simulation: bool = True,
-        count_bounds: Optional[List] = None,
-        fp_size: int = 2048,
         atom_invariants_generator: Optional[List] = None,
-        n_jobs: int = None,
-        sparse: bool = False,
         count: bool = False,
+        sparse: bool = False,
+        n_jobs: int = None,
         verbose: int = 0,
-        random_state: int = 0,
     ):
         super().__init__(
-            n_jobs=n_jobs,
-            sparse=sparse,
             count=count,
+            sparse=sparse,
+            n_jobs=n_jobs,
             verbose=verbose,
-            random_state=random_state,
         )
+        self.fp_size = fp_size
         self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
-        self.count_simulation = count_simulation
-        self.count_bounds = count_bounds
-        self.fp_size = fp_size
         self.atom_invariants_generator = atom_invariants_generator
 
-    def _get_generator(self):
+    def _calculate_fingerprint(
+        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+    ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdFingerprintGenerator import GetTopologicalTorsionGenerator
 
-        return GetTopologicalTorsionGenerator(
+        X = self._validate_input(X)
+
+        gen = GetTopologicalTorsionGenerator(
             includeChirality=self.include_chirality,
             torsionAtomCount=self.torsion_atom_count,
-            countSimulation=self.count_simulation,
-            countBounds=self.count_bounds,
+            countSimulation=self.count,
             atomInvariantsGenerator=self.atom_invariants_generator,
             fpSize=self.fp_size,
         )
 
-    def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, list[str]]
-    ) -> Union[np.ndarray, spsparse.csr_array]:
-        X = self._validate_input(X)
-        return self._generate_fingerprints(X)
+        if self.count:
+            X = [gen.GetCountFingerprintAsNumPy(x) for x in X]
+        else:
+            X = [gen.GetFingerprintAsNumPy(x) for x in X]
+
+        return csr_array(X) if self.sparse else np.array(X)

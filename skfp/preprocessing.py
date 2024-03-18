@@ -1,3 +1,5 @@
+from typing import Optional
+
 from rdkit.Chem import MolFromSmiles, MolToSmiles
 
 
@@ -5,10 +7,10 @@ class MolFromSmilesTransformer:
     def __init__(
         self,
         sanitize: bool = True,
-        replacements: dict = {},
+        replacements: Optional[dict] = None,
     ):
         self.sanitize = sanitize
-        self.replacements = replacements
+        self.replacements = replacements if replacements else {}
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -18,9 +20,7 @@ class MolFromSmilesTransformer:
 
     def transform(self, X):
         return [
-            MolFromSmiles(
-                x, sanitize=self.sanitize, replacements=self.replacements
-            )
+            MolFromSmiles(x, sanitize=self.sanitize, replacements=self.replacements)
             for x in X
         ]
 

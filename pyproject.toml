@@ -23,7 +23,6 @@ python = "^3.9"
 datasketch = "*"
 e3fp = "*"
 joblib = "*"
-mhfp = "*"
 numpy = "^1.20.0"
 pandas = "*"
 rdkit = "*"
@@ -38,7 +37,6 @@ optional = true
 black = "*"
 flake8 = "*"
 isort = "*"
-mypy = "*"
 pre-commit = "*"
 pytest = "*"
 
@@ -48,24 +46,9 @@ optional = true
 [tool.poetry.group.test.dependencies]
 pytest = "*"
 
+[tool.pytest.ini_options]
+python_files = "*.py"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-line-length = 79
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
-
