@@ -147,7 +147,7 @@ class MAP4Fingerprint(FingerprintTransformer):
             # (radius i neighborhood of atom A) | (distance between atoms A and B) | \
             # (radius i neighborhood of atom B) | (shingle count)
             new_atom_pairs = [
-                f"{shingle}|{shingle_count}".encode("utf-8")
+                f"{shingle}|{shingle_count}".encode()
                 for shingle, shingle_count in shingle_dict.items()
             ]
             atom_pairs.extend(new_atom_pairs)

@@ -1,16 +1,33 @@
 repos:
+-   repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        # turn off assert errors for tests
+        exclude: ^tests/
+        args:
+          - -s
+          - B101
+
 -   repo: https://github.com/psf/black
     rev: 24.3.0
     hooks:
     - id: black
-      language_version: python3.10
+      language_version: python3.11
+
+-   repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+    -   id: flake8
+        # TODO: refactor this directory and then enable
+        exclude: ^benchmarking
 
 -   repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
     - id: isort
       args: ["--profile", "black", "--filter-files"]
-      language_version: python3.10
+      language_version: python3.11
 
 -   repo: https://github.com/yunojuno/pre-commit-xenon
     rev: v0.1
@@ -18,11 +35,7 @@ repos:
     - id: xenon
       args: ["--max-average=A", "--max-modules=C", "--max-absolute=C"]
 
--   repo: https://github.com/PyCQA/bandit
-    rev: 1.7.8
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.1
     hooks:
-      - id: bandit
-        exclude: ^tests/
-        args:
-          - -s
-          - B101
+    -   id: pyupgrade

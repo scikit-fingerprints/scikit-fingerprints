@@ -13,14 +13,16 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from skfp.utils import ProgressParallel
 
 """
-If during multiprocessing occurs MaybeEncodingError, first check if there isn't thrown any exception inside
-worker function! (That error isn't very informative and this tip might save you a lot of time)
+If you get MaybeEncodingError, first check any worker functions for exceptions!
+That error isn't very informative, but gets thrown in Joblib multiprocessing.
 """
 
 """
-fp_descriptors need to be inside _calculate_fingerprint() of a specific class (cannot be defined inside the __init__() of
-that class), otherwise pickle gets angry:
-TypeError: cannot pickle 'Boost.Python.function' object
+Note that you need to do create RDKit objects *inside* the function that runs
+in parallel, i.e. _calculate_fingerprint(), not in the constructor or outside in
+general.
+This is because Joblib needs to pickle data sent to workers, and RDKit objects
+cannot be pickled, throwing TypeError: cannot pickle 'Boost.Python.function' object
 """
 
 

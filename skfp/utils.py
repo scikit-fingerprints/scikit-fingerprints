@@ -32,7 +32,7 @@ class CaptureLogger(logging.Handler):
     """
 
     def __init__(self, module=None):
-        super(CaptureLogger, self).__init__(level=logging.DEBUG)
+        super().__init__(level=logging.DEBUG)
         self.logs = {}
         self.devnull = open(os.devnull, "w")
         rdkit.log_handler.setStream(self.devnull)
