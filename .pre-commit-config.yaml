@@ -29,6 +29,24 @@ repos:
         args: [ "--profile", "black", "--filter-files" ]
         language_version: python3.11
 
+  - repo: local
+    hooks:
+      # use local mypy instead of pre-commit hook, since this way we run in venv
+      # and have all dependencies
+      - id: mypy
+        name: mypy
+        entry: bash -c 'poetry run mypy --package skfp --package tests'
+        language: system
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: poetry-plugin-sort
+        name: poetry-plugin-sort
+        entry: bash -c 'poetry sort'
+        language: system
+        pass_filenames: false
+
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.1
     hooks:
