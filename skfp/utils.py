@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from typing import Dict, Optional
+from typing import Optional
 
 import rdkit
 from joblib import Parallel
@@ -20,7 +20,7 @@ class ProgressParallel(Parallel):
         with tqdm(total=self.total) as self._pbar:
             return Parallel.__call__(self, *args, **kwargs)
 
-    def print_progress(self):
+    def print_progress(self) -> None:
         self._pbar.n = self.n_completed_tasks
         self._pbar.refresh()
 
@@ -50,8 +50,7 @@ class CaptureLogger(logging.Handler):
         self.logs[key] = self.logs.get(key, "") + val
         return False
 
-    def release(self) -> Dict:
+    def release(self) -> None:
         rdkit.log_handler.setStream(sys.stderr)
         rdkit.logger.removeHandler(self)
         self.devnull.close()
-        return self.logs

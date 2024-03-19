@@ -1,9 +1,8 @@
 import itertools
 from collections import defaultdict
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 from datasketch import MinHash
 from rdkit.Chem import MolToSmiles, PathToSubmol
 from rdkit.Chem.rdchem import Mol
@@ -45,7 +44,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         self.variant = variant
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+        self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         X = self._validate_input(X)
         X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
@@ -90,7 +89,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         adjacent to it.
         """
         env = FindAtomEnvironmentOfRadiusN(mol, idx, n_radius)
-        atom_map = {}
+        atom_map: Dict[int, int] = dict()
 
         submol = PathToSubmol(mol, env, atomMap=atom_map)
 
@@ -105,7 +104,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         else:
             return ""
 
-    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> List[str]:
+    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> List[bytes]:
         """
         Gets a list of atom-pair molecular shingles - circular structures written
         as SMILES, separated by the bond distance between the two atoms along the
@@ -114,7 +113,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         atom_pairs = []
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()
-        shingle_dict = defaultdict(int)
+        shingle_dict: Dict[str, int] = defaultdict(int)
 
         # Iterate through all pairs of atoms and radius. Shingles are stored in format:
         # (radius i neighborhood of atom A) | (distance between atoms A and B) | (radius i neighborhood of atom B)

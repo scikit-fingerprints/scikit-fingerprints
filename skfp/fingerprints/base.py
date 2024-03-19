@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import List, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
-import pandas as pd
 import scipy.sparse
 from joblib import Parallel, delayed, effective_n_jobs
 from rdkit.Chem import MolFromSmiles
@@ -31,7 +31,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         self,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
@@ -47,7 +47,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X: Union[pd.DataFrame, np.ndarray, List[str]]):
+    def transform(self, X: Sequence[Union[str, Mol]]) -> Union[np.ndarray, csr_array]:
         """
         :param X: np.array or DataFrame of rdkit.Mol objects
         :return: np.array or sparse array of calculated fingerprints for each molecule
@@ -74,7 +74,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
 
     @abstractmethod
     def _calculate_fingerprint(
-        self, X: Union[np.ndarray]
+        self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         """
         Calculate fingerprints for a given input batch.
@@ -84,7 +84,9 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         pass
 
-    def _validate_input(self, X: List, smiles_only: bool = False) -> List[Mol]:
+    def _validate_input(
+        self, X: Sequence[Union[str, Mol]], smiles_only: bool = False
+    ) -> Union[Sequence[str], Sequence[Mol]]:
         if smiles_only:
             if not all(isinstance(x, str) for x in X):
                 raise ValueError("Passed values must be SMILES strings")

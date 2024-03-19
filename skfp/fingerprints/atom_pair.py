@@ -1,7 +1,7 @@
-from typing import List, Optional, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
@@ -33,7 +33,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         self.use_2D = use_2D
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+        self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
 
