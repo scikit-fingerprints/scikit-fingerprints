@@ -82,20 +82,10 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         pass
 
-    def _validate_input(
-        self, X: List, smiles_only: bool = False, require_conf_ids: bool = False
-    ) -> List[Mol]:
+    def _validate_input(self, X: List, smiles_only: bool = False) -> List[Mol]:
         if smiles_only:
             if not all(isinstance(x, str) for x in X):
                 raise ValueError("Passed values must be SMILES strings")
-            return X
-
-        if require_conf_ids:
-            if not all(isinstance(x, Mol) and hasattr(x, "conf_id") for x in X):
-                raise ValueError(
-                    "Passed data must be molecules (rdkit.Chem.rdChem.Mol instances) and "
-                    "must have conf_ids attribute. You can use ConformerGenerator to add them."
-                )
             return X
 
         if not all(isinstance(x, Mol) or isinstance(x, str) for x in X):
