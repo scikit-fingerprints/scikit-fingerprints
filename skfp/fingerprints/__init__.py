@@ -8,6 +8,7 @@ from .maccs import MACCSFingerprint
 from .map4 import MAP4Fingerprint
 from .mhfp import MHFPFingerprint
 from .pharmacophore import PharmacophoreFingerprint
+from .physiochemical_properties import PhysiochemicalPropertiesFingerprint
 from .rdk import RDKitFingerprint
 from .secfp import SECFPFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
