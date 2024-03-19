@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -11,7 +11,7 @@ class MACCSFingerprint(FingerprintTransformer):
     def __init__(
         self,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(

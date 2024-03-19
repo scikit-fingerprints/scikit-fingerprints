@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -18,7 +18,7 @@ class RDKitFingerprint(FingerprintTransformer):
         num_bits_per_feature: int = 2,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(

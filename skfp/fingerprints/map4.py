@@ -1,6 +1,6 @@
 import itertools
 from collections import defaultdict
-from typing import List, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -26,7 +26,7 @@ class MAP4Fingerprint(FingerprintTransformer):
         variant: str = "bit",
         sparse: bool = False,
         count: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
         random_state: int = 0,
     ):

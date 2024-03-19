@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -36,7 +36,7 @@ class E3FPFingerprint(FingerprintTransformer):
         get_values: bool = True,
         aggregation_type: str = "min_energy",
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
         random_state: int = 0,
     ):

@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from typing import Optional
+from typing import Dict, Optional
 
 import rdkit
 from joblib import Parallel
@@ -50,7 +50,7 @@ class CaptureLogger(logging.Handler):
         self.logs[key] = self.logs.get(key, "") + val
         return False
 
-    def release(self):
+    def release(self) -> Dict:
         rdkit.log_handler.setStream(sys.stderr)
         rdkit.logger.removeHandler(self)
         self.devnull.close()

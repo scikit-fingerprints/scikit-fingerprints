@@ -20,7 +20,7 @@ class ECFPFingerprint(FingerprintTransformer):
         count_bounds: Optional[List] = None,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
