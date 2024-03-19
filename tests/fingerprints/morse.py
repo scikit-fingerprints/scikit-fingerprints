@@ -5,7 +5,7 @@ from scipy.sparse import csr_array
 from skfp.fingerprints import MORSEFingerprint
 
 
-def test_morse_bit_fingerprint(mols_conformers_list):
+def test_morse_fingerprint(mols_conformers_list):
     morse_fp = MORSEFingerprint(sparse=False, n_jobs=-1)
     X_skfp = morse_fp.transform(mols_conformers_list)
 
@@ -16,7 +16,7 @@ def test_morse_bit_fingerprint(mols_conformers_list):
     assert np.allclose(X_skfp, X_rdkit, atol=1e-1)
 
 
-def test_morse_sparse_bit_fingerprint(mols_conformers_list):
+def test_morse_sparse_fingerprint(mols_conformers_list):
     morse_fp = MORSEFingerprint(sparse=True, n_jobs=-1)
     X_skfp = morse_fp.transform(mols_conformers_list)
 

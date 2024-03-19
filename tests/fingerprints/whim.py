@@ -5,7 +5,7 @@ from scipy.sparse import csr_array
 from skfp.fingerprints import WHIMFingerprint
 
 
-def test_whim_bit_fingerprint(mols_conformers_list):
+def test_whim_fingerprint(mols_conformers_list):
     whim_fp = WHIMFingerprint(sparse=False, n_jobs=-1)
     X_skfp = whim_fp.transform(mols_conformers_list)
 
@@ -17,7 +17,7 @@ def test_whim_bit_fingerprint(mols_conformers_list):
     assert np.allclose(X_skfp, X_rdkit, atol=1e-1)
 
 
-def test_whim_sparse_bit_fingerprint(mols_conformers_list):
+def test_whim_sparse_fingerprint(mols_conformers_list):
     whim_fp = WHIMFingerprint(sparse=True, n_jobs=-1)
     X_skfp = whim_fp.transform(mols_conformers_list)
 
