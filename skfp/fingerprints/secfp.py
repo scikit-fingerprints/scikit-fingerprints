@@ -16,13 +16,11 @@ class SECFPFingerprint(FingerprintTransformer):
         rings: bool = True,
         isomeric: bool = False,
         kekulize: bool = True,
-        count: bool = False,
         sparse: bool = False,
         n_jobs: int = None,
         verbose: int = 0,
     ):
         super().__init__(
-            count=count,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,

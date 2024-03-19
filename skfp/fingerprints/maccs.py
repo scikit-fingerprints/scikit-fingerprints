@@ -26,5 +26,6 @@ class MACCSFingerprint(FingerprintTransformer):
         from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 
         X = self._validate_input(X)
+
         X = [GetMACCSKeysFingerprint(x) for x in X]
         return csr_array(X) if self.sparse else np.array(X)
