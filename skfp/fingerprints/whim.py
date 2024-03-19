@@ -29,5 +29,5 @@ class WHIMFingerprint(FingerprintTransformer):
 
         X = self._validate_input(X, require_conf_ids=True)
         X = [CalcWHIM(mol, confId=mol.conf_id) for mol in X]
-        X = np.minimum(X, self.clip_val)
+        X = np.clip(X, -self.clip_val, self.clip_val)
         return csr_array(X) if self.sparse else np.array(X)
