@@ -7,6 +7,7 @@ from .estate import EStateFingerprint
 from .maccs import MACCSFingerprint
 from .map4 import MAP4Fingerprint
 from .mhfp import MHFPFingerprint
+from .pattern import PatternFingerprint
 from .pharmacophore import PharmacophoreFingerprint
 from .rdk import RDKitFingerprint
 from .secfp import SECFPFingerprint
