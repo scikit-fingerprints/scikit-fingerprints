@@ -5,6 +5,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class ERGFingerprint(FingerprintTransformer):
@@ -33,7 +34,7 @@ class ERGFingerprint(FingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdReducedGraphs import GetErGFingerprint
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         X = [
             GetErGFingerprint(

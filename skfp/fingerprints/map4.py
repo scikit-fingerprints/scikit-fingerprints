@@ -10,6 +10,7 @@ from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 """
 Code inspired by the original work of the authors of the MAP4 Fingerprint:
@@ -46,7 +47,7 @@ class MAP4Fingerprint(FingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        X = self._validate_input(X)
+        X = ensure_mols(X)
         X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
 
         if self.variant in ["bit", "count"]:

@@ -5,6 +5,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class MHFPFingerprint(FingerprintTransformer):
@@ -42,7 +43,7 @@ class MHFPFingerprint(FingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         # outputs raw hash values, not feature vectors!
         encoder = MHFPEncoder(self.fp_size, self.random_state)

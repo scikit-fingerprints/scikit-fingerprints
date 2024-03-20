@@ -8,15 +8,19 @@ from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
 
 
-class AvalonFingerprint(FingerprintTransformer):
+class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        fp_size: int = 512,
+        fp_size: int = 2048,
+        variant: str = "BP",
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
+        if variant not in ["BP", "BT"]:
+            raise ValueError("Variant must be one of: 'BP', 'BT'")
+
         super().__init__(
             count=count,
             sparse=sparse,
@@ -24,17 +28,18 @@ class AvalonFingerprint(FingerprintTransformer):
             verbose=verbose,
         )
         self.fp_size = fp_size
+        self.variant = variant
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
+        from rdkit.Chem.AtomPairs.Sheridan import GetBPFingerprint, GetBTFingerprint
 
         X = ensure_mols(X)
 
-        if self.count:
-            X = [GetAvalonCountFP(x, nBits=self.fp_size).ToList() for x in X]
-        else:
-            X = [GetAvalonFP(x, nBits=self.fp_size) for x in X]
+        if self.variant == "BP":
+            X = [GetBPFingerprint(mol) for mol in X]
+        else:  # "BT" variant
+            X = [GetBTFingerprint(mol) for mol in X]
 
-        return csr_array(X) if self.sparse else np.array(X)
+        return self._hash_fingerprint_bits(X)

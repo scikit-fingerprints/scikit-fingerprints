@@ -5,6 +5,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class ECFPFingerprint(FingerprintTransformer):
@@ -67,7 +68,7 @@ class ECFPFingerprint(FingerprintTransformer):
             GetMorganGenerator,
         )
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         invgen = GetMorganFeatureAtomInvGen() if self.use_fcfp else None
         gen = GetMorganGenerator(

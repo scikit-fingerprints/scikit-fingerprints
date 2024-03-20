@@ -5,6 +5,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class EStateFingerprint(FingerprintTransformer):
@@ -30,7 +31,7 @@ class EStateFingerprint(FingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.EState.Fingerprinter import FingerprintMol
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         X = np.array([FingerprintMol(x) for x in X])
         if self.variant == "bit":

@@ -5,36 +5,30 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
-from skfp.validators import ensure_mols
+from skfp.validators import require_mols_with_conf_ids
 
 
-class AvalonFingerprint(FingerprintTransformer):
+class GETAWAYFingerprint(FingerprintTransformer):
     def __init__(
         self,
-        fp_size: int = 512,
-        count: bool = False,
+        clip_val: int = np.iinfo(np.int32).max,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
-            count=count,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
         )
-        self.fp_size = fp_size
+        self.clip_val = clip_val
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
+        from rdkit.Chem.rdMolDescriptors import CalcGETAWAY
 
-        X = ensure_mols(X)
-
-        if self.count:
-            X = [GetAvalonCountFP(x, nBits=self.fp_size).ToList() for x in X]
-        else:
-            X = [GetAvalonFP(x, nBits=self.fp_size) for x in X]
-
+        X = require_mols_with_conf_ids(X)
+        X = [CalcGETAWAY(mol, confId=mol.conf_id) for mol in X]
+        X = np.clip(X, -self.clip_val, self.clip_val)
         return csr_array(X) if self.sparse else np.array(X)

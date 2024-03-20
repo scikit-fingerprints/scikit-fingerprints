@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import scipy.sparse
 from joblib import Parallel, delayed, effective_n_jobs
-from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
-from scipy.sparse import csr_array
+from rdkit.DataStructs import IntSparseIntVect
+from scipy.sparse import csr_array, dok_array
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from skfp.utils import ProgressParallel
@@ -84,18 +84,22 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         pass
 
-    def _validate_input(
-        self, X: Sequence[Union[str, Mol]], smiles_only: bool = False
-    ) -> Union[Sequence[str], Sequence[Mol]]:
-        if smiles_only:
-            if not all(isinstance(x, str) for x in X):
-                raise ValueError("Passed values must be SMILES strings")
-            return X
-
-        if not all(isinstance(x, Mol) or isinstance(x, str) for x in X):
-            raise ValueError(
-                "Passed value must be either rdkit.Chem.rdChem.Mol or SMILES"
+    def _hash_fingerprint_bits(
+        self, X: List[IntSparseIntVect]
+    ) -> Union[np.ndarray, csr_array]:
+        if not hasattr(self, "fp_size"):
+            raise AttributeError(
+                "Fingerprint hashing requires inheriting classes to have fp_size attribute"
             )
 
-        X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
-        return X
+        shape = (len(X), self.fp_size)
+        arr = dok_array(shape, dtype=int) if self.sparse else np.zeros(shape, dtype=int)
+
+        for idx, x in enumerate(X):
+            for fp_bit, count in x.GetNonzeroElements().items():
+                if self.count:
+                    arr[idx, fp_bit % self.fp_size] += count
+                else:
+                    arr[idx, fp_bit % self.fp_size] = 1
+
+        return arr.tocsr() if self.sparse else arr

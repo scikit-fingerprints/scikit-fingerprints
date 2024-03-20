@@ -5,6 +5,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class RDKitFingerprint(FingerprintTransformer):
@@ -39,7 +40,7 @@ class RDKitFingerprint(FingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdFingerprintGenerator import GetRDKitFPGenerator
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         gen = GetRDKitFPGenerator(
             minPath=self.min_path,

@@ -5,6 +5,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class AtomPairFingerprint(FingerprintTransformer):
@@ -37,7 +38,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         gen = GetAtomPairGenerator(
             fpSize=self.fp_size,

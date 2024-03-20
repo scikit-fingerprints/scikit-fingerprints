@@ -5,6 +5,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class MACCSFingerprint(FingerprintTransformer):
@@ -25,7 +26,7 @@ class MACCSFingerprint(FingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         X = [GetMACCSKeysFingerprint(x) for x in X]
         return csr_array(X) if self.sparse else np.array(X)
