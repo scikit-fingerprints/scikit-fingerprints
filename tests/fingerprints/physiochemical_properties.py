@@ -52,7 +52,7 @@ def test_physiochemical_properties_bt_count_fingerprint(smiles_list):
     assert np.issubdtype(X_skfp.dtype, int)
 
 
-def test_bp_sparse_bit_fingerprint(smiles_list):
+def test_physiochemical_properties_bp_sparse_bit_fingerprint(smiles_list):
     pp_fp = PhysiochemicalPropertiesFingerprint(
         variant="BP", sparse=True, count=False, n_jobs=-1
     )
@@ -64,7 +64,7 @@ def test_bp_sparse_bit_fingerprint(smiles_list):
     assert np.issubdtype(X_skfp.dtype, int)
 
 
-def test_bp_sparse_count_fingerprint(smiles_list):
+def test_physiochemical_properties_bp_sparse_count_fingerprint(smiles_list):
     pp_fp = PhysiochemicalPropertiesFingerprint(
         variant="BP", sparse=True, count=True, n_jobs=-1
     )
@@ -76,7 +76,7 @@ def test_bp_sparse_count_fingerprint(smiles_list):
     assert np.issubdtype(X_skfp.dtype, int)
 
 
-def test_bt_sparse_bit_fingerprint(smiles_list):
+def test_physiochemical_properties_bt_sparse_bit_fingerprint(smiles_list):
     pp_fp = PhysiochemicalPropertiesFingerprint(
         variant="BT", sparse=True, count=False, n_jobs=-1
     )
@@ -88,7 +88,7 @@ def test_bt_sparse_bit_fingerprint(smiles_list):
     assert np.issubdtype(X_skfp.dtype, int)
 
 
-def test_bt_sparse_count_fingerprint(smiles_list):
+def test_physiochemical_properties_bt_sparse_count_fingerprint(smiles_list):
     pp_fp = PhysiochemicalPropertiesFingerprint(
         variant="BT", sparse=True, count=True, n_jobs=-1
     )

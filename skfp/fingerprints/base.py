@@ -6,7 +6,7 @@ import numpy as np
 import scipy.sparse
 from joblib import Parallel, delayed, effective_n_jobs
 from rdkit.Chem.rdchem import Mol
-from rdkit.DataStructs import IntSparseIntVect
+from rdkit.DataStructs import IntSparseIntVect, LongSparseIntVect, SparseBitVect
 from scipy.sparse import csr_array, dok_array
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -84,22 +84,36 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         """
         pass
 
+    @staticmethod
     def _hash_fingerprint_bits(
-        self, X: List[IntSparseIntVect]
+        X: List[Union[IntSparseIntVect, LongSparseIntVect, SparseBitVect]],
+        fp_size: int,
+        count: bool,
+        sparse: bool,
     ) -> Union[np.ndarray, csr_array]:
-        if not hasattr(self, "fp_size"):
-            raise AttributeError(
-                "Fingerprint hashing requires inheriting classes to have fp_size attribute"
+        if not all(
+            isinstance(x, (IntSparseIntVect, LongSparseIntVect, SparseBitVect))
+            for x in X
+        ):
+            raise ValueError(
+                "Fingerprint hashing requires instances of one of: "
+                "IntSparseIntVect, LongSparseIntVect, SparseBitVect"
             )
 
-        shape = (len(X), self.fp_size)
-        arr = dok_array(shape, dtype=int) if self.sparse else np.zeros(shape, dtype=int)
+        shape = (len(X), fp_size)
+        arr = dok_array(shape, dtype=int) if sparse else np.zeros(shape, dtype=int)
 
-        for idx, x in enumerate(X):
-            for fp_bit, count in x.GetNonzeroElements().items():
-                if self.count:
-                    arr[idx, fp_bit % self.fp_size] += count
-                else:
-                    arr[idx, fp_bit % self.fp_size] = 1
+        if isinstance(X[0], (IntSparseIntVect, LongSparseIntVect)):
+            for idx, x in enumerate(X):
+                for fp_bit, val in x.GetNonzeroElements().items():
+                    arr[idx, fp_bit % fp_size] += val
+        else:
+            # SparseBitVect
+            for idx, x in enumerate(X):
+                for fp_bit in x.GetOnBits():
+                    arr[idx, fp_bit % fp_size] += 1
 
-        return arr.tocsr() if self.sparse else arr
+        arr = arr.tocsr() if sparse else arr
+        arr = (arr > 0).astype(int) if not count else arr
+
+        return arr

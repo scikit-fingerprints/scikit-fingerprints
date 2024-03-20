@@ -4,7 +4,7 @@ from rdkit.Chem import Mol, MolFromSmiles
 
 
 def ensure_mols(X: Sequence[Any]) -> Sequence[Mol]:
-    if not all(isinstance(x, Mol) or isinstance(x, str) for x in X):
+    if not all(isinstance(x, (Mol, str)) for x in X):
         raise ValueError("Passed value must be either rdkit.Chem.rdChem.Mol or SMILES")
 
     X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]

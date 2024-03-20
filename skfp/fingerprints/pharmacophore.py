@@ -11,16 +11,23 @@ from skfp.validators import ensure_mols, require_mols_with_conf_ids
 class PharmacophoreFingerprint(FingerprintTransformer):
     def __init__(
         self,
+        variant: str = "raw_bits",
+        fp_size: int = 2048,
         use_3D: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
+        if variant not in ["bit", "count", "raw_bits"]:
+            raise ValueError("Variant must be one of: 'bit', 'count', 'raw_bits'")
+
         super().__init__(
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
         )
+        self.variant = variant
+        self.fp_size = fp_size
         self.use_3D = use_3D
 
     def _calculate_fingerprint(
@@ -43,5 +50,14 @@ class PharmacophoreFingerprint(FingerprintTransformer):
                 )
                 for x in X
             ]
+
+        if self.variant in ["bit", "count"]:
+            # X at this point is a list of RDKit fingerprints, but MyPy doesn't get it
+            X = self._hash_fingerprint_bits(
+                X,  # type: ignore
+                fp_size=self.fp_size,
+                count=(self.variant == "count"),
+                sparse=self.sparse,
+            )
 
         return csr_array(X) if self.sparse else np.array(X)
