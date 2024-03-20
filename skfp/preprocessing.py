@@ -1,7 +1,7 @@
 from typing import Optional
 
-from rdkit.Chem import AddHs, MolFromSmiles, MolToSmiles, RemoveHs
-from rdkit.Chem.rdDistGeom import EmbedMolecule, ETKDGv3
+from rdkit.Chem import AddHs, Mol, MolFromSmiles, MolToSmiles, RemoveHs
+from rdkit.Chem.rdDistGeom import EmbedMolecule, EmbedParameters, ETKDGv3
 
 
 class MolFromSmilesTransformer:
@@ -80,52 +80,50 @@ class ConformerGenerator:
 
     def transform(self, X):
         # adding hydrogens is recommended for conformer generation
-        X = [AddHs(mol) for mol in X]
+        X_h = [AddHs(mol) for mol in X]
 
+        for mol, mol_h in zip(X, X_h):
+            conformer_id = self._embed_molecule(mol_h)
+            mol.conf_id = conformer_id
+
+        return X
+
+    def _embed_molecule(self, mol: Mol) -> int:
+        conf_id = -1
+
+        # we create a new embedding params for each molecule, since it can
+        # get modified if default settings fail to generate conformers
         embed_params = ETKDGv3()
         embed_params.useSmallRingTorsions = True
         embed_params.randomSeed = self.random_state
 
-        conf_ids = []
-        for mol in X:
-            conf_id = -1
+        try:
+            # basic attempt
+            conf_id = EmbedMolecule(mol, embed_params)
+        except ValueError:
+            pass
 
+        if conf_id == -1:
             try:
-                # basic attempt
+                # more tries
+                embed_params.maxIterations = self.max_conf_gen_attempts
+                embed_params.useRandomCoords = True
                 conf_id = EmbedMolecule(mol, embed_params)
             except ValueError:
                 pass
 
-            if conf_id == -1:
-                try:
-                    # more tries
-                    embed_params.maxIterations = self.max_conf_gen_attempts
-                    embed_params.useRandomCoords = True
-                    conf_id = EmbedMolecule(mol, embed_params)
-                except ValueError:
-                    pass
+        if conf_id == -1:
+            try:
+                # turn off conditions
+                embed_params.enforceChirality = False
+                embed_params.ignoreSmoothingFailures = True
+                conf_id = EmbedMolecule(mol, embed_params)
+            except ValueError:
+                pass
 
-            if conf_id == -1:
-                try:
-                    # turn off conditions
-                    embed_params.enforceChirality = False
-                    embed_params.ignoreSmoothingFailures = True
-                    conf_id = EmbedMolecule(mol, embed_params)
-                except ValueError:
-                    pass
+        # we should not fail at this point
+        if conf_id == -1:
+            smiles = MolToSmiles(mol)
+            raise ValueError(f"Could not generate conformer for {smiles}")
 
-            # we should not fail at this point
-            if mol.GetNumConformers() == 0:
-                smiles = MolToSmiles(mol)
-                raise ValueError(f"Could not generate conformer for {smiles}")
-
-            # mol.conf_id = conf_id
-            conf_ids.append(conf_id)
-
-        # remove added hydrogens
-        X = [RemoveHs(mol) for mol in X]
-
-        for i in range(len(X)):
-            X[i].conf_id = conf_ids[i]
-
-        return X
+        return conf_id
