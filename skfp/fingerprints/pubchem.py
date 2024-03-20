@@ -9,6 +9,14 @@ from scipy.sparse import csr_array
 from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
 
+"""
+Note: this fingerprint may give slightly different vectors than PubChem API!
+This is because we use aromaticity models from RDKit, and ring features may
+be counted differently due to this. This is typically only a very small subset
+of bits, though. In particular, all SMARTS patterns exactly follow the original
+NCGC (NIH) Java code.
+"""
+
 
 class PubChemFingerprint(FingerprintTransformer):
     def __init__(
