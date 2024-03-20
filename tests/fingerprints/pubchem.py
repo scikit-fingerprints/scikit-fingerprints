@@ -19,7 +19,7 @@ def test_pubchem_count_fingerprint(smiles_list, mols_list):
     assert np.issubdtype(X_skfp.dtype, int) and np.all(X_skfp >= 0)
 
 
-def test_getaway_sparse_bit_fingerprint(smiles_list, mols_list):
+def test_pubchem_sparse_bit_fingerprint(smiles_list, mols_list):
     pubchem_fp = PubChemFingerprint(count=False, sparse=True, n_jobs=-1)
     X_skfp = pubchem_fp.transform(smiles_list)
 
@@ -27,7 +27,7 @@ def test_getaway_sparse_bit_fingerprint(smiles_list, mols_list):
     assert np.allclose(X_skfp.data, 1)
 
 
-def test_getaway_sparse_count_fingerprint(smiles_list, mols_list):
+def test_pubchem_sparse_count_fingerprint(smiles_list, mols_list):
     pubchem_fp = PubChemFingerprint(count=True, sparse=True, n_jobs=-1)
     X_skfp = pubchem_fp.transform(smiles_list)
 
