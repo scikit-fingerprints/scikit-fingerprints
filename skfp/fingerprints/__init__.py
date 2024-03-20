@@ -10,6 +10,7 @@ from .maccs import MACCSFingerprint
 from .map4 import MAP4Fingerprint
 from .mhfp import MHFPFingerprint
 from .morse import MORSEFingerprint
+from .pattern import PatternFingerprint
 from .pharmacophore import PharmacophoreFingerprint
 from .rdf import RDFFingerprint
 from .rdk import RDKitFingerprint
