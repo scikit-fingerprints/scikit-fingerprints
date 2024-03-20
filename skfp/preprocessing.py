@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import List, Optional, Sequence, Tuple
 
 from rdkit.Chem import AddHs, Mol, MolFromSmiles, MolToSmiles, RemoveHs
-from rdkit.Chem.rdDistGeom import EmbedMolecule, EmbedParameters, ETKDGv3
+from rdkit.Chem.rdDistGeom import EmbedMolecule, ETKDGv3
 
 
 class MolFromSmilesTransformer:
@@ -19,7 +19,7 @@ class MolFromSmilesTransformer:
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X):
+    def transform(self, X: Sequence[str]) -> List[Mol]:
         return [
             MolFromSmiles(x, sanitize=self.sanitize, replacements=self.replacements)
             for x in X
@@ -51,7 +51,7 @@ class MolToSmilesTransformer:
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X):
+    def transform(self, X: Sequence[Mol]) -> List[str]:
         return [
             MolToSmiles(
                 x,
@@ -78,17 +78,20 @@ class ConformerGenerator:
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X):
+    def transform(self, X: Sequence[Mol]) -> List[Mol]:
         # adding hydrogens is recommended for conformer generation
-        X_h = [AddHs(mol) for mol in X]
+        X = [AddHs(mol) for mol in X]
 
-        for mol, mol_h in zip(X, X_h):
-            conformer_id = self._embed_molecule(mol_h)
-            mol.conf_id = conformer_id
+        conformer_ids = [self._embed_molecule(mol) for mol in X]
+
+        X = [RemoveHs(mol) for mol in X]
+
+        for i in range(len(X)):
+            X[i].conf_id = conformer_ids[i]
 
         return X
 
-    def _embed_molecule(self, mol: Mol) -> int:
+    def _embed_molecule(self, mol: Mol) -> Tuple[Mol, int]:
         conf_id = -1
 
         # we create a new embedding params for each molecule, since it can
