@@ -7,7 +7,7 @@ import scipy.sparse
 from joblib import Parallel, delayed, effective_n_jobs
 from rdkit.Chem import MolFromSmiles
 from rdkit.Chem.rdchem import Mol
-from scipy.sparse import csr_array
+from scipy.sparse import csr_array, dok_array
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from skfp.utils import ProgressParallel
@@ -106,3 +106,21 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
 
         X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
         return X
+
+    def _hash_fingerprint_bits(self, X: List) -> Union[np.ndarray, csr_array]:
+        if not hasattr(self, "fp_size"):
+            raise AttributeError(
+                "Fingerprint hashing requires inheriting classes to have fp_size attribute"
+            )
+
+        shape = (len(X), self.fp_size)
+        arr = dok_array(shape, dtype=int) if self.sparse else np.zeros(shape, dtype=int)
+
+        for idx, x in enumerate(X):
+            for fp_bit, count in x.GetNonzeroElements().items():
+                if self.count:
+                    arr[idx, fp_bit % self.fp_size] += count
+                else:
+                    arr[idx, fp_bit % self.fp_size] = 1
+
+        return arr.tocsr() if self.sparse else arr

@@ -12,6 +12,7 @@ from .mhfp import MHFPFingerprint
 from .morse import MORSEFingerprint
 from .pattern import PatternFingerprint
 from .pharmacophore import PharmacophoreFingerprint
+from .physiochemical_properties import PhysiochemicalPropertiesFingerprint
 from .rdf import RDFFingerprint
 from .rdk import RDKitFingerprint
 from .secfp import SECFPFingerprint
