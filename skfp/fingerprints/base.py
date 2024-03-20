@@ -97,6 +97,11 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         return X
 
     def _hash_fingerprint_bits(self, X: List) -> Union[np.ndarray, csr_array]:
+        if not hasattr(self, "fp_size"):
+            raise AttributeError(
+                "Fingerprint hashing requires inheriting classes to have fp_size attribute"
+            )
+
         shape = (len(X), self.fp_size)
         arr = dok_array(shape, dtype=int) if self.sparse else np.zeros(shape, dtype=int)
 
