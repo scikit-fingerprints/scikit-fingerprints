@@ -1,10 +1,11 @@
-from typing import List, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
@@ -14,7 +15,7 @@ class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
         variant: str = "BP",
         count: bool = False,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         if variant not in ["BP", "BT"]:
@@ -30,11 +31,11 @@ class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
         self.variant = variant
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+        self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.AtomPairs.Sheridan import GetBPFingerprint, GetBTFingerprint
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         if self.variant == "BP":
             X = [GetBPFingerprint(mol) for mol in X]

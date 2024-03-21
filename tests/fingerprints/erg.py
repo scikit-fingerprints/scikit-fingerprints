@@ -6,8 +6,8 @@ from scipy.sparse import csr_array
 from skfp.fingerprints import ERGFingerprint
 
 """
-Note: for some unknown reason passing mols_list from the global fixture sometimes 
-does not work for ErG fingerprints. This happens only for those tests, and not for 
+Note: for some unknown reason passing mols_list from the global fixture sometimes
+does not work for ErG fingerprints. This happens only for those tests, and not for
 any other fingerprint. Creating molecules from SMILES separately here works.
 """
 

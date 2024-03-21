@@ -91,7 +91,7 @@ class ConformerGenerator:
 
         return X
 
-    def _embed_molecule(self, mol: Mol) -> Tuple[Mol, int]:
+    def _embed_molecule(self, mol: Mol) -> int:
         conf_id = -1
 
         # we create a new embedding params for each molecule, since it can

@@ -1,10 +1,11 @@
-from typing import List, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class AvalonFingerprint(FingerprintTransformer):
@@ -13,7 +14,7 @@ class AvalonFingerprint(FingerprintTransformer):
         fp_size: int = 512,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -25,11 +26,11 @@ class AvalonFingerprint(FingerprintTransformer):
         self.fp_size = fp_size
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+        self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         if self.count:
             X = [GetAvalonCountFP(x, nBits=self.fp_size).ToList() for x in X]

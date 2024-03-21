@@ -1,7 +1,6 @@
-from typing import List, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 import scipy.sparse
 from e3fp.conformer.generate import (
     FORCEFIELD_DEF,
@@ -14,6 +13,7 @@ from e3fp.pipeline import fprints_from_mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import require_smiles
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
@@ -36,7 +36,7 @@ class E3FPFingerprint(FingerprintTransformer):
         get_values: bool = True,
         aggregation_type: str = "min_energy",
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
@@ -59,10 +59,8 @@ class E3FPFingerprint(FingerprintTransformer):
         self.get_values = get_values
         self.aggregation_type = aggregation_type
 
-    def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
-    ) -> Union[np.ndarray, csr_array]:
-        X = self._validate_input(X, smiles_only=True)
+    def _calculate_fingerprint(self, X: Sequence[str]) -> Union[np.ndarray, csr_array]:
+        X = require_smiles(X)
         X = [self._calculate_single_mol_fingerprint(smi) for smi in X]
         return scipy.sparse.vstack(X) if self.sparse else np.array(X)
 

@@ -1,5 +1,5 @@
 import numpy as np
-from rdkit.Avalon.pyAvalonTools import GetAvalonFP, GetAvalonCountFP
+from rdkit.Avalon.pyAvalonTools import GetAvalonCountFP, GetAvalonFP
 from scipy.sparse import csr_array
 
 from skfp.fingerprints import AvalonFingerprint

@@ -1,10 +1,11 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class TopologicalTorsionFingerprint(FingerprintTransformer):
@@ -16,7 +17,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         atom_invariants_generator: Optional[List] = None,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -31,11 +32,11 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         self.atom_invariants_generator = atom_invariants_generator
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+        self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdFingerprintGenerator import GetTopologicalTorsionGenerator
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
 
         gen = GetTopologicalTorsionGenerator(
             includeChirality=self.include_chirality,

@@ -1,10 +1,11 @@
-from typing import List, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
+from skfp.validators import ensure_mols
 
 
 class PatternFingerprint(FingerprintTransformer):
@@ -13,7 +14,7 @@ class PatternFingerprint(FingerprintTransformer):
         fp_size: int = 2048,
         tautomers: bool = False,
         sparse: bool = False,
-        n_jobs: int = None,
+        n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -25,11 +26,11 @@ class PatternFingerprint(FingerprintTransformer):
         self.tautomers = tautomers
 
     def _calculate_fingerprint(
-        self, X: Union[pd.DataFrame, np.ndarray, List[str]]
+        self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdmolops import PatternFingerprint as RDKitPatternFingerprint
 
-        X = self._validate_input(X)
+        X = ensure_mols(X)
         X = [
             RDKitPatternFingerprint(
                 x, fpSize=self.fp_size, tautomerFingerprints=self.tautomers
