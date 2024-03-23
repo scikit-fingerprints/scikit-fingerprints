@@ -42,4 +42,8 @@ class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
         else:  # "BT" variant
             X = [GetBTFingerprint(mol) for mol in X]
 
-        return self._hash_fingerprint_bits(X)
+        X = self._hash_fingerprint_bits(
+            X, fp_size=self.fp_size, count=self.count, sparse=self.sparse
+        )
+
+        return X
