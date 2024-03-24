@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class MACCSFingerprint(FingerprintTransformer):
+    """MACCS fingerprint."""
+
     def __init__(
         self,
         sparse: bool = False,

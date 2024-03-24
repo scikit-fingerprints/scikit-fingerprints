@@ -21,6 +21,8 @@ Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library
 
 
 class E3FPFingerprint(FingerprintTransformer):
+    """E3FP fingerprint."""
+
     def __init__(
         self,
         fp_size: int = 1024,
