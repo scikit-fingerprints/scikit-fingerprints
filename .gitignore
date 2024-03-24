@@ -9,3 +9,6 @@ __pycache__
 *.pdf
 *.npy
 *.csv
+
+doc/modules/generated/
+doc/_build/
