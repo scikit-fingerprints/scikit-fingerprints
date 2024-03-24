@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.MAP4Fingerprint
+=================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: MAP4Fingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MAP4Fingerprint.__init__
+      ~MAP4Fingerprint.fit
+      ~MAP4Fingerprint.fit_transform
+      ~MAP4Fingerprint.get_metadata_routing
+      ~MAP4Fingerprint.get_params
+      ~MAP4Fingerprint.set_output
+      ~MAP4Fingerprint.set_params
+      ~MAP4Fingerprint.transform
+   
+   
+
+   
+   
+   

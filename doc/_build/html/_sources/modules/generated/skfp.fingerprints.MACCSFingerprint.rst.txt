@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.MACCSFingerprint
+==================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: MACCSFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MACCSFingerprint.__init__
+      ~MACCSFingerprint.fit
+      ~MACCSFingerprint.fit_transform
+      ~MACCSFingerprint.get_metadata_routing
+      ~MACCSFingerprint.get_params
+      ~MACCSFingerprint.set_output
+      ~MACCSFingerprint.set_params
+      ~MACCSFingerprint.transform
+   
+   
+
+   
+   
+   

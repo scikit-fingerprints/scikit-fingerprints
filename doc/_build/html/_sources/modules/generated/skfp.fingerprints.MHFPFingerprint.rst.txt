@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.MHFPFingerprint
+=================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: MHFPFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MHFPFingerprint.__init__
+      ~MHFPFingerprint.fit
+      ~MHFPFingerprint.fit_transform
+      ~MHFPFingerprint.get_metadata_routing
+      ~MHFPFingerprint.get_params
+      ~MHFPFingerprint.set_output
+      ~MHFPFingerprint.set_params
+      ~MHFPFingerprint.transform
+   
+   
+
+   
+   
+   

@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.PhysiochemicalPropertiesFingerprint
+=====================================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: PhysiochemicalPropertiesFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PhysiochemicalPropertiesFingerprint.__init__
+      ~PhysiochemicalPropertiesFingerprint.fit
+      ~PhysiochemicalPropertiesFingerprint.fit_transform
+      ~PhysiochemicalPropertiesFingerprint.get_metadata_routing
+      ~PhysiochemicalPropertiesFingerprint.get_params
+      ~PhysiochemicalPropertiesFingerprint.set_output
+      ~PhysiochemicalPropertiesFingerprint.set_params
+      ~PhysiochemicalPropertiesFingerprint.transform
+   
+   
+
+   
+   
+   

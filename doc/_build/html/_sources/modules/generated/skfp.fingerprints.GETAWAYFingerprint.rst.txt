@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.GETAWAYFingerprint
+====================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: GETAWAYFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GETAWAYFingerprint.__init__
+      ~GETAWAYFingerprint.fit
+      ~GETAWAYFingerprint.fit_transform
+      ~GETAWAYFingerprint.get_metadata_routing
+      ~GETAWAYFingerprint.get_params
+      ~GETAWAYFingerprint.set_output
+      ~GETAWAYFingerprint.set_params
+      ~GETAWAYFingerprint.transform
+   
+   
+
+   
+   
+   

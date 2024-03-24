@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.PubChemFingerprint
+====================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: PubChemFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PubChemFingerprint.__init__
+      ~PubChemFingerprint.fit
+      ~PubChemFingerprint.fit_transform
+      ~PubChemFingerprint.get_metadata_routing
+      ~PubChemFingerprint.get_params
+      ~PubChemFingerprint.set_output
+      ~PubChemFingerprint.set_params
+      ~PubChemFingerprint.transform
+   
+   
+
+   
+   
+   

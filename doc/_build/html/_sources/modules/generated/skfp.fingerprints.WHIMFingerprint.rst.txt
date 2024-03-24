@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.WHIMFingerprint
+=================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: WHIMFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~WHIMFingerprint.__init__
+      ~WHIMFingerprint.fit
+      ~WHIMFingerprint.fit_transform
+      ~WHIMFingerprint.get_metadata_routing
+      ~WHIMFingerprint.get_params
+      ~WHIMFingerprint.set_output
+      ~WHIMFingerprint.set_params
+      ~WHIMFingerprint.transform
+   
+   
+
+   
+   
+   

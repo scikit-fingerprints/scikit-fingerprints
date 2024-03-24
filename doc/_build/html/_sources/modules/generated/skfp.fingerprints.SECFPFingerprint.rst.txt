@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.SECFPFingerprint
+==================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: SECFPFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SECFPFingerprint.__init__
+      ~SECFPFingerprint.fit
+      ~SECFPFingerprint.fit_transform
+      ~SECFPFingerprint.get_metadata_routing
+      ~SECFPFingerprint.get_params
+      ~SECFPFingerprint.set_output
+      ~SECFPFingerprint.set_params
+      ~SECFPFingerprint.transform
+   
+   
+
+   
+   
+   

@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.EStateFingerprint
+===================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: EStateFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~EStateFingerprint.__init__
+      ~EStateFingerprint.fit
+      ~EStateFingerprint.fit_transform
+      ~EStateFingerprint.get_metadata_routing
+      ~EStateFingerprint.get_params
+      ~EStateFingerprint.set_output
+      ~EStateFingerprint.set_params
+      ~EStateFingerprint.transform
+   
+   
+
+   
+   
+   

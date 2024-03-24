@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.MORSEFingerprint
+==================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: MORSEFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MORSEFingerprint.__init__
+      ~MORSEFingerprint.fit
+      ~MORSEFingerprint.fit_transform
+      ~MORSEFingerprint.get_metadata_routing
+      ~MORSEFingerprint.get_params
+      ~MORSEFingerprint.set_output
+      ~MORSEFingerprint.set_params
+      ~MORSEFingerprint.transform
+   
+   
+
+   
+   
+   

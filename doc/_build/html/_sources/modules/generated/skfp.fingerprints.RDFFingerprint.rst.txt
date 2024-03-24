@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.RDFFingerprint
+================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: RDFFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RDFFingerprint.__init__
+      ~RDFFingerprint.fit
+      ~RDFFingerprint.fit_transform
+      ~RDFFingerprint.get_metadata_routing
+      ~RDFFingerprint.get_params
+      ~RDFFingerprint.set_output
+      ~RDFFingerprint.set_params
+      ~RDFFingerprint.transform
+   
+   
+
+   
+   
+   

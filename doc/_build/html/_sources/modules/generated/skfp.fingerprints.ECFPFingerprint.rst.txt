@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.ECFPFingerprint
+=================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: ECFPFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ECFPFingerprint.__init__
+      ~ECFPFingerprint.fit
+      ~ECFPFingerprint.fit_transform
+      ~ECFPFingerprint.get_metadata_routing
+      ~ECFPFingerprint.get_params
+      ~ECFPFingerprint.set_output
+      ~ECFPFingerprint.set_params
+      ~ECFPFingerprint.transform
+   
+   
+
+   
+   
+   

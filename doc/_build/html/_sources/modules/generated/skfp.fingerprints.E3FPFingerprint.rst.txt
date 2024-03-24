@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.E3FPFingerprint
+=================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: E3FPFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~E3FPFingerprint.__init__
+      ~E3FPFingerprint.fit
+      ~E3FPFingerprint.fit_transform
+      ~E3FPFingerprint.get_metadata_routing
+      ~E3FPFingerprint.get_params
+      ~E3FPFingerprint.set_output
+      ~E3FPFingerprint.set_params
+      ~E3FPFingerprint.transform
+   
+   
+
+   
+   
+   

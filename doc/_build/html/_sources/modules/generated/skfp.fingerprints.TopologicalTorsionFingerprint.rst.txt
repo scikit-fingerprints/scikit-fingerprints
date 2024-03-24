@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.TopologicalTorsionFingerprint
+===============================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: TopologicalTorsionFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TopologicalTorsionFingerprint.__init__
+      ~TopologicalTorsionFingerprint.fit
+      ~TopologicalTorsionFingerprint.fit_transform
+      ~TopologicalTorsionFingerprint.get_metadata_routing
+      ~TopologicalTorsionFingerprint.get_params
+      ~TopologicalTorsionFingerprint.set_output
+      ~TopologicalTorsionFingerprint.set_params
+      ~TopologicalTorsionFingerprint.transform
+   
+   
+
+   
+   
+   

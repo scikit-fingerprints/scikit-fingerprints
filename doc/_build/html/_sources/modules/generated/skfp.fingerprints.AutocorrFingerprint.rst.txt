@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.AutocorrFingerprint
+=====================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: AutocorrFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AutocorrFingerprint.__init__
+      ~AutocorrFingerprint.fit
+      ~AutocorrFingerprint.fit_transform
+      ~AutocorrFingerprint.get_metadata_routing
+      ~AutocorrFingerprint.get_params
+      ~AutocorrFingerprint.set_output
+      ~AutocorrFingerprint.set_params
+      ~AutocorrFingerprint.transform
+   
+   
+
+   
+   
+   

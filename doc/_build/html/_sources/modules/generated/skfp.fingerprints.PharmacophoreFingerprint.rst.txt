@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.PharmacophoreFingerprint
+==========================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: PharmacophoreFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PharmacophoreFingerprint.__init__
+      ~PharmacophoreFingerprint.fit
+      ~PharmacophoreFingerprint.fit_transform
+      ~PharmacophoreFingerprint.get_metadata_routing
+      ~PharmacophoreFingerprint.get_params
+      ~PharmacophoreFingerprint.set_output
+      ~PharmacophoreFingerprint.set_params
+      ~PharmacophoreFingerprint.transform
+   
+   
+
+   
+   
+   

@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.PatternFingerprint
+====================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: PatternFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PatternFingerprint.__init__
+      ~PatternFingerprint.fit
+      ~PatternFingerprint.fit_transform
+      ~PatternFingerprint.get_metadata_routing
+      ~PatternFingerprint.get_params
+      ~PatternFingerprint.set_output
+      ~PatternFingerprint.set_params
+      ~PatternFingerprint.transform
+   
+   
+
+   
+   
+   

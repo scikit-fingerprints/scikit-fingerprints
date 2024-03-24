@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.ERGFingerprint
+================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: ERGFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ERGFingerprint.__init__
+      ~ERGFingerprint.fit
+      ~ERGFingerprint.fit_transform
+      ~ERGFingerprint.get_metadata_routing
+      ~ERGFingerprint.get_params
+      ~ERGFingerprint.set_output
+      ~ERGFingerprint.set_params
+      ~ERGFingerprint.transform
+   
+   
+
+   
+   
+   

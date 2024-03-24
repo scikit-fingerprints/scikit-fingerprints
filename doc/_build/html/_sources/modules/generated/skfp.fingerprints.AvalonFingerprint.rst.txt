@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.AvalonFingerprint
+===================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: AvalonFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AvalonFingerprint.__init__
+      ~AvalonFingerprint.fit
+      ~AvalonFingerprint.fit_transform
+      ~AvalonFingerprint.get_metadata_routing
+      ~AvalonFingerprint.get_params
+      ~AvalonFingerprint.set_output
+      ~AvalonFingerprint.set_params
+      ~AvalonFingerprint.transform
+   
+   
+
+   
+   
+   

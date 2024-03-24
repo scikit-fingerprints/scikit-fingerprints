@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.RDKitFingerprint
+==================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: RDKitFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RDKitFingerprint.__init__
+      ~RDKitFingerprint.fit
+      ~RDKitFingerprint.fit_transform
+      ~RDKitFingerprint.get_metadata_routing
+      ~RDKitFingerprint.get_params
+      ~RDKitFingerprint.set_output
+      ~RDKitFingerprint.set_params
+      ~RDKitFingerprint.transform
+   
+   
+
+   
+   
+   

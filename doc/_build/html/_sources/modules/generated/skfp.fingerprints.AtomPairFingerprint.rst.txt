@@ -1,0 +1,29 @@
+﻿skfp.fingerprints.AtomPairFingerprint
+=====================================
+
+.. currentmodule:: skfp.fingerprints
+
+.. autoclass:: AtomPairFingerprint
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AtomPairFingerprint.__init__
+      ~AtomPairFingerprint.fit
+      ~AtomPairFingerprint.fit_transform
+      ~AtomPairFingerprint.get_metadata_routing
+      ~AtomPairFingerprint.get_params
+      ~AtomPairFingerprint.set_output
+      ~AtomPairFingerprint.set_params
+      ~AtomPairFingerprint.transform
+   
+   
+
+   
+   
+   
