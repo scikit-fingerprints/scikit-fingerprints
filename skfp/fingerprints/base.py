@@ -114,6 +114,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                     arr[idx, fp_bit % fp_size] += 1
 
         arr = arr.tocsr() if sparse else arr
-        arr = (arr > 0).astype(int) if not count else arr
+        arr = (arr > 0) if not count else arr
 
         return arr

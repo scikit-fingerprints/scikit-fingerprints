@@ -62,6 +62,6 @@ class MHFPFingerprint(FingerprintTransformer):
             X = np.mod(X, self.fp_size)
             X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
             if self.variant == "bit":
-                X = (X > 0).astype(int)
+                X = X > 0
 
         return csr_array(X) if self.sparse else np.array(X)
