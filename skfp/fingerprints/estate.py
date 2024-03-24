@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class EStateFingerprint(FingerprintTransformer):
+    """EState fingerprint."""
+
     def __init__(
         self,
         variant: str = "sum",

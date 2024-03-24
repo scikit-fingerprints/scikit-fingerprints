@@ -19,6 +19,8 @@ https://github.com/reymond-group/map4
 
 
 class MAP4Fingerprint(FingerprintTransformer):
+    """MAP4 fingerprint."""
+
     def __init__(
         self,
         fp_size: int = 1024,

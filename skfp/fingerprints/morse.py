@@ -9,6 +9,8 @@ from skfp.validators import require_mols_with_conf_ids
 
 
 class MORSEFingerprint(FingerprintTransformer):
+    """MORSE fingerprint."""
+
     def __init__(
         self,
         sparse: bool = False,

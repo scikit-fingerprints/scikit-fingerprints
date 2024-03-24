@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class SECFPFingerprint(FingerprintTransformer):
+    """SECFP fingerprint."""
+
     def __init__(
         self,
         fp_size: int = 2048,

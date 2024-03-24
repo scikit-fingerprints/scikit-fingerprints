@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class RDKitFingerprint(FingerprintTransformer):
+    """RDKit fingerprint."""
+
     def __init__(
         self,
         fp_size: int = 2048,
