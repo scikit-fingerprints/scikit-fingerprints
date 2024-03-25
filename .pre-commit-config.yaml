@@ -13,7 +13,6 @@ repos:
     rev: 24.3.0
     hooks:
       - id: black
-        language_version: python3.11
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
@@ -27,7 +26,6 @@ repos:
     hooks:
       - id: isort
         args: [ "--profile", "black", "--filter-files" ]
-        language_version: python3.11
 
   - repo: local
     hooks:
