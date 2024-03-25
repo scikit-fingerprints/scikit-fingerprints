@@ -10,5 +10,5 @@ __pycache__
 *.npy
 *.csv
 
-doc/modules/generated/
-doc/_build/
+docs/modules/generated/
+docs/_build/

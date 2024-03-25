@@ -9,7 +9,7 @@
 project = "scikit-fingerprints"
 copyright = "2024, scikit-fingerprints team"
 author = "scikit-fingerprints team"
-release = "0.1.2"
+release = "1.2.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
