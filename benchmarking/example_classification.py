@@ -10,11 +10,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import MinMaxScaler
 
-from skfp import (
+from skfp.fingerprints import (
     AtomPairFingerprint,
     ECFPFingerprint,
     ERGFingerprint,
-    MACCSKeysFingerprint,
+    MACCSFingerprint,
     MAP4Fingerprint,
     MHFPFingerprint,
     TopologicalTorsionFingerprint,
@@ -69,7 +69,7 @@ for dataset_name, property_name in zip(dataset_names, property_names):
         ECFPFingerprint,
         AtomPairFingerprint,
         TopologicalTorsionFingerprint,
-        MACCSKeysFingerprint,
+        MACCSFingerprint,
         ERGFingerprint,
         MAP4Fingerprint,
         MHFPFingerprint,
