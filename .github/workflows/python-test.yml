@@ -28,7 +28,7 @@ jobs:
       run: $POETRY install --with test
 
     - name: Install poetry plugins
-      run: $POETRY plugin add poetry-plugin-sort
+      run: $POETRY self add poetry-plugin-sort
 
     - name: Check pre-commit
       run: $POETRY run pre-commit run --all-files
