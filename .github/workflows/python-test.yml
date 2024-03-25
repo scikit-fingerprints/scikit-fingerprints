@@ -25,7 +25,10 @@ jobs:
         $POETRY_VENV/bin/pip install poetry
 
     - name: Install dependencies using Poetry
-      run: $POETRY install --with test
+      run: $POETRY install --with dev
+
+    - name: Check pre-commit
+      run: $POETRY run pre-commit run --all-files
 
     - name: Run tests with pytest
       run: $POETRY run pytest tests
