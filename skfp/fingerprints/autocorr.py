@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols, require_mols_with_conf_ids
 
 
 class AutocorrFingerprint(FingerprintTransformer):
+    """Autocorrelation fingerprint."""
+
     def __init__(
         self,
         use_3D: bool = False,

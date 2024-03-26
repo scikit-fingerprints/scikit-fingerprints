@@ -27,6 +27,8 @@ cannot be pickled, throwing TypeError: cannot pickle 'Boost.Python.function' obj
 
 
 class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
+    """Base class for fingerprint transformers."""
+
     def __init__(
         self,
         count: bool = False,

@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class ERGFingerprint(FingerprintTransformer):
+    """Extended Reduced Graph Fingerprint (ERG) transformer."""
+
     def __init__(
         self,
         atom_types: int = 0,

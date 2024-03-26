@@ -9,6 +9,8 @@ from skfp.validators import require_mols_with_conf_ids
 
 
 class WHIMFingerprint(FingerprintTransformer):
+    """WHIM fingerprint."""
+
     def __init__(
         self,
         clip_val: int = np.iinfo(np.int32).max,

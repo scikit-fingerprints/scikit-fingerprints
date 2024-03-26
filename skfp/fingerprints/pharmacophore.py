@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols, require_mols_with_conf_ids
 
 
 class PharmacophoreFingerprint(FingerprintTransformer):
+    """Pharmacophore fingerprint."""
+
     def __init__(
         self,
         variant: str = "raw_bits",

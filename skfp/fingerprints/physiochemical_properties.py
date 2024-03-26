@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
+    """Physiochemical properties fingerprint."""
+
     def __init__(
         self,
         fp_size: int = 2048,

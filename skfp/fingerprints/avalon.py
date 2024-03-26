@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class AvalonFingerprint(FingerprintTransformer):
+    """Avalon fingerprint."""
+
     def __init__(
         self,
         fp_size: int = 512,
