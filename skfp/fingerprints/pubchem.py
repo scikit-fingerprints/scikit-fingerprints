@@ -19,6 +19,8 @@ NCGC (NIH) Java code.
 
 
 class PubChemFingerprint(FingerprintTransformer):
+    """PubChem fingerprint."""
+
     def __init__(
         self,
         count: bool = False,

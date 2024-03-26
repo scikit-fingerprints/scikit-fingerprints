@@ -1,3 +1,5 @@
+"""This module contains the fingerprint classes for generating molecular fingerprints."""
+
 from .atom_pair import AtomPairFingerprint
 from .autocorr import AutocorrFingerprint
 from .avalon import AvalonFingerprint

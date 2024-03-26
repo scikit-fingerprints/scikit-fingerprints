@@ -48,6 +48,12 @@ optional = true
 pre-commit = "*"
 pytest = "*"
 
+[tool.poetry.group.doc]
+optional = true
+
+[tool.poetry.group.doc.dependencies]
+sphinx = "*"
+
 [tool.pytest.ini_options]
 python_files = "*.py"
 

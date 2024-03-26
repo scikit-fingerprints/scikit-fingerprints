@@ -9,6 +9,8 @@ from skfp.validators import ensure_mols
 
 
 class MHFPFingerprint(FingerprintTransformer):
+    """MinHashed FingerPrint (MHFP) transformer."""
+
     def __init__(
         self,
         fp_size: int = 2048,
