@@ -9,11 +9,9 @@
 name: Publish Python distributions to PyPI and TestPyPI
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - 'release/**'
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build-n-publish:
