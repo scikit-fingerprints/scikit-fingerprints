@@ -54,56 +54,62 @@ class MAP4Fingerprint(FingerprintTransformer):
             X = np.mod(X, self.fp_size)
             X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
             if self.variant == "bit":
-                X = (X > 0).astype(int)
+                X = X > 0
 
         return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
-        # TODO: does not work for some molecules, for now handled by try/except
-        try:
-            atoms_envs = self._get_atom_envs(mol)
-            atom_env_pairs = self._get_atom_pair_shingles(mol, atoms_envs)
-            encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
-            encoder.update_batch(atom_env_pairs)
-            fp = encoder.digest()
-            return fp
-        except ValueError:
-            return np.full(shape=self.fp_size, fill_value=-1)
+        atoms_envs = self._get_atom_envs(mol)
+        atom_env_pairs = self._get_atom_pair_shingles(mol, atoms_envs)
+        encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
+        encoder.update_batch(atom_env_pairs)
+        fp = encoder.digest()
+        return fp
 
-    def _get_atom_envs(self, mol: Mol) -> dict:
+    def _get_atom_envs(self, mol: Mol) -> Dict[int, List[Optional[str]]]:
         """
         For each atom get its environment, i.e. radius-hop neighborhood.
         """
         atoms_env = defaultdict(list)
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
-            new_values = [
+            atom_envs = [
                 self._find_neighborhood(mol, idx, r) for r in range(1, self.radius + 1)
             ]
-            atoms_env[idx].extend(new_values)
+            atoms_env[idx].extend(atom_envs)
 
         return atoms_env
 
-    def _find_neighborhood(self, mol: Mol, idx: int, n_radius: int) -> str:
+    def _find_neighborhood(
+        self, mol: Mol, atom_idx: int, n_radius: int
+    ) -> Optional[str]:
         """
-        Function for getting the neighborhood for given atom, i.e. structures
-        adjacent to it.
+        Get the radius-hop neighborhood for a given atom. If there is no neighborhood
+        of a given radius, e.g. 2-hop neighborhood for [Li]F with just two atoms,
+        returns None.
         """
-        env = FindAtomEnvironmentOfRadiusN(mol, idx, n_radius)
+        try:
+            env = FindAtomEnvironmentOfRadiusN(mol, atom_idx, n_radius)
+        except ValueError as e:
+            # this error happens if radius is larger than possible
+            if "bad atom index" in str(e):
+                return None
+            else:
+                raise
+
         atom_map: Dict[int, int] = dict()
 
         submol = PathToSubmol(mol, env, atomMap=atom_map)
 
-        if idx in atom_map:
-            smiles = MolToSmiles(
+        if atom_idx in atom_map:
+            return MolToSmiles(
                 submol,
-                rootedAtAtom=atom_map[idx],
+                rootedAtAtom=atom_map[atom_idx],
                 canonical=True,
                 isomericSmiles=False,
             )
-            return smiles
         else:
-            return ""
+            return None
 
     def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> List[bytes]:
         """
@@ -131,7 +137,8 @@ class MAP4Fingerprint(FingerprintTransformer):
                 env_a_radius = env_a[i]
                 env_b_radius = env_b[i]
 
-                if not len(env_a_radius) or not len(env_b_radius):
+                # can be None if we couldn't get atom neighborhood of given radius
+                if not env_a_radius or not env_b_radius:
                     continue
 
                 ordered = sorted([env_a_radius, env_b_radius])

@@ -272,7 +272,7 @@ class PubChemFingerprint(FingerprintTransformer):
         )
         X = csr_array(x) if self.sparse else np.array(x)
 
-        return (X > 0).astype(int) if not self.count else X
+        return (X > 0) if not self.count else X
 
     def _get_atom_counts(self, mol: Mol) -> Dict[str, int]:
         counts: Dict[str, int] = defaultdict(int)
