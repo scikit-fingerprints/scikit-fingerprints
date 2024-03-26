@@ -27,6 +27,14 @@ jobs:
     - name: Install dependencies using Poetry
       run: $POETRY install --with test
 
+    - name: Install poetry plugins
+      run: $POETRY self add poetry-plugin-sort
+
+    - name: Check pre-commit
+      run: |
+        export PATH=$POETRY_VENV/bin:$PATH
+        $POETRY run pre-commit run --all-files
+
     - name: Run tests with pytest
       run: $POETRY run pytest tests
 
