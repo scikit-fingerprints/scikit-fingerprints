@@ -45,6 +45,7 @@ pytest = "*"
 optional = true
 
 [tool.poetry.group.test.dependencies]
+mypy = "*"
 pre-commit = "*"
 pytest = "*"
 
