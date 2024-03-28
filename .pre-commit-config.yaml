@@ -33,7 +33,7 @@ repos:
       # and have all dependencies
       - id: mypy
         name: mypy
-        entry: bash -c 'poetry run mypy --allow-redefinition --package skfp --package tests'
+        entry: poetry run mypy --allow-redefinition --package skfp --package tests
         language: system
         pass_filenames: false
 
@@ -41,7 +41,7 @@ repos:
     hooks:
       - id: poetry-plugin-sort
         name: poetry-plugin-sort
-        entry: bash -c 'poetry sort'
+        entry: poetry sort
         language: system
         pass_filenames: false
 
