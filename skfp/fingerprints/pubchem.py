@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import scipy.sparse
@@ -276,14 +276,14 @@ class PubChemFingerprint(FingerprintTransformer):
 
         return (X > 0) if not self.count else X
 
-    def _get_atom_counts(self, mol: Mol) -> Dict[str, int]:
-        counts: Dict[str, int] = defaultdict(int)
+    def _get_atom_counts(self, mol: Mol) -> dict[str, int]:
+        counts: dict[str, int] = defaultdict(int)
         for atom in mol.GetAtoms():
             counts[atom.GetSymbol()] += 1
         return counts
 
-    def _get_ESSSR_ring_counts(self, mol: Mol) -> Dict[str, int]:
-        counts: Dict[str, int] = defaultdict(int)
+    def _get_ESSSR_ring_counts(self, mol: Mol) -> dict[str, int]:
+        counts: dict[str, int] = defaultdict(int)
 
         ring_info = mol.GetRingInfo()
         for ring in ring_info.BondRings():
@@ -320,8 +320,8 @@ class PubChemFingerprint(FingerprintTransformer):
         return counts
 
     def _get_ring_stats(
-        self, mol: Mol, ring: Tuple[int]
-    ) -> Dict[str, Union[int, bool]]:
+        self, mol: Mol, ring: tuple[int]
+    ) -> dict[str, Union[int, bool]]:
         from rdkit.Chem import BondType
 
         stats = {
@@ -355,7 +355,7 @@ class PubChemFingerprint(FingerprintTransformer):
 
         return stats
 
-    def _get_ring_binary_features(self, ring_counts: Dict[str, int]) -> List[int]:
+    def _get_ring_binary_features(self, ring_counts: dict[str, int]) -> list[int]:
         # for each ring size, we have different number of binary features, for multiple
         # count thresholds, e.g. for 7-atom rings we have 2 sets of features (>=1, >=2),
         # and for 5-atom rings we have 5 sets
@@ -405,7 +405,7 @@ class PubChemFingerprint(FingerprintTransformer):
         features = [int(feat) for feat in features]
         return features
 
-    def _get_ring_count_features(self, ring_counts: Dict[str, int]) -> List[int]:
+    def _get_ring_count_features(self, ring_counts: dict[str, int]) -> list[int]:
         # for each ring size, we count all
         features = []
 
@@ -431,7 +431,7 @@ class PubChemFingerprint(FingerprintTransformer):
 
         return features
 
-    def _get_atom_pair_counts(self, mol: Mol) -> List[int]:
+    def _get_atom_pair_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[Li]~[H]",
             "[Li]~[Li]",
@@ -500,7 +500,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_simple_neighborhoods_counts(self, mol: Mol) -> List[int]:
+    def _get_simple_neighborhoods_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6](~Br)(~[#6])",
             "[#6](~Br)(~[#6])(~[#6])",
@@ -594,7 +594,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_detailed_neighborhoods_counts(self, mol: Mol) -> List[int]:
+    def _get_detailed_neighborhoods_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6]=,:[#6]",
             "[#6]#[#6]",
@@ -643,7 +643,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_simple_smarts_patterns_counts(self, mol: Mol) -> List[int]:
+    def _get_simple_smarts_patterns_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6]-,:[#6]-,:[#6]#[#6]",
             "[#8]-,:[#6]-,:[#6]=,:[#7]",
@@ -901,7 +901,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_complex_smarts_patterns_counts(self, mol: Mol) -> List[int]:
+    def _get_complex_smarts_patterns_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6]c1ccc([#6])cc1",
             "[#6]c1ccc([#8])cc1",
@@ -1074,7 +1074,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_smarts_match_counts(self, mol: Mol, smarts_list: List[str]) -> List[int]:
+    def _get_smarts_match_counts(self, mol: Mol, smarts_list: list[str]) -> list[int]:
         from rdkit.Chem import MolFromSmarts
 
         return [
