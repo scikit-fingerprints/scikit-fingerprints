@@ -2,7 +2,6 @@ from typing import Optional, Sequence, Union
 
 import numpy as np
 from mordred import Calculator, descriptors
-from mordred.error import Missing
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
@@ -15,7 +14,7 @@ class MordredFingerprint(FingerprintTransformer):
 
     def __init__(
         self,
-        ignore_3D: bool = True,
+        use_3D: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
@@ -25,14 +24,14 @@ class MordredFingerprint(FingerprintTransformer):
             n_jobs=n_jobs,
             verbose=verbose,
         )
-        self.ignore_3D = ignore_3D
+        self.use_3D = use_3D
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         X = ensure_mols(X)
 
-        calc = Calculator(descriptors, ignore_3D=self.ignore_3D)
+        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
         X = [calc(x) for x in X]
 
         return (
