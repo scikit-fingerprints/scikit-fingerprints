@@ -8,6 +8,7 @@ from .ecfp import ECFPFingerprint
 from .erg import ERGFingerprint
 from .estate import EStateFingerprint
 from .getaway import GETAWAYFingerprint
+from .layered import LayeredFingerprint
 from .maccs import MACCSFingerprint
 from .map4 import MAP4Fingerprint
 from .mhfp import MHFPFingerprint
