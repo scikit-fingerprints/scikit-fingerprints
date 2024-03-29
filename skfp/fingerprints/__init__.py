@@ -11,6 +11,7 @@ from .getaway import GETAWAYFingerprint
 from .maccs import MACCSFingerprint
 from .map4 import MAP4Fingerprint
 from .mhfp import MHFPFingerprint
+from .mordred_fp import MordredFingerprint
 from .morse import MORSEFingerprint
 from .pattern import PatternFingerprint
 from .pharmacophore import PharmacophoreFingerprint
