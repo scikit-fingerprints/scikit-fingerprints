@@ -24,6 +24,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=fp_size,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,

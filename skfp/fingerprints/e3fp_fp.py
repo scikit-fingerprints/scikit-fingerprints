@@ -13,7 +13,7 @@ from e3fp.pipeline import fprints_from_mol
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
-from skfp.validators import require_smiles
+from skfp.validators import ensure_smiles
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
@@ -43,6 +43,7 @@ class E3FPFingerprint(FingerprintTransformer):
         random_state: int = 0,
     ):
         super().__init__(
+            n_features_out=fp_size,
             n_jobs=n_jobs,
             verbose=verbose,
             sparse=sparse,
@@ -62,7 +63,7 @@ class E3FPFingerprint(FingerprintTransformer):
         self.aggregation_type = aggregation_type
 
     def _calculate_fingerprint(self, X: Sequence[str]) -> Union[np.ndarray, csr_array]:
-        X = require_smiles(X)
+        X = ensure_smiles(X)
         X = [self._calculate_single_mol_fingerprint(smi) for smi in X]
         return scipy.sparse.vstack(X) if self.sparse else np.array(X)
 
