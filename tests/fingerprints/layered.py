@@ -10,6 +10,7 @@ def test_layered_fingerprint(smiles_list, mols_list):
     X_skfp = layered_fp.transform(smiles_list)
     X_rdkit = np.array([RDKitLayeredFingerprint(mol) for mol in mols_list])
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), layered_fp.fp_size)
 
 
 def test_layered_sparse_fingerprint(smiles_list, mols_list):
@@ -17,3 +18,4 @@ def test_layered_sparse_fingerprint(smiles_list, mols_list):
     X_skfp = layered_fp.transform(smiles_list)
     X_rdkit = csr_array([RDKitLayeredFingerprint(mol) for mol in mols_list])
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(smiles_list), layered_fp.fp_size)
