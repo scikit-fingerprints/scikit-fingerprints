@@ -1,5 +1,3 @@
-from typing import List
-
 import pandas as pd
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -13,7 +11,7 @@ def pytest_addoption(parser) -> None:
 
 
 @pytest.fixture(scope="session")
-def smiles_list(request: FixtureRequest) -> List[str]:
+def smiles_list(request: FixtureRequest) -> list[str]:
     # handle different paths, e.g. from CLI and PyCharm
     try:
         smiles = _load_smiles("hiv_mol.csv.zip")
@@ -24,12 +22,12 @@ def smiles_list(request: FixtureRequest) -> List[str]:
 
 
 @pytest.fixture(scope="session")
-def mols_list(smiles_list) -> List[Mol]:
+def mols_list(smiles_list) -> list[Mol]:
     return [MolFromSmiles(smi) for smi in smiles_list]
 
 
 @pytest.fixture(scope="session")
-def smallest_smiles_list(request: FixtureRequest) -> List[str]:
+def smallest_smiles_list(request: FixtureRequest) -> list[str]:
     """
     Returns shortest SMILES, i.e. for smallest molecules, for use with
     computationally demanding fingerprints.
@@ -46,7 +44,7 @@ def smallest_smiles_list(request: FixtureRequest) -> List[str]:
 
 
 @pytest.fixture(scope="session")
-def smallest_mols_list(smallest_smiles_list) -> List[Mol]:
+def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
     """
     Returns shortest molecules, for use with computationally demanding fingerprints.
     """
@@ -59,5 +57,5 @@ def mols_conformers_list(smallest_mols_list) -> list[Mol]:
     return conf_gen.transform(smallest_mols_list)
 
 
-def _load_smiles(file_path: str) -> List[str]:
+def _load_smiles(file_path: str) -> list[str]:
     return pd.read_csv(file_path)["smiles"].tolist()

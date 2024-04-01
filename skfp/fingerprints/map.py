@@ -2,7 +2,7 @@ import hashlib
 import itertools
 import struct
 from collections import defaultdict
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 from datasketch import MinHash
@@ -75,7 +75,7 @@ class MAPFingerprint(FingerprintTransformer):
 
         return fp
 
-    def _get_atom_envs(self, mol: Mol) -> Dict[int, List[Optional[str]]]:
+    def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
         """
         For each atom get its environment, i.e. radius-hop neighborhood.
         """
@@ -106,7 +106,7 @@ class MAPFingerprint(FingerprintTransformer):
             else:
                 raise
 
-        atom_map: Dict[int, int] = dict()
+        atom_map: dict[int, int] = dict()
 
         submol = PathToSubmol(mol, env, atomMap=atom_map)
 
@@ -120,7 +120,7 @@ class MAPFingerprint(FingerprintTransformer):
         else:
             return None
 
-    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> List[bytes]:
+    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> list[bytes]:
         """
         Gets a list of atom molecular shingles - circular structures around atom pairs,
         written as SMILES, separated by the bond distance between the two atoms along the
@@ -129,7 +129,7 @@ class MAPFingerprint(FingerprintTransformer):
         shingles = []
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()
-        shingle_dict: Dict[str, int] = defaultdict(int)
+        shingle_dict: dict[str, int] = defaultdict(int)
 
         # Iterate through all pairs of atoms and radius. Shingles are stored in format:
         # (radius i neighborhood of atom A) | (distance between atoms A and B) | (radius i neighborhood of atom B)

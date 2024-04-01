@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
@@ -88,7 +88,7 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
 
     @staticmethod
     def _hash_fingerprint_bits(
-        X: List[Union[IntSparseIntVect, LongSparseIntVect, SparseBitVect]],
+        X: list[Union[IntSparseIntVect, LongSparseIntVect, SparseBitVect]],
         fp_size: int,
         count: bool,
         sparse: bool,
