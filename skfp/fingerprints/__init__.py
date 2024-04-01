@@ -10,8 +10,9 @@ from .estate import EStateFingerprint
 from .getaway import GETAWAYFingerprint
 from .layered import LayeredFingerprint
 from .maccs import MACCSFingerprint
-from .map4 import MAP4Fingerprint
+from .map import MAPFingerprint
 from .mhfp import MHFPFingerprint
+from .mordred_fp import MordredFingerprint
 from .morse import MORSEFingerprint
 from .pattern import PatternFingerprint
 from .pharmacophore import PharmacophoreFingerprint

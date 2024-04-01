@@ -4,8 +4,8 @@ import sys
 from typing import Optional
 
 import rdkit
-from joblib import Parallel
 from rdkit import rdBase
+from sklearn.utils.parallel import Parallel
 from tqdm import tqdm
 
 rdBase.LogToPythonLogger()
