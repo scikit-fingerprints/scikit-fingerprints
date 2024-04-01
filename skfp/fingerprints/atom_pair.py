@@ -12,7 +12,8 @@ from skfp.validators import ensure_mols, require_mols_with_conf_ids
 
 
 class AtomPairFingerprint(FingerprintTransformer):
-    """Atom pair fingerprint.
+    """
+    Atom Pair fingerprint.
 
     The implementation uses RDKit. This is a hashed fingerprint, where
     fragments are computed based on pairs of atoms and distance between them.
@@ -20,10 +21,11 @@ class AtomPairFingerprint(FingerprintTransformer):
     Concretely, the hashed fragment is a triplet: (atom type 1, atom type 2, distance)
 
     Atom type takes into consideration:
-        - atomic number
-        - number of pi electrons
-        - degree (number of bonds)
-        - optionally: chirality (based on `include_chirality` parameter)
+
+    - atomic number
+    - number of pi electrons
+    - degree (number of bonds)
+    - optionally: chirality (based on `include_chirality` parameter)
 
     Distance is normally the topological distance, i.e. length of the shortest path
     in the molecular graph (number of bonds between atoms). Only pairs with distance
@@ -75,8 +77,7 @@ class AtomPairFingerprint(FingerprintTransformer):
 
     See Also
     --------
-    TopologicalTorsionFingerprint : Related fingerprint, but taking into consideration
-    4-atom paths.
+    :class:`TopologicalTorsionFingerprint` : Related fingerprint, but uses 4-atom paths.
 
     References
     ----------

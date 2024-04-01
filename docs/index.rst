@@ -1,8 +1,8 @@
-Welcome to scikit-fingerprints's documentation!
+Welcome to scikit-fingerprints documentation!
 ===============================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    usage

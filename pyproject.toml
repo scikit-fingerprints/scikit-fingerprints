@@ -41,7 +41,6 @@ isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
-sphinx = "*"
 
 [tool.poetry.group.test]
 optional = true
@@ -55,6 +54,7 @@ pytest = "*"
 optional = true
 
 [tool.poetry.group.doc.dependencies]
+pydata-sphinx-theme = "*"
 sphinx = "*"
 
 [tool.pytest.ini_options]

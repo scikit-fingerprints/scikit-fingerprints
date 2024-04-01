@@ -54,7 +54,7 @@ jobs:
         run: $POETRY install --with doc
 
       - name: Build documentation
-        run: $POETRY run make -C docs html
+        run: $POETRY run make docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
