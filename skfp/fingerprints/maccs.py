@@ -18,6 +18,7 @@ class MACCSFingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=167,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,

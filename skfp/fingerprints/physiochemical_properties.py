@@ -24,6 +24,7 @@ class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
             raise ValueError("Variant must be one of: 'BP', 'BT'")
 
         super().__init__(
+            n_features_out=fp_size,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
