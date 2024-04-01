@@ -17,8 +17,8 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install poetry
-      uses: abatilo/actions-poetry@v2
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v3
 
     - name: Configure Poetry for TestPyPI
       run: >-

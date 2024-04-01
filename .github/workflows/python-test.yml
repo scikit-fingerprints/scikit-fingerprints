@@ -23,7 +23,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-plugins: "poetry-plugin-sort"
 
       - name: Setup a local virtual environment
         run: |
@@ -38,9 +40,6 @@ jobs:
 
       - name: Install the project dependencies
         run: poetry install --with test
-
-      - name: Install poetry plugins
-        run: poetry self add poetry-plugin-sort
 
       - name: Check pre-commit
         run: poetry run pre-commit run --all-files
