@@ -1,40 +1,45 @@
-name: Python package workflow
+name: Tests & checks
 
 on: [pull_request]
 
-env:
-  POETRY_VENV: poetry_venv
-  POETRY: poetry_venv/bin/poetry
-
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
+  ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install Poetry
-      run: |
-        python3 -m venv $POETRY_VENV
-        $POETRY_VENV/bin/pip install -U pip setuptools
-        $POETRY_VENV/bin/pip install poetry
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
 
-    - name: Install dependencies using Poetry
-      run: $POETRY install --with test
+      - name: Setup a local virtual environment
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
 
-    - name: Install poetry plugins
-      run: $POETRY self add poetry-plugin-sort
+      - uses: actions/cache@v3
+        name: Define dependencies cache based
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
 
-    - name: Check pre-commit
-      run: |
-        export PATH=$POETRY_VENV/bin:$PATH
-        $POETRY run pre-commit run --all-files
+      - name: Install the project dependencies
+        run: poetry install --with test
 
-    - name: Run tests with pytest
-      run: $POETRY run pytest tests
+      - name: Install poetry plugins
+        run: $POETRY self add poetry-plugin-sort
 
+      - name: Check pre-commit
+        run: |
+          $POETRY run pre-commit run --all-files
+
+      - name: Run tests with pytest
+        run: $POETRY run pytest tests
