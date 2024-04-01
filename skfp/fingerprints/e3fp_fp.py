@@ -95,8 +95,9 @@ class E3FPFingerprint(FingerprintTransformer):
         try:
             try:
                 # suppress flood of logs
-                logging.disable(logging.INFO)
-                RDLogger.DisableLog("rdApp.*")
+                if not self.verbose:
+                    logging.disable(logging.INFO)
+                    RDLogger.DisableLog("rdApp.*")
 
                 mol, values = conf_gen.generate_conformers(mol)
                 fps = fprints_from_mol(
