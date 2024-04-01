@@ -1,4 +1,6 @@
+import hashlib
 import itertools
+import struct
 from collections import defaultdict
 from typing import Optional, Sequence, Union
 
@@ -18,8 +20,8 @@ https://github.com/reymond-group/map4
 """
 
 
-class MAP4Fingerprint(FingerprintTransformer):
-    """MAP4 fingerprint."""
+class MAPFingerprint(FingerprintTransformer):
+    """MAP fingerprint."""
 
     def __init__(
         self,
@@ -52,20 +54,25 @@ class MAP4Fingerprint(FingerprintTransformer):
         X = ensure_mols(X)
         X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
 
-        if self.variant in ["bit", "count"]:
-            X = np.mod(X, self.fp_size)
-            X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
-            if self.variant == "bit":
-                X = X > 0
+        if self.variant == "bit":
+            X = X > 0
 
         return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
         atoms_envs = self._get_atom_envs(mol)
-        atom_env_pairs = self._get_atom_pair_shingles(mol, atoms_envs)
-        encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
-        encoder.update_batch(atom_env_pairs)
-        fp = encoder.digest()
+        shingles = self._get_atom_pair_shingles(mol, atoms_envs)
+
+        if self.variant == "raw_hashes":
+            encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
+            encoder.update_batch(shingles)
+            fp = encoder.digest()
+        else:
+            # bit/count folded version from original MAP4 and MHFP implementation
+            hashes = [self._get_hash(shingle) for shingle in shingles]
+            bits = [hash_val % self.fp_size for hash_val in hashes]
+            fp = np.bincount(bits, minlength=self.fp_size)
+
         return fp
 
     def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
@@ -115,11 +122,11 @@ class MAP4Fingerprint(FingerprintTransformer):
 
     def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> list[bytes]:
         """
-        Gets a list of atom-pair molecular shingles - circular structures written
-        as SMILES, separated by the bond distance between the two atoms along the
+        Gets a list of atom molecular shingles - circular structures around atom pairs,
+        written as SMILES, separated by the bond distance between the two atoms along the
         shortest path.
         """
-        atom_pairs = []
+        shingles = []
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()
         shingle_dict: dict[str, int] = defaultdict(int)
@@ -149,16 +156,24 @@ class MAP4Fingerprint(FingerprintTransformer):
                 if self.count:
                     shingle_dict[shingle] += 1
                 else:
-                    atom_pairs.append(shingle.encode("utf-8"))
+                    shingles.append(shingle)
 
         if self.count:
             # shingle in format:
             # (radius i neighborhood of atom A) | (distance between atoms A and B) | \
             # (radius i neighborhood of atom B) | (shingle count)
-            new_atom_pairs = [
-                f"{shingle}|{shingle_count}".encode()
+            shingle_count = [
+                f"{shingle}|{shingle_count}"
                 for shingle, shingle_count in shingle_dict.items()
             ]
-            atom_pairs.extend(new_atom_pairs)
+            shingles.extend(shingle_count)
 
-        return atom_pairs
+        # convert strings to bytes for hashing
+        shingles = [shingle.encode() for shingle in shingles]
+
+        return shingles
+
+    def _get_hash(self, shingle: bytes) -> int:
+        hash_bytes = hashlib.sha1(shingle, usedforsecurity=False).digest()
+        hash_value = struct.unpack("<I", hash_bytes[:4])[0]
+        return hash_value
