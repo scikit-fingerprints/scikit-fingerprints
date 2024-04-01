@@ -126,7 +126,7 @@ def test_pharmacophore_raw_bits_3D_sparse_fingerprint(mols_conformers_list):
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (mols_conformers_list, 39972)
+    assert X_skfp.shape == (len(mols_conformers_list), 39972)
 
 
 def test_pharmacophore_bit_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
