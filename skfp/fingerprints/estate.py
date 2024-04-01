@@ -22,6 +22,7 @@ class EStateFingerprint(FingerprintTransformer):
             raise ValueError("Variant must be one of: 'bit', 'count', 'sum'")
 
         super().__init__(
+            n_features_out=79,
             n_jobs=n_jobs,
             sparse=sparse,
             verbose=verbose,

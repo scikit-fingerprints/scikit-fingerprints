@@ -38,6 +38,7 @@ class MAPFingerprint(FingerprintTransformer):
             raise ValueError("Variant must be one of: 'bit', 'count', 'raw_hashes'")
 
         super().__init__(
+            n_features_out=fp_size,
             sparse=sparse,
             count=count,
             n_jobs=n_jobs,

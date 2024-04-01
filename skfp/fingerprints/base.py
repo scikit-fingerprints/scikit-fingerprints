@@ -4,11 +4,16 @@ from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
-from joblib import Parallel, delayed, effective_n_jobs
+from joblib import delayed, effective_n_jobs
 from rdkit.Chem.rdchem import Mol
 from rdkit.DataStructs import IntSparseIntVect, LongSparseIntVect, SparseBitVect
 from scipy.sparse import csr_array, dok_array
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import (
+    BaseEstimator,
+    ClassNamePrefixFeaturesOutMixin,
+    TransformerMixin,
+)
+from sklearn.utils.parallel import Parallel
 
 from skfp.utils import ProgressParallel
 
@@ -26,11 +31,14 @@ cannot be pickled, throwing TypeError: cannot pickle 'Boost.Python.function' obj
 """
 
 
-class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
+class FingerprintTransformer(
+    ABC, TransformerMixin, BaseEstimator, ClassNamePrefixFeaturesOutMixin
+):
     """Base class for fingerprint transformers."""
 
     def __init__(
         self,
+        n_features_out: int,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
@@ -39,9 +47,23 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
     ):
         self.count = count
         self.sparse = sparse
-        self.n_jobs = effective_n_jobs(n_jobs)
+        self.n_jobs = n_jobs
         self.verbose = verbose
         self.random_state = random_state
+
+        # this, combined with ClassNamePrefixFeaturesOutMixin, automatically handles
+        # set_output() API
+        self._n_features_out = n_features_out
+
+    @property
+    def n_features_out(self) -> int:
+        # publicly expose the number of output features
+        # it has underscore at the beginning only due to Scikit-learn convention
+        return self._n_features_out
+
+    def __sklearn_is_fitted__(self) -> bool:
+        # fingerprint transformers don't require fitting
+        return True
 
     def fit(self, X, y=None, **fit_params):
         return self
@@ -54,19 +76,20 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         :param X: np.array or DataFrame of rdkit.Mol objects
         :return: np.array or sparse array of calculated fingerprints for each molecule
         """
+        n_jobs = effective_n_jobs(self.n_jobs)
 
-        if self.n_jobs == 1:
+        if n_jobs == 1:
             return self._calculate_fingerprint(X)
         else:
-            batch_size = max(len(X) // self.n_jobs, 1)
+            batch_size = max(len(X) // n_jobs, 1)
 
             args = (X[i : i + batch_size] for i in range(0, len(X), batch_size))
 
             if self.verbose > 0:
-                total = min(self.n_jobs, len(X))
-                parallel = ProgressParallel(n_jobs=self.n_jobs, total=total)
+                total = min(n_jobs, len(X))
+                parallel = ProgressParallel(n_jobs=n_jobs, total=total)
             else:
-                parallel = Parallel(n_jobs=self.n_jobs)
+                parallel = Parallel(n_jobs=n_jobs)
 
             results = parallel(
                 delayed(self._calculate_fingerprint)(X_sub) for X_sub in args

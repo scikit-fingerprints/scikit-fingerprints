@@ -23,7 +23,9 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         if variant not in ["bit", "count", "raw_bits"]:
             raise ValueError("Variant must be one of: 'bit', 'count', 'raw_bits'")
 
+        n_features_out = 39972 if variant == "raw_bits" else fp_size
         super().__init__(
+            n_features_out=n_features_out,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,

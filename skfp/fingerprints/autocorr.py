@@ -18,7 +18,9 @@ class AutocorrFingerprint(FingerprintTransformer):
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
+        n_features_out = 80 if use_3D else 192
         super().__init__(
+            n_features_out=n_features_out,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
