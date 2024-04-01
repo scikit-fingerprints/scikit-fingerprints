@@ -13,6 +13,7 @@ def test_secfp_fingerprint(smiles_list, mols_list):
     X_rdkit = np.array([encoder.EncodeSECFPMol(x) for x in mols_list])
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), secfp_fp.fp_size)
 
 
 def test_secfp_sparse_fingerprint(smiles_list, mols_list):
@@ -23,3 +24,4 @@ def test_secfp_sparse_fingerprint(smiles_list, mols_list):
     X_rdkit = csr_array([encoder.EncodeSECFPMol(x) for x in mols_list])
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(smiles_list), secfp_fp.fp_size)
