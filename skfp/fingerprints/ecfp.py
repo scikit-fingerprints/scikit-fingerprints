@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -20,7 +20,7 @@ class ECFPFingerprint(FingerprintTransformer):
         use_bond_types: bool = True,
         only_nonzero_invariants: bool = False,
         include_ring_membership: bool = True,
-        count_bounds: Optional[List] = None,
+        count_bounds: Optional[list] = None,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
