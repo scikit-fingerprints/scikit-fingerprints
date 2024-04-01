@@ -15,6 +15,7 @@ def test_pharmacophore_raw_bits_fingerprint(smallest_smiles_list, smallest_mols_
     X_rdkit = np.array([Gen2DFingerprint(x, factory) for x in smallest_mols_list])
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_raw_bits_3D_fingerprint(mols_conformers_list):
@@ -30,6 +31,7 @@ def test_pharmacophore_raw_bits_3D_fingerprint(mols_conformers_list):
     )
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -43,6 +45,7 @@ def test_pharmacophore_bit_fingerprint(smallest_smiles_list, smallest_mols_list)
     )
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_bit_3D_fingerprint(mols_conformers_list):
@@ -61,6 +64,7 @@ def test_pharmacophore_bit_3D_fingerprint(mols_conformers_list):
     )
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_count_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -74,6 +78,7 @@ def test_pharmacophore_count_fingerprint(smallest_smiles_list, smallest_mols_lis
     )
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_count_3D_fingerprint(mols_conformers_list):
@@ -92,6 +97,7 @@ def test_pharmacophore_count_3D_fingerprint(mols_conformers_list):
     )
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_raw_bits_sparse_fingerprint(
@@ -104,6 +110,7 @@ def test_pharmacophore_raw_bits_sparse_fingerprint(
     X_rdkit = csr_array([Gen2DFingerprint(mol, factory) for mol in smallest_mols_list])
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(X_skfp), 39972)
 
 
 def test_pharmacophore_raw_bits_3D_sparse_fingerprint(mols_conformers_list):
@@ -119,6 +126,7 @@ def test_pharmacophore_raw_bits_3D_sparse_fingerprint(mols_conformers_list):
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(X_skfp), 39972)
 
 
 def test_pharmacophore_bit_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -132,6 +140,7 @@ def test_pharmacophore_bit_sparse_fingerprint(smallest_smiles_list, smallest_mol
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_bit_3D_sparse_fingerprint(mols_conformers_list):
@@ -150,6 +159,7 @@ def test_pharmacophore_bit_3D_sparse_fingerprint(mols_conformers_list):
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_count_sparse_fingerprint(
@@ -165,6 +175,7 @@ def test_pharmacophore_count_sparse_fingerprint(
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)
 
 
 def test_pharmacophore_count_3D_sparse_fingerprint(mols_conformers_list):
@@ -183,3 +194,4 @@ def test_pharmacophore_count_3D_sparse_fingerprint(mols_conformers_list):
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(X_skfp), pharmacophore_fp.fp_size)

@@ -21,6 +21,7 @@ def test_map4_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
     X_map4 = np.stack([(np.bincount(x, minlength=map4_fp.fp_size) > 0) for x in X_map4])
 
     assert np.array_equal(X_skfp, X_map4)
+    assert X_skfp.shape == (len(smallest_smiles_list), map4_fp.fp_size)
 
 
 def test_map4_count_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -40,6 +41,7 @@ def test_map4_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     X_map4 = np.stack([np.bincount(x, minlength=map4_fp.fp_size) for x in X_map4])
 
     assert np.array_equal(X_skfp, X_map4)
+    assert X_skfp.shape == (len(smallest_smiles_list), map4_fp.fp_size)
 
 
 def test_map4_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -56,6 +58,7 @@ def test_map4_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
     )
 
     assert np.array_equal(X_skfp, X_map4)
+    assert X_skfp.shape == (len(smallest_smiles_list), map4_fp.fp_size)
 
 
 def test_map4_sparse_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -77,6 +80,7 @@ def test_map4_sparse_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
     )
 
     assert np.array_equal(X_skfp.data, X_map4.data)
+    assert X_skfp.shape == (len(smallest_smiles_list), map4_fp.fp_size)
 
 
 def test_map4_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -98,6 +102,7 @@ def test_map4_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list)
     )
 
     assert np.array_equal(X_skfp.data, X_map4.data)
+    assert X_skfp.shape == (len(smallest_smiles_list), map4_fp.fp_size)
 
 
 def test_map4_sparse_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -114,3 +119,4 @@ def test_map4_sparse_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_
     )
 
     assert np.array_equal(X_skfp.data, X_map4.data)
+    assert X_skfp.shape == (len(smallest_smiles_list), map4_fp.fp_size)
