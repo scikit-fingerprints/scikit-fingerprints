@@ -20,6 +20,7 @@ def test_erg_fingerprint(smiles_list):
     X_rdkit = np.array([GetErGFingerprint(mol) for mol in mols_list])
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), 315)
 
 
 def test_erg_sparse_fingerprint(smiles_list):
@@ -30,3 +31,4 @@ def test_erg_sparse_fingerprint(smiles_list):
     X_rdkit = csr_array([GetErGFingerprint(mol) for mol in mols_list])
 
     assert np.all(np.isclose(X_skfp.data, X_rdkit.data))
+    assert X_skfp.shape == (len(smiles_list), 315)
