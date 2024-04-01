@@ -13,6 +13,7 @@ def test_estate_bit_fingerprint(smiles_list, mols_list):
     X_rdkit = X_rdkit[:, 0] > 0
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), 79)
 
 
 def test_estate_count_fingerprint(smiles_list, mols_list):
@@ -23,6 +24,7 @@ def test_estate_count_fingerprint(smiles_list, mols_list):
     X_rdkit = X_rdkit[:, 0]
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), 79)
 
 
 def test_estate_sum_fingerprint(smiles_list, mols_list):
@@ -33,6 +35,7 @@ def test_estate_sum_fingerprint(smiles_list, mols_list):
     X_rdkit = X_rdkit[:, 1]
 
     assert np.all(np.isclose(X_skfp, X_rdkit))
+    assert X_skfp.shape == (len(smiles_list), 79)
 
 
 def test_estate_sparse_bit_fingerprint(smiles_list, mols_list):
@@ -44,6 +47,7 @@ def test_estate_sparse_bit_fingerprint(smiles_list, mols_list):
     X_rdkit = csr_array(X_rdkit)
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(smiles_list), 79)
 
 
 def test_estate_sparse_count_fingerprint(smiles_list, mols_list):
@@ -55,6 +59,7 @@ def test_estate_sparse_count_fingerprint(smiles_list, mols_list):
     X_rdkit = csr_array(X_rdkit)
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(smiles_list), 79)
 
 
 def test_estate_sparse_sum_fingerprint(smiles_list, mols_list):
@@ -66,3 +71,4 @@ def test_estate_sparse_sum_fingerprint(smiles_list, mols_list):
     X_rdkit = csr_array(X_rdkit)
 
     assert np.all(np.isclose(X_skfp.data, X_rdkit.data))
+    assert X_skfp.shape == (len(smiles_list), 79)

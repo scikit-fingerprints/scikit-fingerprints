@@ -14,6 +14,7 @@ def test_mordred_fingerprint(smiles_list, mols_list):
     X_seq = np.array(X_seq, dtype=np.float32)
 
     assert np.array_equal(X_skfp, X_seq, equal_nan=True)
+    assert X_skfp.shape == (len(smiles_list), 1613)
 
 
 def test_mordred_sparse_fingerprint(smiles_list, mols_list):
@@ -25,6 +26,7 @@ def test_mordred_sparse_fingerprint(smiles_list, mols_list):
     X_seq = csr_array(X_seq, dtype=np.float32)
 
     assert np.array_equal(X_skfp.data, X_seq.data, equal_nan=True)
+    assert X_skfp.shape == (len(smiles_list), 1613)
 
 
 def test_mordred_3D_fingerprint(smiles_list, mols_list):
@@ -36,6 +38,7 @@ def test_mordred_3D_fingerprint(smiles_list, mols_list):
     X_seq = np.array(X_seq, dtype=np.float32)
 
     assert np.array_equal(X_skfp, X_seq, equal_nan=True)
+    assert X_skfp.shape == (len(smiles_list), 1826)
 
 
 def test_mordred_3D_sparse_fingerprint(smiles_list, mols_list):
@@ -47,3 +50,4 @@ def test_mordred_3D_sparse_fingerprint(smiles_list, mols_list):
     X_seq = csr_array(X_seq, dtype=np.float32)
 
     assert np.array_equal(X_skfp.data, X_seq.data, equal_nan=True)
+    assert X_skfp.shape == (len(smiles_list), 1826)

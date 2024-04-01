@@ -19,9 +19,9 @@ class MordredFingerprint(FingerprintTransformer):
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
-        n_feaatures_out = 1826 if use_3D else 1613
+        n_features_out = 1826 if use_3D else 1613
         super().__init__(
-            n_features_out=n_feaatures_out,
+            n_features_out=n_features_out,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,

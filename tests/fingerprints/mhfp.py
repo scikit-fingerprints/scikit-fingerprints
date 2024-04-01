@@ -20,6 +20,7 @@ def test_mhfp_bit_fingerprint(smiles_list, mols_list):
     X_rdkit = (X_rdkit > 0).astype(int)
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)
 
 
 def test_mhfp_count_fingerprint(smiles_list, mols_list):
@@ -36,6 +37,7 @@ def test_mhfp_count_fingerprint(smiles_list, mols_list):
     X_rdkit = np.stack([np.bincount(x, minlength=mhfp_fp.fp_size) for x in X_rdkit])
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)
 
 
 def test_mhfp_raw_hashes_fingerprint(smiles_list, mols_list):
@@ -50,6 +52,7 @@ def test_mhfp_raw_hashes_fingerprint(smiles_list, mols_list):
     X_rdkit = np.array(X_rdkit)
 
     assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)
 
 
 def test_mhfp_sparse_bit_fingerprint(smiles_list, mols_list):
@@ -69,6 +72,7 @@ def test_mhfp_sparse_bit_fingerprint(smiles_list, mols_list):
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)
 
 
 def test_mhfp_sparse_count_fingerprint(smiles_list, mols_list):
@@ -88,6 +92,7 @@ def test_mhfp_sparse_count_fingerprint(smiles_list, mols_list):
     )
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)
 
 
 def test_mhfp_sparse_raw_hashes_fingerprint(smiles_list, mols_list):
@@ -102,3 +107,4 @@ def test_mhfp_sparse_raw_hashes_fingerprint(smiles_list, mols_list):
     X_rdkit = csr_array(X_rdkit)
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
+    assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)
