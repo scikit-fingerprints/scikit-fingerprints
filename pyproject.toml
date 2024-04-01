@@ -41,6 +41,7 @@ isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+sphinx = "*"
 
 [tool.poetry.group.test]
 optional = true
