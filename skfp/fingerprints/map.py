@@ -2,6 +2,7 @@ import hashlib
 import itertools
 import struct
 from collections import defaultdict
+from numbers import Integral
 from typing import Optional, Sequence, Union
 
 import numpy as np
@@ -10,9 +11,12 @@ from rdkit.Chem import MolToSmiles, PathToSubmol
 from rdkit.Chem.rdchem import Mol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
+from sklearn.utils._param_validation import StrOptions
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 """
 Code inspired by the original work of the authors of the MAP4 Fingerprint:
@@ -22,6 +26,13 @@ https://github.com/reymond-group/map4
 
 class MAPFingerprint(FingerprintTransformer):
     """MAP fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "radius": [Interval(Integral, 0, None, closed="left")],
+        "variant": [StrOptions({"bit", "count", "raw_hashes"})],
+    }
 
     def __init__(
         self,
@@ -34,9 +45,6 @@ class MAPFingerprint(FingerprintTransformer):
         verbose: int = 0,
         random_state: int = 0,
     ):
-        if variant not in ["bit", "count", "raw_hashes"]:
-            raise ValueError("Variant must be one of: 'bit', 'count', 'raw_hashes'")
-
         super().__init__(
             n_features_out=fp_size,
             sparse=sparse,

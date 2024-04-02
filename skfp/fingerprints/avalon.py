@@ -1,15 +1,23 @@
+from numbers import Integral
 from typing import Optional, Sequence, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class AvalonFingerprint(FingerprintTransformer):
     """Avalon fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+    }
 
     def __init__(
         self,
