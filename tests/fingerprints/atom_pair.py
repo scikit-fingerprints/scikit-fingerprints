@@ -45,6 +45,23 @@ def test_atom_pair_count_fingerprint(smiles_list, mols_list):
     assert X_skfp.shape == (len(smiles_list), atom_pair_fp.fp_size)
 
 
+def test_atom_pair_count_fingerprint_normalized(smiles_list, mols_list):
+    atom_pair_fp = AtomPairFingerprint(
+        sparse=False, count=True, normalize=True, n_jobs=-1
+    )
+    X_skfp = atom_pair_fp.transform(smiles_list)
+
+    fp_gen = GetAtomPairGenerator()
+    X_rdkit = np.array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
+    X_rdkit_scaled = [
+        np.rint(100 * fp / mol.GetNumHeavyAtoms())
+        for fp, mol in zip(X_rdkit, mols_list)
+    ]
+
+    assert np.array_equal(X_skfp, X_rdkit_scaled)
+    assert X_skfp.shape == (len(smiles_list), atom_pair_fp.fp_size)
+
+
 def test_atom_pair_count_3D_fingerprint(mols_conformers_list):
     atom_pair_fp = AtomPairFingerprint(use_3D=True, sparse=False, count=True, n_jobs=-1)
     X_skfp = atom_pair_fp.transform(mols_conformers_list)

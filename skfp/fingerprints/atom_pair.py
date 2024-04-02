@@ -1,3 +1,4 @@
+import warnings
 from numbers import Integral
 from typing import Optional, Sequence, Union
 
@@ -63,6 +64,11 @@ class AtomPairFingerprint(FingerprintTransformer):
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
 
+    normalize: bool, default=False
+        Wheather to scale count fingerprint by the heavy atom count (HAC) to
+        obtain a proportionality to molecular size. Vector values are
+        expressed in percent and rounded to the nearest integer.
+
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
 
@@ -126,6 +132,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         "include_chirality": ["boolean"],
         "use_2D": ["boolean"],
         "count": ["boolean"],
+        "normalize": ["boolean"],
     }
 
     def __init__(
@@ -137,6 +144,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         count_simulation: bool = True,
         use_3D: bool = False,
         count: bool = False,
+        normalize: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
@@ -153,6 +161,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         self.max_distance = max_distance
         self.include_chirality = include_chirality
         self.count_simulation = count_simulation
+        self.normalize = normalize
         self.use_3D = use_3D
 
     def _validate_params(self) -> None:
@@ -206,14 +215,31 @@ class AtomPairFingerprint(FingerprintTransformer):
             countSimulation=self.count_simulation,
         )
         if self.count:
-            X = [
-                gen.GetCountFingerprintAsNumPy(mol, confId=conf_id)
-                for mol, conf_id in zip(X, conf_ids)
-            ]
+            if self.normalize:
+                X = [
+                    self._scale_by_hac(
+                        gen.GetCountFingerprintAsNumPy(mol, confId=conf_id), mol
+                    )
+                    for mol, conf_id in zip(X, conf_ids)
+                ]
+            else:
+                X = [
+                    gen.GetCountFingerprintAsNumPy(mol, confId=conf_id)
+                    for mol, conf_id in zip(X, conf_ids)
+                ]
         else:
             X = [
                 gen.GetFingerprintAsNumPy(mol, confId=conf_id)
                 for mol, conf_id in zip(X, conf_ids)
             ]
+            if self.normalize:
+                warnings.warn("Scaling by HAC can only be applied to count vectors.")
 
         return csr_array(X) if self.sparse else np.array(X)
+
+    def _scale_by_hac(self, fingerprint: np.ndarray, mol: Mol) -> np.ndarray:
+        """Scale computed fingerprint by the heavy atom count (HAC).
+
+        Vector values are expressed in percent and rounded to the nearest integer.
+        """
+        return np.round(100 * fingerprint / mol.GetNumHeavyAtoms()).astype(int)
