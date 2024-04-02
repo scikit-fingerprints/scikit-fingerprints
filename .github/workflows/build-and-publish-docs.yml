@@ -42,7 +42,7 @@ jobs:
         run: poetry install --with doc
 
       - name: Build documentation
-        run: poetry run make -C docs html
+        run: poetry run make docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

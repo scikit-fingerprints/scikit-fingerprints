@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Optional, Union
+from copy import deepcopy
+from numbers import Integral
+from typing import List, Optional, Union
 
 import numpy as np
 import scipy.sparse
@@ -54,29 +56,71 @@ class FingerprintTransformer(
         # this, combined with ClassNamePrefixFeaturesOutMixin, automatically handles
         # set_output() API
         self._n_features_out = n_features_out
+        self.n_features_out = self._n_features_out
 
-    @property
-    def n_features_out(self) -> int:
-        # publicly expose the number of output features
-        # it has underscore at the beginning only due to Scikit-learn convention
-        return self._n_features_out
+    # parameters common for all fingerprints
+    _parameter_constraints: dict = {
+        "sparse": ["boolean"],
+        "n_jobs": [Integral, None],
+        "verbose": ["verbose"],
+    }
 
     def __sklearn_is_fitted__(self) -> bool:
         # fingerprint transformers don't require fitting
         return True
 
     def fit(self, X, y=None, **fit_params):
+        """Unused, kept for Scikit-learn compatibility.
+
+        Parameters
+        ----------
+        X : any
+            Unused, kept for Scikit-learn compatibility.
+
+        Y : any
+            Unused, kept for Scikit-learn compatibility.
+
+        **fit_params : dict
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        --------
+        self
+        """
+        self._validate_params()
         return self
 
     def fit_transform(self, X, y=None, **fit_params):
+        """
+        The same as `transform` method, kept for Scikit-learn compatibility.
+
+        Parameters
+        ----------
+        X : any
+            See `transform` method.
+
+        y : any
+            See `transform` method.
+
+        **fit_params : dict
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        -------
+        X_new : any
+            See `transform` method.
+        """
         return self.transform(X)
 
-    def transform(self, X: Sequence[Union[str, Mol]]) -> Union[np.ndarray, csr_array]:
-        """
-        :param X: np.array or DataFrame of rdkit.Mol objects
-        :return: np.array or sparse array of calculated fingerprints for each molecule
-        """
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        self._validate_params()
+
         n_jobs = effective_n_jobs(self.n_jobs)
+
+        if copy:
+            X = deepcopy(X)
 
         if n_jobs == 1:
             return self._calculate_fingerprint(X)

@@ -54,6 +54,7 @@ pytest = "*"
 optional = true
 
 [tool.poetry.group.doc.dependencies]
+pydata-sphinx-theme = "*"
 sphinx = "*"
 
 [tool.pytest.ini_options]
