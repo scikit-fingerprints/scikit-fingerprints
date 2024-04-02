@@ -57,7 +57,7 @@ class MHFPFingerprint(FingerprintTransformer):
         super()._validate_params()
         if self.radius < self.min_radius:
             raise InvalidParameterError(
-                f"The radius parameter of {self.__class__.__name__} must be"
+                f"The radius parameter of {self.__class__.__name__} must be "
                 f"greater or equal to min_radius, got: "
                 f"min_radius={self.min_radius}, radius={self.radius}"
             )

@@ -56,7 +56,7 @@ class RDKitFingerprint(FingerprintTransformer):
         super()._validate_params()
         if self.max_path < self.min_path:
             raise InvalidParameterError(
-                f"The max_distance parameter of {self.__class__.__name__} must be"
+                f"The max_distance parameter of {self.__class__.__name__} must be "
                 f"greater or equal to min_distance, got: "
                 f"min_distance={self.min_path}, max_distance={self.max_path}"
             )
