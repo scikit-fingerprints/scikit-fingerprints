@@ -75,6 +75,11 @@ class AtomPairFingerprint(FingerprintTransformer):
     verbose : int, default=0
         Controls the verbosity when computing fingerprints.
 
+    Attributes
+    ----------
+    n_features_out : int
+        Number of output features, size of fingerprints. Equal to `fp_size`.
+
     See Also
     --------
     :class:`TopologicalTorsionFingerprint` : Related fingerprint, but uses 4-atom paths.

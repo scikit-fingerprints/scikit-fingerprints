@@ -56,6 +56,7 @@ class FingerprintTransformer(
         # this, combined with ClassNamePrefixFeaturesOutMixin, automatically handles
         # set_output() API
         self._n_features_out = n_features_out
+        self.n_features_out = self._n_features_out
 
     # parameters common for all fingerprints
     _parameter_constraints: dict = {
@@ -63,12 +64,6 @@ class FingerprintTransformer(
         "n_jobs": [Integral, None],
         "verbose": ["verbose"],
     }
-
-    @property
-    def n_features_out(self) -> int:
-        # publicly expose the number of output features
-        # it has underscore at the beginning only due to Scikit-learn convention
-        return self._n_features_out
 
     def __sklearn_is_fitted__(self) -> bool:
         # fingerprint transformers don't require fitting
