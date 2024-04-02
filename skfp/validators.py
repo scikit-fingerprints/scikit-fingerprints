@@ -1,6 +1,6 @@
 from typing import Any, Sequence
 
-from rdkit.Chem import Mol, MolFromSmiles
+from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 
 def ensure_mols(X: Sequence[Any]) -> Sequence[Mol]:
@@ -11,9 +11,10 @@ def ensure_mols(X: Sequence[Any]) -> Sequence[Mol]:
     return X
 
 
-def require_smiles(X: Sequence[Any]) -> Sequence[str]:
-    if not all(isinstance(x, str) for x in X):
+def ensure_smiles(X: Sequence[Any]) -> Sequence[str]:
+    if not all(isinstance(x, (Mol, str)) for x in X):
         raise ValueError("Passed values must be SMILES strings")
+    X = [MolToSmiles(x) if isinstance(x, Mol) else x for x in X]
     return X
 
 

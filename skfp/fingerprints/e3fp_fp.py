@@ -1,3 +1,4 @@
+import logging
 from typing import Optional, Sequence, Union
 
 import numpy as np
@@ -10,10 +11,11 @@ from e3fp.conformer.generate import (
 )
 from e3fp.conformer.generator import ConformerGenerator
 from e3fp.pipeline import fprints_from_mol
+from rdkit import RDLogger
 from scipy.sparse import csr_array
 
 from skfp.fingerprints.base import FingerprintTransformer
-from skfp.validators import require_smiles
+from skfp.validators import ensure_smiles
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
@@ -43,6 +45,7 @@ class E3FPFingerprint(FingerprintTransformer):
         random_state: int = 0,
     ):
         super().__init__(
+            n_features_out=fp_size,
             n_jobs=n_jobs,
             verbose=verbose,
             sparse=sparse,
@@ -62,7 +65,7 @@ class E3FPFingerprint(FingerprintTransformer):
         self.aggregation_type = aggregation_type
 
     def _calculate_fingerprint(self, X: Sequence[str]) -> Union[np.ndarray, csr_array]:
-        X = require_smiles(X)
+        X = ensure_smiles(X)
         X = [self._calculate_single_mol_fingerprint(smi) for smi in X]
         return scipy.sparse.vstack(X) if self.sparse else np.array(X)
 
@@ -91,15 +94,24 @@ class E3FPFingerprint(FingerprintTransformer):
         # Generating conformers
         # TODO: for some molecules conformers are not properly generated - returns an empty list and throws RuntimeError
         try:
-            mol, values = conf_gen.generate_conformers(mol)
-            fps = fprints_from_mol(
-                mol,
-                fprint_params={
-                    "bits": self.n_bits_before_hash,
-                    "radius_multiplier": self.radius_multiplier,
-                    "rdkit_invariants": self.rdkit_invariants,
-                },
-            )
+            try:
+                # suppress flood of logs
+                if not self.verbose:
+                    logging.disable(logging.INFO)
+                    RDLogger.DisableLog("rdApp.*")
+
+                mol, values = conf_gen.generate_conformers(mol)
+                fps = fprints_from_mol(
+                    mol,
+                    fprint_params={
+                        "bits": self.n_bits_before_hash,
+                        "radius_multiplier": self.radius_multiplier,
+                        "rdkit_invariants": self.rdkit_invariants,
+                    },
+                )
+            finally:
+                RDLogger.EnableLog("rdApp.*")
+                logging.disable(logging.NOTSET)
 
             # TODO: add other aggregation types
             if self.aggregation_type == "min_energy":

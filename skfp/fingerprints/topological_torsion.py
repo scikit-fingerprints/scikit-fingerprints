@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -16,13 +16,14 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         fp_size: int = 2048,
         include_chirality: bool = False,
         torsion_atom_count: int = 4,
-        atom_invariants_generator: Optional[List] = None,
+        atom_invariants_generator: Optional[list] = None,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=fp_size,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,

@@ -1,12 +1,4 @@
-# This workflow will upload a Python Package using Twine when a release is created
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Publish Python distributions to PyPI and TestPyPI
+name: Publish Python package to PyPI
 
 on:
   push:
@@ -14,35 +6,35 @@ on:
       - 'v*'
 
 jobs:
-  build-n-publish:
-    name: Build and publish Python distributions to PyPI and TestPyPI
+  build-and-publish:
+    name: Publish Python package to PyPI
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+
     - name: Set up Python 3.9
       uses: actions/setup-python@v1
       with:
         python-version: 3.9
-    - name: Install poetry
-      run: >-
-        python -m
-        pip install
-        poetry
-        --user
-    - name: Configure poetry for PyPI
-      run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
-    - name: Configure poetry for TestPyPI
+
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v3
+
+    - name: Configure Poetry for TestPyPI
       run: >-
         poetry config repositories.testpypi https://test.pypi.org/legacy/
         && poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+
     - name: Build and publish to TestPyPI
       run: >-
         poetry build
         && poetry publish --repository testpypi
+
+    - name: Configure Poetry for PyPI
+      run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+
     - name: Build and publish to PyPI
       if: startsWith(github.ref, 'refs/tags')
       run: >-
         poetry build
         && poetry publish
-
-

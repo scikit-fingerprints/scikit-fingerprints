@@ -14,6 +14,7 @@ def test_morse_fingerprint(mols_conformers_list):
     )
 
     assert np.allclose(X_skfp, X_rdkit, atol=1e-1)
+    assert X_skfp.shape == (len(mols_conformers_list), 224)
 
 
 def test_morse_sparse_fingerprint(mols_conformers_list):
@@ -25,3 +26,4 @@ def test_morse_sparse_fingerprint(mols_conformers_list):
     )
 
     assert np.allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
+    assert X_skfp.shape == (len(mols_conformers_list), 224)

@@ -8,17 +8,15 @@ from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
 
 
-class SECFPFingerprint(FingerprintTransformer):
-    """SECFP fingerprint."""
+class LayeredFingerprint(FingerprintTransformer):
+    """Pattern fingerprint."""
 
     def __init__(
         self,
         fp_size: int = 2048,
-        radius: int = 3,
-        min_radius: int = 1,
-        rings: bool = True,
-        isomeric: bool = False,
-        kekulize: bool = True,
+        min_path: int = 1,
+        max_path: int = 7,
+        branched_paths: bool = True,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
@@ -30,32 +28,24 @@ class SECFPFingerprint(FingerprintTransformer):
             verbose=verbose,
         )
         self.fp_size = fp_size
-        self.radius = radius
-        self.min_radius = min_radius
-        self.rings = rings
-        self.isomeric = isomeric
-        self.kekulize = kekulize
+        self.min_path = min_path
+        self.max_path = max_path
+        self.branched_paths = branched_paths
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
+        from rdkit.Chem.rdmolops import LayeredFingerprint as RDKitLayeredFingerprint
 
         X = ensure_mols(X)
-
-        # bulk function does not work
-        encoder = MHFPEncoder(self.fp_size, self.random_state)
         X = [
-            encoder.EncodeSECFPMol(
+            RDKitLayeredFingerprint(
                 x,
-                length=self.fp_size,
-                radius=self.radius,
-                min_radius=self.min_radius,
-                rings=self.rings,
-                isomeric=self.isomeric,
-                kekulize=self.kekulize,
+                fpSize=self.fp_size,
+                minPath=self.min_path,
+                maxPath=self.max_path,
+                branchedPaths=self.branched_paths,
             )
             for x in X
         ]
-
         return csr_array(X) if self.sparse else np.array(X)
