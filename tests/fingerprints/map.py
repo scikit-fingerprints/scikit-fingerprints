@@ -51,7 +51,8 @@ def test_map_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
     X_skfp = map_fp.transform(smallest_smiles_list)
 
     X_map = np.stack(
-        [map_fp._calculate_single_mol_fingerprint(mol) for mol in smallest_mols_list]
+        [map_fp._calculate_single_mol_fingerprint(mol) for mol in smallest_mols_list],
+        dtype=int,
     )
 
     assert np.array_equal(X_skfp, X_map)
@@ -105,7 +106,8 @@ def test_map_sparse_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_l
     X_skfp = map_fp.transform(smallest_smiles_list)
 
     X_map = csr_array(
-        [map_fp._calculate_single_mol_fingerprint(mol) for mol in smallest_mols_list]
+        [map_fp._calculate_single_mol_fingerprint(mol) for mol in smallest_mols_list],
+        dtype=int,
     )
 
     assert np.array_equal(X_skfp.data, X_map.data)
