@@ -38,9 +38,9 @@ class E3FPFingerprint(FingerprintTransformer):
         "num_conf_generated": [Interval(Integral, 1, None, closed="left")],
         "num_conf_used": [Interval(Integral, 1, None, closed="left")],
         "pool_multiplier": [Interval(Real, 0.0, None, closed="neither")],
-        "rmsd_cutoff": [Interval(Real, 0.0, None, closed="left")],
-        "max_energy_diff": [Interval(Real, 0.0, None, closed="left")],
-        "force_field": [Interval(Real, 0.0, None, closed="left")],
+        "rmsd_cutoff": [Interval(Real, 0.0, None, closed="left"), None],
+        "max_energy_diff": [Real, None],
+        "force_field": [StrOptions({"uff", "mmff94", "mmff94s"})],
         "get_values": ["boolean"],
         "aggregation_type": [StrOptions({"min_energy"})],
     }
