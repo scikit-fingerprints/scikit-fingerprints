@@ -165,6 +165,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         self.use_3D = use_3D
 
     def _validate_params(self) -> None:
+        super()._validate_params()
         if self.max_distance < self.min_distance:
             raise InvalidParameterError(
                 f"The max_distance parameter of {self.__class__.__name__} must be"
