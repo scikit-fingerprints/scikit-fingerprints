@@ -114,34 +114,28 @@ class E3FPFingerprint(FingerprintTransformer):
         # Generating conformers
         # TODO: for some molecules conformers are not properly generated - returns an empty list and throws RuntimeError
         try:
-            try:
-                # suppress flood of logs
-                if not self.verbose:
-                    logging.disable(logging.INFO)
-                    RDLogger.DisableLog("rdApp.*")
+            # suppress flood of logs
+            if not self.verbose:
+                logging.disable(logging.INFO)
+                RDLogger.DisableLog("rdApp.*")
 
-                mol, values = conf_gen.generate_conformers(mol)
-                fps = fprints_from_mol(
-                    mol,
-                    fprint_params={
-                        "bits": self.n_bits_before_hash,
-                        "radius_multiplier": self.radius_multiplier,
-                        "rdkit_invariants": self.rdkit_invariants,
-                    },
-                )
-            finally:
-                RDLogger.EnableLog("rdApp.*")
-                logging.disable(logging.NOTSET)
+            mol, values = conf_gen.generate_conformers(mol)
+            fps = fprints_from_mol(
+                mol,
+                fprint_params={
+                    "bits": self.n_bits_before_hash,
+                    "radius_multiplier": self.radius_multiplier,
+                    "rdkit_invariants": self.rdkit_invariants,
+                },
+            )
+        finally:
+            RDLogger.EnableLog("rdApp.*")
+            logging.disable(logging.NOTSET)
 
-            # TODO: add other aggregation types
-            if self.aggregation_type == "min_energy":
-                energies = values[2]
-                fp = fps[np.argmin(energies)]
-            else:
-                fp = fps[0]
+        # TODO: add other aggregation types
+        # "min_energy" aggregation
+        energies = values[2]
+        fp = fps[np.argmin(energies)]
 
-            fp = fp.fold(self.fp_size)
-            return fp.to_vector(sparse=self.sparse)
-        except RuntimeError:
-            fp = np.full(shape=self.fp_size, fill_value=-1)
-            return csr_array(fp) if self.sparse else fp
+        fp = fp.fold(self.fp_size)
+        return fp.to_vector(sparse=self.sparse)

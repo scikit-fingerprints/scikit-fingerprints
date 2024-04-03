@@ -185,7 +185,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
             Array with fingerprints.
         """
-        return super().transform(X)
+        return super().transform(X, copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

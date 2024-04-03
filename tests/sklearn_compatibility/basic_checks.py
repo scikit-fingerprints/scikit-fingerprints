@@ -16,6 +16,7 @@ from sklearn.utils.estimator_checks import (
 )
 
 import skfp.fingerprints
+import skfp.preprocessing
 from skfp.fingerprints.base import FingerprintTransformer
 
 """
@@ -32,7 +33,7 @@ X = []
 y = None
 
 
-def test_basic_sklearn_transformer_checks(mols_conformers_list):
+def test_basic_sklearn_checks_for_fingerprints(mols_conformers_list):
     global X, y
     X = mols_conformers_list[:n_samples]
     y = np.arange(n_samples) % 2
@@ -43,6 +44,25 @@ def test_basic_sklearn_transformer_checks(mols_conformers_list):
 
         fp = obj()
         run_checks(fp_name, fp)
+
+
+def test_basic_sklearn_checks_for_preprocessors(
+    smallest_smiles_list, smallest_mols_list
+):
+    global X, y
+    y = np.arange(n_samples) % 2
+
+    for preproc_name, obj in inspect.getmembers(skfp.preprocessing):
+        if not inspect.isclass(obj):
+            continue
+
+        if "MolFromSmiles" in preproc_name:
+            X = smallest_smiles_list[:n_samples]
+        else:
+            X = smallest_mols_list[:n_samples]
+
+        fp = obj()
+        run_checks(preproc_name, fp)
 
 
 def run_checks(fp_name: str, fp: FingerprintTransformer):
@@ -122,11 +142,14 @@ def check_estimators_pickle(
     for method in result:
         unpickled_result = getattr(unpickled_estimator, method)(X)
 
-        assert result[method].shape == unpickled_result.shape
-        if name not in nondeterministic_fingerprints:
-            assert np.allclose(
-                result[method], unpickled_result, atol=1e-1, equal_nan=True
-            )
+        if isinstance(result[method], list):
+            assert len(result[method]) == len(unpickled_result)
+        else:
+            assert result[method].shape == unpickled_result.shape
+            if name not in nondeterministic_fingerprints:
+                assert np.allclose(
+                    result[method], unpickled_result, atol=1e-1, equal_nan=True
+                )
 
 
 def check_transformers_unfitted_stateless(
@@ -139,4 +162,4 @@ def check_transformers_unfitted_stateless(
     transformer = clone(transformer)
     X_trans = transformer.transform(X)
 
-    assert len(X) == X_trans.shape[0]
+    assert len(X) == len(X_trans)

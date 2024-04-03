@@ -5,11 +5,7 @@ from skfp.fingerprints import E3FPFingerprint
 
 
 def test_e3fp_fingerprint(smallest_smiles_list):
-    e3fp_fp = E3FPFingerprint(
-        sparse=False,
-        verbose=0,
-        n_jobs=-1,
-    )
+    e3fp_fp = E3FPFingerprint(sparse=False, n_jobs=-1)
     X_skfp = e3fp_fp.transform(smallest_smiles_list)
 
     X_e3fp = np.stack(
@@ -21,11 +17,7 @@ def test_e3fp_fingerprint(smallest_smiles_list):
 
 
 def test_e3fp_sparse_fingerprint(smallest_smiles_list):
-    e3fp_fp = E3FPFingerprint(
-        sparse=True,
-        verbose=0,
-        n_jobs=-1,
-    )
+    e3fp_fp = E3FPFingerprint(sparse=True, n_jobs=-1)
     X_skfp = e3fp_fp.transform(smallest_smiles_list)
 
     X_e3fp = scipy.sparse.vstack(

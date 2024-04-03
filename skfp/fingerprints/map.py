@@ -108,12 +108,9 @@ class MAPFingerprint(FingerprintTransformer):
         """
         try:
             env = FindAtomEnvironmentOfRadiusN(mol, atom_idx, n_radius)
-        except ValueError as e:
-            # this error happens if radius is larger than possible
-            if "bad atom index" in str(e):
-                return None
-            else:
-                raise
+        except ValueError:
+            # "bad atom index" error happens if radius is larger than possible
+            return None
 
         atom_map: dict[int, int] = dict()
 
