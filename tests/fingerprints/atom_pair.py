@@ -134,6 +134,18 @@ def test_atom_pair_sparse_3D_count_fingerprint(mols_conformers_list):
     assert X_skfp.shape == (len(mols_conformers_list), atom_pair_fp.fp_size)
 
 
+def test_atom_pair_hac_scaling(smiles_list, mols_list):
+    atom_pair_fp = AtomPairFingerprint(scale_by_hac=True, count=True, n_jobs=-1)
+    X_skfp = atom_pair_fp.transform(smiles_list)
+    assert X_skfp.shape == (len(smiles_list), atom_pair_fp.fp_size)
+    assert np.all(X_skfp >= 0)
+
+    atom_pair_fp = AtomPairFingerprint(scale_by_hac=2, count=True, n_jobs=-1)
+    X_skfp = atom_pair_fp.transform(smiles_list)
+    assert X_skfp.shape == (len(smiles_list), atom_pair_fp.fp_size)
+    assert np.all((X_skfp >= 0) & (X_skfp <= 100))
+
+
 def test_atom_pair_wrong_distances(smiles_list):
     atom_pair_fp = AtomPairFingerprint(min_distance=3, max_distance=2)
     with pytest.raises(InvalidParameterError):
