@@ -23,6 +23,7 @@ def test_erg_fingerprint(smiles_list):
 
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(smiles_list), 315)
+    assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
 def test_erg_sparse_fingerprint(smiles_list):
@@ -34,6 +35,7 @@ def test_erg_sparse_fingerprint(smiles_list):
 
     assert np.all(np.isclose(X_skfp.data, X_rdkit.data))
     assert X_skfp.shape == (len(smiles_list), 315)
+    assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
 def test_erg_wrong_path_lengths(smiles_list):

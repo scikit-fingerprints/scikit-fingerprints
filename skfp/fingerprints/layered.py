@@ -70,4 +70,8 @@ class LayeredFingerprint(FingerprintTransformer):
             )
             for x in X
         ]
-        return csr_array(X) if self.sparse else np.array(X)
+
+        if self.sparse:
+            return csr_array(X, dtype=np.uint8)
+        else:
+            return np.array(X, dtype=np.uint8)

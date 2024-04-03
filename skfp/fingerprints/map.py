@@ -65,7 +65,9 @@ class MAPFingerprint(FingerprintTransformer):
         X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
 
         if self.variant == "bit":
-            X = X > 0
+            X = (X > 0).astype(np.uint8)
+        elif self.variant == "count":
+            X = X.astype(np.uint32)
 
         return csr_array(X) if self.sparse else np.array(X)
 

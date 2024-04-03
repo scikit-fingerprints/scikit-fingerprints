@@ -32,6 +32,9 @@ class MACCSFingerprint(FingerprintTransformer):
         from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 
         X = ensure_mols(X)
-
         X = [GetMACCSKeysFingerprint(x) for x in X]
-        return csr_array(X) if self.sparse else np.array(X)
+
+        if self.sparse:
+            return csr_array(X, dtype=np.uint8)
+        else:
+            return np.array(X, dtype=np.uint8)
