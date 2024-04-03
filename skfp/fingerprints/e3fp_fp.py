@@ -1,6 +1,7 @@
 import logging
+from collections.abc import Sequence
 from numbers import Integral, Real
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse

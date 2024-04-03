@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Sequence
 
 from rdkit.Chem import AddHs, Mol, MolToSmiles, RemoveHs
 from rdkit.Chem.rdDistGeom import EmbedMolecule, ETKDGv3

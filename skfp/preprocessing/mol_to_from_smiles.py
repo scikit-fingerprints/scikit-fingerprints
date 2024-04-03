@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Sequence
+from typing import Optional
 
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
