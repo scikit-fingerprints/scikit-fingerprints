@@ -24,4 +24,4 @@ def test_maccs_sparse_bit_fingerprint(smiles_list, mols_list):
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), 167)
     assert X_skfp.dtype == np.uint8
-    assert np.all(np.isin(X_skfp.data, [0, 1]))
+    assert np.all(X_skfp.data == 1)

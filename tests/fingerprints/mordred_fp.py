@@ -15,6 +15,7 @@ def test_mordred_fingerprint(smiles_list, mols_list):
 
     assert np.array_equal(X_skfp, X_seq, equal_nan=True)
     assert X_skfp.shape == (len(smiles_list), 1613)
+    assert X_skfp.dtype == np.float32
 
 
 def test_mordred_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -27,6 +28,7 @@ def test_mordred_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
 
     assert np.array_equal(X_skfp.data, X_seq.data, equal_nan=True)
     assert X_skfp.shape == (len(smallest_smiles_list), 1613)
+    assert X_skfp.dtype == np.float32
 
 
 def test_mordred_3D_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -39,6 +41,7 @@ def test_mordred_3D_fingerprint(smallest_smiles_list, smallest_mols_list):
 
     assert np.array_equal(X_skfp, X_seq, equal_nan=True)
     assert X_skfp.shape == (len(smallest_smiles_list), 1826)
+    assert X_skfp.dtype == np.float32
 
 
 def test_mordred_3D_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -51,3 +54,4 @@ def test_mordred_3D_sparse_fingerprint(smallest_smiles_list, smallest_mols_list)
 
     assert np.array_equal(X_skfp.data, X_seq.data, equal_nan=True)
     assert X_skfp.shape == (len(smallest_smiles_list), 1826)
+    assert X_skfp.dtype == np.float32

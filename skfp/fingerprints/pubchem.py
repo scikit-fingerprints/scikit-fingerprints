@@ -273,10 +273,13 @@ class PubChemFingerprint(FingerprintTransformer):
             + simple_neigh_counts
             + detailed_neigh_counts
             + simple_smarts_counts
-            + complex_smarts_counts
+            + complex_smarts_counts,
         )
 
-        return (X > 0) if not self.count else X
+        if self.count:
+            return X.astype(np.uint32)
+        else:
+            return (X > 0).astype(np.uint8)
 
     def _get_atom_counts(self, mol: Mol) -> dict[str, int]:
         counts: dict[str, int] = defaultdict(int)

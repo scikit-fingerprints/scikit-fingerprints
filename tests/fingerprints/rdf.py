@@ -15,6 +15,7 @@ def test_rdf_fingerprint(mols_conformers_list):
 
     assert np.allclose(X_skfp, X_rdkit, atol=1e-1)
     assert X_skfp.shape == (len(mols_conformers_list), 210)
+    assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
 def test_rdf_sparse_fingerprint(mols_conformers_list):

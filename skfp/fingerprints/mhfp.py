@@ -81,12 +81,14 @@ class MHFPFingerprint(FingerprintTransformer):
             isomeric=self.isomeric,
             kekulize=self.kekulize,
         )
-        X = np.array(X)
+        X = np.array(X, dtype=np.uint32)
 
         if self.variant in ["bit", "count"]:
             X = np.mod(X, self.fp_size)
             X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
             if self.variant == "bit":
-                X = X > 0
+                X = (X > 0).astype(np.uint8)
+            else:
+                X = X.astype(np.uint32)
 
         return csr_array(X) if self.sparse else np.array(X)

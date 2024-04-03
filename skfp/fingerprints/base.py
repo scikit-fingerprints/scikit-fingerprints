@@ -178,7 +178,8 @@ class FingerprintTransformer(
             )
 
         shape = (len(X), fp_size)
-        arr = dok_array(shape, dtype=int) if sparse else np.zeros(shape, dtype=int)
+        dtype = np.uint32 if count else np.uint8
+        arr = dok_array(shape, dtype=dtype) if sparse else np.zeros(shape, dtype=dtype)
 
         if isinstance(X[0], (IntSparseIntVect, LongSparseIntVect)):
             for idx, x in enumerate(X):
@@ -191,6 +192,6 @@ class FingerprintTransformer(
                     arr[idx, fp_bit % fp_size] += 1
 
         arr = arr.tocsr() if sparse else arr
-        arr = (arr > 0) if not count else arr
+        arr = (arr > 0).astype(np.uint8) if not count else arr
 
         return arr

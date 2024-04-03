@@ -8,7 +8,7 @@ def test_getaway_fingerprint(mols_conformers_list):
     X_skfp = getaway_fp.transform(mols_conformers_list)
 
     assert X_skfp.shape == (len(mols_conformers_list), 273)
-    assert np.issubdtype(X_skfp, np.floating)
+    assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
 def test_getaway_sparse_fingerprint(mols_conformers_list):
