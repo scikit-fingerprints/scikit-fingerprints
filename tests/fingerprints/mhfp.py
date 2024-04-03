@@ -1,6 +1,8 @@
 import numpy as np
+import pytest
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from scipy.sparse import csr_array
+from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.fingerprints import MHFPFingerprint
 
@@ -108,3 +110,9 @@ def test_mhfp_sparse_raw_hashes_fingerprint(smiles_list, mols_list):
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)
+
+
+def test_mhfp_wrong_radii(smiles_list):
+    mhfp_fp = MHFPFingerprint(min_radius=3, radius=2)
+    with pytest.raises(InvalidParameterError):
+        mhfp_fp.transform(smiles_list)

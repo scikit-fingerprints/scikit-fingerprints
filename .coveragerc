@@ -1,5 +1,6 @@
 [run]
 branch = True
+data_file = .tmp_coverage_files/.coverage
 
 [report]
 show_missing=true

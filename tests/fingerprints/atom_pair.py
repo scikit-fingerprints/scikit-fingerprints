@@ -1,6 +1,8 @@
 import numpy as np
+import pytest
 from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
 from scipy.sparse import csr_array
+from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.fingerprints import AtomPairFingerprint
 
@@ -113,3 +115,9 @@ def test_atom_pair_sparse_3D_count_fingerprint(mols_conformers_list):
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(mols_conformers_list), atom_pair_fp.fp_size)
+
+
+def test_atom_pair_wrong_distances(smiles_list):
+    atom_pair_fp = AtomPairFingerprint(min_distance=3, max_distance=2)
+    with pytest.raises(InvalidParameterError):
+        atom_pair_fp.transform(smiles_list)
