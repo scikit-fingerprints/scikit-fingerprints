@@ -247,6 +247,5 @@ class AtomPairFingerprint(FingerprintTransformer):
         return csr_array(fps) if self.sparse else np.array(fps)
 
     def _scale_by_hac(self, fingerprint: np.ndarray, mol: Mol) -> np.ndarray:
-        numerator = 100 * fingerprint
-        denominator = mol.GetNumHeavyAtoms() ** self.scale_by_hac
-        return np.round(numerator / denominator)
+        scale_factor = mol.GetNumHeavyAtoms() ** self.scale_by_hac
+        return (100 * fingerprint) / scale_factor
