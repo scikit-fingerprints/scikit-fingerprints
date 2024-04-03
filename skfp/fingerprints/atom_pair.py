@@ -1,3 +1,4 @@
+import warnings
 from numbers import Integral
 from typing import Optional, Sequence, Union
 
@@ -64,6 +65,11 @@ class AtomPairFingerprint(FingerprintTransformer):
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
 
+    scale_by_hac: bool, default=False
+        Whether to scale count fingerprint by the heavy atom count (HAC) to
+        obtain a proportionality to molecule size. Values are expressed as
+        percentages, rounded to the nearest integer. [2]
+
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
 
@@ -127,6 +133,8 @@ class AtomPairFingerprint(FingerprintTransformer):
         "include_chirality": ["boolean"],
         "count_simulation": ["boolean"],
         "use_3D": ["boolean"],
+        "count": ["boolean"],
+        "scale_by_hac": ["boolean"],
     }
 
     def __init__(
@@ -138,6 +146,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         count_simulation: bool = True,
         use_3D: bool = False,
         count: bool = False,
+        scale_by_hac: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
@@ -154,6 +163,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         self.max_distance = max_distance
         self.include_chirality = include_chirality
         self.count_simulation = count_simulation
+        self.scale_by_hac = scale_by_hac
         self.use_3D = use_3D
 
     def _validate_params(self) -> None:
@@ -208,14 +218,27 @@ class AtomPairFingerprint(FingerprintTransformer):
             countSimulation=self.count_simulation,
         )
         if self.count:
-            X = [
+            fps = [
                 gen.GetCountFingerprintAsNumPy(mol, confId=conf_id)
                 for mol, conf_id in zip(X, conf_ids)
             ]
         else:
-            X = [
+            fps = [
                 gen.GetFingerprintAsNumPy(mol, confId=conf_id)
                 for mol, conf_id in zip(X, conf_ids)
             ]
 
-        return csr_array(X) if self.sparse else np.array(X)
+        if self.scale_by_hac:
+            if self.count:
+                fps = [self._scale_by_hac(fp, mol) for fp, mol in zip(fps, X)]
+            else:
+                warnings.warn(
+                    "Scaling by HAC can only be applied to count vectors. "
+                    "No HAC scaling will be applied."
+                )
+
+        return csr_array(fps) if self.sparse else np.array(fps)
+
+    def _scale_by_hac(self, fingerprint: np.ndarray, mol: Mol) -> np.ndarray:
+        # scale values to percentages, rounded to the nearest integer
+        return np.round(100 * fingerprint / mol.GetNumHeavyAtoms()).astype(int)
