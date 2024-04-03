@@ -43,7 +43,7 @@ class PubChemFingerprint(FingerprintTransformer):
         X = ensure_mols(X)
 
         X = [self._get_pubchem_fingerprint(x) for x in X]
-        return scipy.sparse.vstack(X) if self.sparse else np.vstack(X)
+        return csr_array(X) if self.sparse else np.vstack(X)
 
     def _get_pubchem_fingerprint(self, mol: Mol) -> Union[np.ndarray, csr_array]:
         # PubChem's definition requires hydrogens to be present
@@ -265,7 +265,7 @@ class PubChemFingerprint(FingerprintTransformer):
             ]
             ring_features = self._get_ring_count_features(ring_counts)
 
-        x = (
+        X = np.array(
             atom_features
             + ring_features
             + atom_pair_counts
@@ -274,7 +274,6 @@ class PubChemFingerprint(FingerprintTransformer):
             + simple_smarts_counts
             + complex_smarts_counts
         )
-        X = csr_array(x) if self.sparse else np.array(x)
 
         return (X > 0) if not self.count else X
 
