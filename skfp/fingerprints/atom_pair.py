@@ -218,26 +218,26 @@ class AtomPairFingerprint(FingerprintTransformer):
             countSimulation=self.count_simulation,
         )
         if self.count:
-            Y = [
+            fps = [
                 gen.GetCountFingerprintAsNumPy(mol, confId=conf_id)
                 for mol, conf_id in zip(X, conf_ids)
             ]
         else:
-            Y = [
+            fps = [
                 gen.GetFingerprintAsNumPy(mol, confId=conf_id)
                 for mol, conf_id in zip(X, conf_ids)
             ]
 
         if self.scale_by_hac:
             if self.count:
-                Y = [self._scale_by_hac(fp, mol) for fp, mol in zip(Y, X)]
+                fps = [self._scale_by_hac(fp, mol) for fp, mol in zip(fps, X)]
             else:
                 warnings.warn(
                     "Scaling by HAC can only be applied to count vectors. "
                     "No HAC scaling will be applied."
                 )
 
-        return csr_array(Y) if self.sparse else np.array(Y)
+        return csr_array(fps) if self.sparse else np.array(fps)
 
     def _scale_by_hac(self, fingerprint: np.ndarray, mol: Mol) -> np.ndarray:
         # scale values to percentages, rounded to the nearest integer
