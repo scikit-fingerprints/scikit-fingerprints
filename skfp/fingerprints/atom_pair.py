@@ -65,9 +65,9 @@ class AtomPairFingerprint(FingerprintTransformer):
         Whether to return binary (bit) features, or their counts.
 
     normalize: bool, default=False
-        Wheather to scale count fingerprint by the heavy atom count (HAC) to
-        obtain a proportionality to molecular size. Vector values are
-        expressed in percent and rounded to the nearest integer.
+        Whether to scale count fingerprint by the heavy atom count (HAC) to
+        obtain a proportionality to molecule size. Values are expressed as
+        percentages, rounded to the nearest integer. [2]
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -216,31 +216,24 @@ class AtomPairFingerprint(FingerprintTransformer):
             countSimulation=self.count_simulation,
         )
         if self.count:
-            if self.normalize:
-                X = [
-                    self._scale_by_hac(
-                        gen.GetCountFingerprintAsNumPy(mol, confId=conf_id), mol
-                    )
-                    for mol, conf_id in zip(X, conf_ids)
-                ]
-            else:
-                X = [
-                    gen.GetCountFingerprintAsNumPy(mol, confId=conf_id)
-                    for mol, conf_id in zip(X, conf_ids)
-                ]
+            Y = [
+                gen.GetCountFingerprintAsNumPy(mol, confId=conf_id)
+                for mol, conf_id in zip(X, conf_ids)
+            ]
         else:
-            X = [
+            Y = [
                 gen.GetFingerprintAsNumPy(mol, confId=conf_id)
                 for mol, conf_id in zip(X, conf_ids)
             ]
-            if self.normalize:
+
+        if self.normalize:
+            if self.count:
+                Y = [self._scale_by_hac(fp, mol) for fp, mol in zip(Y, X)]
+            else:
                 warnings.warn("Scaling by HAC can only be applied to count vectors.")
 
-        return csr_array(X) if self.sparse else np.array(X)
+        return csr_array(Y) if self.sparse else np.array(Y)
 
     def _scale_by_hac(self, fingerprint: np.ndarray, mol: Mol) -> np.ndarray:
-        """Scale computed fingerprint by the heavy atom count (HAC).
-
-        Vector values are expressed in percent and rounded to the nearest integer.
-        """
+        # scale values to percentages, rounded to the nearest integer
         return np.round(100 * fingerprint / mol.GetNumHeavyAtoms()).astype(int)
