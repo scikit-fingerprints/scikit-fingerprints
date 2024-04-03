@@ -64,7 +64,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
 
-    normalize: bool, default=False
+    scale_by_hac: bool, default=False
         Whether to scale count fingerprint by the heavy atom count (HAC) to
         obtain a proportionality to molecule size. Values are expressed as
         percentages, rounded to the nearest integer. [2]
@@ -132,7 +132,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         "include_chirality": ["boolean"],
         "use_2D": ["boolean"],
         "count": ["boolean"],
-        "normalize": ["boolean"],
+        "scale_by_hac": ["boolean"],
     }
 
     def __init__(
@@ -144,7 +144,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         count_simulation: bool = True,
         use_3D: bool = False,
         count: bool = False,
-        normalize: bool = False,
+        scale_by_hac: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
@@ -161,7 +161,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         self.max_distance = max_distance
         self.include_chirality = include_chirality
         self.count_simulation = count_simulation
-        self.normalize = normalize
+        self.scale_by_hac = scale_by_hac
         self.use_3D = use_3D
 
     def _validate_params(self) -> None:
@@ -226,11 +226,14 @@ class AtomPairFingerprint(FingerprintTransformer):
                 for mol, conf_id in zip(X, conf_ids)
             ]
 
-        if self.normalize:
+        if self.scale_by_hac:
             if self.count:
                 Y = [self._scale_by_hac(fp, mol) for fp, mol in zip(Y, X)]
             else:
-                warnings.warn("Scaling by HAC can only be applied to count vectors.")
+                warnings.warn(
+                    "Scaling by HAC can only be applied to count vectors. "
+                    "No HAC scaling will be applied."
+                )
 
         return csr_array(Y) if self.sparse else np.array(Y)
 
