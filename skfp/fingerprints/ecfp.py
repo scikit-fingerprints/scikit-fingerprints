@@ -1,15 +1,31 @@
+from numbers import Integral
 from typing import Optional, Sequence, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class ECFPFingerprint(FingerprintTransformer):
     """Extended Connectivity Fingerprint (ECFP) transformer."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "radius": [Interval(Integral, 0, None, closed="left")],
+        "use_fcfp": ["boolean"],
+        "include_chirality": ["boolean"],
+        "use_bond_types": ["boolean"],
+        "only_nonzero_invariants": ["boolean"],
+        "include_ring_membership": ["boolean"],
+        "count_bounds": [list, None],
+        "use_2D": ["boolean"],
+    }
 
     def __init__(
         self,

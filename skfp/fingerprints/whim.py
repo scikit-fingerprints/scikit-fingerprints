@@ -1,15 +1,23 @@
+from numbers import Real
 from typing import Optional, Sequence, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import require_mols_with_conf_ids
+
+from .base import FingerprintTransformer
 
 
 class WHIMFingerprint(FingerprintTransformer):
     """WHIM fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "clip_val": [Interval(Real, 0, None, closed="left")],
+    }
 
     def __init__(
         self,

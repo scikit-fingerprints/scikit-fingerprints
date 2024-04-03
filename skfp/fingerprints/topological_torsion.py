@@ -1,22 +1,33 @@
+from numbers import Integral
 from typing import Optional, Sequence, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class TopologicalTorsionFingerprint(FingerprintTransformer):
     """Topological torsion fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "include_chirality": ["boolean"],
+        "torsion_atom_count": [Interval(Integral, 2, None, closed="left")],
+        "count_simulation": ["boolean"],
+    }
 
     def __init__(
         self,
         fp_size: int = 2048,
         include_chirality: bool = False,
         torsion_atom_count: int = 4,
-        atom_invariants_generator: Optional[list] = None,
+        count_simulation: bool = True,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
@@ -32,7 +43,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         self.fp_size = fp_size
         self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
-        self.atom_invariants_generator = atom_invariants_generator
+        self.count_simulation = count_simulation
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
@@ -44,8 +55,7 @@ class TopologicalTorsionFingerprint(FingerprintTransformer):
         gen = GetTopologicalTorsionGenerator(
             includeChirality=self.include_chirality,
             torsionAtomCount=self.torsion_atom_count,
-            countSimulation=self.count,
-            atomInvariantsGenerator=self.atom_invariants_generator,
+            countSimulation=self.count_simulation,
             fpSize=self.fp_size,
         )
 

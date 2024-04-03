@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
@@ -15,6 +15,7 @@ from sklearn.base import (
     ClassNamePrefixFeaturesOutMixin,
     TransformerMixin,
 )
+from sklearn.utils._param_validation import InvalidParameterError
 from sklearn.utils.parallel import Parallel
 
 from skfp.utils import ProgressParallel
@@ -34,9 +35,18 @@ cannot be pickled, throwing TypeError: cannot pickle 'Boost.Python.function' obj
 
 
 class FingerprintTransformer(
-    ABC, TransformerMixin, BaseEstimator, ClassNamePrefixFeaturesOutMixin
+    ABC, BaseEstimator, TransformerMixin, ClassNamePrefixFeaturesOutMixin
 ):
     """Base class for fingerprint transformers."""
+
+    # parameters common for all fingerprints
+    _parameter_constraints: dict = {
+        "count": ["boolean"],
+        "sparse": ["boolean"],
+        "n_jobs": [Integral, None],
+        "verbose": ["verbose"],
+        "random_state": ["random_state"],
+    }
 
     def __init__(
         self,
@@ -45,7 +55,7 @@ class FingerprintTransformer(
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
-        random_state: int = 0,
+        random_state: Optional[int] = 0,
     ):
         self.count = count
         self.sparse = sparse
@@ -58,16 +68,8 @@ class FingerprintTransformer(
         self._n_features_out = n_features_out
         self.n_features_out = self._n_features_out
 
-    # parameters common for all fingerprints
-    _parameter_constraints: dict = {
-        "sparse": ["boolean"],
-        "n_jobs": [Integral, None],
-        "verbose": ["verbose"],
-    }
-
     def __sklearn_is_fitted__(self) -> bool:
-        # fingerprint transformers don't require fitting
-        return True
+        return True  # fingerprint transformers don't need fitting
 
     def fit(self, X, y=None, **fit_params):
         """Unused, kept for Scikit-learn compatibility.
@@ -117,11 +119,10 @@ class FingerprintTransformer(
     ) -> Union[np.ndarray, csr_array]:
         self._validate_params()
 
-        n_jobs = effective_n_jobs(self.n_jobs)
-
         if copy:
             X = deepcopy(X)
 
+        n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
             return self._calculate_fingerprint(X)
         else:
@@ -151,7 +152,14 @@ class FingerprintTransformer(
         :param X: subset of original X data
         :return: array containing calculated fingerprints for each molecule
         """
-        pass
+        raise NotImplementedError
+
+    def _validate_params(self) -> None:
+        # override Scikit-learn validation to make stacktrace nicer
+        try:
+            super()._validate_params()
+        except InvalidParameterError as e:
+            raise InvalidParameterError(str(e)) from None
 
     @staticmethod
     def _hash_fingerprint_bits(

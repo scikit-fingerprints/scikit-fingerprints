@@ -6,8 +6,9 @@ import scipy.sparse
 from rdkit.Chem import AddHs, Mol
 from scipy.sparse import csr_array
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 """
 Note: this fingerprint may give slightly different vectors than PubChem API!
