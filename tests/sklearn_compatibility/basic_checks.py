@@ -1,8 +1,6 @@
 import inspect
 import pickle
-import sys
 from functools import partial
-from typing import Optional
 
 import numpy as np
 from sklearn import clone
@@ -27,8 +25,9 @@ RDKit molecules.
 """
 
 
-# test data
-n_samples = 20
+# unfortunately, there is no way to pass data to Scikit-learn tests other than
+# global variables
+n_samples = 10
 X = []
 y = None
 

@@ -60,25 +60,6 @@ class ECFPFingerprint(FingerprintTransformer):
         self.include_ring_membership = include_ring_membership
         self.count_bounds = count_bounds
 
-    def _get_generator(self):
-        from rdkit.Chem.rdFingerprintGenerator import (
-            GetMorganFeatureAtomInvGen,
-            GetMorganGenerator,
-        )
-
-        invgen = GetMorganFeatureAtomInvGen() if self.use_fcfp else None
-
-        return GetMorganGenerator(
-            radius=self.radius,
-            includeChirality=self.include_chirality,
-            useBondTypes=self.use_bond_types,
-            onlyNonzeroInvariants=self.only_nonzero_invariants,
-            includeRingMembership=self.include_ring_membership,
-            countBounds=self.count_bounds,
-            fpSize=self.fp_size,
-            atomInvariantsGenerator=invgen,
-        )
-
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:

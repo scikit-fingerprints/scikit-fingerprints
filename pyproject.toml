@@ -36,11 +36,13 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
+coverage = "*"
 flake8 = "*"
 isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+pytest-cov = "*"
 
 [tool.poetry.group.test]
 optional = true

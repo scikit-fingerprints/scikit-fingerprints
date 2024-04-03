@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
-from joblib import delayed, effective_n_jobs
+from joblib import effective_n_jobs
 from rdkit.Chem.rdchem import Mol
 from rdkit.DataStructs import IntSparseIntVect, LongSparseIntVect, SparseBitVect
 from scipy.sparse import csr_array, dok_array
@@ -16,7 +16,7 @@ from sklearn.base import (
     TransformerMixin,
 )
 from sklearn.utils._param_validation import InvalidParameterError
-from sklearn.utils.parallel import Parallel
+from sklearn.utils.parallel import Parallel, delayed
 
 from skfp.utils import ProgressParallel
 
