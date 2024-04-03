@@ -8,8 +8,9 @@ from scipy.sparse import csr_array
 from sklearn.utils import Interval
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols, require_mols_with_conf_ids
+
+from .base import FingerprintTransformer
 
 
 class AtomPairFingerprint(FingerprintTransformer):
@@ -130,7 +131,8 @@ class AtomPairFingerprint(FingerprintTransformer):
         "min_distance": [Interval(Integral, 1, None, closed="left")],
         "max_distance": [Interval(Integral, 1, None, closed="left")],
         "include_chirality": ["boolean"],
-        "use_2D": ["boolean"],
+        "count_simulation": ["boolean"],
+        "use_3D": ["boolean"],
         "count": ["boolean"],
         "scale_by_hac": ["boolean"],
     }
@@ -168,7 +170,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         super()._validate_params()
         if self.max_distance < self.min_distance:
             raise InvalidParameterError(
-                f"The max_distance parameter of {self.__class__.__name__} must be"
+                f"The max_distance parameter of {self.__class__.__name__} must be "
                 f"greater or equal to min_distance, got: "
                 f"min_distance={self.min_distance}, max_distance={self.max_distance}"
             )

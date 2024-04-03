@@ -3,13 +3,20 @@ from typing import Optional, Sequence, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils._param_validation import StrOptions
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class EStateFingerprint(FingerprintTransformer):
     """EState fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "variant": [StrOptions({"bit", "count", "sum"})],
+    }
 
     def __init__(
         self,
@@ -18,9 +25,6 @@ class EStateFingerprint(FingerprintTransformer):
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
-        if variant not in ["bit", "count", "sum"]:
-            raise ValueError("Variant must be one of: 'bit', 'count', 'sum'")
-
         super().__init__(
             n_features_out=79,
             n_jobs=n_jobs,

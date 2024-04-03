@@ -4,8 +4,9 @@ import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class MACCSFingerprint(FingerprintTransformer):
