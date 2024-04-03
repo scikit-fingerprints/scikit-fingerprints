@@ -48,4 +48,9 @@ class AvalonFingerprint(FingerprintTransformer):
         else:
             X = [GetAvalonFP(x, nBits=self.fp_size) for x in X]
 
-        return csr_array(X) if self.sparse else np.array(X)
+        dtype = np.uint32 if self.count else np.uint8
+
+        if self.sparse:
+            return csr_array(X, dtype=dtype)
+        else:
+            return np.array(X, dtype=dtype)

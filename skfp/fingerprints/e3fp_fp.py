@@ -138,4 +138,4 @@ class E3FPFingerprint(FingerprintTransformer):
         fp = fps[np.argmin(energies)]
 
         fp = fp.fold(self.fp_size)
-        return fp.to_vector(sparse=self.sparse)
+        return fp.to_vector(sparse=self.sparse, dtype=np.uint8)
