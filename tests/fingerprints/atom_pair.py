@@ -47,7 +47,7 @@ def test_atom_pair_count_fingerprint(smiles_list, mols_list):
 
 def test_atom_pair_count_fingerprint_hac_scaled(smiles_list, mols_list):
     atom_pair_fp = AtomPairFingerprint(
-        sparse=False, count=True, normalize=True, n_jobs=-1
+        sparse=False, count=True, scale_by_hac=True, n_jobs=-1
     )
     X_skfp = atom_pair_fp.transform(smiles_list)
 
