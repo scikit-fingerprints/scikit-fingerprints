@@ -15,11 +15,10 @@ class AvalonFingerprint(FingerprintTransformer):
     """
     Avalon fingerprint.
 
-    The implementation uses RDKit [1]_. This is a hashed fingerprint, where
-    fragments are computed based on atom environments. Avalon is a path-based
-    fingerprint.
-
-    The fingerprint is based on the Avalon toolkit [2]_ described in [3]_.
+    The implementation uses RDKit and Avalon Toolkit [1]_. This is a hashed fingerprint, where
+    fragments are computed based on atom environments. The fingerprint is based on
+    multiple features, including atom types, bond types, rings and paths. The detailed description
+    can be found in the original paper [2]_.
 
     Parameters
     ----------
@@ -43,18 +42,17 @@ class AvalonFingerprint(FingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features.
+        Number of output features. Equal to `fp_size`.
 
     References
     ----------
-    .. [1] RDKit implementation of Avalon fingerprints
-        https://www.rdkit.org/docs/source/rdkit.Avalon.pyAvalonTools.html
-    .. [2] Avalon toolkit
+    .. [1] Avalon toolkit
         https://sourceforge.net/projects/avalontoolkit/
-    .. [3] Gedeck, P., Rohde, B., & Bartels, C. (2006).
+    .. [2] `Gedeck, Peter, Bernhard Rohde, and Christian Bartels
         "QSAR − How Good Is It in Practice? Comparison of Descriptor Sets on an Unbiased
         Cross Section of Corporate Data Sets."
-        Journal of Chemical Information and Modeling, 46(5), 1924–1936. doi:10.1021/ci050413p
+        J. Chem. Inf. Model. 2006, 46, 5, 1924–1936
+        <https://pubs.acs.org/doi/abs/10.1021/ci050413p>`_
 
     Examples
     --------
