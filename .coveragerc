@@ -1,0 +1,11 @@
+[run]
+data_file = .tmp_coverage_files/.coverage
+
+[report]
+show_missing=true
+
+exclude_also =
+    # coverage doesn't properly detect test coverage for constructors and
+    # functions used in parallel with Joblib
+    def __init__
+    def _calculate_fingerprint

@@ -2,8 +2,9 @@ import hashlib
 import itertools
 import struct
 from collections import defaultdict
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import numpy as np
 from datasketch import MinHash
@@ -64,7 +65,9 @@ class MAPFingerprint(FingerprintTransformer):
         X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
 
         if self.variant == "bit":
-            X = X > 0
+            X = (X > 0).astype(np.uint8)
+        elif self.variant == "count":
+            X = X.astype(np.uint32)
 
         return csr_array(X) if self.sparse else np.array(X)
 
@@ -108,12 +111,9 @@ class MAPFingerprint(FingerprintTransformer):
         """
         try:
             env = FindAtomEnvironmentOfRadiusN(mol, atom_idx, n_radius)
-        except ValueError as e:
-            # this error happens if radius is larger than possible
-            if "bad atom index" in str(e):
-                return None
-            else:
-                raise
+        except ValueError:
+            # "bad atom index" error happens if radius is larger than possible
+            return None
 
         atom_map: dict[int, int] = dict()
 

@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Sequence
 
 from rdkit.Chem import AddHs, Mol, MolToSmiles, RemoveHs
 from rdkit.Chem.rdDistGeom import EmbedMolecule, ETKDGv3
@@ -19,6 +19,8 @@ class ConformerGenerator(BasePreprocessor):
         self.random_state = random_state
 
     def transform(self, X: Sequence[Mol], copy: bool = False) -> list[Mol]:
+        self._validate_params()
+
         # adding hydrogens is recommended for conformer generation
         X = [AddHs(mol) for mol in X]
 

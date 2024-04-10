@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Sequence
+from typing import Optional
 
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
@@ -21,6 +22,8 @@ class MolFromSmilesTransformer(BasePreprocessor):
         self.replacements = replacements
 
     def transform(self, X: Sequence[str], copy: bool = False) -> list[Mol]:
+        self._validate_params()
+
         replacements = self.replacements if self.replacements else {}
         return [
             MolFromSmiles(x, sanitize=self.sanitize, replacements=replacements)
@@ -58,6 +61,7 @@ class MolToSmilesTransformer(BasePreprocessor):
         self.do_random = do_random
 
     def transform(self, X: Sequence[Mol], copy: bool = False) -> list[str]:
+        self._validate_params()
         return [
             MolToSmiles(
                 x,

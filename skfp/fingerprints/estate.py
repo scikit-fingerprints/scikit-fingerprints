@@ -1,4 +1,5 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -42,9 +43,9 @@ class EStateFingerprint(FingerprintTransformer):
 
         X = np.array([FingerprintMol(x) for x in X])
         if self.variant == "bit":
-            X = X[:, 0] > 0
+            X = (X[:, 0] > 0).astype(np.uint8)
         elif self.variant == "count":
-            X = (X[:, 0]).astype(int)
+            X = (X[:, 0]).astype(np.uint32)
         else:  # "sum" variant
             X = X[:, 1]
 

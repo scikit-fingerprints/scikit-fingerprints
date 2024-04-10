@@ -1,6 +1,7 @@
 import warnings
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -37,6 +38,12 @@ class AtomPairFingerprint(FingerprintTransformer):
     is used. Note that this uses `conf_id` attribute of input molecules, and requires
     them to have conformations computed.
 
+    Values of count version are sensitive to the molecule size, since the number of
+    shortest paths scales with square of heavy atom count (HAC). This can be offset
+    by setting `scale_by_hac` to True (divide counts by HAC), or integer value greater
+    than 1, which divides by HAC to the given power. Setting `scale_by_hac=2` makes
+    valeus independent of molecule size.
+
     Parameters
     ----------
     fp_size : int, default=2048
@@ -65,10 +72,11 @@ class AtomPairFingerprint(FingerprintTransformer):
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
 
-    scale_by_hac: bool, default=False
+    scale_by_hac: bool or int, default=False
         Whether to scale count fingerprint by the heavy atom count (HAC) to
-        obtain a proportionality to molecule size. Values are expressed as
-        percentages, rounded to the nearest integer. [2]
+        obtain a proportionality to molecule size [2]. If integer value is given,
+        scaling uses given power of HAC, e.g. `scale_by_hac=2` divides counts by
+        squared HAC. Values are expressed as percentages in range [0, 100].
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -133,8 +141,8 @@ class AtomPairFingerprint(FingerprintTransformer):
         "include_chirality": ["boolean"],
         "count_simulation": ["boolean"],
         "use_3D": ["boolean"],
+        "scale_by_hac": ["boolean", Interval(Integral, 0, None, closed="left")],
         "count": ["boolean"],
-        "scale_by_hac": ["boolean"],
     }
 
     def __init__(
@@ -145,8 +153,8 @@ class AtomPairFingerprint(FingerprintTransformer):
         include_chirality: bool = False,
         count_simulation: bool = True,
         use_3D: bool = False,
+        scale_by_hac: Union[bool, int] = False,
         count: bool = False,
-        scale_by_hac: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
@@ -195,7 +203,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
             Array with fingerprints.
         """
-        return super().transform(X)
+        return super().transform(X, copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
@@ -240,5 +248,5 @@ class AtomPairFingerprint(FingerprintTransformer):
         return csr_array(fps) if self.sparse else np.array(fps)
 
     def _scale_by_hac(self, fingerprint: np.ndarray, mol: Mol) -> np.ndarray:
-        # scale values to percentages, rounded to the nearest integer
-        return np.round(100 * fingerprint / mol.GetNumHeavyAtoms()).astype(int)
+        scale_factor = mol.GetNumHeavyAtoms() ** self.scale_by_hac
+        return (100 * fingerprint) / scale_factor

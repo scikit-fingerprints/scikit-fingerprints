@@ -11,5 +11,10 @@ install-dev: ## Install development dependencies, pre-commit hooks and poetry pl
 docs: ## Re-generate documentation
 	$(MAKE) -C docs clean html
 
+test-coverage: ## Run tests and calculate test coverage
+	-mkdir .tmp_coverage_files
+	pytest --cov=skfp tests
+	-rm -rf .tmp_coverage_files
+
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

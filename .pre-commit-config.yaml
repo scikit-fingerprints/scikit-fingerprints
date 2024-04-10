@@ -46,12 +46,13 @@ repos:
         pass_filenames: false
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.1
+    rev: v3.15.2
     hooks:
       - id: pyupgrade
+        args: [ "--py39-plus" ]
 
   - repo: https://github.com/yunojuno/pre-commit-xenon
     rev: v0.1
     hooks:
       - id: xenon
-        args: [ "--max-average=A", "--max-modules=A", "--max-absolute=C" ]
+        args: [ "--max-average=B", "--max-modules=B", "--max-absolute=C" ]

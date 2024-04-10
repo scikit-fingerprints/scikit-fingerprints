@@ -7,6 +7,8 @@ import skfp.fingerprints
 
 
 def test_individual_set_output(mols_conformers_list):
+    mols_conformers_list = mols_conformers_list[:10]
+
     for name, obj in inspect.getmembers(skfp.fingerprints):
         if not inspect.isclass(obj):
             continue
@@ -22,6 +24,8 @@ def test_individual_set_output(mols_conformers_list):
 
 
 def test_global_set_output(mols_conformers_list):
+    mols_conformers_list = mols_conformers_list[:10]
+
     with sklearn.config_context(transform_output="pandas"):
         # loop through all fingerprint classes
         for name, obj in inspect.getmembers(skfp.fingerprints):

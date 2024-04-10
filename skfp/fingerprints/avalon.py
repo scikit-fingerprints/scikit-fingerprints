@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -48,4 +49,9 @@ class AvalonFingerprint(FingerprintTransformer):
         else:
             X = [GetAvalonFP(x, nBits=self.fp_size) for x in X]
 
-        return csr_array(X) if self.sparse else np.array(X)
+        dtype = np.uint32 if self.count else np.uint8
+
+        if self.sparse:
+            return csr_array(X, dtype=dtype)
+        else:
+            return np.array(X, dtype=dtype)

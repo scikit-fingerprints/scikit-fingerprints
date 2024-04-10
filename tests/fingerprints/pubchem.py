@@ -8,6 +8,7 @@ def test_pubchem_bit_fingerprint(smiles_list, mols_list):
     X_skfp = pubchem_fp.transform(smiles_list)
 
     assert X_skfp.shape == (len(mols_list), 881)
+    assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
 
 
@@ -16,7 +17,8 @@ def test_pubchem_count_fingerprint(smiles_list, mols_list):
     X_skfp = pubchem_fp.transform(smiles_list)
 
     assert X_skfp.shape == (len(mols_list), 757)
-    assert np.issubdtype(X_skfp.dtype, int) and np.all(X_skfp >= 0)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp >= 0)
 
 
 def test_pubchem_sparse_bit_fingerprint(smiles_list, mols_list):
@@ -24,6 +26,7 @@ def test_pubchem_sparse_bit_fingerprint(smiles_list, mols_list):
     X_skfp = pubchem_fp.transform(smiles_list)
 
     assert X_skfp.shape == (len(mols_list), 881)
+    assert X_skfp.dtype == np.uint8
     assert np.allclose(X_skfp.data, 1)
 
 
@@ -32,4 +35,5 @@ def test_pubchem_sparse_count_fingerprint(smiles_list, mols_list):
     X_skfp = pubchem_fp.transform(smiles_list)
 
     assert X_skfp.shape == (len(mols_list), 757)
-    assert np.issubdtype(X_skfp.dtype, int) and np.all(X_skfp.data > 0)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp.data > 0)

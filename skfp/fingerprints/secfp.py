@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -81,4 +82,7 @@ class SECFPFingerprint(FingerprintTransformer):
             for x in X
         ]
 
-        return csr_array(X) if self.sparse else np.array(X)
+        if self.sparse:
+            return csr_array(X, dtype=np.uint8)
+        else:
+            return np.array(X, dtype=np.uint8)

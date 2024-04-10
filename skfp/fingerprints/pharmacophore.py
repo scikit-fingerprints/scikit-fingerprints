@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -64,11 +65,15 @@ class PharmacophoreFingerprint(FingerprintTransformer):
 
         if self.variant in ["bit", "count"]:
             # X at this point is a list of RDKit fingerprints, but MyPy doesn't get it
-            X = self._hash_fingerprint_bits(
+            return self._hash_fingerprint_bits(
                 X,  # type: ignore
                 fp_size=self.fp_size,
                 count=(self.variant == "count"),
                 sparse=self.sparse,
             )
-
-        return csr_array(X) if self.sparse else np.array(X)
+        else:
+            return (
+                csr_array(X, dtype=np.uint8)
+                if self.sparse
+                else np.array(X, dtype=np.uint8)
+            )

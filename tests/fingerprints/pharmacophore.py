@@ -16,6 +16,8 @@ def test_pharmacophore_raw_bits_fingerprint(smallest_smiles_list, smallest_mols_
 
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(smallest_smiles_list), 39972)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(np.isin(X_skfp, [0, 1]))
 
 
 def test_pharmacophore_raw_bits_3D_fingerprint(mols_conformers_list):
@@ -32,6 +34,8 @@ def test_pharmacophore_raw_bits_3D_fingerprint(mols_conformers_list):
 
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(mols_conformers_list), 39972)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(np.isin(X_skfp, [0, 1]))
 
 
 def test_pharmacophore_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -46,6 +50,8 @@ def test_pharmacophore_bit_fingerprint(smallest_smiles_list, smallest_mols_list)
 
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(np.isin(X_skfp, [0, 1]))
 
 
 def test_pharmacophore_bit_3D_fingerprint(mols_conformers_list):
@@ -65,6 +71,8 @@ def test_pharmacophore_bit_3D_fingerprint(mols_conformers_list):
 
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(np.isin(X_skfp, [0, 1]))
 
 
 def test_pharmacophore_count_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -79,6 +87,8 @@ def test_pharmacophore_count_fingerprint(smallest_smiles_list, smallest_mols_lis
 
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp >= 0)
 
 
 def test_pharmacophore_count_3D_fingerprint(mols_conformers_list):
@@ -98,6 +108,8 @@ def test_pharmacophore_count_3D_fingerprint(mols_conformers_list):
 
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp >= 0)
 
 
 def test_pharmacophore_raw_bits_sparse_fingerprint(
@@ -111,6 +123,8 @@ def test_pharmacophore_raw_bits_sparse_fingerprint(
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smallest_smiles_list), 39972)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(X_skfp.data == 1)
 
 
 def test_pharmacophore_raw_bits_3D_sparse_fingerprint(mols_conformers_list):
@@ -127,6 +141,8 @@ def test_pharmacophore_raw_bits_3D_sparse_fingerprint(mols_conformers_list):
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(mols_conformers_list), 39972)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(X_skfp.data == 1)
 
 
 def test_pharmacophore_bit_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
@@ -141,6 +157,8 @@ def test_pharmacophore_bit_sparse_fingerprint(smallest_smiles_list, smallest_mol
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(X_skfp.data == 1)
 
 
 def test_pharmacophore_bit_3D_sparse_fingerprint(mols_conformers_list):
@@ -160,6 +178,8 @@ def test_pharmacophore_bit_3D_sparse_fingerprint(mols_conformers_list):
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(X_skfp.data == 1)
 
 
 def test_pharmacophore_count_sparse_fingerprint(
@@ -176,6 +196,8 @@ def test_pharmacophore_count_sparse_fingerprint(
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp.data > 0)
 
 
 def test_pharmacophore_count_3D_sparse_fingerprint(mols_conformers_list):
@@ -195,3 +217,5 @@ def test_pharmacophore_count_3D_sparse_fingerprint(mols_conformers_list):
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp.data > 0)

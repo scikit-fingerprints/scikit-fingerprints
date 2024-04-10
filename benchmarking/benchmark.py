@@ -242,8 +242,8 @@ def get_times_e3fp(X: pd.DataFrame):
 
 def save_results(
     n_molecules: int,
-    y_skfp: List,
-    y_sequential: List,
+    y_skfp: list,
+    y_sequential: list,
     title: str = "",
     count: bool = None,
     save: bool = True,
@@ -288,8 +288,8 @@ def save_results(
 
 
 def save_all_results(
-    scores_skfp: List,
-    scores_seq: List,
+    scores_skfp: list,
+    scores_seq: list,
     n_molecules: int,
     title: str,
     use_count: bool,

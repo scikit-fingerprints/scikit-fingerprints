@@ -1,5 +1,6 @@
 from collections import defaultdict
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
@@ -43,7 +44,7 @@ class PubChemFingerprint(FingerprintTransformer):
         X = ensure_mols(X)
 
         X = [self._get_pubchem_fingerprint(x) for x in X]
-        return scipy.sparse.vstack(X) if self.sparse else np.vstack(X)
+        return csr_array(X) if self.sparse else np.vstack(X)
 
     def _get_pubchem_fingerprint(self, mol: Mol) -> Union[np.ndarray, csr_array]:
         # PubChem's definition requires hydrogens to be present
@@ -265,18 +266,20 @@ class PubChemFingerprint(FingerprintTransformer):
             ]
             ring_features = self._get_ring_count_features(ring_counts)
 
-        x = (
+        X = np.array(
             atom_features
             + ring_features
             + atom_pair_counts
             + simple_neigh_counts
             + detailed_neigh_counts
             + simple_smarts_counts
-            + complex_smarts_counts
+            + complex_smarts_counts,
         )
-        X = csr_array(x) if self.sparse else np.array(x)
 
-        return (X > 0) if not self.count else X
+        if self.count:
+            return X.astype(np.uint32)
+        else:
+            return (X > 0).astype(np.uint8)
 
     def _get_atom_counts(self, mol: Mol) -> dict[str, int]:
         counts: dict[str, int] = defaultdict(int)
