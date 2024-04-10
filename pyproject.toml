@@ -59,6 +59,13 @@ optional = true
 pydata-sphinx-theme = "*"
 sphinx = "*"
 
+[tool.poetry.group.eval]
+optional = true
+
+[tool.poetry.group.eval.dependencies]
+lightgbm = "*"
+ogb = "*"
+
 [tool.pytest.ini_options]
 python_files = "*.py"
 
