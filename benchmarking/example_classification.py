@@ -18,7 +18,7 @@ fingerprint_classes = [
     for name, cls in inspect.getmembers(skfp.fingerprints, predicate=inspect.isclass)
 ]
 
-SIZE = 125
+SIZE = -1
 
 dataset_params = [
     ("ogbg-molhiv", "HIV_active"),
