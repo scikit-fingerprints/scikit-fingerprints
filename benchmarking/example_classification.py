@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import MinMaxScaler
@@ -93,6 +94,11 @@ for dataset_name, property_name in dataset_params:
         execution_time = end - start
         print(f" - Time of fingerprints computing : {round(execution_time,2)}s")
         records[-1]["execution_time"] = execution_time
+
+        imputer = SimpleImputer(strategy="constant", fill_value=0)
+        X_fp_train = imputer.fit_transform(X_fp_train)
+        X_fp_valid = imputer.transform(X_fp_valid)
+        X_fp_test = imputer.transform(X_fp_test)
 
         for classifier, clf_kwargs in classifier_parameters:
             clf_name = classifier.__name__
