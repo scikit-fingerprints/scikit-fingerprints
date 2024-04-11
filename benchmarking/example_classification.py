@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import MinMaxScaler
 
@@ -30,8 +30,8 @@ dataset_params = [
 classifier_parameters = [
     (RandomForestClassifier, {"n_jobs": -1, "class_weight": "balanced"}),
     (
-        LogisticRegression,
-        {"class_weight": "balanced", "penalty": None, "n_jobs": -1},
+        LogisticRegressionCV,
+        {"class_weight": "balanced", "max_iter": 150, "n_jobs": -1},
     ),
     (lgb.LGBMClassifier, {"n_jobs": -1, "class_weight": "balanced", "verbose": -1}),
 ]
