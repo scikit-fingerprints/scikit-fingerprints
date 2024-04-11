@@ -14,6 +14,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import MinMaxScaler
 
 import skfp.fingerprints
+from skfp.preprocessing import ConformerGenerator
 
 fingerprint_classes = [
     cls
@@ -86,9 +87,20 @@ for dataset_name, property_name in dataset_params:
             records[-1]["error"] = str(e)
             continue
         except ValueError as e:
-            print(f" - Error: {e}")
-            records[-1]["error"] = str(e)
-            continue
+            try:
+                conf_gen = ConformerGenerator()
+                X_train_conf = conf_gen.transform(X_train_mols)
+                X_valid_conf = conf_gen.transform(X_valid_mols)
+                X_test_conf = conf_gen.transform(X_test_mols)
+
+                X_fp_train = fp_transformer.fit_transform(X_train_conf)
+                X_fp_valid = fp_transformer.transform(X_valid_conf)
+                X_fp_test = fp_transformer.transform(X_test_conf)
+            except ValueError as e:
+                print(e.__class__.__name__)
+                print(f" - Error: {e}")
+                records[-1]["error"] = str(e)
+                continue
 
         scaler = MinMaxScaler()
         X_fp_train = scaler.fit_transform(X_fp_train)
