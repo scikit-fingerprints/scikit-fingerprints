@@ -23,6 +23,10 @@ fingerprint_classes = [
 
 SIZE = -1
 
+SCRIPT_PATH = os.path.abspath(__file__)
+DATASET_DIR = os.path.join(os.path.dirname(os.path.dirname(SCRIPT_PATH)), "dataset")
+
+
 dataset_params = [
     ("ogbg-molhiv", "HIV_active"),
     ("ogbg-molbace", "Class"),
@@ -40,14 +44,14 @@ classifier_parameters = [
 ]
 
 for dataset_name, property_name in dataset_params:
-    dataset = GraphPropPredDataset(name=dataset_name, root="../dataset")
+    dataset = GraphPropPredDataset(name=dataset_name, root=DATASET_DIR)
     split_idx = dataset.get_idx_split()
     train_idx = np.array(split_idx["train"])[:SIZE]
     valid_idx = np.array(split_idx["valid"])[:SIZE]
     test_idx = np.array(split_idx["test"])[:SIZE]
 
     dataframe = pd.read_csv(
-        f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
+        f"{DATASET_DIR}/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
 
     print(dataframe.columns)
