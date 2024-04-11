@@ -6,6 +6,7 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
+from rdkit.Chem import MolFromSmiles
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegressionCV
@@ -59,6 +60,10 @@ for dataset_name, property_name in dataset_params:
     X_train, y_train = X[train_idx], y[train_idx]
     X_test, y_test = X[test_idx], y[test_idx]
     X_valid, y_valid = X[valid_idx], y[valid_idx]
+
+    X_train_mols = [MolFromSmiles(smiles) for smiles in X_train]
+    X_valid_mols = [MolFromSmiles(smiles) for smiles in X_valid]
+    X_test_mols = [MolFromSmiles(smiles) for smiles in X_test]
 
     records = []
 
