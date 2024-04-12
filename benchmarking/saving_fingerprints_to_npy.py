@@ -36,7 +36,7 @@ fp_names = [
     "Layered",
     "MACCS-Keys",
     "MAP",
-    # "MHFP", # overflow
+    "MHFP",
     # "MORDRED", # overflow
     # "MORSE", # expects conf_id
     "Pattern",
@@ -47,7 +47,7 @@ fp_names = [
     "RDKit",
     "SECFP",
     "Topological-Torsion",
-    "Whim",
+    # "Whim",
 ]
 
 fprints = [
@@ -62,18 +62,18 @@ fprints = [
     LayeredFingerprint,
     MACCSFingerprint,
     MAPFingerprint,
-    # MHFPFingerprint,
+    MHFPFingerprint,
     # MordredFingerprint,
     # MORSEFingerprint,
     PatternFingerprint,
     # PharmacophoreFingerprint,
     PhysiochemicalPropertiesFingerprint,
     PubChemFingerprint,
-    RDFFingerprint,
+    # RDFFingerprint,
     RDKitFingerprint,
     SECFPFingerprint,
     TopologicalTorsionFingerprint,
-    WHIMFingerprint,
+    # WHIMFingerprint,
 ]
 
 fps_requiring_conformers = ["Getway"]
@@ -101,7 +101,7 @@ for dataset_name, property_name in zip(dataset_names, property_names):
     X = dataframe["smiles"]
     y = dataframe[property_name]
 
-    # X = MolFromSmilesTransformer().transform(X)
+    X = np.array(MolFromSmilesTransformer().transform(X))
 
     n_molecules = len(X)
     print("Number of molecules:", n_molecules)
@@ -125,9 +125,17 @@ for dataset_name, property_name in zip(dataset_names, property_names):
             start = time()
             fp_transformer = fingerprint(n_jobs=-1)
 
-            X_fp_train = fp_transformer.transform(X_train)
-            X_fp_valid = fp_transformer.transform(X_valid)
-            X_fp_test = fp_transformer.transform(X_test)
+            X_fp_train = X_train
+            X_fp_valid = X_valid
+            X_fp_test = X_test
+
+            X_fp_train = X_train
+            X_fp_valid = X_valid
+            X_fp_test = X_test
+
+            X_fp_train = fp_transformer.transform(X_fp_train)
+            X_fp_valid = fp_transformer.transform(X_fp_valid)
+            X_fp_test = fp_transformer.transform(X_fp_test)
 
             scaler = MinMaxScaler()
             X_fp_train = scaler.fit_transform(X_fp_train)
