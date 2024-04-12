@@ -24,58 +24,61 @@ property_names = [
     "p_np",
 ]
 
-save_data_dir = "./saved_fingerprints"
-
 fp_names = [
     "AtomPair",
     "Autocorr",
     "Avalon",
-    "E3FP",
+    # "E3FP", # errors out - won't generate a conformer for one molecule
     "ECFP",
     "ERG",
     "EState",
-    # "Getway",
+    # "Getway", # expects conf_id
+    "Layered",
     "MACCS-Keys",
-    "MAP4",
-    "MHFP",
-    # "MORSE",
+    "MAP",
+    # "MHFP", # overflow
+    # "MORDRED", # overflow
+    # "MORSE", # expects conf_id
     "Pattern",
-    "Pharmacophore",
+    # "Pharmacophore", # very long
     "Phsiochemical-Properties",
     "PubChem",
-    # "RDF",
+    # "RDF", # expects conf_id
     "RDKit",
     "SECFP",
     "Topological-Torsion",
-    # "Whim",
+    "Whim",
 ]
 
 fprints = [
     AtomPairFingerprint,
     AutocorrFingerprint,
     AvalonFingerprint,
-    E3FPFingerprint,
+    # E3FPFingerprint,
     ECFPFingerprint,
     ERGFingerprint,
     EStateFingerprint,
     # GETAWAYFingerprint,
+    LayeredFingerprint,
     MACCSFingerprint,
-    MAP4Fingerprint,
-    MHFPFingerprint,
+    MAPFingerprint,
+    # MHFPFingerprint,
+    # MordredFingerprint,
     # MORSEFingerprint,
     PatternFingerprint,
-    PharmacophoreFingerprint,
+    # PharmacophoreFingerprint,
     PhysiochemicalPropertiesFingerprint,
     PubChemFingerprint,
-    # RDFFingerprint,
+    RDFFingerprint,
     RDKitFingerprint,
     SECFPFingerprint,
     TopologicalTorsionFingerprint,
-    # WHIMFingerprint,
+    WHIMFingerprint,
 ]
 
 fps_requiring_conformers = ["Getway"]
 
+save_data_dir = "./saved_fingerprints"
 if not os.path.exists(save_data_dir):
     os.mkdir(save_data_dir)
 
