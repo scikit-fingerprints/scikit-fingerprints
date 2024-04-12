@@ -1,14 +1,24 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils._param_validation import StrOptions
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class EStateFingerprint(FingerprintTransformer):
+    """EState fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "variant": [StrOptions({"bit", "count", "sum"})],
+    }
+
     def __init__(
         self,
         variant: str = "sum",
@@ -16,10 +26,8 @@ class EStateFingerprint(FingerprintTransformer):
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
-        if variant not in ["bit", "count", "sum"]:
-            raise ValueError("Variant must be one of: 'bit', 'count', 'sum'")
-
         super().__init__(
+            n_features_out=79,
             n_jobs=n_jobs,
             sparse=sparse,
             verbose=verbose,
@@ -35,9 +43,9 @@ class EStateFingerprint(FingerprintTransformer):
 
         X = np.array([FingerprintMol(x) for x in X])
         if self.variant == "bit":
-            X = X[:, 0] > 0
+            X = (X[:, 0] > 0).astype(np.uint8)
         elif self.variant == "count":
-            X = (X[:, 0]).astype(int)
+            X = (X[:, 0]).astype(np.uint32)
         else:  # "sum" variant
             X = X[:, 1]
 

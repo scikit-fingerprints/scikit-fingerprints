@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scikit-fingerprints"
-version = "1.1.2"
+version = "1.2.0"
 description = "Library for effective molecular fingerprints calculation"
 authors = [
     "Scikit-Fingerprints Development Team <scikitfingerprints@gmail.com>",
@@ -23,6 +23,7 @@ python = "^3.9"
 datasketch = "*"
 e3fp = "*"
 joblib = "*"
+mordredcommunity = "*"
 numpy = "^1.20.0"
 pandas = "*"
 rdkit = "*"
@@ -35,17 +36,28 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
+coverage = "*"
 flake8 = "*"
 isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+pytest-cov = "*"
 
 [tool.poetry.group.test]
 optional = true
 
 [tool.poetry.group.test.dependencies]
+mypy = "*"
+pre-commit = "*"
 pytest = "*"
+
+[tool.poetry.group.doc]
+optional = true
+
+[tool.poetry.group.doc.dependencies]
+pydata-sphinx-theme = "*"
+sphinx = "*"
 
 [tool.pytest.ini_options]
 python_files = "*.py"

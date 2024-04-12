@@ -1,13 +1,15 @@
 from collections import defaultdict
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
 from rdkit.Chem import AddHs, Mol
 from scipy.sparse import csr_array
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 """
 Note: this fingerprint may give slightly different vectors than PubChem API!
@@ -19,6 +21,8 @@ NCGC (NIH) Java code.
 
 
 class PubChemFingerprint(FingerprintTransformer):
+    """PubChem fingerprint."""
+
     def __init__(
         self,
         count: bool = False,
@@ -27,6 +31,7 @@ class PubChemFingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=881,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
@@ -39,7 +44,7 @@ class PubChemFingerprint(FingerprintTransformer):
         X = ensure_mols(X)
 
         X = [self._get_pubchem_fingerprint(x) for x in X]
-        return scipy.sparse.vstack(X) if self.sparse else np.vstack(X)
+        return csr_array(X) if self.sparse else np.vstack(X)
 
     def _get_pubchem_fingerprint(self, mol: Mol) -> Union[np.ndarray, csr_array]:
         # PubChem's definition requires hydrogens to be present
@@ -261,27 +266,29 @@ class PubChemFingerprint(FingerprintTransformer):
             ]
             ring_features = self._get_ring_count_features(ring_counts)
 
-        x = (
+        X = np.array(
             atom_features
             + ring_features
             + atom_pair_counts
             + simple_neigh_counts
             + detailed_neigh_counts
             + simple_smarts_counts
-            + complex_smarts_counts
+            + complex_smarts_counts,
         )
-        X = csr_array(x) if self.sparse else np.array(x)
 
-        return (X > 0) if not self.count else X
+        if self.count:
+            return X.astype(np.uint32)
+        else:
+            return (X > 0).astype(np.uint8)
 
-    def _get_atom_counts(self, mol: Mol) -> Dict[str, int]:
-        counts: Dict[str, int] = defaultdict(int)
+    def _get_atom_counts(self, mol: Mol) -> dict[str, int]:
+        counts: dict[str, int] = defaultdict(int)
         for atom in mol.GetAtoms():
             counts[atom.GetSymbol()] += 1
         return counts
 
-    def _get_ESSSR_ring_counts(self, mol: Mol) -> Dict[str, int]:
-        counts: Dict[str, int] = defaultdict(int)
+    def _get_ESSSR_ring_counts(self, mol: Mol) -> dict[str, int]:
+        counts: dict[str, int] = defaultdict(int)
 
         ring_info = mol.GetRingInfo()
         for ring in ring_info.BondRings():
@@ -318,8 +325,8 @@ class PubChemFingerprint(FingerprintTransformer):
         return counts
 
     def _get_ring_stats(
-        self, mol: Mol, ring: Tuple[int]
-    ) -> Dict[str, Union[int, bool]]:
+        self, mol: Mol, ring: tuple[int]
+    ) -> dict[str, Union[int, bool]]:
         from rdkit.Chem import BondType
 
         stats = {
@@ -353,7 +360,7 @@ class PubChemFingerprint(FingerprintTransformer):
 
         return stats
 
-    def _get_ring_binary_features(self, ring_counts: Dict[str, int]) -> List[int]:
+    def _get_ring_binary_features(self, ring_counts: dict[str, int]) -> list[int]:
         # for each ring size, we have different number of binary features, for multiple
         # count thresholds, e.g. for 7-atom rings we have 2 sets of features (>=1, >=2),
         # and for 5-atom rings we have 5 sets
@@ -403,7 +410,7 @@ class PubChemFingerprint(FingerprintTransformer):
         features = [int(feat) for feat in features]
         return features
 
-    def _get_ring_count_features(self, ring_counts: Dict[str, int]) -> List[int]:
+    def _get_ring_count_features(self, ring_counts: dict[str, int]) -> list[int]:
         # for each ring size, we count all
         features = []
 
@@ -429,7 +436,7 @@ class PubChemFingerprint(FingerprintTransformer):
 
         return features
 
-    def _get_atom_pair_counts(self, mol: Mol) -> List[int]:
+    def _get_atom_pair_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[Li]~[H]",
             "[Li]~[Li]",
@@ -498,7 +505,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_simple_neighborhoods_counts(self, mol: Mol) -> List[int]:
+    def _get_simple_neighborhoods_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6](~Br)(~[#6])",
             "[#6](~Br)(~[#6])(~[#6])",
@@ -592,7 +599,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_detailed_neighborhoods_counts(self, mol: Mol) -> List[int]:
+    def _get_detailed_neighborhoods_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6]=,:[#6]",
             "[#6]#[#6]",
@@ -641,7 +648,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_simple_smarts_patterns_counts(self, mol: Mol) -> List[int]:
+    def _get_simple_smarts_patterns_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6]-,:[#6]-,:[#6]#[#6]",
             "[#8]-,:[#6]-,:[#6]=,:[#7]",
@@ -899,7 +906,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_complex_smarts_patterns_counts(self, mol: Mol) -> List[int]:
+    def _get_complex_smarts_patterns_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
             "[#6]c1ccc([#6])cc1",
             "[#6]c1ccc([#8])cc1",
@@ -1072,7 +1079,7 @@ class PubChemFingerprint(FingerprintTransformer):
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
-    def _get_smarts_match_counts(self, mol: Mol, smarts_list: List[str]) -> List[int]:
+    def _get_smarts_match_counts(self, mol: Mol, smarts_list: list[str]) -> list[int]:
         from rdkit.Chem import MolFromSmarts
 
         return [

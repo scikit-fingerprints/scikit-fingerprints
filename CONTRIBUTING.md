@@ -55,6 +55,15 @@ To set up a development environment for Effective Molecule Fingerprints library,
 ### Testing
 Before submitting a pull request, please make sure to run the tests to ensure that your changes do not introduce regressions. If necessary, add new tests to cover your code. Also please be sure that you do not violate any code style requirements (you can check it simply by running "flake8" in the CLI).
 
+### Documentation
+If you are contributing new features or changes, please update the documentation to reflect your changes. You can find the documentation in the `docs` directory.
+To build the documentation, run the following command in the main directory of the repository:
+```bash
+poetry run make -C docs html
+```
+
+To view the documentation, open the `docs/_build/html/index.html` file in your browser.
+
 ### Code of Conduct
 By participating in this project, you agree to abide by the Code of Conduct. We take violations seriously and may take action if necessary to maintain a welcoming and respectful community.
 

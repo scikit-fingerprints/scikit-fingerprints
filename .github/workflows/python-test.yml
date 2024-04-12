@@ -1,32 +1,48 @@
-name: Python package workflow
+name: Tests & checks
 
 on: [pull_request]
 
-env:
-  POETRY_VENV: poetry_venv
-  POETRY: poetry_venv/bin/poetry
+# cancel previous runs on a new commit
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
+  ci:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install Poetry
-      run: |
-        python3 -m venv $POETRY_VENV
-        $POETRY_VENV/bin/pip install -U pip setuptools
-        $POETRY_VENV/bin/pip install poetry
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-plugins: "poetry-plugin-sort"
 
-    - name: Install dependencies using Poetry
-      run: $POETRY install --with test
+      - name: Setup a local virtual environment
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
 
-    - name: Run tests with pytest
-      run: $POETRY run pytest tests
+      - uses: actions/cache@v3
+        name: Define dependencies cache based
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
 
+      - name: Install the project dependencies
+        run: poetry install --with test
+
+      - name: Check pre-commit
+        run: poetry run pre-commit run --all-files
+
+      - name: Run tests with pytest
+        run: poetry run pytest tests

@@ -1,6 +1,10 @@
+import hashlib
 import itertools
+import struct
 from collections import defaultdict
-from typing import Dict, List, Optional, Sequence, Union
+from collections.abc import Sequence
+from numbers import Integral
+from typing import Optional, Union
 
 import numpy as np
 from datasketch import MinHash
@@ -8,9 +12,12 @@ from rdkit.Chem import MolToSmiles, PathToSubmol
 from rdkit.Chem.rdchem import Mol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
+from sklearn.utils._param_validation import StrOptions
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 """
 Code inspired by the original work of the authors of the MAP4 Fingerprint:
@@ -18,7 +25,16 @@ https://github.com/reymond-group/map4
 """
 
 
-class MAP4Fingerprint(FingerprintTransformer):
+class MAPFingerprint(FingerprintTransformer):
+    """MAP fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "radius": [Interval(Integral, 0, None, closed="left")],
+        "variant": [StrOptions({"bit", "count", "raw_hashes"})],
+    }
+
     def __init__(
         self,
         fp_size: int = 1024,
@@ -30,10 +46,8 @@ class MAP4Fingerprint(FingerprintTransformer):
         verbose: int = 0,
         random_state: int = 0,
     ):
-        if variant not in ["bit", "count", "raw_hashes"]:
-            raise ValueError("Variant must be one of: 'bit', 'count', 'raw_hashes'")
-
         super().__init__(
+            n_features_out=fp_size,
             sparse=sparse,
             count=count,
             n_jobs=n_jobs,
@@ -50,23 +64,30 @@ class MAP4Fingerprint(FingerprintTransformer):
         X = ensure_mols(X)
         X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
 
-        if self.variant in ["bit", "count"]:
-            X = np.mod(X, self.fp_size)
-            X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
-            if self.variant == "bit":
-                X = X > 0
+        if self.variant == "bit":
+            X = (X > 0).astype(np.uint8)
+        elif self.variant == "count":
+            X = X.astype(np.uint32)
 
         return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
         atoms_envs = self._get_atom_envs(mol)
-        atom_env_pairs = self._get_atom_pair_shingles(mol, atoms_envs)
-        encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
-        encoder.update_batch(atom_env_pairs)
-        fp = encoder.digest()
+        shingles = self._get_atom_pair_shingles(mol, atoms_envs)
+
+        if self.variant == "raw_hashes":
+            encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
+            encoder.update_batch(shingles)
+            fp = encoder.digest()
+        else:
+            # bit/count folded version from original MAP4 and MHFP implementation
+            hashes = [self._get_hash(shingle) for shingle in shingles]
+            bits = [hash_val % self.fp_size for hash_val in hashes]
+            fp = np.bincount(bits, minlength=self.fp_size)
+
         return fp
 
-    def _get_atom_envs(self, mol: Mol) -> Dict[int, List[Optional[str]]]:
+    def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
         """
         For each atom get its environment, i.e. radius-hop neighborhood.
         """
@@ -90,14 +111,11 @@ class MAP4Fingerprint(FingerprintTransformer):
         """
         try:
             env = FindAtomEnvironmentOfRadiusN(mol, atom_idx, n_radius)
-        except ValueError as e:
-            # this error happens if radius is larger than possible
-            if "bad atom index" in str(e):
-                return None
-            else:
-                raise
+        except ValueError:
+            # "bad atom index" error happens if radius is larger than possible
+            return None
 
-        atom_map: Dict[int, int] = dict()
+        atom_map: dict[int, int] = dict()
 
         submol = PathToSubmol(mol, env, atomMap=atom_map)
 
@@ -111,16 +129,16 @@ class MAP4Fingerprint(FingerprintTransformer):
         else:
             return None
 
-    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> List[bytes]:
+    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> list[bytes]:
         """
-        Gets a list of atom-pair molecular shingles - circular structures written
-        as SMILES, separated by the bond distance between the two atoms along the
+        Gets a list of atom molecular shingles - circular structures around atom pairs,
+        written as SMILES, separated by the bond distance between the two atoms along the
         shortest path.
         """
-        atom_pairs = []
+        shingles = []
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()
-        shingle_dict: Dict[str, int] = defaultdict(int)
+        shingle_dict: dict[str, int] = defaultdict(int)
 
         # Iterate through all pairs of atoms and radius. Shingles are stored in format:
         # (radius i neighborhood of atom A) | (distance between atoms A and B) | (radius i neighborhood of atom B)
@@ -147,16 +165,24 @@ class MAP4Fingerprint(FingerprintTransformer):
                 if self.count:
                     shingle_dict[shingle] += 1
                 else:
-                    atom_pairs.append(shingle.encode("utf-8"))
+                    shingles.append(shingle)
 
         if self.count:
             # shingle in format:
             # (radius i neighborhood of atom A) | (distance between atoms A and B) | \
             # (radius i neighborhood of atom B) | (shingle count)
-            new_atom_pairs = [
-                f"{shingle}|{shingle_count}".encode()
+            shingle_count = [
+                f"{shingle}|{shingle_count}"
                 for shingle, shingle_count in shingle_dict.items()
             ]
-            atom_pairs.extend(new_atom_pairs)
+            shingles.extend(shingle_count)
 
-        return atom_pairs
+        # convert strings to bytes for hashing
+        shingles = [shingle.encode() for shingle in shingles]
+
+        return shingles
+
+    def _get_hash(self, shingle: bytes) -> int:
+        hash_bytes = hashlib.sha1(shingle, usedforsecurity=False).digest()
+        hash_value = struct.unpack("<I", hash_bytes[:4])[0]
+        return hash_value

@@ -1,14 +1,18 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class MACCSFingerprint(FingerprintTransformer):
+    """MACCS fingerprint."""
+
     def __init__(
         self,
         sparse: bool = False,
@@ -16,6 +20,7 @@ class MACCSFingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=167,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
@@ -27,6 +32,9 @@ class MACCSFingerprint(FingerprintTransformer):
         from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 
         X = ensure_mols(X)
-
         X = [GetMACCSKeysFingerprint(x) for x in X]
-        return csr_array(X) if self.sparse else np.array(X)
+
+        if self.sparse:
+            return csr_array(X, dtype=np.uint8)
+        else:
+            return np.array(X, dtype=np.uint8)

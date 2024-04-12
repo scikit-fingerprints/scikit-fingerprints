@@ -1,14 +1,22 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import List, Optional, Union
+from copy import deepcopy
+from numbers import Integral
+from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
-from joblib import Parallel, delayed, effective_n_jobs
+from joblib import effective_n_jobs
 from rdkit.Chem.rdchem import Mol
 from rdkit.DataStructs import IntSparseIntVect, LongSparseIntVect, SparseBitVect
 from scipy.sparse import csr_array, dok_array
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import (
+    BaseEstimator,
+    ClassNamePrefixFeaturesOutMixin,
+    TransformerMixin,
+)
+from sklearn.utils._param_validation import InvalidParameterError
+from sklearn.utils.parallel import Parallel, delayed
 
 from skfp.utils import ProgressParallel
 
@@ -26,45 +34,107 @@ cannot be pickled, throwing TypeError: cannot pickle 'Boost.Python.function' obj
 """
 
 
-class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
+class FingerprintTransformer(
+    ABC, BaseEstimator, TransformerMixin, ClassNamePrefixFeaturesOutMixin
+):
+    """Base class for fingerprint transformers."""
+
+    # parameters common for all fingerprints
+    _parameter_constraints: dict = {
+        "count": ["boolean"],
+        "sparse": ["boolean"],
+        "n_jobs": [Integral, None],
+        "verbose": ["verbose"],
+        "random_state": ["random_state"],
+    }
+
     def __init__(
         self,
+        n_features_out: int,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
-        random_state: int = 0,
+        random_state: Optional[int] = 0,
     ):
         self.count = count
         self.sparse = sparse
-        self.n_jobs = effective_n_jobs(n_jobs)
+        self.n_jobs = n_jobs
         self.verbose = verbose
         self.random_state = random_state
 
+        # this, combined with ClassNamePrefixFeaturesOutMixin, automatically handles
+        # set_output() API
+        self._n_features_out = n_features_out
+        self.n_features_out = self._n_features_out
+
+    def __sklearn_is_fitted__(self) -> bool:
+        return True  # fingerprint transformers don't need fitting
+
     def fit(self, X, y=None, **fit_params):
+        """Unused, kept for Scikit-learn compatibility.
+
+        Parameters
+        ----------
+        X : any
+            Unused, kept for Scikit-learn compatibility.
+
+        Y : any
+            Unused, kept for Scikit-learn compatibility.
+
+        **fit_params : dict
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        --------
+        self
+        """
+        self._validate_params()
         return self
 
     def fit_transform(self, X, y=None, **fit_params):
+        """
+        The same as `transform` method, kept for Scikit-learn compatibility.
+
+        Parameters
+        ----------
+        X : any
+            See `transform` method.
+
+        y : any
+            See `transform` method.
+
+        **fit_params : dict
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        -------
+        X_new : any
+            See `transform` method.
+        """
         return self.transform(X)
 
-    def transform(self, X: Sequence[Union[str, Mol]]) -> Union[np.ndarray, csr_array]:
-        """
-        :param X: np.array or DataFrame of rdkit.Mol objects
-        :return: np.array or sparse array of calculated fingerprints for each molecule
-        """
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        self._validate_params()
 
-        if self.n_jobs == 1:
+        if copy:
+            X = deepcopy(X)
+
+        n_jobs = effective_n_jobs(self.n_jobs)
+        if n_jobs == 1:
             return self._calculate_fingerprint(X)
         else:
-            batch_size = max(len(X) // self.n_jobs, 1)
+            batch_size = max(len(X) // n_jobs, 1)
 
             args = (X[i : i + batch_size] for i in range(0, len(X), batch_size))
 
             if self.verbose > 0:
-                total = min(self.n_jobs, len(X))
-                parallel = ProgressParallel(n_jobs=self.n_jobs, total=total)
+                total = min(n_jobs, len(X))
+                parallel = ProgressParallel(n_jobs=n_jobs, total=total)
             else:
-                parallel = Parallel(n_jobs=self.n_jobs)
+                parallel = Parallel(n_jobs=n_jobs)
 
             results = parallel(
                 delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
@@ -82,11 +152,18 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
         :param X: subset of original X data
         :return: array containing calculated fingerprints for each molecule
         """
-        pass
+        raise NotImplementedError
+
+    def _validate_params(self) -> None:
+        # override Scikit-learn validation to make stacktrace nicer
+        try:
+            super()._validate_params()
+        except InvalidParameterError as e:
+            raise InvalidParameterError(str(e)) from None
 
     @staticmethod
     def _hash_fingerprint_bits(
-        X: List[Union[IntSparseIntVect, LongSparseIntVect, SparseBitVect]],
+        X: list[Union[IntSparseIntVect, LongSparseIntVect, SparseBitVect]],
         fp_size: int,
         count: bool,
         sparse: bool,
@@ -101,7 +178,8 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
             )
 
         shape = (len(X), fp_size)
-        arr = dok_array(shape, dtype=int) if sparse else np.zeros(shape, dtype=int)
+        dtype = np.uint32 if count else np.uint8
+        arr = dok_array(shape, dtype=dtype) if sparse else np.zeros(shape, dtype=dtype)
 
         if isinstance(X[0], (IntSparseIntVect, LongSparseIntVect)):
             for idx, x in enumerate(X):
@@ -114,6 +192,6 @@ class FingerprintTransformer(ABC, TransformerMixin, BaseEstimator):
                     arr[idx, fp_bit % fp_size] += 1
 
         arr = arr.tocsr() if sparse else arr
-        arr = (arr > 0) if not count else arr
+        arr = (arr > 0).astype(np.uint8) if not count else arr
 
         return arr

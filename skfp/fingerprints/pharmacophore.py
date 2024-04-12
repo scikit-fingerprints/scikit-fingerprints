@@ -1,14 +1,27 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from numbers import Integral
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils._param_validation import Interval, StrOptions
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols, require_mols_with_conf_ids
+
+from .base import FingerprintTransformer
 
 
 class PharmacophoreFingerprint(FingerprintTransformer):
+    """Pharmacophore fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "variant": [StrOptions({"raw_bits", "bit", "count"})],
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "use_3D": ["boolean"],
+    }
+
     def __init__(
         self,
         variant: str = "raw_bits",
@@ -18,10 +31,9 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
-        if variant not in ["bit", "count", "raw_bits"]:
-            raise ValueError("Variant must be one of: 'bit', 'count', 'raw_bits'")
-
+        n_features_out = 39972 if variant == "raw_bits" else fp_size
         super().__init__(
+            n_features_out=n_features_out,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
@@ -53,11 +65,15 @@ class PharmacophoreFingerprint(FingerprintTransformer):
 
         if self.variant in ["bit", "count"]:
             # X at this point is a list of RDKit fingerprints, but MyPy doesn't get it
-            X = self._hash_fingerprint_bits(
+            return self._hash_fingerprint_bits(
                 X,  # type: ignore
                 fp_size=self.fp_size,
                 count=(self.variant == "count"),
                 sparse=self.sparse,
             )
-
-        return csr_array(X) if self.sparse else np.array(X)
+        else:
+            return (
+                csr_array(X, dtype=np.uint8)
+                if self.sparse
+                else np.array(X, dtype=np.uint8)
+            )

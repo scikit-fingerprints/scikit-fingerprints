@@ -1,14 +1,25 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from numbers import Real
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import require_mols_with_conf_ids
+
+from .base import FingerprintTransformer
 
 
 class GETAWAYFingerprint(FingerprintTransformer):
+    """GETAWAY fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "clip_val": [Interval(Real, 0, None, closed="left")],
+    }
+
     def __init__(
         self,
         clip_val: int = np.iinfo(np.int32).max,
@@ -17,6 +28,7 @@ class GETAWAYFingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=273,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,

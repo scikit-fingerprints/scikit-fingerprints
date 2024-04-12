@@ -1,4 +1,7 @@
-from typing import Optional, Sequence, Union
+import logging
+from collections.abc import Sequence
+from numbers import Integral, Real
+from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
@@ -10,10 +13,14 @@ from e3fp.conformer.generate import (
 )
 from e3fp.conformer.generator import ConformerGenerator
 from e3fp.pipeline import fprints_from_mol
+from rdkit import RDLogger
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
+from sklearn.utils._param_validation import StrOptions
 
-from skfp.fingerprints.base import FingerprintTransformer
-from skfp.validators import require_smiles
+from skfp.validators import ensure_smiles
+
+from .base import FingerprintTransformer
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
@@ -21,6 +28,24 @@ Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library
 
 
 class E3FPFingerprint(FingerprintTransformer):
+    """E3FP fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "n_bits_before_hash": [Interval(Integral, 1, None, closed="left")],
+        "radius_multiplier": [Interval(Real, 0.0, None, closed="neither")],
+        "rdkit_invariants": ["boolean"],
+        "num_conf_generated": [Interval(Integral, 1, None, closed="left")],
+        "num_conf_used": [Interval(Integral, 1, None, closed="left")],
+        "pool_multiplier": [Interval(Real, 0.0, None, closed="neither")],
+        "rmsd_cutoff": [Interval(Real, 0.0, None, closed="left"), None],
+        "max_energy_diff": [Real, None],
+        "force_field": [StrOptions({"uff", "mmff94", "mmff94s"})],
+        "get_values": ["boolean"],
+        "aggregation_type": [StrOptions({"min_energy"})],
+    }
+
     def __init__(
         self,
         fp_size: int = 1024,
@@ -41,6 +66,7 @@ class E3FPFingerprint(FingerprintTransformer):
         random_state: int = 0,
     ):
         super().__init__(
+            n_features_out=fp_size,
             n_jobs=n_jobs,
             verbose=verbose,
             sparse=sparse,
@@ -60,7 +86,7 @@ class E3FPFingerprint(FingerprintTransformer):
         self.aggregation_type = aggregation_type
 
     def _calculate_fingerprint(self, X: Sequence[str]) -> Union[np.ndarray, csr_array]:
-        X = require_smiles(X)
+        X = ensure_smiles(X)
         X = [self._calculate_single_mol_fingerprint(smi) for smi in X]
         return scipy.sparse.vstack(X) if self.sparse else np.array(X)
 
@@ -89,6 +115,11 @@ class E3FPFingerprint(FingerprintTransformer):
         # Generating conformers
         # TODO: for some molecules conformers are not properly generated - returns an empty list and throws RuntimeError
         try:
+            # suppress flood of logs
+            if not self.verbose:
+                logging.disable(logging.INFO)
+                RDLogger.DisableLog("rdApp.*")
+
             mol, values = conf_gen.generate_conformers(mol)
             fps = fprints_from_mol(
                 mol,
@@ -98,16 +129,14 @@ class E3FPFingerprint(FingerprintTransformer):
                     "rdkit_invariants": self.rdkit_invariants,
                 },
             )
+        finally:
+            RDLogger.EnableLog("rdApp.*")
+            logging.disable(logging.NOTSET)
 
-            # TODO: add other aggregation types
-            if self.aggregation_type == "min_energy":
-                energies = values[2]
-                fp = fps[np.argmin(energies)]
-            else:
-                fp = fps[0]
+        # TODO: add other aggregation types
+        # "min_energy" aggregation
+        energies = values[2]
+        fp = fps[np.argmin(energies)]
 
-            fp = fp.fold(self.fp_size)
-            return fp.to_vector(sparse=self.sparse)
-        except RuntimeError:
-            fp = np.full(shape=self.fp_size, fill_value=-1)
-            return csr_array(fp) if self.sparse else fp
+        fp = fp.fold(self.fp_size)
+        return fp.to_vector(sparse=self.sparse, dtype=np.uint8)

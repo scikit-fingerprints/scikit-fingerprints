@@ -1,4 +1,5 @@
-from typing import Any, List, Optional, Sequence, Tuple
+from collections.abc import Sequence
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
 from numpy import dtype, ndarray
@@ -55,7 +56,7 @@ class MolToSmilesTransformer:
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X: Sequence[Mol]) -> List[str]:
+    def transform(self, X: Sequence[Mol]) -> list[str]:
         return [
             MolToSmiles(
                 x,
@@ -82,7 +83,7 @@ class ConformerGenerator:
     def fit_transform(self, X, y=None, **fit_params):
         return self.transform(X)
 
-    def transform(self, X: Sequence[Mol]) -> List[Mol]:
+    def transform(self, X: Sequence[Mol]) -> list[Mol]:
         # adding hydrogens is recommended for conformer generation
         X = [AddHs(mol) for mol in X]
 

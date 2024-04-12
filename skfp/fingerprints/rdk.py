@@ -1,14 +1,31 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from numbers import Integral
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
+from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class RDKitFingerprint(FingerprintTransformer):
+    """RDKit fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "min_path": [Interval(Integral, 1, None, closed="left")],
+        "max_path": [Interval(Integral, 1, None, closed="left")],
+        "use_hs": ["boolean"],
+        "use_bond_order": ["boolean"],
+        "num_bits_per_feature": [Interval(Integral, 1, None, closed="left")],
+    }
+
     def __init__(
         self,
         fp_size: int = 2048,
@@ -23,6 +40,7 @@ class RDKitFingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=fp_size,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
@@ -34,6 +52,15 @@ class RDKitFingerprint(FingerprintTransformer):
         self.use_hs = use_hs
         self.use_bond_order = use_bond_order
         self.num_bits_per_feature = num_bits_per_feature
+
+    def _validate_params(self) -> None:
+        super()._validate_params()
+        if self.max_path < self.min_path:
+            raise InvalidParameterError(
+                f"The max_distance parameter of {self.__class__.__name__} must be "
+                f"greater or equal to min_distance, got: "
+                f"min_distance={self.min_path}, max_distance={self.max_path}"
+            )
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

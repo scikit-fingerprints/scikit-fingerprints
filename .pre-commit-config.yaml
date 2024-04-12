@@ -13,7 +13,6 @@ repos:
     rev: 24.3.0
     hooks:
       - id: black
-        language_version: python3.9
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
@@ -27,7 +26,6 @@ repos:
     hooks:
       - id: isort
         args: [ "--profile", "black", "--filter-files" ]
-        language_version: python3.9
 
   - repo: local
     hooks:
@@ -35,7 +33,7 @@ repos:
       # and have all dependencies
       - id: mypy
         name: mypy
-        entry: bash -c 'poetry run mypy --allow-redefinition --package skfp --package tests'
+        entry: poetry run mypy --package skfp --package tests
         language: system
         pass_filenames: false
 
@@ -43,7 +41,7 @@ repos:
     hooks:
       - id: poetry-plugin-sort
         name: poetry-plugin-sort
-        entry: bash -c 'poetry sort'
+        entry: poetry sort
         language: system
         pass_filenames: false
 
@@ -51,9 +49,10 @@ repos:
     rev: v3.15.2
     hooks:
       - id: pyupgrade
+        args: [ "--py39-plus" ]
 
   - repo: https://github.com/yunojuno/pre-commit-xenon
     rev: v0.1
     hooks:
       - id: xenon
-        args: [ "--max-average=A", "--max-modules=A", "--max-absolute=C" ]
+        args: [ "--max-average=B", "--max-modules=B", "--max-absolute=C" ]

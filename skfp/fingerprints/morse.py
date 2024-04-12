@@ -1,14 +1,18 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import require_mols_with_conf_ids
+
+from .base import FingerprintTransformer
 
 
 class MORSEFingerprint(FingerprintTransformer):
+    """MORSE fingerprint."""
+
     def __init__(
         self,
         sparse: bool = False,
@@ -16,6 +20,7 @@ class MORSEFingerprint(FingerprintTransformer):
         verbose: int = 0,
     ):
         super().__init__(
+            n_features_out=224,
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,

@@ -1,14 +1,27 @@
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from numbers import Integral
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from sklearn.utils import Interval
+from sklearn.utils._param_validation import StrOptions
 
-from skfp.fingerprints.base import FingerprintTransformer
 from skfp.validators import ensure_mols
+
+from .base import FingerprintTransformer
 
 
 class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
+    """Physiochemical properties fingerprint."""
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "fp_size": [Interval(Integral, 1, None, closed="left")],
+        "variant": [StrOptions({"BP", "BT"})],
+    }
+
     def __init__(
         self,
         fp_size: int = 2048,
@@ -18,10 +31,8 @@ class PhysiochemicalPropertiesFingerprint(FingerprintTransformer):
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
-        if variant not in ["BP", "BT"]:
-            raise ValueError("Variant must be one of: 'BP', 'BT'")
-
         super().__init__(
+            n_features_out=fp_size,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,

@@ -1,19 +1,21 @@
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
-from rdkit.Chem import Mol, MolFromSmiles
+from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 
 def ensure_mols(X: Sequence[Any]) -> Sequence[Mol]:
     if not all(isinstance(x, (Mol, str)) for x in X):
-        raise ValueError("Passed value must be either rdkit.Chem.rdChem.Mol or SMILES")
+        raise ValueError("Passed values must be either rdkit.Chem.rdChem.Mol or SMILES")
 
     X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
     return X
 
 
-def require_smiles(X: Sequence[Any]) -> Sequence[str]:
-    if not all(isinstance(x, str) for x in X):
+def ensure_smiles(X: Sequence[Any]) -> Sequence[str]:
+    if not all(isinstance(x, (Mol, str)) for x in X):
         raise ValueError("Passed values must be SMILES strings")
+    X = [MolToSmiles(x) if isinstance(x, Mol) else x for x in X]
     return X
 
 

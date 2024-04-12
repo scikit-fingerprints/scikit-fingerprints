@@ -12,8 +12,8 @@ def test_physiochemical_properties_bp_bit_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, np.ndarray)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
-    assert np.issubdtype(X_skfp.dtype, bool)
 
 
 def test_physiochemical_properties_bp_count_fingerprint(smiles_list):
@@ -24,8 +24,8 @@ def test_physiochemical_properties_bp_count_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, np.ndarray)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
+    assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp >= 0)
-    assert np.issubdtype(X_skfp.dtype, int)
 
 
 def test_physiochemical_properties_bt_bit_fingerprint(smiles_list):
@@ -36,8 +36,8 @@ def test_physiochemical_properties_bt_bit_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, np.ndarray)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
-    assert np.issubdtype(X_skfp.dtype, bool)
 
 
 def test_physiochemical_properties_bt_count_fingerprint(smiles_list):
@@ -48,8 +48,8 @@ def test_physiochemical_properties_bt_count_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, np.ndarray)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
+    assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp >= 0)
-    assert np.issubdtype(X_skfp.dtype, int)
 
 
 def test_physiochemical_properties_bp_sparse_bit_fingerprint(smiles_list):
@@ -60,8 +60,8 @@ def test_physiochemical_properties_bp_sparse_bit_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, csr_array)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
-    assert np.all(np.isin(X_skfp.data, [0, 1]))
-    assert np.issubdtype(X_skfp.dtype, bool)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(X_skfp.data == 1)
 
 
 def test_physiochemical_properties_bp_sparse_count_fingerprint(smiles_list):
@@ -72,8 +72,8 @@ def test_physiochemical_properties_bp_sparse_count_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, csr_array)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
-    assert np.all(X_skfp.data >= 0)
-    assert np.issubdtype(X_skfp.dtype, int)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp.data > 0)
 
 
 def test_physiochemical_properties_bt_sparse_bit_fingerprint(smiles_list):
@@ -84,8 +84,8 @@ def test_physiochemical_properties_bt_sparse_bit_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, csr_array)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
-    assert np.all(np.isin(X_skfp.data, [0, 1]))
-    assert np.issubdtype(X_skfp.dtype, bool)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(X_skfp.data == 1)
 
 
 def test_physiochemical_properties_bt_sparse_count_fingerprint(smiles_list):
@@ -96,5 +96,5 @@ def test_physiochemical_properties_bt_sparse_count_fingerprint(smiles_list):
 
     assert isinstance(X_skfp, csr_array)
     assert X_skfp.shape == (len(smiles_list), pp_fp.fp_size)
-    assert np.all(X_skfp.data >= 0)
-    assert np.issubdtype(X_skfp.dtype, int)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp.data > 0)
