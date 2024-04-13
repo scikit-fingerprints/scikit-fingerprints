@@ -27,7 +27,7 @@ Fingerprint classes
     EStateFingerprint
     GETAWAYFingerprint
     MACCSFingerprint
-    MAP4Fingerprint
+    MAPFingerprint
     MHFPFingerprint
     MORSEFingerprint
     PatternFingerprint
