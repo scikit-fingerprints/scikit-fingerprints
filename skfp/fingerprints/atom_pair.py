@@ -124,7 +124,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
     >>> fp = AtomPairFingerprint()
     >>> fp
-    AtomPairFingerprint(n_jobs=1)
+    AtomPairFingerprint()
 
     >>> fp.transform(smiles)
     array([[0, 0, 0, ..., 0, 0, 0],
