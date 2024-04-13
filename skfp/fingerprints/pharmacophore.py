@@ -53,14 +53,16 @@ class PharmacophoreFingerprint(FingerprintTransformer):
 
         if not self.use_3D:
             X = ensure_mols(X)
-            X = [Gen2DFingerprint(x, factory) for x in X]
+            X = [Gen2DFingerprint(mol, factory) for mol in X]
         else:
             X = require_mols_with_conf_ids(X)
             X = [
                 Gen2DFingerprint(
-                    x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id)
+                    mol,
+                    factory,
+                    dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
                 )
-                for x in X
+                for mol in X
             ]
 
         if self.variant in ["bit", "count"]:

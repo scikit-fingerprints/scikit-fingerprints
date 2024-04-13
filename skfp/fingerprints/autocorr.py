@@ -44,6 +44,6 @@ class AutocorrFingerprint(FingerprintTransformer):
             X = [CalcAUTOCORR2D(mol) for mol in X]
         else:
             X = require_mols_with_conf_ids(X)
-            X = [CalcAUTOCORR3D(mol, confId=mol.conf_id) for mol in X]
+            X = [CalcAUTOCORR3D(mol, confId=mol.GetIntProp("conf_id")) for mol in X]
 
         return csr_array(X) if self.sparse else np.array(X)

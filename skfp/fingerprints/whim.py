@@ -41,6 +41,6 @@ class WHIMFingerprint(FingerprintTransformer):
         from rdkit.Chem.rdMolDescriptors import CalcWHIM
 
         X = require_mols_with_conf_ids(X)
-        X = [CalcWHIM(mol, confId=mol.conf_id) for mol in X]
+        X = [CalcWHIM(mol, confId=mol.GetIntProp("conf_id")) for mol in X]
         X = np.clip(X, -self.clip_val, self.clip_val)
         return csr_array(X) if self.sparse else np.array(X)

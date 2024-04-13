@@ -16,9 +16,8 @@ from sklearn.base import (
     TransformerMixin,
 )
 from sklearn.utils._param_validation import InvalidParameterError
-from sklearn.utils.parallel import Parallel, delayed
 
-from skfp.utils import ProgressParallel
+from skfp.parallel import run_in_parallel
 
 """
 If you get MaybeEncodingError, first check any worker functions for exceptions!
@@ -124,22 +123,15 @@ class FingerprintTransformer(
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            return self._calculate_fingerprint(X)
+            results = self._calculate_fingerprint(X)
         else:
-            batch_size = max(len(X) // n_jobs, 1)
-
-            args = (X[i : i + batch_size] for i in range(0, len(X), batch_size))
-
-            if self.verbose > 0:
-                total = min(n_jobs, len(X))
-                parallel = ProgressParallel(n_jobs=n_jobs, total=total)
-            else:
-                parallel = Parallel(n_jobs=n_jobs)
-
-            results = parallel(
-                delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
+            results = run_in_parallel(
+                self._calculate_fingerprint, data=X, n_jobs=n_jobs, verbose=self.verbose
             )
 
+        if isinstance(results, (np.ndarray, csr_array)):
+            return results
+        else:
             return scipy.sparse.vstack(results) if self.sparse else np.vstack(results)
 
     @abstractmethod

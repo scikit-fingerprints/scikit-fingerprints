@@ -27,8 +27,12 @@ def test_pharmacophore_raw_bits_3D_fingerprint(mols_conformers_list):
     factory = Gobbi_Pharm2D.factory
     X_rdkit = np.array(
         [
-            Gen2DFingerprint(x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id))
-            for x in mols_conformers_list
+            Gen2DFingerprint(
+                mol,
+                factory,
+                dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
+            )
+            for mol in mols_conformers_list
         ]
     )
 
@@ -62,8 +66,12 @@ def test_pharmacophore_bit_3D_fingerprint(mols_conformers_list):
 
     factory = Gobbi_Pharm2D.factory
     X_rdkit = [
-        Gen2DFingerprint(x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id))
-        for x in mols_conformers_list
+        Gen2DFingerprint(
+            mol,
+            factory,
+            dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
+        )
+        for mol in mols_conformers_list
     ]
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
         X_rdkit, fp_size=pharmacophore_fp.fp_size, count=False, sparse=False
@@ -99,8 +107,12 @@ def test_pharmacophore_count_3D_fingerprint(mols_conformers_list):
 
     factory = Gobbi_Pharm2D.factory
     X_rdkit = [
-        Gen2DFingerprint(x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id))
-        for x in mols_conformers_list
+        Gen2DFingerprint(
+            mol,
+            factory,
+            dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
+        )
+        for mol in mols_conformers_list
     ]
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
         X_rdkit, fp_size=pharmacophore_fp.fp_size, count=True, sparse=False
@@ -134,8 +146,12 @@ def test_pharmacophore_raw_bits_3D_sparse_fingerprint(mols_conformers_list):
     factory = Gobbi_Pharm2D.factory
     X_rdkit = csr_array(
         [
-            Gen2DFingerprint(x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id))
-            for x in mols_conformers_list
+            Gen2DFingerprint(
+                mol,
+                factory,
+                dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
+            )
+            for mol in mols_conformers_list
         ]
     )
 
@@ -169,8 +185,12 @@ def test_pharmacophore_bit_3D_sparse_fingerprint(mols_conformers_list):
 
     factory = Gobbi_Pharm2D.factory
     X_rdkit = [
-        Gen2DFingerprint(x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id))
-        for x in mols_conformers_list
+        Gen2DFingerprint(
+            mol,
+            factory,
+            dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
+        )
+        for mol in mols_conformers_list
     ]
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
         X_rdkit, fp_size=pharmacophore_fp.fp_size, count=False, sparse=True
@@ -208,8 +228,12 @@ def test_pharmacophore_count_3D_sparse_fingerprint(mols_conformers_list):
 
     factory = Gobbi_Pharm2D.factory
     X_rdkit = [
-        Gen2DFingerprint(x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id))
-        for x in mols_conformers_list
+        Gen2DFingerprint(
+            mol,
+            factory,
+            dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
+        )
+        for mol in mols_conformers_list
     ]
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
         X_rdkit, fp_size=pharmacophore_fp.fp_size, count=True, sparse=True

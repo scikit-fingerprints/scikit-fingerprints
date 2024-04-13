@@ -35,8 +35,8 @@ class AtomPairFingerprint(FingerprintTransformer):
     between `min_distance` and `max_distance` (both inclusive) are used.
 
     If `use_3D` is True, then the Euclidean distance between atoms in a conformation
-    is used. Note that this uses `conf_id` attribute of input molecules, and requires
-    them to have conformations computed.
+    is used. Note that this uses `conf_id` property of input molecules, and requires
+    them to have this property set.
 
     Values of count version are sensitive to the molecule size, since the number of
     shortest paths scales with square of heavy atom count (HAC). This can be offset
@@ -193,7 +193,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         X : {sequence, array-like} of shape (n_samples,)
             Sequence containing SMILES strings or RDKit Mol objects. If `use_3D`
             is True, only Mol objects with computed conformations and with
-            `conf_id` attribute are allowed.
+            `conf_id` property are allowed.
 
         copy : bool, default=False
             Copy the input X or not.
@@ -212,7 +212,7 @@ class AtomPairFingerprint(FingerprintTransformer):
 
         if self.use_3D:
             X = require_mols_with_conf_ids(X)
-            conf_ids = [mol.conf_id for mol in X]
+            conf_ids = [mol.GetIntProp("conf_id") for mol in X]
         else:
             X = ensure_mols(X)
             conf_ids = [-1 for _ in X]
