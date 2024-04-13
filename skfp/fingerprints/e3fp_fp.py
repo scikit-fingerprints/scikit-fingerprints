@@ -93,7 +93,7 @@ class E3FPFingerprint(FingerprintTransformer):
 
     max_energy_diff : float, default=None
         If set, conformers with energies this amount above the minimum energy
-        conformer are filtered out. Must be nonnegative..
+        conformer are filtered out. Must be nonnegative.
 
     force_field : {"uff", "mmff94", "mmff94s"}, default="uff"
         Force field optimization algorithms to use on generated conformers.
