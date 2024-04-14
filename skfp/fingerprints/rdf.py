@@ -17,12 +17,14 @@ class RDFFingerprint(FingerprintTransformer):
         self,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
             n_features_out=210,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
 
@@ -30,5 +32,5 @@ class RDFFingerprint(FingerprintTransformer):
         from rdkit.Chem.rdMolDescriptors import CalcRDF
 
         X = require_mols_with_conf_ids(X)
-        X = [CalcRDF(mol, confId=mol.conf_id) for mol in X]
+        X = [CalcRDF(mol, confId=mol.GetIntProp("conf_id")) for mol in X]
         return csr_array(X) if self.sparse else np.array(X)

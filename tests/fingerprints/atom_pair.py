@@ -29,7 +29,7 @@ def test_atom_pair_bit_3D_fingerprint(mols_conformers_list):
     fp_gen = GetAtomPairGenerator(use2D=False)
     X_rdkit = np.array(
         [
-            fp_gen.GetFingerprintAsNumPy(mol, confId=mol.conf_id)
+            fp_gen.GetFingerprintAsNumPy(mol, confId=mol.GetIntProp("conf_id"))
             for mol in mols_conformers_list
         ]
     )
@@ -60,7 +60,7 @@ def test_atom_pair_count_3D_fingerprint(mols_conformers_list):
     fp_gen = GetAtomPairGenerator(use2D=False)
     X_rdkit = np.array(
         [
-            fp_gen.GetCountFingerprintAsNumPy(mol, confId=mol.conf_id)
+            fp_gen.GetCountFingerprintAsNumPy(mol, confId=mol.GetIntProp("conf_id"))
             for mol in mols_conformers_list
         ]
     )
@@ -91,7 +91,7 @@ def test_atom_pair_sparse_3D_bit_fingerprint(mols_conformers_list):
     fp_gen = GetAtomPairGenerator(use2D=False)
     X_rdkit = csr_array(
         [
-            fp_gen.GetFingerprintAsNumPy(mol, confId=mol.conf_id)
+            fp_gen.GetFingerprintAsNumPy(mol, confId=mol.GetIntProp("conf_id"))
             for mol in mols_conformers_list
         ]
     )
@@ -122,7 +122,7 @@ def test_atom_pair_sparse_3D_count_fingerprint(mols_conformers_list):
     fp_gen = GetAtomPairGenerator(use2D=False)
     X_rdkit = csr_array(
         [
-            fp_gen.GetCountFingerprintAsNumPy(mol, confId=mol.conf_id)
+            fp_gen.GetCountFingerprintAsNumPy(mol, confId=mol.GetIntProp("conf_id"))
             for mol in mols_conformers_list
         ]
     )

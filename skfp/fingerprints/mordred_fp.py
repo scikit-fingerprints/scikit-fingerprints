@@ -24,6 +24,7 @@ class MordredFingerprint(FingerprintTransformer):
         use_3D: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         n_features_out = 1826 if use_3D else 1613
@@ -31,6 +32,7 @@ class MordredFingerprint(FingerprintTransformer):
             n_features_out=n_features_out,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.use_3D = use_3D

@@ -1,28 +1,11 @@
 import logging
 import os
 import sys
-from typing import Optional
 
 import rdkit
 from rdkit import rdBase
-from sklearn.utils.parallel import Parallel
-from tqdm import tqdm
 
 rdBase.LogToPythonLogger()
-
-
-class ProgressParallel(Parallel):
-    def __init__(self, total: Optional[int] = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.total = total
-
-    def __call__(self, *args, **kwargs):
-        with tqdm(total=self.total) as self._pbar:
-            return Parallel.__call__(self, *args, **kwargs)
-
-    def print_progress(self) -> None:
-        self._pbar.n = self.n_completed_tasks
-        self._pbar.refresh()
 
 
 class CaptureLogger(logging.Handler):

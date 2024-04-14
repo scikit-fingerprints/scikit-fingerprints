@@ -9,7 +9,7 @@ def test_conformer_generator(smallest_mols_list):
     mols_with_confs = conf_gen.transform(smallest_mols_list)
 
     assert len(mols_with_confs) == len(smallest_mols_list)
-    assert all(hasattr(mol, "conf_id") for mol in mols_with_confs)
+    assert all(mol.HasProp("conf_id") for mol in mols_with_confs)
 
 
 def test_conformer_generator_too_few_tries():
@@ -34,8 +34,8 @@ def test_conformer_generator_with_hydrogens(smallest_mols_list):
 
     assert len(mols_with_confs) == len(smallest_mols_list)
     assert len(mols_with_confs_2) == len(smallest_mols_list)
-    assert all(hasattr(mol, "conf_id") for mol in mols_with_confs_2)
+    assert all(mol.HasProp("conf_id") for mol in mols_with_confs_2)
     assert all(
-        mol.conf_id == mol_2.conf_id
+        mol.GetIntProp("conf_id") == mol_2.GetIntProp("conf_id")
         for mol, mol_2 in zip(mols_with_confs, mols_with_confs_2)
     )

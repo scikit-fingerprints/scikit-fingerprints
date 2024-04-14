@@ -20,10 +20,10 @@ def ensure_smiles(X: Sequence[Any]) -> Sequence[str]:
 
 
 def require_mols_with_conf_ids(X: Sequence[Any]) -> Sequence[Mol]:
-    if not all(isinstance(x, Mol) and hasattr(x, "conf_id") for x in X):
+    if not all(isinstance(x, Mol) and x.HasProp("conf_id") for x in X):
         raise ValueError(
             "Passed data must be molecules (rdkit.Chem.rdChem.Mol instances) "
-            "and each must have conf_id attribute. You can use "
+            "and each must have conf_id property set. You can use "
             "ConformerGenerator to add them."
         )
     return X

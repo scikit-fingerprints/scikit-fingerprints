@@ -29,16 +29,23 @@ class AvalonFingerprint(FingerprintTransformer):
         positive.
 
     count : bool, default=False
-        Whether to use binary or count fingerprints.
+        Whether to return binary (bit) features, or their counts.
 
     sparse : bool, default=False
-        Whether to return sparse matrix.
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
 
     n_jobs : int, default=None
-        Number of parallel jobs. If -1, then the number of jobs is set to the number of CPU cores.
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
 
     verbose : int, default=0
-        Verbosity level.
+        Controls the verbosity when computing fingerprints.
 
     Attributes
     ----------
@@ -81,6 +88,7 @@ class AvalonFingerprint(FingerprintTransformer):
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -88,6 +96,7 @@ class AvalonFingerprint(FingerprintTransformer):
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.fp_size = fp_size

@@ -25,12 +25,14 @@ class WHIMFingerprint(FingerprintTransformer):
         clip_val: int = np.iinfo(np.int32).max,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
             n_features_out=114,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.clip_val = clip_val
@@ -39,6 +41,6 @@ class WHIMFingerprint(FingerprintTransformer):
         from rdkit.Chem.rdMolDescriptors import CalcWHIM
 
         X = require_mols_with_conf_ids(X)
-        X = [CalcWHIM(mol, confId=mol.conf_id) for mol in X]
+        X = [CalcWHIM(mol, confId=mol.GetIntProp("conf_id")) for mol in X]
         X = np.clip(X, -self.clip_val, self.clip_val)
         return csr_array(X) if self.sparse else np.array(X)
