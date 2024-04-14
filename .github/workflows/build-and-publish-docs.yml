@@ -5,6 +5,8 @@ on:
     branches: [ "master" ]
     paths:
       - 'docs/**'
+      - 'skfp/**'
+      - '.github/workflows/build-and-publish-docs.yml'
 
   # allow running manually from the Actions tab
   workflow_dispatch:
