@@ -85,7 +85,11 @@ class AtomPairFingerprint(FingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on `n_jobs` for more details.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
 
     verbose : int, default=0
         Controls the verbosity when computing fingerprints.
@@ -142,7 +146,6 @@ class AtomPairFingerprint(FingerprintTransformer):
         "count_simulation": ["boolean"],
         "use_3D": ["boolean"],
         "scale_by_hac": ["boolean", Interval(Integral, 0, None, closed="left")],
-        "count": ["boolean"],
     }
 
     def __init__(
@@ -157,6 +160,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -164,6 +168,7 @@ class AtomPairFingerprint(FingerprintTransformer):
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.fp_size = fp_size

@@ -43,6 +43,7 @@ class FingerprintTransformer(
         "count": ["boolean"],
         "sparse": ["boolean"],
         "n_jobs": [Integral, None],
+        "batch_size": [Integral, None],
         "verbose": ["verbose"],
         "random_state": ["random_state"],
     }
@@ -53,12 +54,14 @@ class FingerprintTransformer(
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
         random_state: Optional[int] = 0,
     ):
         self.count = count
         self.sparse = sparse
         self.n_jobs = n_jobs
+        self.batch_size = batch_size
         self.verbose = verbose
         self.random_state = random_state
 
@@ -126,7 +129,11 @@ class FingerprintTransformer(
             results = self._calculate_fingerprint(X)
         else:
             results = run_in_parallel(
-                self._calculate_fingerprint, data=X, n_jobs=n_jobs, verbose=self.verbose
+                self._calculate_fingerprint,
+                data=X,
+                n_jobs=n_jobs,
+                batch_size=self.batch_size,
+                verbose=self.verbose,
             )
 
         if isinstance(results, (np.ndarray, csr_array)):

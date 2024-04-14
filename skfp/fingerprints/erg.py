@@ -30,12 +30,14 @@ class ERGFingerprint(FingerprintTransformer):
         max_path: int = 15,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
             n_features_out=315,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.fuzz_increment = fuzz_increment

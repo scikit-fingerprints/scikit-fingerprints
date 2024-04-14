@@ -37,6 +37,7 @@ class RDKitFingerprint(FingerprintTransformer):
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -44,6 +45,7 @@ class RDKitFingerprint(FingerprintTransformer):
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.fp_size = fp_size

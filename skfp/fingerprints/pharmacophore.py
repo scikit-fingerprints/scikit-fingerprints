@@ -29,6 +29,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         use_3D: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         n_features_out = 39972 if variant == "raw_bits" else fp_size
@@ -36,6 +37,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
             n_features_out=n_features_out,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.variant = variant
