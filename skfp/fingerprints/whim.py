@@ -37,9 +37,7 @@ class WHIMFingerprint(FingerprintTransformer):
         )
         self.clip_val = clip_val
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import CalcWHIM
 
         X = require_mols_with_conf_ids(X)
