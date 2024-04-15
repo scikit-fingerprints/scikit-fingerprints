@@ -1,12 +1,13 @@
 from collections.abc import Sequence
 from copy import deepcopy
+from functools import partial
 from numbers import Integral
 from typing import Optional
 
 import numpy as np
 from joblib import effective_n_jobs
 from rdkit import Chem
-from rdkit.Chem import AddHs, Mol, MolToSmiles, RemoveHs
+from rdkit.Chem import AddHs, Mol, MolToSmiles, RemoveHs, SanitizeMol
 from rdkit.Chem.rdDistGeom import (
     EmbedFailureCauses,
     EmbedMolecule,
@@ -21,20 +22,22 @@ from rdkit.Chem.rdForceFieldHelpers import (
 )
 from rdkit.ForceField import ForceField
 from sklearn.utils import Interval
-from sklearn.utils._param_validation import StrOptions
+from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
 from skfp.parallel import run_in_parallel
 from skfp.preprocessing.base import BasePreprocessor
 
 
 class ConformerGenerator(BasePreprocessor):
+    """ """
+
     _parameter_constraints: dict = {
         "num_conformers": [Interval(Integral, 1, None, closed="left")],
         "max_gen_attempts": [Interval(Integral, 1, None, closed="left")],
         "error_on_conf_gen_fail": ["boolean"],
         "optimize_force_field": [StrOptions({"UFF", "MMFF94", "MMFF94s"}), None],
         "multiple_confs_select": [StrOptions({"min_energy", "first"})],
-        "random_state": ["random_state"],
+        "random_state": [Interval(Integral, left=-1, right=None, closed="left")],
     }
 
     def __init__(
@@ -62,6 +65,20 @@ class ConformerGenerator(BasePreprocessor):
         # make sure that conf_id property gets saved when pickle is used, e.g. for
         # parallelism with Joblib; this should be set every time this class is used
         Chem.SetDefaultPickleProperties(Chem.PropertyPickleOptions.MolProps)
+
+    def _validate_params(self) -> None:
+        super()._validate_params()
+        if (
+            self.num_conformers > 1
+            and self.multiple_confs_select == "min_energy"
+            and self.optimize_force_field is None
+        ):
+            raise InvalidParameterError(
+                "For selecting one of multiple conformers with lowest energy "
+                '(num_conformers > 1 and multiple_confs_select == "min_energy"), '
+                "force field optimization algorithm must be selected with "
+                "optimize_force_field parameter, got None."
+            )
 
     def transform_x_y(
         self, X: Sequence[Mol], y: np.ndarray, copy: bool = False
@@ -91,6 +108,7 @@ class ConformerGenerator(BasePreprocessor):
                 data=X,
                 n_jobs=n_jobs,
                 batch_size=self.batch_size,
+                flatten_results=True,
                 verbose=self.verbose,
             )
 
@@ -106,22 +124,23 @@ class ConformerGenerator(BasePreprocessor):
         return X, y
 
     def _embed_molecules(self, mols: Sequence[Mol]) -> list[int]:
+        # adding hydrogens is recommended for conformer generation
+        mols = [AddHs(mol) for mol in mols]
+        for mol in mols:
+            SanitizeMol(mol)
+
         conf_ids = [self._embed_molecule(mol) for mol in mols]
 
-        if self.optimize_force_field is not None:
-            for mol in mols:
-                self._optimize_conformers(mol)
-
         if self.num_conformers > 1:
-            conf_ids = [self._select_conformer(mol) for mol in mols]
+            conf_ids = [
+                self._select_conformer(mol)
+                for mol, conf_id in zip(mols, conf_ids)
+                if conf_id != -1
+            ]
 
         return conf_ids
 
     def _embed_molecule(self, mol: Mol) -> int:
-        # adding hydrogens is recommended for conformer generation
-        mol = AddHs(mol)
-        Chem.SanitizeMol(mol)
-
         # we create a new embedding params for each molecule, since it can
         # get modified if default settings fail to generate conformers
         embed_params = ETKDGv3()
@@ -129,25 +148,25 @@ class ConformerGenerator(BasePreprocessor):
         embed_params.trackFailures = True
         embed_params.randomSeed = self.random_state
 
+        # basic attempt
         if self.num_conformers == 1:
             embedder = EmbedMolecule
         else:
-            embedder = EmbedMultipleConfs
+            embedder = partial(EmbedMultipleConfs, numConfs=self.num_conformers)
 
-        # basic attempt
-        conf_id = embedder(mol, embed_params)
+        conf_id = embedder(mol, params=embed_params)
 
         if conf_id == -1:
             # more tries
             embed_params.maxIterations = self.max_gen_attempts
             embed_params.useRandomCoords = True
-            conf_id = embedder(mol, embed_params)
+            conf_id = embedder(mol, params=embed_params)
 
         if conf_id == -1:
             # turn off conditions
             embed_params.enforceChirality = False
             embed_params.ignoreSmoothingFailures = True
-            conf_id = embedder(mol, embed_params)
+            conf_id = embedder(mol, params=embed_params)
 
         # we should not fail at this point
         if conf_id == -1:
@@ -159,6 +178,10 @@ class ConformerGenerator(BasePreprocessor):
                 )
             elif self.verbose:
                 print(f"Could not generate conformer for {smiles}:\n{fail_reason}")
+                return -1
+
+        if self.optimize_force_field:
+            self._optimize_conformers(mol)
 
         return conf_id
 
