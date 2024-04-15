@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import roc_auc_score
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import RobustScaler
 
 import skfp.fingerprints
 from skfp.preprocessing import ConformerGenerator
@@ -21,7 +21,7 @@ fingerprint_classes = [
     for name, cls in inspect.getmembers(skfp.fingerprints, predicate=inspect.isclass)
 ]
 
-SIZE = -1
+LIMIT_SIZE = None
 
 SCRIPT_PATH = os.path.abspath(__file__)
 DATASET_DIR = os.path.join(os.path.dirname(os.path.dirname(SCRIPT_PATH)), "dataset")
@@ -46,9 +46,14 @@ classifier_parameters = [
 for dataset_name, property_name in dataset_params:
     dataset = GraphPropPredDataset(name=dataset_name, root=DATASET_DIR)
     split_idx = dataset.get_idx_split()
-    train_idx = np.array(split_idx["train"])[:SIZE]
-    valid_idx = np.array(split_idx["valid"])[:SIZE]
-    test_idx = np.array(split_idx["test"])[:SIZE]
+    train_idx = np.array(split_idx["train"])
+    valid_idx = np.array(split_idx["valid"])
+    test_idx = np.array(split_idx["test"])
+
+    if LIMIT_SIZE:
+        train_idx = train_idx[:LIMIT_SIZE]
+        valid_idx = valid_idx[:LIMIT_SIZE]
+        test_idx = test_idx[:LIMIT_SIZE]
 
     dataframe = pd.read_csv(
         f"{DATASET_DIR}/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
@@ -97,7 +102,7 @@ for dataset_name, property_name in dataset_params:
                 X_valid_conf = conf_gen.transform(X_valid_mols)
                 X_test_conf = conf_gen.transform(X_test_mols)
 
-                X_fp_train = fp_transformer.fit_transform(X_train_conf)
+                X_fp_train = fp_transformer.transform(X_train_conf)
                 X_fp_valid = fp_transformer.transform(X_valid_conf)
                 X_fp_test = fp_transformer.transform(X_test_conf)
             except ValueError as e:
@@ -106,20 +111,22 @@ for dataset_name, property_name in dataset_params:
                 records[-1]["error"] = str(e)
                 continue
 
-        scaler = MinMaxScaler()
-        X_fp_train = scaler.fit_transform(X_fp_train)
-        X_fp_valid = scaler.fit_transform(X_fp_valid)
-        X_fp_test = scaler.transform(X_fp_test)
+
 
         end = time()
         execution_time = end - start
         print(f" - Time of fingerprints computing : {round(execution_time,2)}s")
         records[-1]["execution_time"] = execution_time
 
-        imputer = SimpleImputer(strategy="constant", fill_value=0)
+        imputer = SimpleImputer(strategy="median")
         X_fp_train = imputer.fit_transform(X_fp_train)
         X_fp_valid = imputer.transform(X_fp_valid)
         X_fp_test = imputer.transform(X_fp_test)
+
+        scaler = RobustScaler()
+        X_fp_train = scaler.fit_transform(X_fp_train)
+        X_fp_valid = scaler.transform(X_fp_valid)
+        X_fp_test = scaler.transform(X_fp_test)
 
         for classifier, clf_kwargs in classifier_parameters:
             clf_name = classifier.__name__
