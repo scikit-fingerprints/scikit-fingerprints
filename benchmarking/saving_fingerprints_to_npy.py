@@ -1,16 +1,117 @@
-import logging
 import os
 from time import time
 
 import numpy as np
 import pandas as pd
 from ogb.graphproppred import GraphPropPredDataset
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import roc_auc_score
-from sklearn.preprocessing import MinMaxScaler
 
 from skfp.fingerprints import *
-from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
+from skfp.preprocessing import MolFromSmilesTransformer
+
+
+def compute_and_save_fingerprint(X_train, fp_transformer, file_name):
+    """
+    Compute a fingerprint and save it
+    """
+
+    if os.path.exists(file_name + ".npy"):
+        return
+    X_train = fp_transformer.transform(X_train)
+    with open(file_name + ".npy", "wb") as f:
+        np.save(f, X_train)
+
+
+def save_dataset_as_fingerprints(
+    data: np.array,
+    train_idx: np.array,
+    valid_idx: np.array,
+    test_idx: np.array,
+    save_dir_path: str,
+    fprints: list,
+):
+    """
+    Store the data processed by all fingerprints(fprints) at save_dir_path
+    the indices for scaffold split must be provided
+    """
+
+    if not os.path.exists(save_dir_path):
+        os.makedirs(save_dir_path)
+
+    X = np.array(MolFromSmilesTransformer().transform(data))
+
+    n_molecules = len(X)
+    print("Number of molecules:", n_molecules)
+
+    with open(save_dir_path + "/" + "labels_train.npy", "wb") as f:
+        np.save(f, y[train_idx])
+    with open(save_dir_path + "/" + "labels_valid.npy", "wb") as f:
+        np.save(f, y[valid_idx])
+    with open(save_dir_path + "/" + "labels_test.npy", "wb") as f:
+        np.save(f, y[test_idx])
+
+    for fingerprint in fprints:
+        fp_name = fingerprint.__name__.removesuffix("Fingerprint")
+        print(fp_name, "Fingerprint")
+        fp_path = save_dir_path + "/" + fp_name
+
+        start = time()
+
+        fp_transformer = fingerprint(n_jobs=-1)
+        compute_and_save_fingerprint(
+            X[train_idx],
+            fp_transformer,
+            fp_path + "_train",
+        )
+        compute_and_save_fingerprint(
+            X[valid_idx],
+            fp_transformer,
+            fp_path + "_valid",
+        )
+        compute_and_save_fingerprint(
+            X[test_idx],
+            fp_transformer,
+            fp_path + "_test",
+        )
+
+        end = time()
+        execution_time = end - start
+        print(f" - Time of fingerprint computation : {round(execution_time, 2)}s")
+
+
+def load_fingerprints_from_file(file_path: str):
+    """
+    Opens saved fingerprints stored at file_path
+    Notice that file_path should be provided without the extension,
+    so that the function can load both data and labels
+    """
+
+    with open(file_path + ".npy", "rb") as f:
+        X = np.load(f)
+    return X
+
+
+def load_dataset_as_fingerprints(dir_path: str):
+    fp_names = [file_name.split(sep="_")[0] for file_name in os.listdir(dir_path)]
+    fp_names = [f for i, f in enumerate(fp_names) if f not in fp_names[:i]]
+    fp_names.remove("labels")
+
+    with open(dir_path + "/" + "labels_train.npy", "rb") as f:
+        y_train = np.load(f)
+    with open(dir_path + "/" + "labels_valid.npy", "rb") as f:
+        y_valid = np.load(f)
+    with open(dir_path + "/" + "labels_test.npy", "rb") as f:
+        y_test = np.load(f)
+
+    X_list = []
+    for fp_name in fp_names:
+        X_train = load_fingerprints_from_file(dir_path + "/" + fp_name + "_train")
+        X_valid = load_fingerprints_from_file(dir_path + "/" + fp_name + "_valid")
+        X_test = load_fingerprints_from_file(dir_path + "/" + fp_name + "_test")
+
+        X_list.append((X_train, X_valid, X_test))
+
+    return X_list, (y_train, y_valid, y_test), fp_names
+
 
 dataset_names = [
     "ogbg-molhiv",
@@ -24,33 +125,7 @@ property_names = [
     "p_np",
 ]
 
-fp_names = [
-    "AtomPair",
-    "Autocorr",
-    "Avalon",
-    # "E3FP", # errors out - won't generate a conformer for one molecule
-    "ECFP",
-    "ERG",
-    "EState",
-    # "Getway", # expects conf_id
-    "Layered",
-    "MACCS-Keys",
-    "MAP",
-    "MHFP",
-    # "MORDRED", # overflow
-    # "MORSE", # expects conf_id
-    "Pattern",
-    # "Pharmacophore", # very long
-    "Phsiochemical-Properties",
-    "PubChem",
-    # "RDF", # expects conf_id
-    "RDKit",
-    "SECFP",
-    "Topological-Torsion",
-    # "Whim",
-]
-
-fprints = [
+fingerprints = [
     AtomPairFingerprint,
     AutocorrFingerprint,
     AvalonFingerprint,
@@ -76,90 +151,36 @@ fprints = [
     # WHIMFingerprint,
 ]
 
-fps_requiring_conformers = ["Getway"]
 
-save_data_dir = "./saved_fingerprints"
-if not os.path.exists(save_data_dir):
-    os.mkdir(save_data_dir)
+if __name__ == "__main__":
+    for dataset_name, property_name in zip(dataset_names, property_names):
+        dataset = GraphPropPredDataset(name=dataset_name, root="../dataset")
+        csv_path = f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
+        dataframe = pd.read_csv(csv_path)
 
-for dataset_name, property_name in zip(dataset_names, property_names):
-    dataset = GraphPropPredDataset(name=dataset_name, root="../dataset")
-    split_idx = dataset.get_idx_split()
-    train_idx = np.array(split_idx["train"])
-    valid_idx = np.array(split_idx["valid"])
-    test_idx = np.array(split_idx["test"])
+        split_idx = dataset.get_idx_split()
+        train_idx = np.array(split_idx["train"])
+        valid_idx = np.array(split_idx["valid"])
+        test_idx = np.array(split_idx["test"])
 
-    if not os.path.exists("saved_fingerprints/" + dataset_name):
-        os.mkdir(save_data_dir + "/" + dataset_name)
+        X = dataframe["smiles"]
+        y = dataframe[property_name]
 
-    dataframe = pd.read_csv(
-        f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-    )
+        save_dataset_as_fingerprints(
+            X,
+            train_idx,
+            valid_idx,
+            test_idx,
+            "./saved_fingerprints/" + dataset_name,
+            fingerprints,
+        )
 
-    print(dataframe.columns)
-
-    X = dataframe["smiles"]
-    y = dataframe[property_name]
-
-    X = np.array(MolFromSmilesTransformer().transform(X))
-
-    n_molecules = len(X)
-    print("Number of molecules:", n_molecules)
-
-    X_train, y_train = X[train_idx], y[train_idx]
-    X_test, y_test = X[test_idx], y[test_idx]
-    X_valid, y_valid = X[valid_idx], y[valid_idx]
-
-    np.random.seed(42)
-
-    fingerprints_train = []
-    fingerprints_valid = []
-    fingerprints_test = []
-
-    for fingerprint, fp_name in zip(fprints, fp_names):
-        print(fp_name, "Fingerprint")
-
-        dir_path = save_data_dir + "/" + dataset_name + "/" + fp_name
-
-        if not os.path.exists(dir_path + "_train.npy"):
-            start = time()
-            fp_transformer = fingerprint(n_jobs=-1)
-
-            X_fp_train = X_train
-            X_fp_valid = X_valid
-            X_fp_test = X_test
-
-            X_fp_train = X_train
-            X_fp_valid = X_valid
-            X_fp_test = X_test
-
-            X_fp_train = fp_transformer.transform(X_fp_train)
-            X_fp_valid = fp_transformer.transform(X_fp_valid)
-            X_fp_test = fp_transformer.transform(X_fp_test)
-
-            scaler = MinMaxScaler()
-            X_fp_train = scaler.fit_transform(X_fp_train)
-            X_fp_valid = scaler.fit_transform(X_fp_valid)
-            X_fp_test = scaler.transform(X_fp_test)
-
-            end = time()
-            execution_time = end - start
-            print(f" - Time of fingerprint computation : {round(execution_time, 2)}s")
-
-            with open(dir_path + "_train.npy", "wb") as f:
-                np.save(f, X_fp_train)
-            with open(dir_path + "_valid.npy", "wb") as f:
-                np.save(f, X_fp_valid)
-            with open(dir_path + "_test.npy", "wb") as f:
-                np.save(f, X_fp_test)
-        else:
-            with open(dir_path + "_train.npy", "rb") as f:
-                X_fp_train = np.load(f)
-            with open(dir_path + "_valid.npy", "rb") as f:
-                X_fp_valid = np.load(f)
-            with open(dir_path + "_test.npy", "rb") as f:
-                X_fp_test = np.load(f)
-
-        fingerprints_train.append(X_fp_train)
-        fingerprints_valid.append(X_fp_valid)
-        fingerprints_test.append(X_fp_test)
+    # example for each dataset
+    for dataset_name, property_name in zip(dataset_names, property_names):
+        # load all data into a list of split tuples for each dataset
+        # (X_train, X_valid, X_test)
+        # also loads a tuple of labels (y_train, y_valid, y_test)
+        # additionally returns a list of fingerprint names
+        X_list, y_tuple, fp_names = load_dataset_as_fingerprints(
+            "./saved_fingerprints/" + dataset_name
+        )
