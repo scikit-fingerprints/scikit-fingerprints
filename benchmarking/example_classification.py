@@ -75,6 +75,16 @@ for dataset_name, property_name in dataset_params:
     X_valid_mols = [MolFromSmiles(smiles) for smiles in X_valid]
     X_test_mols = [MolFromSmiles(smiles) for smiles in X_test]
 
+    try:
+        conf_gen = ConformerGenerator()
+        X_train_conf = conf_gen.transform(X_train_mols)
+        X_valid_conf = conf_gen.transform(X_valid_mols)
+        X_test_conf = conf_gen.transform(X_test_mols)
+        conformers_generated = True
+    except ValueError as e:
+        conformers_generated = False
+        print(f" - Error: {e}")
+
     records = []
 
     np.random.seed(42)
@@ -96,22 +106,19 @@ for dataset_name, property_name in dataset_params:
             records[-1]["error"] = str(e)
             continue
         except ValueError as e:
-            try:
-                conf_gen = ConformerGenerator()
-                X_train_conf = conf_gen.transform(X_train_mols)
-                X_valid_conf = conf_gen.transform(X_valid_mols)
-                X_test_conf = conf_gen.transform(X_test_mols)
-
-                X_fp_train = fp_transformer.transform(X_train_conf)
-                X_fp_valid = fp_transformer.transform(X_valid_conf)
-                X_fp_test = fp_transformer.transform(X_test_conf)
-            except ValueError as e:
-                print(e.__class__.__name__)
-                print(f" - Error: {e}")
-                records[-1]["error"] = str(e)
+            print(f" - Error: {e}")
+            if conformers_generated:
+                try:
+                    X_fp_train = fp_transformer.transform(X_train_conf)
+                    X_fp_valid = fp_transformer.transform(X_valid_conf)
+                    X_fp_test = fp_transformer.transform(X_test_conf)
+                except ValueError as e:
+                    print(e.__class__.__name__)
+                    print(f" - Error: {e}")
+                    records[-1]["error"] = str(e)
+                    continue
+            else:
                 continue
-
-
 
         end = time()
         execution_time = end - start
