@@ -43,6 +43,7 @@ class MAPFingerprint(FingerprintTransformer):
         sparse: bool = False,
         count: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
         random_state: int = 0,
     ):
@@ -51,6 +52,7 @@ class MAPFingerprint(FingerprintTransformer):
             sparse=sparse,
             count=count,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
             random_state=random_state,
         )

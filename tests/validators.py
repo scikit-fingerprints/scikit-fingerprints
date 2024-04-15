@@ -21,4 +21,4 @@ def test_require_mols_with_conf_ids(mols_conformers_list, mols_list):
     require_mols_with_conf_ids(mols_conformers_list)
     with pytest.raises(ValueError) as exc_info:
         require_mols_with_conf_ids(mols_conformers_list + mols_list)
-    assert "each must have conf_id attribute" in str(exc_info)
+    assert "each must have conf_id property set" in str(exc_info)

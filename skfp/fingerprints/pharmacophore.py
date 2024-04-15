@@ -29,6 +29,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         use_3D: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         n_features_out = 39972 if variant == "raw_bits" else fp_size
@@ -36,6 +37,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
             n_features_out=n_features_out,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.variant = variant
@@ -53,14 +55,16 @@ class PharmacophoreFingerprint(FingerprintTransformer):
 
         if not self.use_3D:
             X = ensure_mols(X)
-            X = [Gen2DFingerprint(x, factory) for x in X]
+            X = [Gen2DFingerprint(mol, factory) for mol in X]
         else:
             X = require_mols_with_conf_ids(X)
             X = [
                 Gen2DFingerprint(
-                    x, factory, dMat=Get3DDistanceMatrix(x, confId=x.conf_id)
+                    mol,
+                    factory,
+                    dMat=Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")),
                 )
-                for x in X
+                for mol in X
             ]
 
         if self.variant in ["bit", "count"]:

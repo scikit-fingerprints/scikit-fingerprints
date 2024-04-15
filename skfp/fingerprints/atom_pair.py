@@ -35,8 +35,8 @@ class AtomPairFingerprint(FingerprintTransformer):
     between `min_distance` and `max_distance` (both inclusive) are used.
 
     If `use_3D` is True, then the Euclidean distance between atoms in a conformation
-    is used. Note that this uses `conf_id` attribute of input molecules, and requires
-    them to have conformations computed.
+    is used. Note that this uses `conf_id` property of input molecules, and requires
+    them to have this property set.
 
     Values of count version are sensitive to the molecule size, since the number of
     shortest paths scales with square of heavy atom count (HAC). This can be offset
@@ -85,7 +85,11 @@ class AtomPairFingerprint(FingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on `n_jobs` for more details.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
 
     verbose : int, default=0
         Controls the verbosity when computing fingerprints.
@@ -124,7 +128,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
     >>> fp = AtomPairFingerprint()
     >>> fp
-    AtomPairFingerprint(n_jobs=1)
+    AtomPairFingerprint()
 
     >>> fp.transform(smiles)
     array([[0, 0, 0, ..., 0, 0, 0],
@@ -142,7 +146,6 @@ class AtomPairFingerprint(FingerprintTransformer):
         "count_simulation": ["boolean"],
         "use_3D": ["boolean"],
         "scale_by_hac": ["boolean", Interval(Integral, 0, None, closed="left")],
-        "count": ["boolean"],
     }
 
     def __init__(
@@ -157,6 +160,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -164,6 +168,7 @@ class AtomPairFingerprint(FingerprintTransformer):
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.fp_size = fp_size
@@ -193,7 +198,7 @@ class AtomPairFingerprint(FingerprintTransformer):
         X : {sequence, array-like} of shape (n_samples,)
             Sequence containing SMILES strings or RDKit Mol objects. If `use_3D`
             is True, only Mol objects with computed conformations and with
-            `conf_id` attribute are allowed.
+            `conf_id` property are allowed.
 
         copy : bool, default=False
             Copy the input X or not.
@@ -212,7 +217,7 @@ class AtomPairFingerprint(FingerprintTransformer):
 
         if self.use_3D:
             X = require_mols_with_conf_ids(X)
-            conf_ids = [mol.conf_id for mol in X]
+            conf_ids = [mol.GetIntProp("conf_id") for mol in X]
         else:
             X = ensure_mols(X)
             conf_ids = [-1 for _ in X]

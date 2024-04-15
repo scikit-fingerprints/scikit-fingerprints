@@ -36,12 +36,14 @@ class SECFPFingerprint(FingerprintTransformer):
         kekulize: bool = True,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.fp_size = fp_size

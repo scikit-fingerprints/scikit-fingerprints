@@ -4,14 +4,17 @@ API Reference
 
 This is the class and function reference of scikit-fingerprints.
 
-:mod: `skfp.fingerprints`: Fingerprint generation classes
-=========================================================
+
 
 .. automodule:: skfp.fingerprints
 
 
 Fingerprint classes
 -------------------
+
+:mod: `skfp.fingerprints`: Fingerprint generation classes
+=========================================================
+
 .. py:currentmodule:: skfp.fingerprints
 
 .. autosummary::
@@ -39,3 +42,23 @@ Fingerprint classes
     SECFPFingerprint
     TopologicalTorsionFingerprint
     WHIMFingerprint
+
+
+
+.. automodule:: skfp.preprocessing
+
+Preprocessing classes
+---------------------
+
+:mod: `skfp.preprocessing`: Utility functions for preprocessing
+=========================================================
+
+.. py:currentmodule:: skfp.preprocessing
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    ConformerGenerator
+    MolFromSmilesTransformer
+    MolToSmilesTransformer

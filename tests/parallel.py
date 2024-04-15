@@ -1,0 +1,47 @@
+import operator
+import re
+from functools import reduce
+
+from sklearn.utils.parallel import delayed
+
+from skfp.parallel import ProgressParallel, run_in_parallel
+
+
+def test_progress_parallel(capsys):
+    func = lambda x: x + 1
+    data = list(range(100))
+    parallel = ProgressParallel(total=len(data))
+    _ = parallel(delayed(func)(num) for num in data)
+    stderr = capsys.readouterr().err  # tqdm outputs to stderr
+
+    # example output: 17%|█▋        | 2/12 [00:00<00:00, 458.09it/s]
+
+    # percentage, e.g. 10%
+    assert re.search(r"\d+%", stderr)
+
+    # processed iterations, e.g. 1/10
+    assert re.search(r"\d+/\d+", stderr)
+
+    # time, e.g. 00:01
+    assert re.search(r"\d\d:\d\d", stderr)
+
+    # iterations per second, e.g. 1.23it/s
+    assert re.search(r"it/s", stderr)
+
+
+def test_run_in_parallel(capsys):
+    func = lambda X: [x + 1 for x in X]
+    data = list(range(100))
+    result_sequential = func(data)
+    result_parallel = run_in_parallel(func, data, n_jobs=-1, flatten_results=True)
+    assert result_sequential == result_parallel
+
+
+def test_run_in_parallel_batch_size(capsys):
+    func = lambda X: [x + 1 for x in X]
+    data = list(range(100))
+    result_sequential = func(data)
+    result_parallel = run_in_parallel(
+        func, data, n_jobs=-1, batch_size=1, flatten_results=True
+    )
+    assert result_sequential == result_parallel

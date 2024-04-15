@@ -2,6 +2,8 @@
 
 A Python library for efficient computation of molecular fingerprints
 
+Click [HERE](https://scikit-fingerprints.github.io/scikit-fingerprints/) to see the Documentation.
+
 
 ## Table of Contents
 - [Description](#description)
