@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 from _pytest.fixtures import FixtureRequest
 from rdkit.Chem import Mol, MolFromSmiles
+from rdkit.Chem.PropertyMol import PropertyMol
 
 from skfp.preprocessing import ConformerGenerator
 
@@ -55,9 +56,9 @@ def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
 
 
 @pytest.fixture(scope="session")
-def mols_conformers_list(smallest_mols_list) -> np.ndarray:
+def mols_conformers_list(smallest_mols_list) -> list[PropertyMol]:
     conf_gen = ConformerGenerator()
-    return conf_gen.transform(smallest_mols_list)
+    return list(conf_gen.transform(smallest_mols_list))
 
 
 def _load_smiles(file_path: str) -> list[str]:
