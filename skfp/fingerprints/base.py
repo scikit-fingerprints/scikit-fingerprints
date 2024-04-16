@@ -74,7 +74,8 @@ class FingerprintTransformer(
         return True  # fingerprint transformers don't need fitting
 
     def fit(self, X, y=None, **fit_params):
-        """Unused, kept for Scikit-learn compatibility.
+        """
+        Unused, kept for Scikit-learn compatibility.
 
         Parameters
         ----------

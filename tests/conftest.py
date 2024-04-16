@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 
+import numpy as np
 import pandas as pd
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -54,7 +55,7 @@ def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
 
 
 @pytest.fixture(scope="session")
-def mols_conformers_list(smallest_mols_list) -> Sequence[Mol]:
+def mols_conformers_list(smallest_mols_list) -> np.ndarray:
     conf_gen = ConformerGenerator()
     return conf_gen.transform(smallest_mols_list)
 
