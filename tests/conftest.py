@@ -58,7 +58,7 @@ def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
 @pytest.fixture(scope="session")
 def mols_conformers_list(smallest_mols_list) -> list[PropertyMol]:
     conf_gen = ConformerGenerator()
-    return list(conf_gen.transform(smallest_mols_list))
+    return conf_gen.transform(smallest_mols_list)
 
 
 def _load_smiles(file_path: str) -> list[str]:

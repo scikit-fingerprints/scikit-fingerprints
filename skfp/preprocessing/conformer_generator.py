@@ -179,7 +179,7 @@ class ConformerGenerator(BasePreprocessor):
 
     def transform_x_y(
         self, X: Sequence[Mol], y: np.ndarray, copy: bool = False
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[list[PropertyMol], np.ndarray]:
         """
         Generate conformers for molecules.
 
@@ -197,8 +197,8 @@ class ConformerGenerator(BasePreprocessor):
 
         Returns
         -------
-        X : np.ndarray of shape (n_samples_conf_gen,)
-            Array with RDKit PropertyMol objects, each one with conformers computed and
+        X : list of shape (n_samples_conf_gen,)
+            List with RDKit PropertyMol objects, each one with conformers computed and
             ``conf_id`` integer property set.
 
             Length of returned outputs ``n_samples_conf_gen`` will ideally be the same
@@ -212,7 +212,7 @@ class ConformerGenerator(BasePreprocessor):
         """
         return self._transform(X, y, copy)
 
-    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> list[PropertyMol]:
         """
         Generate conformers for molecules.
 
@@ -227,8 +227,8 @@ class ConformerGenerator(BasePreprocessor):
 
         Returns
         -------
-        X : np.ndarray of shape (n_samples_conf_gen,)
-            Array with RDKit PropertyMol objects, each one with conformers computed and
+        X : list of shape (n_samples_conf_gen,)
+            List with RDKit PropertyMol objects, each one with conformers computed and
             ``conf_id`` integer property set.
 
             Length of returned outputs ``n_samples_conf_gen`` will ideally be the same
@@ -241,7 +241,7 @@ class ConformerGenerator(BasePreprocessor):
 
     def _transform(
         self, X: Sequence[Mol], y: np.ndarray, copy: bool = True
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[list[PropertyMol], np.ndarray]:
         self._validate_params()
 
         if copy:
@@ -250,9 +250,9 @@ class ConformerGenerator(BasePreprocessor):
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            mols_and_conf_ids = self._embed_molecules(X)
+            mols = self._embed_molecules(X)
         else:
-            mols_and_conf_ids = run_in_parallel(
+            mols = run_in_parallel(
                 self._embed_molecules,
                 data=X,
                 n_jobs=n_jobs,
@@ -261,23 +261,19 @@ class ConformerGenerator(BasePreprocessor):
                 verbose=self.verbose,
             )
 
-        # unzip list of tuples (mol, conf_id) into two lists
-        mols, conformer_ids = zip(*mols_and_conf_ids)
-        mols = np.array(mols)
+        # keep only molecules and labels for which we generated conformers
+        mols_with_conformers = []
+        idxs_to_keep = []
+        for idx, mol in enumerate(mols):
+            if mol.GetIntProp("conf_id") != -1:
+                mols_with_conformers.append(mol)
+                idxs_to_keep.append(idx)
 
-        conf_generated_idxs = []
-        for idx, (mol, conf_id) in enumerate(zip(mols, conformer_ids)):
-            mol.SetIntProp("conf_id", conf_id)
-            if conf_id != -1:
-                conf_generated_idxs.append(idx)
+        y = y[idxs_to_keep]
 
-        # keep only molecules for which we generated conformers
-        mols = mols[conf_generated_idxs]
-        y = y[conf_generated_idxs]
+        return mols_with_conformers, y
 
-        return mols, y
-
-    def _embed_molecules(self, mols: Sequence[Mol]) -> list[tuple[Mol, int]]:
+    def _embed_molecules(self, mols: Sequence[Mol]) -> list[Mol]:
         # adding hydrogens and sanitizing is recommended for conformer generation
         mols = [AddHs(mol) for mol in mols]
         for mol in mols:
@@ -293,7 +289,12 @@ class ConformerGenerator(BasePreprocessor):
                 (mol, self._select_conformer(mol)) for mol, conf_id in mols_and_conf_ids
             ]
 
-        return mols_and_conf_ids
+        mols = []
+        for mol, conf_id in mols_and_conf_ids:
+            mol.SetIntProp("conf_id", conf_id)
+            mols.append(mol)
+
+        return mols
 
     def _embed_molecule(self, mol: Mol) -> tuple[Mol, int]:
         # we create a new embedding params for each molecule, since it can
