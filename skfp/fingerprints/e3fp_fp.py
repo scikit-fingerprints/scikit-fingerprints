@@ -8,12 +8,12 @@ import scipy.sparse
 from e3fp.conformer.generator import ConformerGenerator
 from e3fp.pipeline import fprints_from_mol
 from rdkit import RDLogger
-from rdkit.Chem import Mol
+from rdkit.Chem import Mol, MolToSmiles
 from scipy.sparse import csr_array
 from sklearn.utils import Interval
 from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
-from skfp.validators import ensure_smiles
+from skfp.validators import require_mols_with_conf_ids
 
 from .base import FingerprintTransformer
 
@@ -46,9 +46,8 @@ class E3FPFingerprint(FingerprintTransformer):
     - number of bound hydrogens
     - whether it is a part of a ring
 
-    Note that this class generates multiple conformers, and by default selects
-    the single, most stable one (with the lowest energy) for fingerprint calculation.
-    Currently, it is not possible to pass precomputed conformers.
+    This is a 3D fingerprint, and requries molecules with ``conf_id`` integer property
+    set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.
 
     Parameters
     ----------
@@ -70,38 +69,6 @@ class E3FPFingerprint(FingerprintTransformer):
 
     rdkit_invariants : bool, default=False
         Whether to use RDKit ECFP invariants instead of Daylight ones.
-
-    num_conf_generated : int, default=3
-        Number of conformers to generate per molecule. Note that due to energy
-        minimization and filtering the actual number of conformers used can be
-        smaller. Must be greater or equal to 1.
-
-    num_conf_used : int, default=1
-        Number of conformers to use for fingerprint calculation per molecule.
-        If more than one is used, the resulting fingerprint is aggregated for
-        molecule as determined by `aggregation_type`. Must be less or equal to
-        `num_conf_generated`.
-
-    pool_multiplier : float, default=1.0
-        Factor to multiply by max_conformers to generate the initial conformer pool.
-        Conformers are first generated, and then filtered after energy minimization.
-        Increasing the size of the pool increases the chance of identifying more
-        unique conformers. Must be greater or equal to 1.
-
-    rmsd_cutoff : float, default=0.5
-        RMSD cutoff for pruning conformers. If None, no pruning is performed.
-
-    max_energy_diff : float, default=None
-        If set, conformers with energies this amount above the minimum energy
-        conformer are filtered out. Must be nonnegative.
-
-    force_field : {"uff", "mmff94", "mmff94s"}, default="uff"
-        Force field optimization algorithms to use on generated conformers.
-
-    aggregation_type : {"min_energy}", default="min_energy"
-        How to aggregate fingerprints calculated from different conformers of
-        a single molecule. Currently, only "min_energy" option is supported, which
-        selects the fingerprint from the lowest energy (the most stable) conformer.
 
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
@@ -145,12 +112,17 @@ class E3FPFingerprint(FingerprintTransformer):
     Examples
     --------
     >>> from skfp.fingerprints import E3FPFingerprint
+    >>> from skfp.preprocessing import MolFromSmilesTransformer, ConformerGenerator
     >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
     >>> fp = E3FPFingerprint()
     >>> fp
     E3FPFingerprint()
 
-    >>> fp.transform(smiles)
+    >>> mol_from_smiles = MolFromSmilesTransformer()
+    >>> mols = mol_from_smiles.transform(smiles)
+    >>> conf_gen = ConformerGenerator()
+    >>> mols = conf_gen.transform(mols)
+    >>> fp.transform(mols)
     array([[0, 0, 0, ..., 0, 0, 0],
        [0, 0, 0, ..., 0, 0, 0],
        [0, 0, 0, ..., 0, 0, 0],
@@ -164,13 +136,6 @@ class E3FPFingerprint(FingerprintTransformer):
         "level": [None, Interval(Integral, 1, None, closed="left")],
         "radius_multiplier": [Interval(Real, 1.0, None, closed="neither")],
         "rdkit_invariants": ["boolean"],
-        "num_conf_generated": [Interval(Integral, 1, None, closed="left")],
-        "num_conf_used": [Interval(Integral, 1, None, closed="left")],
-        "pool_multiplier": [Interval(Real, 1.0, None, closed="left")],
-        "rmsd_cutoff": [Interval(Real, 0.0, None, closed="left"), None],
-        "max_energy_diff": [Interval(Real, 0.0, None, closed="left"), None],
-        "force_field": [StrOptions({"uff", "mmff94", "mmff94s"})],
-        "aggregation_type": [StrOptions({"min_energy"})],
     }
 
     def __init__(
@@ -180,13 +145,6 @@ class E3FPFingerprint(FingerprintTransformer):
         level: Optional[int] = None,
         radius_multiplier: float = 1.718,
         rdkit_invariants: bool = False,
-        num_conf_generated: int = 3,
-        num_conf_used: int = 1,
-        pool_multiplier: float = 1.0,
-        rmsd_cutoff: Optional[float] = 0.5,
-        max_energy_diff: Optional[float] = None,
-        force_field: str = "uff",
-        aggregation_type: str = "min_energy",
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
@@ -208,13 +166,6 @@ class E3FPFingerprint(FingerprintTransformer):
         self.level = level
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
-        self.num_conf_generated = num_conf_generated
-        self.num_conf_used = num_conf_used
-        self.pool_multiplier = pool_multiplier
-        self.rmsd_cutoff = rmsd_cutoff
-        self.max_energy_diff = max_energy_diff
-        self.force_field = force_field
-        self.aggregation_type = aggregation_type
 
     def _validate_params(self) -> None:
         super()._validate_params()
@@ -224,22 +175,18 @@ class E3FPFingerprint(FingerprintTransformer):
                 f"n_bits_before_folding={self.n_bits_before_folding}, "
                 f"fp_size={self.fp_size}"
             )
-        if self.num_conf_generated < self.num_conf_used:
-            raise InvalidParameterError(
-                f"num_conf_generated must be greater of equal to num_conf_used, got:"
-                f"num_conf_generated={self.num_conf_generated}, "
-                f"num_conf_used={self.num_conf_used}"
-            )
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
-        """Compute E3FP fingerprints.
+        """
+        Compute E3FP fingerprints.
 
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings.
+            Sequence containing RDKit Mol objects, with conformers generated and
+            ``conf_id`` integer property set.
 
         copy : bool, default=False
             Copy the input X or not.
@@ -251,47 +198,25 @@ class E3FPFingerprint(FingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(self, X: Sequence[str]) -> Union[np.ndarray, csr_array]:
-        X = ensure_smiles(X)
-        X = [self._calculate_single_mol_fingerprint(smi) for smi in X]
+    def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
+        X = require_mols_with_conf_ids(X)
+        X = [self._calculate_single_mol_fingerprint(mol) for mol in X]
         return scipy.sparse.vstack(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(
-        self, smiles: str
+        self, mol: Mol
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem import MolFromSmiles
-        from rdkit.Chem.PropertyMol import PropertyMol
 
-        # e3fp library has a bug with passing floating point number
-        # as a number of conformers, where RDKit requires an integer
-        # we fix this by explicitly passing the target number of conformer
-        num_conf = round(self.num_conf_generated * self.pool_multiplier)
+        # e3fp requires "_Name" property to be set
+        mol.SetProp("_Name", MolToSmiles(mol))
 
-        conf_gen = ConformerGenerator(
-            first=self.num_conf_used,
-            num_conf=num_conf,
-            pool_multiplier=1,
-            rmsd_cutoff=self.rmsd_cutoff,
-            max_energy_diff=self.max_energy_diff,
-            forcefield=self.force_field,
-            get_values=True,
-            seed=self.random_state,
-        )
-
-        mol = MolFromSmiles(smiles)
-        mol.SetProp("_Name", smiles)
-        mol = PropertyMol(mol)
-        mol.SetProp("_SMILES", smiles)
-
-        # Generating conformers
-        # TODO: for some molecules conformers are not properly generated - returns an empty list and throws RuntimeError
+        # suppress flood of logs
         try:
-            # suppress flood of logs
             if not self.verbose:
                 logging.disable(logging.INFO)
                 RDLogger.DisableLog("rdApp.*")
 
-            mol, values = conf_gen.generate_conformers(mol)
             fps = fprints_from_mol(
                 mol,
                 fprint_params={
@@ -306,11 +231,9 @@ class E3FPFingerprint(FingerprintTransformer):
             RDLogger.EnableLog("rdApp.*")
             logging.disable(logging.NOTSET)
 
-        # TODO: add other aggregation types
-        # "min_energy" aggregation
-        energies = values[2]
-        fp = fps[np.argmin(energies)]
+        mol.ClearProp("_Name")
 
+        fp = fps[0]
         fp = fp.fold(self.fp_size)
         dtype = np.uint32 if self.count else np.uint8
         return fp.to_vector(sparse=self.sparse, dtype=dtype)

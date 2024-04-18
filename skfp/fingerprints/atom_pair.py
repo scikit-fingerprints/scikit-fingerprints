@@ -191,7 +191,8 @@ class AtomPairFingerprint(FingerprintTransformer):
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
-        """Compute Atom Pair fingerprints.
+        """
+        Compute Atom Pair fingerprints.
 
         Parameters
         ----------

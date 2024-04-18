@@ -104,7 +104,8 @@ class AvalonFingerprint(FingerprintTransformer):
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
-        """Compute Avalon fingerprints.
+        """
+        Compute Avalon fingerprints.
 
         Parameters
         ----------
