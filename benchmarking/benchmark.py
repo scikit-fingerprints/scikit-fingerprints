@@ -81,16 +81,16 @@ def save_results(
     plt.legend(loc="upper left", fontsize="14")
 
     to_save = np.object_([times])
-    np.save(SCORE_DIR + "/" + title.replace(" ", "_") + ".npy", to_save)
 
+    title = title.replace(" ", "_")
+    np.save(os.path.join(SCORE_DIR, f"{title}.npy"), to_save)
     fig.tight_layout()
 
     if save:
-        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".png")
-        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".svg")
-        plt.savefig(PLOT_DIR + "/" + title.replace(" ", "_") + ".pdf")
+        plt.savefig(os.path.join(PLOT_DIR, f"{title}.png"))
     else:
         plt.show()
+
     plt.close(fig)
 
 
@@ -143,10 +143,10 @@ if __name__ == "__main__":
     ]
 
     for fingerprint in fingerprint_constructors:
-        if not os.path.exists(SCORE_DIR + "/" + fingerprint.__name__ + ".npy"):
+        if not os.path.exists(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy")):
             times = get_times_skfp(X, fingerprint)
             print(times)
             save_results(n_molecules, times, fingerprint.__name__, True)
 
     full_time_end = time()
-    print("Time of execution: ", full_time_end - full_time_start, "s")
+    print(f"Time of execution: {full_time_end - full_time_start} s")
