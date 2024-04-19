@@ -165,6 +165,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     ):
         super().__init__(
             n_features_out=fp_size,
+            requires_conf_ids=use_3D,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,

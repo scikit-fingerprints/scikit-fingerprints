@@ -29,6 +29,7 @@ class AutocorrFingerprint(FingerprintTransformer):
         n_features_out = 80 if use_3D else 192
         super().__init__(
             n_features_out=n_features_out,
+            requires_conf_ids=use_3D,
             sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,

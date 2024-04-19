@@ -154,6 +154,7 @@ class E3FPFingerprint(FingerprintTransformer):
     ):
         super().__init__(
             n_features_out=fp_size,
+            requires_conf_ids=True,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
