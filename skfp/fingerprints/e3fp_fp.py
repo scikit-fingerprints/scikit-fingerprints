@@ -97,7 +97,7 @@ class E3FPFingerprint(FingerprintTransformer):
     n_features_out : int
         Number of output features, size of fingerprints. Equal to `fp_size`.
 
-    requires_conf_ids : bool
+    requires_conformers : bool
         Value is always True, as this fingerprint is 3D based. It always requires
         molecules with conformers as inputs, with ``conf_id`` integer property set.
 
@@ -158,7 +158,7 @@ class E3FPFingerprint(FingerprintTransformer):
     ):
         super().__init__(
             n_features_out=fp_size,
-            requires_conf_ids=True,
+            requires_conformers=True,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,

@@ -35,7 +35,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         n_features_out = 39972 if variant == "raw_bits" else fp_size
         super().__init__(
             n_features_out=n_features_out,
-            requires_conf_ids=use_3D,
+            requires_conformers=use_3D,
             sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,

@@ -22,7 +22,7 @@ class MORSEFingerprint(FingerprintTransformer):
     ):
         super().__init__(
             n_features_out=224,
-            requires_conf_ids=True,
+            requires_conformers=True,
             sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,
