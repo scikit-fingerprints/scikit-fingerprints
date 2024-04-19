@@ -79,6 +79,13 @@ class FingerprintTransformer(
     def __sklearn_is_fitted__(self) -> bool:
         return True  # fingerprint transformers don't need fitting
 
+    def set_params(self, **params):
+        super().set_params(**params)
+        # for fingerprints that have both 2D and 3D versions, as indicated by use_3D
+        # attribute, we need to also keep requires_conf_ids attribute in sync
+        if hasattr(self, "use_3D"):
+            self.requires_conf_ids = self.use_3D
+
     def fit(self, X, y=None, **fit_params):
         """
         Unused, kept for Scikit-learn compatibility.
