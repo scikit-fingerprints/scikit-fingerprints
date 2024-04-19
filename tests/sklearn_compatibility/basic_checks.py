@@ -120,7 +120,8 @@ def check_estimators_pickle(
     """
     check_methods = ["predict", "transform", "decision_function", "predict_proba"]
 
-    nondeterministic_fingerprints = ["GETAWAYFingerprint"]
+    # nondeterministic, classes, those that cannot be compares with NumPy etc.
+    omit_results_check = ["GETAWAYFingerprint", "ConformerGenerator"]
 
     estimator = clone(estimator_orig)
 
@@ -146,7 +147,7 @@ def check_estimators_pickle(
             assert len(result[method]) == len(unpickled_result)
         else:
             assert result[method].shape == unpickled_result.shape
-            if name not in nondeterministic_fingerprints:
+            if name not in omit_results_check:
                 assert np.allclose(
                     result[method], unpickled_result, atol=1e-1, equal_nan=True
                 )
