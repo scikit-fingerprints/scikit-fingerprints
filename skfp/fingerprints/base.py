@@ -85,6 +85,7 @@ class FingerprintTransformer(
         # attribute, we need to also keep requires_conformers attribute in sync
         if hasattr(self, "use_3D"):
             self.requires_conformers = self.use_3D
+        return self
 
     def fit(self, X, y=None, **fit_params):
         """
