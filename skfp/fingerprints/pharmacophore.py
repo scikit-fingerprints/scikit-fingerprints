@@ -68,7 +68,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
                 for mol in X
             ]
 
-        if self.variant in ["bit", "count"]:
+        if self.variant in {"bit", "count"}:
             # X at this point is a list of RDKit fingerprints, but MyPy doesn't get it
             return self._hash_fingerprint_bits(
                 X,  # type: ignore
