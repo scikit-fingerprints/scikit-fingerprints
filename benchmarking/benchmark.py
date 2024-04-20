@@ -1,6 +1,6 @@
 import os
 from time import time
-from typing import Callable
+from typing import Callable, Type
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,9 +9,9 @@ from joblib import cpu_count
 from ogb.graphproppred import GraphPropPredDataset
 
 from skfp.fingerprints import *
-from skfp.preprocessing import MolFromSmilesTransformer
+from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
-dataset_name = "ogbg-molhiv"
+dataset_name = "ogbg-molbace"
 
 # N_SPLITS - number of parts in which the dataset will be divided.
 # the test is performed first on 1 of them, then 2, ... then N_SPLITS
@@ -23,12 +23,12 @@ MAX_CORES = cpu_count()
 N_CORES = [2**i for i in range(MAX_CORES.bit_length())]
 if MAX_CORES > N_CORES[-1]:
     N_CORES.append(MAX_CORES)
-PLOT_DIR = "benchmark_times/benchmark_times_plotted"
-SCORE_DIR = "benchmark_times/benchmark_times_saved"
+PLOT_DIR = os.path.join("benchmark_times", "benchmark_times_plotted")
+SCORE_DIR = os.path.join("benchmark_times", "benchmark_times_saved")
 
 
-def get_times_skfp(X: pd.DataFrame, transformer_constructor: Callable, **kwargs):
-    print(f" - fingerprint : {transformer_constructor.__name__}")
+def get_times_skfp(X: np.ndarray, transformer_cls: type, **kwargs) -> np.ndarray:
+    print(f" - fingerprint : {transformer_cls.__name__}")
     n_molecules = X.shape[0]
 
     result = []
@@ -37,8 +37,8 @@ def get_times_skfp(X: pd.DataFrame, transformer_constructor: Callable, **kwargs)
         # testing different fractions of the dataset
 
         for data_fraction in np.linspace(0, 1, N_SPLITS + 1)[1:]:
-            print(f" - - - data fraction : {round(data_fraction*100,2)}%")
-            idx = (data_fraction * n_molecules).astype(int)
+            print(f" - - - data fraction : {data_fraction:.2%}")
+            idx = round(data_fraction * n_molecules)
 
             # testing several times to get average computation time
             times = []
@@ -46,7 +46,7 @@ def get_times_skfp(X: pd.DataFrame, transformer_constructor: Callable, **kwargs)
                 print(f" - - - - repeat : {i}/{N_REPEATS - 1}")
                 # select random molecules - data_fraction part of the dataset
                 start = time()
-                transformer = transformer_constructor(n_jobs=n_jobs, **kwargs)
+                transformer = transformer_cls(n_jobs=n_jobs, **kwargs)
                 _ = transformer.transform(X[:idx])
                 end = time()
                 times.append(end - start)
@@ -57,10 +57,10 @@ def get_times_skfp(X: pd.DataFrame, transformer_constructor: Callable, **kwargs)
 
 def save_results(
     n_molecules: int,
-    times: list,
+    times: np.ndarray,
     title: str = "",
     save: bool = True,
-):
+) -> None:
 
     X = n_molecules * np.linspace(0, 1, N_SPLITS + 1)[1:]
 
@@ -80,10 +80,8 @@ def save_results(
 
     plt.legend(loc="upper left", fontsize="14")
 
-    to_save = np.object_([times])
-
     title = title.replace(" ", "_")
-    np.save(os.path.join(SCORE_DIR, f"{title}.npy"), to_save)
+    np.save(os.path.join(SCORE_DIR, f"{title}.npy"), times)
     fig.tight_layout()
 
     if save:
@@ -107,10 +105,16 @@ if __name__ == "__main__":
     dataset = pd.read_csv(
         f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
     )
-    X = dataset["smiles"]
-    X = np.array(MolFromSmilesTransformer().transform(X))
 
-    y = dataset["HIV_active"]
+    if os.path.exists("mols_with_conformers.npy"):
+        X = np.load("mols_with_conformers.npy", allow_pickle=True)
+    else:
+        X = dataset["smiles"]
+        X = MolFromSmilesTransformer().transform(X)
+        X = np.array(
+            ConformerGenerator(n_jobs=-1, error_on_gen_fail=False).transform(X)
+        )
+        np.save("mols_with_conformers.npy", X, allow_pickle=True)
 
     n_molecules = X.shape[0]
 
@@ -120,33 +124,38 @@ if __name__ == "__main__":
         AtomPairFingerprint,
         AutocorrFingerprint,
         AvalonFingerprint,
-        # E3FPFingerprint,
+        E3FPFingerprint,
         ECFPFingerprint,
         ERGFingerprint,
         EStateFingerprint,
-        # GETAWAYFingerprint,
+        GETAWAYFingerprint,
         LayeredFingerprint,
         MACCSFingerprint,
         MAPFingerprint,
         MHFPFingerprint,
-        # MordredFingerprint,
-        # MORSEFingerprint,
+        MordredFingerprint,
+        MORSEFingerprint,
         PatternFingerprint,
-        # PharmacophoreFingerprint,
+        PharmacophoreFingerprint,
         PhysiochemicalPropertiesFingerprint,
         PubChemFingerprint,
-        # RDFFingerprint,
+        RDFFingerprint,
         RDKitFingerprint,
         SECFPFingerprint,
         TopologicalTorsionFingerprint,
-        # WHIMFingerprint,
+        WHIMFingerprint,
     ]
 
     for fingerprint in fingerprint_constructors:
         if not os.path.exists(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy")):
-            times = get_times_skfp(X, fingerprint)
+            times = get_times_skfp(X=X, transformer_cls=fingerprint)
             print(times)
-            save_results(n_molecules, times, fingerprint.__name__, True)
+            save_results(
+                n_molecules=n_molecules,
+                times=times,
+                title=fingerprint.__name__,
+                save=True,
+            )
 
     full_time_end = time()
-    print(f"Time of execution: {full_time_end - full_time_start} s")
+    print(f"Time of execution: {np.round(full_time_end - full_time_start,2)} s")
