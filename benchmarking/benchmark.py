@@ -1,6 +1,5 @@
 import os
 from time import time
-from typing import Callable, Type
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,7 +10,7 @@ from ogb.graphproppred import GraphPropPredDataset
 from skfp.fingerprints import *
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
-dataset_name = "ogbg-molbace"
+DATASET_NAME = "ogbg-molhiv"
 
 # N_SPLITS - number of parts in which the dataset will be divided.
 # the test is performed first on 1 of them, then 2, ... then N_SPLITS
@@ -101,15 +100,15 @@ if __name__ == "__main__":
     if not os.path.exists(SCORE_DIR):
         os.makedirs(SCORE_DIR)
 
-    GraphPropPredDataset(name=dataset_name, root="../dataset")
+    GraphPropPredDataset(name=DATASET_NAME, root="../dataset")
     dataset = pd.read_csv(
-        f"../dataset/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
+        f"../dataset/{'_'.join(DATASET_NAME.split('-'))}/mapping/mol.csv.gz"
     )
 
     if os.path.exists("mols_with_conformers.npy"):
         X = np.load("mols_with_conformers.npy", allow_pickle=True)
     else:
-        X = dataset["smiles"]
+        X = dataset["smiles"][:10000]
         X = MolFromSmilesTransformer().transform(X)
         X = np.array(
             ConformerGenerator(n_jobs=-1, error_on_gen_fail=False).transform(X)
@@ -158,4 +157,4 @@ if __name__ == "__main__":
             )
 
     full_time_end = time()
-    print(f"Time of execution: {np.round(full_time_end - full_time_start,2)} s")
+    print(f"Time of execution: {full_time_end - full_time_start:.2f} s")
