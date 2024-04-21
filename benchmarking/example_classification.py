@@ -21,6 +21,15 @@ fingerprint_classes = [
     for name, cls in inspect.getmembers(skfp.fingerprints, predicate=inspect.isclass)
 ]
 
+descriptor_fingerprints = [
+    skfp.fingerprints.AutocorrFingerprint,
+    skfp.fingerprints.GETAWAYFingerprint,
+    skfp.fingerprints.MordredFingerprint,
+    skfp.fingerprints.MORSEFingerprint,
+    skfp.fingerprints.RDFFingerprint,
+    skfp.fingerprints.WHIMFingerprint,
+]
+
 LIMIT_SIZE = None
 
 SCRIPT_PATH = os.path.abspath(__file__)
@@ -105,10 +114,11 @@ for dataset_name, property_name in dataset_params:
         X_fp_valid = imputer.transform(X_fp_valid)
         X_fp_test = imputer.transform(X_fp_test)
 
-        scaler = RobustScaler()
-        X_fp_train = scaler.fit_transform(X_fp_train)
-        X_fp_valid = scaler.transform(X_fp_valid)
-        X_fp_test = scaler.transform(X_fp_test)
+        if fp_transformer in descriptor_fingerprints:
+            scaler = RobustScaler()
+            X_fp_train = scaler.fit_transform(X_fp_train)
+            X_fp_valid = scaler.transform(X_fp_valid)
+            X_fp_test = scaler.transform(X_fp_test)
 
         for classifier, clf_kwargs in classifier_parameters:
             clf_name = classifier.__name__
