@@ -51,6 +51,7 @@ class FingerprintTransformer(
     def __init__(
         self,
         n_features_out: int,
+        requires_conformers: bool = False,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
@@ -70,8 +71,21 @@ class FingerprintTransformer(
         self._n_features_out = n_features_out
         self.n_features_out = self._n_features_out
 
+        # indicate whether inputs need to be molecules with conformers computed and
+        # conf_id integer property set; this allows programmatically checking which
+        # fingerprints are 3D-based and require such input
+        self.requires_conformers = requires_conformers
+
     def __sklearn_is_fitted__(self) -> bool:
         return True  # fingerprint transformers don't need fitting
+
+    def set_params(self, **params):
+        super().set_params(**params)
+        # for fingerprints that have both 2D and 3D versions, as indicated by use_3D
+        # attribute, we need to also keep requires_conformers attribute in sync
+        if hasattr(self, "use_3D"):
+            self.requires_conformers = self.use_3D
+        return self
 
     def fit(self, X, y=None, **fit_params):
         """

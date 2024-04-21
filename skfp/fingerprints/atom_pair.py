@@ -99,6 +99,11 @@ class AtomPairFingerprint(FingerprintTransformer):
     n_features_out : int
         Number of output features, size of fingerprints. Equal to `fp_size`.
 
+    requires_conformers : bool
+        Whether the fingerprint is 3D-based and requires molecules with conformers as
+        inputs, with ``conf_id`` integer property set. This depends on the ``use_3D``
+        attribute, and has the same value as that parameter.
+
     See Also
     --------
     :class:`TopologicalTorsionFingerprint` : Related fingerprint, but uses 4-atom paths.
@@ -165,6 +170,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     ):
         super().__init__(
             n_features_out=fp_size,
+            requires_conformers=use_3D,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,

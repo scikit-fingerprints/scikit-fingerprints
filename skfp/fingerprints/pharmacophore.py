@@ -35,6 +35,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
         n_features_out = 39972 if variant == "raw_bits" else fp_size
         super().__init__(
             n_features_out=n_features_out,
+            requires_conformers=use_3D,
             sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,
@@ -67,7 +68,7 @@ class PharmacophoreFingerprint(FingerprintTransformer):
                 for mol in X
             ]
 
-        if self.variant in ["bit", "count"]:
+        if self.variant in {"bit", "count"}:
             # X at this point is a list of RDKit fingerprints, but MyPy doesn't get it
             return self._hash_fingerprint_bits(
                 X,  # type: ignore

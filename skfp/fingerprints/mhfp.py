@@ -85,7 +85,7 @@ class MHFPFingerprint(FingerprintTransformer):
         )
         X = np.array(X, dtype=np.uint32)
 
-        if self.variant in ["bit", "count"]:
+        if self.variant in {"bit", "count"}:
             X = np.mod(X, self.fp_size)
             X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
             if self.variant == "bit":
