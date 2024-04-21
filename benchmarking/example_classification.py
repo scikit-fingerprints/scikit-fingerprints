@@ -75,15 +75,10 @@ for dataset_name, property_name in dataset_params:
     X_valid_mols = [MolFromSmiles(smiles) for smiles in X_valid]
     X_test_mols = [MolFromSmiles(smiles) for smiles in X_test]
 
-    try:
-        conf_gen = ConformerGenerator()
-        X_train_conf = conf_gen.transform(X_train_mols)
-        X_valid_conf = conf_gen.transform(X_valid_mols)
-        X_test_conf = conf_gen.transform(X_test_mols)
-        conformers_generated = True
-    except ValueError as e:
-        conformers_generated = False
-        print(f" - Error: {e}")
+    conf_gen = ConformerGenerator(n_jobs=-1, error_on_gen_fail=False)
+    X_train_conf, y_train = conf_gen.transform_x_y(X_train_mols, np.array(y_train))
+    X_valid_conf, y_valid = conf_gen.transform_x_y(X_valid_mols, np.array(y_valid))
+    X_test_conf, y_test = conf_gen.transform_x_y(X_test_mols, np.array(y_test))
 
     records = []
 
@@ -96,29 +91,9 @@ for dataset_name, property_name in dataset_params:
         print(fp_name)
         start = time()
         fp_transformer = fingerprint(n_jobs=-1)
-
-        try:
-            X_fp_train = fp_transformer.fit_transform(X_train)
-            X_fp_valid = fp_transformer.transform(X_valid)
-            X_fp_test = fp_transformer.transform(X_test)
-        except RuntimeError as e:
-            print(f" - Error: {e}")
-            records[-1]["error"] = str(e)
-            continue
-        except ValueError as e:
-            print(f" - Error: {e}")
-            if conformers_generated:
-                try:
-                    X_fp_train = fp_transformer.transform(X_train_conf)
-                    X_fp_valid = fp_transformer.transform(X_valid_conf)
-                    X_fp_test = fp_transformer.transform(X_test_conf)
-                except ValueError as e:
-                    print(e.__class__.__name__)
-                    print(f" - Error: {e}")
-                    records[-1]["error"] = str(e)
-                    continue
-            else:
-                continue
+        X_fp_train = fp_transformer.transform(X_train_conf)
+        X_fp_valid = fp_transformer.transform(X_valid_conf)
+        X_fp_test = fp_transformer.transform(X_test_conf)
 
         end = time()
         execution_time = end - start
