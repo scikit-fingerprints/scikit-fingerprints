@@ -29,6 +29,7 @@ Fingerprint classes
     ERGFingerprint
     EStateFingerprint
     GETAWAYFingerprint
+    LingoFingerprint
     MACCSFingerprint
     MAPFingerprint
     MHFPFingerprint
