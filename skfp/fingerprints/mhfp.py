@@ -38,12 +38,14 @@ class MHFPFingerprint(FingerprintTransformer):
         variant: str = "bit",
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
         self.fp_size = fp_size
@@ -83,7 +85,7 @@ class MHFPFingerprint(FingerprintTransformer):
         )
         X = np.array(X, dtype=np.uint32)
 
-        if self.variant in ["bit", "count"]:
+        if self.variant in {"bit", "count"}:
             X = np.mod(X, self.fp_size)
             X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
             if self.variant == "bit":

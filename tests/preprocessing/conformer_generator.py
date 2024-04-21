@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from rdkit.Chem import AddHs
 
@@ -5,20 +6,19 @@ from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
 
 def test_conformer_generator(smallest_mols_list):
-    conf_gen = ConformerGenerator()
+    conf_gen = ConformerGenerator(n_jobs=-1)
     mols_with_confs = conf_gen.transform(smallest_mols_list)
 
     assert len(mols_with_confs) == len(smallest_mols_list)
-    assert all(hasattr(mol, "conf_id") for mol in mols_with_confs)
+    assert all(mol.HasProp("conf_id") for mol in mols_with_confs)
 
 
 def test_conformer_generator_too_few_tries():
-    # this molecule does not have any conformers
-    # https://greglandrum.github.io/rdkit-blog/posts/2023-05-17-understanding-confgen-errors.html
+    # this molecule has hard conformers, requiring many tries
     mol_from_smiles = MolFromSmilesTransformer()
-    mols = mol_from_smiles.transform([r"C1C[C@]2(F)CC[C@]1(Cl)C2"])
+    mols = mol_from_smiles.transform(["C1C2CC3C1C1CN3C21"])
 
-    conf_gen = ConformerGenerator(max_conf_gen_attempts=1)
+    conf_gen = ConformerGenerator(max_gen_attempts=100)
     with pytest.raises(ValueError) as exc_info:
         conf_gen.transform(mols)
 
@@ -26,7 +26,7 @@ def test_conformer_generator_too_few_tries():
 
 
 def test_conformer_generator_with_hydrogens(smallest_mols_list):
-    conf_gen = ConformerGenerator()
+    conf_gen = ConformerGenerator(n_jobs=-1)
     mols_with_confs = conf_gen.transform(smallest_mols_list)
 
     smallest_mols_with_hs = [AddHs(mol) for mol in smallest_mols_list]
@@ -34,8 +34,51 @@ def test_conformer_generator_with_hydrogens(smallest_mols_list):
 
     assert len(mols_with_confs) == len(smallest_mols_list)
     assert len(mols_with_confs_2) == len(smallest_mols_list)
-    assert all(hasattr(mol, "conf_id") for mol in mols_with_confs_2)
+    assert all(mol.HasProp("conf_id") for mol in mols_with_confs_2)
     assert all(
-        mol.conf_id == mol_2.conf_id
+        mol.GetIntProp("conf_id") == mol_2.GetIntProp("conf_id")
         for mol, mol_2 in zip(mols_with_confs, mols_with_confs_2)
     )
+
+
+def test_conformer_generator_force_field_optimization(smallest_mols_list):
+    conf_gen = ConformerGenerator(optimize_force_field="UFF", n_jobs=-1)
+    mols_with_confs = conf_gen.transform(smallest_mols_list)
+
+    assert len(mols_with_confs) == len(smallest_mols_list)
+    assert all(mol.HasProp("conf_id") for mol in mols_with_confs)
+
+
+def test_conformer_generator_multiple_conformers(smallest_mols_list):
+    conf_gen = ConformerGenerator(
+        num_conformers=3,
+        optimize_force_field="UFF",
+        multiple_confs_select="min_energy",
+        n_jobs=-1,
+    )
+    mols_with_confs = conf_gen.transform(smallest_mols_list)
+
+    assert len(mols_with_confs) == len(smallest_mols_list)
+    assert all(mol.HasProp("conf_id") for mol in mols_with_confs)
+
+
+def test_conformer_generator_transform_x_y(smallest_mols_list):
+    y = np.zeros(len(smallest_mols_list))
+
+    # last molecule has hard conformers, requiring many tries
+    mol_from_smiles = MolFromSmilesTransformer()
+    mols = mol_from_smiles.transform(["O", "CC", "[C-]#N", "CC=O", "C1C2CC3C1C1CN3C21"])
+
+    conf_gen = ConformerGenerator(max_gen_attempts=100, n_jobs=-1)
+    with pytest.raises(ValueError) as exc_info:
+        conf_gen.transform_x_y(mols, y)
+
+    assert "Could not generate conformer for" in str(exc_info)
+
+    conf_gen = ConformerGenerator(
+        max_gen_attempts=100, error_on_gen_fail=False, n_jobs=-1
+    )
+    mols_conf, y_conf = conf_gen.transform_x_y(mols, y)
+    assert all(mol.HasProp("conf_id") for mol in mols_conf)
+    assert len(mols_conf) == len(y_conf)
+    assert len(mols_conf) == len(mols) - 1

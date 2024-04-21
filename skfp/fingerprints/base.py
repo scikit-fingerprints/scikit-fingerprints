@@ -16,9 +16,8 @@ from sklearn.base import (
     TransformerMixin,
 )
 from sklearn.utils._param_validation import InvalidParameterError
-from sklearn.utils.parallel import Parallel, delayed
 
-from skfp.utils import ProgressParallel
+from skfp.parallel import run_in_parallel
 
 """
 If you get MaybeEncodingError, first check any worker functions for exceptions!
@@ -44,6 +43,7 @@ class FingerprintTransformer(
         "count": ["boolean"],
         "sparse": ["boolean"],
         "n_jobs": [Integral, None],
+        "batch_size": [Integral, None],
         "verbose": ["verbose"],
         "random_state": ["random_state"],
     }
@@ -51,15 +51,18 @@ class FingerprintTransformer(
     def __init__(
         self,
         n_features_out: int,
+        requires_conformers: bool = False,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
         random_state: Optional[int] = 0,
     ):
         self.count = count
         self.sparse = sparse
         self.n_jobs = n_jobs
+        self.batch_size = batch_size
         self.verbose = verbose
         self.random_state = random_state
 
@@ -68,11 +71,25 @@ class FingerprintTransformer(
         self._n_features_out = n_features_out
         self.n_features_out = self._n_features_out
 
+        # indicate whether inputs need to be molecules with conformers computed and
+        # conf_id integer property set; this allows programmatically checking which
+        # fingerprints are 3D-based and require such input
+        self.requires_conformers = requires_conformers
+
     def __sklearn_is_fitted__(self) -> bool:
         return True  # fingerprint transformers don't need fitting
 
+    def set_params(self, **params):
+        super().set_params(**params)
+        # for fingerprints that have both 2D and 3D versions, as indicated by use_3D
+        # attribute, we need to also keep requires_conformers attribute in sync
+        if hasattr(self, "use_3D"):
+            self.requires_conformers = self.use_3D
+        return self
+
     def fit(self, X, y=None, **fit_params):
-        """Unused, kept for Scikit-learn compatibility.
+        """
+        Unused, kept for Scikit-learn compatibility.
 
         Parameters
         ----------
@@ -124,22 +141,19 @@ class FingerprintTransformer(
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            return self._calculate_fingerprint(X)
+            results = self._calculate_fingerprint(X)
         else:
-            batch_size = max(len(X) // n_jobs, 1)
-
-            args = (X[i : i + batch_size] for i in range(0, len(X), batch_size))
-
-            if self.verbose > 0:
-                total = min(n_jobs, len(X))
-                parallel = ProgressParallel(n_jobs=n_jobs, total=total)
-            else:
-                parallel = Parallel(n_jobs=n_jobs)
-
-            results = parallel(
-                delayed(self._calculate_fingerprint)(X_sub) for X_sub in args
+            results = run_in_parallel(
+                self._calculate_fingerprint,
+                data=X,
+                n_jobs=n_jobs,
+                batch_size=self.batch_size,
+                verbose=self.verbose,
             )
 
+        if isinstance(results, (np.ndarray, csr_array)):
+            return results
+        else:
             return scipy.sparse.vstack(results) if self.sparse else np.vstack(results)
 
     @abstractmethod

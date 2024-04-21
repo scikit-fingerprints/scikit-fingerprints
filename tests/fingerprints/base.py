@@ -1,14 +1,9 @@
-import re
-
 import numpy as np
 import pytest
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.fingerprints import (
-    AtomPairFingerprint,
-    MACCSFingerprint,
-    PhysiochemicalPropertiesFingerprint,
-)
+from skfp.fingerprints import AtomPairFingerprint, MACCSFingerprint
+from skfp.fingerprints.base import FingerprintTransformer
 
 """
 We cannot test most of FingerprintTransformer directly, as it is an abstract base
@@ -29,26 +24,6 @@ def test_base_transform_copy(smiles_list):
     assert np.array_equal(X_skfp, X_skfp_2)
 
 
-def test_base_verbose_progress(smiles_list, capsys):
-    atom_pair_fp = AtomPairFingerprint(n_jobs=-1, verbose=10)
-    _ = atom_pair_fp.transform(smiles_list)
-    stderr = capsys.readouterr().err  # tqdm outputs to stderr
-
-    # example output: 17%|█▋        | 2/12 [00:00<00:00, 458.09it/s]
-
-    # percentage, e.g. 10%
-    assert re.search(r"\d+%", stderr)
-
-    # processed iterations, e.g. 1/10
-    assert re.search(r"\d+/\d+", stderr)
-
-    # time, e.g. 00:01
-    assert re.search(r"\d\d:\d\d", stderr)
-
-    # iterations per second, e.g. 1.23it/s
-    assert re.search(r"\d+\.\d+it/s", stderr)
-
-
 def test_base_invalid_params(smiles_list):
     maccs_fp = MACCSFingerprint(sparse=None)
     with pytest.raises(InvalidParameterError):
@@ -56,9 +31,10 @@ def test_base_invalid_params(smiles_list):
 
 
 def test_base_hash_fingerprint_bits():
-    pp_fp = PhysiochemicalPropertiesFingerprint()
     X = [1, 2, 3, 4]
     with pytest.raises(ValueError) as exc_info:
-        pp_fp._hash_fingerprint_bits(X, fp_size=1, count=False, sparse=False)
+        FingerprintTransformer._hash_fingerprint_bits(
+            X, fp_size=1, count=False, sparse=False
+        )
 
     assert "Fingerprint hashing requires instances of one of" in str(exc_info)

@@ -17,20 +17,21 @@ class MORSEFingerprint(FingerprintTransformer):
         self,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
             n_features_out=224,
+            requires_conformers=True,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import CalcMORSE
 
         X = require_mols_with_conf_ids(X)
-        X = [CalcMORSE(mol, confId=mol.conf_id) for mol in X]
+        X = [CalcMORSE(mol, confId=mol.GetIntProp("conf_id")) for mol in X]
         return csr_array(X) if self.sparse else np.array(X)

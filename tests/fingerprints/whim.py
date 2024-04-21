@@ -10,7 +10,10 @@ def test_whim_fingerprint(mols_conformers_list):
     X_skfp = whim_fp.transform(mols_conformers_list)
 
     X_rdkit = np.array(
-        [CalcWHIM(mol, confId=mol.conf_id) for mol in mols_conformers_list]
+        [
+            CalcWHIM(mol, confId=mol.GetIntProp("conf_id"))
+            for mol in mols_conformers_list
+        ]
     )
     X_rdkit = np.minimum(X_rdkit, whim_fp.clip_val)
 
@@ -24,7 +27,10 @@ def test_whim_sparse_fingerprint(mols_conformers_list):
     X_skfp = whim_fp.transform(mols_conformers_list)
 
     X_rdkit = csr_array(
-        [CalcWHIM(mol, confId=mol.conf_id) for mol in mols_conformers_list]
+        [
+            CalcWHIM(mol, confId=mol.GetIntProp("conf_id"))
+            for mol in mols_conformers_list
+        ]
     )
     X_rdkit = X_rdkit.minimum(whim_fp.clip_val)
 

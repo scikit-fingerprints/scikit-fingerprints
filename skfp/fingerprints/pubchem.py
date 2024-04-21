@@ -28,6 +28,7 @@ class PubChemFingerprint(FingerprintTransformer):
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
@@ -35,6 +36,7 @@ class PubChemFingerprint(FingerprintTransformer):
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
 

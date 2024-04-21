@@ -30,7 +30,10 @@ def test_autocorr_3D_fingerprint(mols_conformers_list):
     X_skfp = autocorr_fp.transform(mols_conformers_list)
 
     X_rdkit = np.array(
-        [CalcAUTOCORR3D(mol, confId=mol.conf_id) for mol in mols_conformers_list]
+        [
+            CalcAUTOCORR3D(mol, confId=mol.GetIntProp("conf_id"))
+            for mol in mols_conformers_list
+        ]
     )
 
     assert np.allclose(X_skfp, X_rdkit)
@@ -43,7 +46,10 @@ def test_autocorr_3D_sparse_fingerprint(mols_conformers_list):
     X_skfp = autocorr_fp.transform(mols_conformers_list)
 
     X_rdkit = csr_array(
-        [CalcAUTOCORR3D(mol, confId=mol.conf_id) for mol in mols_conformers_list]
+        [
+            CalcAUTOCORR3D(mol, confId=mol.GetIntProp("conf_id"))
+            for mol in mols_conformers_list
+        ]
     )
 
     assert np.allclose(X_skfp.data, X_rdkit.data)
