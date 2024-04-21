@@ -9,6 +9,7 @@ from .erg import ERGFingerprint
 from .estate import EStateFingerprint
 from .getaway import GETAWAYFingerprint
 from .layered import LayeredFingerprint
+from .lingo import LingoFingerprint
 from .maccs import MACCSFingerprint
 from .map import MAPFingerprint
 from .mhfp import MHFPFingerprint
