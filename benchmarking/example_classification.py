@@ -109,12 +109,12 @@ for dataset_name, property_name in dataset_params:
         print(f" - Time of fingerprints computing : {round(execution_time,2)}s")
         records[-1]["execution_time"] = execution_time
 
-        imputer = SimpleImputer(strategy="median")
-        X_fp_train = imputer.fit_transform(X_fp_train)
-        X_fp_valid = imputer.transform(X_fp_valid)
-        X_fp_test = imputer.transform(X_fp_test)
-
         if fp_transformer in descriptor_fingerprints:
+            imputer = SimpleImputer(strategy="median")
+            X_fp_train = imputer.fit_transform(X_fp_train)
+            X_fp_valid = imputer.transform(X_fp_valid)
+            X_fp_test = imputer.transform(X_fp_test)
+
             scaler = RobustScaler()
             X_fp_train = scaler.fit_transform(X_fp_train)
             X_fp_valid = scaler.transform(X_fp_valid)
