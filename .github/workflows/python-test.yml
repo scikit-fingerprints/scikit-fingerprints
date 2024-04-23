@@ -1,6 +1,8 @@
 name: Tests & checks
 
-on: [pull_request]
+on:
+  pull_request:
+  workflow_dispatch: # allow running manually from the Actions tab
 
 # cancel previous runs on a new commit
 concurrency:
