@@ -8,6 +8,7 @@ from .ecfp import ECFPFingerprint
 from .erg import ERGFingerprint
 from .estate import EStateFingerprint
 from .getaway import GETAWAYFingerprint
+from .klekota_roth import KlekotaRothFingerprint
 from .layered import LayeredFingerprint
 from .maccs import MACCSFingerprint
 from .map import MAPFingerprint
@@ -21,5 +22,6 @@ from .pubchem import PubChemFingerprint
 from .rdf import RDFFingerprint
 from .rdk import RDKitFingerprint
 from .secfp import SECFPFingerprint
+from .substructure_fp import SubstructureFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
 from .whim import WHIMFingerprint
