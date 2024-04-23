@@ -10,6 +10,7 @@ authors = [
     "Michal Szafarczyk <adammichal657@gmail.com>",
 ]
 repository = "https://github.com/Arch4ngel21/scikit-fingerprints"
+documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints/"
 license = "MIT"
 packages = [
     { include = "skfp" }
