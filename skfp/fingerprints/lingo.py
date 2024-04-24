@@ -18,13 +18,10 @@ class LingoFingerprint(FingerprintTransformer):
     """
     Lingo fingerprint.
 
-    The Lingo fingerprint [1]_ is a hashed fingerprint based on cdk that counts/flags the occurrences of
-    substrings of a given length in a SMILES string. The hash function used in our
-    implementation is SHA-1. The Lingo fingerprint is a binary fingerprint by default,
-    but it can also be a count fingerprint.
-
-    If option `count` is set to True, the fingerprint vector will contain counts of
-    substrings, otherwise it will contain binary flags.
+    The Lingo fingerprint [1]_ is a hashed fingerprint that checks the occurrences of
+    substrings of a given length in a SMILES string. Original paper uses raw dictionaries os output.
+    Our implementation returns constant-length hashed fingerprints. The hash function used in our
+    implementation is SHA-1.
 
     You can use method :meth:`smiles_to_dicts` to convert SMILES strings to dictionaries of substring,
     like original Lingo fingerprint.
@@ -39,11 +36,10 @@ class LingoFingerprint(FingerprintTransformer):
         Length of the substrings to count in the SMILES strings. Must be positive.
 
     count : bool, default=False
-        Whether to use count fingerprint instead of binary fingerprint.
+        Whether to return binary (bit) features, or their counts.
 
     sparse : bool, default=False
-        Whether to return sparse matrix. If True, the output will be a Scipy CSR matrix, otherwise
-        it will be a Numpy array.
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized
