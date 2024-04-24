@@ -146,6 +146,9 @@ class LingoFingerprint(FingerprintTransformer):
             List of dictionaries containing substring counts.
         """
         X = ensure_smiles(X)
+        # we are doing this according to the original paper
+        # which aimed for reducing the number of possible substrings
+        # and improving statistical sampling in the QSPR models.
         X = [re.sub(r"[123456789]", "0", x) for x in X]
         X = [re.sub(r"Cl", "L", x) for x in X]
         X = [re.sub(r"Br", "R", x) for x in X]
@@ -170,7 +173,7 @@ class LingoFingerprint(FingerprintTransformer):
         result = np.zeros((len(X), self.fp_size), dtype=dtype)
         for i, dictionary in enumerate(X):
             for key, value in dictionary.items():
-                string_bytes = key.encode()
+                string_bytes = key.encode("utf-8")
                 hash_bytes = hashlib.sha1(string_bytes, usedforsecurity=False).digest()
                 hash_index = int.from_bytes(hash_bytes, byteorder="big") % self.fp_size
                 if self.count:
