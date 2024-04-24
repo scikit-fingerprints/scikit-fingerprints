@@ -1,9 +1,74 @@
-from typing import Optional
+from collections.abc import Sequence
+from typing import Optional, Union
+
+import numpy as np
+from rdkit.Chem import Mol
+from scipy.sparse import csr_array
 
 from .substructure_fp import SubstructureFingerprint
 
 
 class KlekotaRothFingerprint(SubstructureFingerprint):
+    """Klekota-Roth Fingerprint
+
+    A substructure fingerprint based on [1]. Tests for presence of
+    4860 predefined substructures which are predisposed for bioactivity.
+
+    Number of features in the fingerprint is equal to the number of substructures it was constructed from.
+
+    For binary fingerprint set bit indicates that that substructure was found at least once in the molecule
+    for which the fingerprint was calculated.  For count fingerprint each feature represents number of
+    unique occurrences.
+
+    Parameters
+    ----------
+    count : bool, default=False
+        Whether to return binary (bit) features, or their counts.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    verbose : int, default=0
+        Controls the verbosity when computing fingerprints.
+
+    Attributes
+    ----------
+    n_features_out : int
+        Number of output features, size of fingerprints. Equal to `fp_size`.
+
+    requires_conformers : bool
+        Whether the fingerprint is 3D-based and requires molecules with conformers as
+        inputs, with ``conf_id`` integer property set. This depends on the ``use_3D``
+        attribute, and has the same value as that parameter.
+
+
+    References
+    ----------
+    .. [1] `Klekota, Justin, and Frederick P Roth.
+        “Chemical substructures that enrich for biological activity.”
+        Bioinformatics (Oxford, England) vol. 24,21 (2008): 2518-25.
+        https://pubmed.ncbi.nlm.nih.gov/18784118/
+
+    Examples
+    --------
+    >>> from skfp.fingerprints import KlekotaRothFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = KlekotaRothFingerprint()
+    >>> fp
+    KlekotaRothFingerprint()
+
+    >>> fp.transform(smiles)
+    array([[0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+    """
 
     def __init__(
         self,
@@ -11,7 +76,6 @@ class KlekotaRothFingerprint(SubstructureFingerprint):
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         verbose: int = 0,
-        random_state: Optional[int] = 0,
     ):
         # flake8: noqa: E501
         substructures = [
@@ -4883,5 +4947,27 @@ class KlekotaRothFingerprint(SubstructureFingerprint):
             sparse=sparse,
             n_jobs=n_jobs,
             verbose=verbose,
-            random_state=random_state,
         )
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute Klekota-Roth fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit Mol objects. If `use_3D`
+            is True, only Mol objects with computed conformations and with
+            `conf_id` property are allowed.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)

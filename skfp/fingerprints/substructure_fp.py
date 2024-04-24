@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from typing import Any, Optional, Union
 
 import numpy as np
+from rdkit import Chem
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
@@ -11,7 +12,21 @@ from .base import FingerprintTransformer
 
 
 class SubstructureFingerprint(FingerprintTransformer):
-    _parameter_constraints: dict = {**FingerprintTransformer._parameter_constraints}
+    """
+    Substructure fingerprint.
+
+    Fingerprint that checks for presence of provided molecular substructures.
+    Number of features in fingerprint is equal to the number of substructures it was constructed from.
+
+    For binary fingerprint set bit indicates that that substructure was found at least once in the molecule
+    for which the fingerprint was calculated.  For count fingerprint each feature represents number of
+    unique occurrences of a given substructure.
+    """
+
+    _parameter_constraints: dict = {
+        **FingerprintTransformer._parameter_constraints,
+        "substructures": [list],
+    }
 
     def __init__(
         self,
@@ -30,7 +45,7 @@ class SubstructureFingerprint(FingerprintTransformer):
             verbose=verbose,
             random_state=random_state,
         )
-        self.substructures = ensure_mols(substructures)
+        self.substructures = [Chem.MolFromSmarts(smarts) for smarts in substructures]
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
@@ -54,4 +69,4 @@ class SubstructureFingerprint(FingerprintTransformer):
                 for mol in X
             ]
 
-        return csr_array(fps) if self.sparse else np.array(fps)
+        return csr_array(fps) if self.sparse else np.array(fps, dtype=np.uint8)
