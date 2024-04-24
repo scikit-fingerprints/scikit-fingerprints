@@ -15,7 +15,10 @@ jobs:
       fail-fast: true
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-        os: [macos-12.7.4, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        exclude:
+          - python-version: "3.9"
+            os: macos-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
