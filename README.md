@@ -26,11 +26,11 @@ creating an efficient and accessible Python library for molecular fingerprint co
 
 ## Supported platforms
 
-|                      | `python3.9` | `python3.10` | `python3.11` | `python3.12` |
-|----------------------|-------------|--------------|--------------|--------------|
-| **Ubuntu - latest**  | ✅           | ✅            | ✅            | ✅            |
-| **Windows - latest** | ✅           | ✅            | ✅            | ✅            |
-| **macOS - latest**   | ❌           | ✅            | ✅            | ✅            |
+|                      | `python3.9`       | `python3.10` | `python3.11` | `python3.12` |
+|----------------------|-------------------|--------------|--------------|--------------|
+| **Ubuntu - latest**  | ✅                 | ✅            | ✅            | ✅            |
+| **Windows - latest** | ✅                 | ✅            | ✅            | ✅            |
+| **macOS - latest**   | ❌ - only macOS 13 | ✅            | ✅            | ✅            |
 
 ## Installation
 
