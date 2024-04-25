@@ -3,7 +3,7 @@ import pytest
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.fingerprints.substructure_fp import SubstructureFingerprint
+from skfp.fingerprints import SubstructureFingerprint
 
 
 @pytest.fixture
