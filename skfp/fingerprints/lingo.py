@@ -19,11 +19,12 @@ class LingoFingerprint(FingerprintTransformer):
     Lingo fingerprint.
 
     The Lingo fingerprint [1]_ is a hashed fingerprint that checks the occurrences of
-    substrings of a given length in a SMILES string. Original paper uses raw dictionaries os output.
-    Our implementation returns constant-length hashed fingerprints. The hash function used in our
-    implementation is SHA-1.
+    substrings of a given length in a SMILES string. Original paper uses raw
+    dictionaries os output. Our implementation returns constant-length hashed
+    fingerprints. The hash function used in our implementation is SHA-1.
 
-    You can use method :meth:`smiles_to_dicts` to convert SMILES strings to dictionaries of substring,
+    You can use method :meth:`smiles_to_dicts` to convert SMILES strings to
+    dictionaries of substring,
     like original Lingo fingerprint.
 
     Parameters
