@@ -1,6 +1,8 @@
 name: Tests & checks
 
-on: [pull_request]
+on:
+  pull_request:
+  workflow_dispatch: # allow running manually from the Actions tab
 
 # cancel previous runs on a new commit
 concurrency:
@@ -14,6 +16,12 @@ jobs:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
         os: [macos-latest, ubuntu-latest, windows-latest]
+        exclude:
+          - python-version: "3.9"
+            os: macos-latest
+        include:
+          - python-version: "3.9"
+            os: macos-13
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
