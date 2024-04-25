@@ -11,14 +11,11 @@ from .substructure_fp import SubstructureFingerprint
 class KlekotaRothFingerprint(SubstructureFingerprint):
     """Klekota-Roth Fingerprint
 
-    A substructure fingerprint based on [1]. Tests for presence of
-    4860 predefined substructures which are predisposed for bioactivity.
+    A substructure fingerprint based on [1]. Tests for presence of 4860 predefined
+    substructures which are predisposed for bioactivity.
 
-    Number of features in the fingerprint is equal to the number of substructures it was constructed from.
-
-    For binary fingerprint set bit indicates that that substructure was found at least once in the molecule
-    for which the fingerprint was calculated.  For count fingerprint each feature represents number of
-    unique occurrences.
+    Number of features in the fingerprint is equal to the number of substructures
+    it was constructed from.
 
     Parameters
     ----------
@@ -78,7 +75,7 @@ class KlekotaRothFingerprint(SubstructureFingerprint):
         verbose: int = 0,
     ):
         # flake8: noqa: E501
-        substructures = [
+        patterns = [
             "[!#1][CH]([!#1])[!#1]",
             "[!#1][CH]([!#1])[CH]([!#1])[!#1]",
             "[!#1][CH]([!#1])[CH]([!#1])C([CH3])([CH3])[CH3]",
@@ -4942,7 +4939,7 @@ class KlekotaRothFingerprint(SubstructureFingerprint):
         ]
         # flake8: noqa
         super().__init__(
-            substructures=substructures,
+            patterns=patterns,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,

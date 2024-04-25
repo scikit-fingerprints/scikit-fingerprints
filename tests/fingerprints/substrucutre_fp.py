@@ -7,7 +7,7 @@ from skfp.fingerprints.substructure_fp import SubstructureFingerprint
 
 
 @pytest.fixture
-def molecules() -> list[str]:
+def substructure_smiles_list() -> list[str]:
     return [
         "CCOC",
         "CCOCCO",
@@ -18,7 +18,7 @@ def molecules() -> list[str]:
 
 
 @pytest.fixture
-def substructures() -> list[str]:
+def patterns_smarts_list() -> list[str]:
     return [
         "[#6]-[#6]-[#8]",
         "[#6]-[#6]-[#8]",
@@ -29,11 +29,14 @@ def substructures() -> list[str]:
     ]
 
 
-def test_substructure_count_fingerprint(substructures: list[str], molecules: list[str]):
-    fp = SubstructureFingerprint(substructures, count=True)
-    X_count = fp.transform(molecules)
-    assert type(X_count) is np.ndarray
+def test_substructure_count_fingerprint(
+    patterns_smarts_list: list[str], substructure_smiles_list: list[str]
+):
+    fp = SubstructureFingerprint(patterns_smarts_list, count=True)
+    X_count = fp.transform(substructure_smiles_list)
 
+    assert isinstance(X_count, np.ndarray)
+    assert X_count.dtype == np.uint32
     expected_count = np.array(
         [
             [1, 1, 0, 0, 0, 0],
@@ -46,11 +49,14 @@ def test_substructure_count_fingerprint(substructures: list[str], molecules: lis
     assert np.array_equal(X_count, expected_count)
 
 
-def test_substructure_bit_fingerprint(substructures: list[str], molecules: list[str]):
-    fp = SubstructureFingerprint(substructures, count=False)
-    X_bit = fp.transform(molecules)
+def test_substructure_bit_fingerprint(
+    patterns_smarts_list: list[str], substructure_smiles_list: list[str]
+):
+    fp = SubstructureFingerprint(patterns_smarts_list, count=False)
+    X_bit = fp.transform(substructure_smiles_list)
 
-    assert type(X_bit) is np.ndarray
+    assert isinstance(X_bit, np.ndarray)
+    assert X_bit.dtype == np.uint8
     expected_bit = np.array(
         [
             [1, 1, 0, 0, 0, 0],
@@ -64,12 +70,13 @@ def test_substructure_bit_fingerprint(substructures: list[str], molecules: list[
 
 
 def test_substructure_sparse_count_fingerprint(
-    substructures: list[str], molecules: list[str]
+    patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
-    fp = SubstructureFingerprint(substructures, count=True, sparse=True)
-    X_count = fp.transform(molecules)
-    assert type(X_count) is csr_array
+    fp = SubstructureFingerprint(patterns_smarts_list, count=True, sparse=True)
+    X_count = fp.transform(substructure_smiles_list)
 
+    assert isinstance(X_count, csr_array)
+    assert X_count.dtype == np.uint32
     expected_count = csr_array(
         [
             [1, 1, 0, 0, 0, 0],
@@ -79,17 +86,16 @@ def test_substructure_sparse_count_fingerprint(
             [0, 0, 0, 0, 4, 0],
         ]
     )
-    # check for inequality in nonzero elements
-    assert (X_count != expected_count).nnz == 0
+    assert np.array_equal(X_count.data, expected_count.data)
 
 
 def test_substructure_sparse_bit_fingerprint(
-    substructures: list[str], molecules: list[str]
+    patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
-    fp = SubstructureFingerprint(substructures, count=False, sparse=True)
-    X_bit = fp.transform(molecules)
-    assert type(X_bit) is csr_array
-
+    fp = SubstructureFingerprint(patterns_smarts_list, count=False, sparse=True)
+    X_bit = fp.transform(substructure_smiles_list)
+    assert isinstance(X_bit, csr_array)
+    assert X_bit.dtype == np.uint8
     expected_bit = csr_array(
         [
             [1, 1, 0, 0, 0, 0],
@@ -99,17 +105,27 @@ def test_substructure_sparse_bit_fingerprint(
             [0, 0, 0, 0, 1, 0],
         ]
     )
-    # check for inequality in nonzero elements
-    assert (X_bit != expected_bit).nnz == 0
+    assert np.array_equal(X_bit.data, expected_bit.data)
 
 
-def test_parameter_constraints_enabled(substructures: list[str], molecules: list[str]):
-    with pytest.raises(InvalidParameterError):
-        fp = SubstructureFingerprint(substructures, count=42)  # type: ignore
-        fp.transform(molecules)
+def test_parameter_constraints_enabled(
+    patterns_smarts_list: list[str], substructure_smiles_list: list[str]
+):
+    with pytest.raises(InvalidParameterError) as error:
+        fp = SubstructureFingerprint(patterns_smarts_list, count=42)  # type: ignore
+        fp.transform(substructure_smiles_list)
+
+    assert str(error.value).startswith(
+        "The 'count' parameter of SubstructureFingerprint must be an instance of 'bool'"
+    )
 
 
-# def test_substructure_validation():
-#     invalid_substructures = [1, True, "abc"]
-#     with pytest.raises(InvalidParameterError):
-#         SubstructureFingerprint(invalid_substructures)
+def test_pattern_validation(substructure_smiles_list: list[str]):
+    invalid_patterns = [1, True, "abc"]
+    with pytest.raises(InvalidParameterError) as error:
+        fp = SubstructureFingerprint(invalid_patterns)  # type: ignore
+        fp.transform(substructure_smiles_list)
+
+    assert str(error.value).startswith(
+        "The 'patterns' parameter must be a sequence of molecular patterns in SMARTS format."
+    )
