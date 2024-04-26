@@ -23,6 +23,8 @@ N_CORES = [2**i for i in range(MAX_CORES.bit_length())]
 if MAX_CORES > N_CORES[-1]:
     N_CORES.append(MAX_CORES)
 PLOT_DIR = os.path.join("benchmark_times", "benchmark_times_plotted")
+TIME_DIR = "time"
+SPEEDUP_DIR = "speedup"
 SCORE_DIR = os.path.join("benchmark_times", "benchmark_times_saved")
 
 
@@ -54,12 +56,17 @@ def get_times_skfp(X: np.ndarray, transformer_cls: type, **kwargs) -> np.ndarray
     return np.array(result).reshape((len(N_CORES), N_SPLITS))
 
 
-def save_results(
+LEGAL_PLOT_TYPES = ["time", "speedup", "fprints_per_second"]
+
+
+def save_plots(
     n_molecules: int,
     times: np.ndarray,
     title: str = "",
     save: bool = True,
+    plot_type: str = "time",
 ) -> None:
+    dir_name = plot_type
 
     X = n_molecules * np.linspace(0, 1, N_SPLITS + 1)[1:]
 
@@ -67,35 +74,80 @@ def save_results(
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
     ax1.set_title(title)
+    ax1.set_xlabel("Number of molecules")
 
-    for i, y in zip(N_CORES, times):
-        ax1.plot(X, y, label=f"our time - # cores: {i}")
-
-    ax1.set_ylabel("Time of computation [s]")
-    ax1.set_xlabel("Number of fingerprints")
+    if plot_type == "time":
+        ax1.set_ylabel("Time of computation")
+        for i, y in zip(N_CORES, times):
+            ax1.plot(X, y, marker="o", label=f"# cores: {i}")
+    elif plot_type == "speedup":
+        ax1.set_ylabel("Speedup")
+        for i, y in zip(N_CORES[1:], times[1:]):
+            ax1.plot(X, times[0] / y, marker="o", label=f"# cores: {i}")
+    elif plot_type == "fprints_per_second":
+        ax1.set_ylabel("Fingerprints / s")
+        for i, y in zip(N_CORES, times):
+            ax1.plot(X, X / y, marker="o", label=f"# cores: {i}")
 
     ax1.set_xlim(n_molecules * 0.1, n_molecules * 1.1)
     ax1.set_ylim(bottom=0)
 
     plt.legend(loc="upper left", fontsize="14")
 
-    title = title.replace(" ", "_")
-    np.save(os.path.join(SCORE_DIR, f"{title}.npy"), times)
     fig.tight_layout()
 
     if save:
-        plt.savefig(os.path.join(PLOT_DIR, f"{title}.png"))
+        os.makedirs(os.path.join(PLOT_DIR, dir_name), exist_ok=True)
+        plt.savefig(os.path.join(PLOT_DIR, dir_name, f"{title}.png"))
     else:
         plt.show()
 
     plt.close(fig)
 
 
+def save_combined_plot(
+    n_molecules: int,
+    fingerprints: list,
+    times: list,
+    save: bool = True,
+    type: str = "time",
+):
+    fig = plt.figure(figsize=(15, 10))
+    ax1 = fig.add_subplot()
+    ax1.set_ylabel("Fingerprints")
+    fp_names = [fp.__name__ for fp in fingerprints]
+
+    if type == "time":
+        file_name = "times_of_sequential_computation"
+        ax1.set_xlabel("Time of computation")
+        ax1.set_title("Times of sequential computation for all fingerprints")
+        ax1.barh(fp_names, [time[0, -1] for time in times], color="skyblue")
+    elif type == "speedup":
+        file_name = "speedup_for_all_cores"
+        ax1.set_xlabel("speedup")
+        ax1.set_title("Speedup for all fingerprints")
+        ax1.barh(
+            fp_names, [time[-1, 0] / time[-1, -1] for time in times], color="skyblue"
+        )
+    elif type == "fprints_per_second":
+        file_name = "fingerprints_per_second_sequential"
+        ax1.set_xlabel("Fingerprints / s")
+        ax1.set_title("Molecules per second for all fingerprints")
+        ax1.barh(
+            fp_names, [n_molecules / time[0, -1] for time in times], color="skyblue"
+        )
+
+    fig.tight_layout()
+
+    if save:
+        os.makedirs(PLOT_DIR, exist_ok=True)
+        plt.savefig(os.path.join(PLOT_DIR, f"{file_name}.png"))
+    else:
+        plt.show()
+
+
 if __name__ == "__main__":
     full_time_start = time()
-
-    if not os.path.exists(PLOT_DIR):
-        os.makedirs(PLOT_DIR)
 
     if not os.path.exists(SCORE_DIR):
         os.makedirs(SCORE_DIR)
@@ -119,7 +171,7 @@ if __name__ == "__main__":
 
     print(f"Number of molecules : {n_molecules}")
 
-    fingerprint_constructors = [
+    fingerprints = [
         AtomPairFingerprint,
         AutocorrFingerprint,
         AvalonFingerprint,
@@ -145,16 +197,30 @@ if __name__ == "__main__":
         WHIMFingerprint,
     ]
 
-    for fingerprint in fingerprint_constructors:
+    times_for_all_fingerprints = []
+    for fingerprint in fingerprints:
         if not os.path.exists(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy")):
             times = get_times_skfp(X=X, transformer_cls=fingerprint)
-            print(times)
-            save_results(
+            np.save(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"), times)
+        else:
+            times = np.load(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"))
+        for plot_type in LEGAL_PLOT_TYPES:
+            save_plots(
                 n_molecules=n_molecules,
                 times=times,
                 title=fingerprint.__name__,
                 save=True,
+                plot_type=plot_type,
             )
+        times_for_all_fingerprints.append(times)
+
+    for plot_type in LEGAL_PLOT_TYPES:
+        save_combined_plot(
+            n_molecules=n_molecules,
+            fingerprints=fingerprints,
+            times=times_for_all_fingerprints,
+            type=plot_type,
+        )
 
     full_time_end = time()
     print(f"Time of execution: {full_time_end - full_time_start:.2f} s")
