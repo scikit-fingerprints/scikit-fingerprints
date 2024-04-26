@@ -14,9 +14,6 @@ class KlekotaRothFingerprint(SubstructureFingerprint):
     A substructure fingerprint based on [1]. Tests for presence of 4860 predefined
     substructures which are predisposed for bioactivity.
 
-    Number of features in the fingerprint is equal to the number of substructures
-    it was constructed from.
-
     Parameters
     ----------
     count : bool, default=False
@@ -36,8 +33,8 @@ class KlekotaRothFingerprint(SubstructureFingerprint):
 
     Attributes
     ----------
-    n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+    n_features_out : int = 4860
+        Number of output features, size of fingerprints.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

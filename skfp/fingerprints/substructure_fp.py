@@ -41,7 +41,7 @@ class SubstructureFingerprint(FingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of patterns. Equal to `fp_size`.
+        Number of output features, size of patterns. Equal to length of ``patterns``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.
@@ -122,20 +122,14 @@ class SubstructureFingerprint(FingerprintTransformer):
         from rdkit.Chem import MolFromSmarts
 
         X = ensure_mols(X)
+
         patterns = [MolFromSmarts(smarts) for smarts in self.patterns]
+        X = [
+            [len(mol.GetSubstructMatches(pattern)) for pattern in patterns] for mol in X
+        ]
+        X = np.array(X, dtype=np.uint32)
 
-        if self.count:
-            fps = np.array(
-                [
-                    [len(mol.GetSubstructMatches(pattern)) for pattern in patterns]
-                    for mol in X
-                ],
-                dtype=np.uint32,
-            )
-        else:
-            fps = np.array(
-                [[mol.HasSubstructMatch(pattern) for pattern in patterns] for mol in X],
-                dtype=np.uint8,
-            )
+        if not self.count:
+            X = (X > 0).astype(np.uint8)
 
-        return csr_array(fps) if self.sparse else fps
+        return csr_array(X) if self.sparse else X
