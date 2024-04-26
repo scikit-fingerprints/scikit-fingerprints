@@ -33,7 +33,7 @@ cannot be pickled, throwing TypeError: cannot pickle 'Boost.Python.function' obj
 """
 
 
-class FingerprintTransformer(
+class BaseFingerprintTransformer(
     ABC, BaseEstimator, TransformerMixin, ClassNamePrefixFeaturesOutMixin
 ):
     """Base class for fingerprint transformers."""

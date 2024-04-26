@@ -6,16 +6,15 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
 
-from .base import FingerprintTransformer
 
-
-class EStateFingerprint(FingerprintTransformer):
+class EStateFingerprint(BaseFingerprintTransformer):
     """EState fingerprint."""
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "variant": [StrOptions({"bit", "count", "sum"})],
     }
 

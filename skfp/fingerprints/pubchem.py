@@ -3,13 +3,11 @@ from collections.abc import Sequence
 from typing import Optional, Union
 
 import numpy as np
-import scipy.sparse
 from rdkit.Chem import AddHs, Mol
 from scipy.sparse import csr_array
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
-
-from .base import FingerprintTransformer
 
 """
 Note: this fingerprint may give slightly different vectors than PubChem API!
@@ -20,7 +18,7 @@ NCGC (NIH) Java code.
 """
 
 
-class PubChemFingerprint(FingerprintTransformer):
+class PubChemFingerprint(BaseFingerprintTransformer):
     """PubChem fingerprint."""
 
     def __init__(

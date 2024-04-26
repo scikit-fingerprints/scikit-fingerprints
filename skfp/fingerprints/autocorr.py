@@ -5,16 +5,15 @@ import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols, require_mols_with_conf_ids
 
-from .base import FingerprintTransformer
 
-
-class AutocorrFingerprint(FingerprintTransformer):
+class AutocorrFingerprint(BaseFingerprintTransformer):
     """Autocorrelation fingerprint."""
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "use_3D": ["boolean"],
     }
 

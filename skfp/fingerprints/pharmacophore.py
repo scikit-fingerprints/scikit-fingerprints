@@ -7,16 +7,15 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, StrOptions
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols, require_mols_with_conf_ids
 
-from .base import FingerprintTransformer
 
-
-class PharmacophoreFingerprint(FingerprintTransformer):
+class PharmacophoreFingerprint(BaseFingerprintTransformer):
     """Pharmacophore fingerprint."""
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "variant": [StrOptions({"raw_bits", "bit", "count"})],
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "use_3D": ["boolean"],

@@ -7,12 +7,11 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils import Interval
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
 
-from .base import FingerprintTransformer
 
-
-class AvalonFingerprint(FingerprintTransformer):
+class AvalonFingerprint(BaseFingerprintTransformer):
     """
     Avalon fingerprint.
 
@@ -78,7 +77,7 @@ class AvalonFingerprint(FingerprintTransformer):
     """
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
     }
 

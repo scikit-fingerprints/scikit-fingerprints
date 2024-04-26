@@ -11,18 +11,17 @@ from rdkit import RDLogger
 from rdkit.Chem import Mol, MolToSmiles
 from scipy.sparse import csr_array
 from sklearn.utils import Interval
-from sklearn.utils._param_validation import InvalidParameterError, StrOptions
+from sklearn.utils._param_validation import InvalidParameterError
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import require_mols_with_conf_ids
-
-from .base import FingerprintTransformer
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
 """
 
 
-class E3FPFingerprint(FingerprintTransformer):
+class E3FPFingerprint(BaseFingerprintTransformer):
     """
     E3FP (Extended 3-Dimensional FingerPrint) fingerprint.
 
@@ -134,7 +133,7 @@ class E3FPFingerprint(FingerprintTransformer):
     """
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "n_bits_before_folding": [Interval(Integral, 1, None, closed="left")],
         "level": [None, Interval(Integral, 1, None, closed="left")],
@@ -211,7 +210,6 @@ class E3FPFingerprint(FingerprintTransformer):
     def _calculate_single_mol_fingerprint(
         self, mol: Mol
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem import MolFromSmiles
 
         # e3fp requires "_Name" property to be set
         mol.SetProp("_Name", MolToSmiles(mol))
