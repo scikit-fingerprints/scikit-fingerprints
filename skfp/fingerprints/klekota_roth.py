@@ -39,11 +39,8 @@ class KlekotaRothFingerprint(SubstructureFingerprint):
     n_features_out : int
         Number of output features, size of fingerprints. Equal to `fp_size`.
 
-    requires_conformers : bool
-        Whether the fingerprint is 3D-based and requires molecules with conformers as
-        inputs, with ``conf_id`` integer property set. This depends on the ``use_3D``
-        attribute, and has the same value as that parameter.
-
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
 
     References
     ----------

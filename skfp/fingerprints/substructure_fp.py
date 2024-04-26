@@ -41,13 +41,10 @@ class SubstructureFingerprint(FingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+        Number of output features, size of patterns. Equal to `fp_size`.
 
-    requires_conformers : bool
-        Whether the fingerprint is 3D-based and requires molecules with conformers as
-        inputs, with ``conf_id`` integer property set. This depends on the ``use_3D``
-        attribute, and has the same value as that parameter.
-
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
 
     Examples
     --------
@@ -91,7 +88,7 @@ class SubstructureFingerprint(FingerprintTransformer):
 
     def _validate_params(self) -> None:
         super()._validate_params()
-        if any(not isinstance(pattern, str) for pattern in self.patterns):
+        if not all(isinstance(pattern, str) for pattern in self.patterns):
             raise InvalidParameterError(
                 "The 'patterns' parameter must be a sequence of molecular patterns in SMARTS format."
             )
