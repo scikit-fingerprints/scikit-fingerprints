@@ -10,11 +10,11 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils import Interval
 
-from skfp.fingerprints.base import FingerprintTransformer
+from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_smiles
 
 
-class LingoFingerprint(FingerprintTransformer):
+class LingoFingerprint(BaseFingerprintTransformer):
     """
     Lingo fingerprint.
 
@@ -24,8 +24,7 @@ class LingoFingerprint(FingerprintTransformer):
     fingerprints are returned. SHA-1 hash function is used here.
 
     You can use method :meth:`smiles_to_dicts` to convert SMILES strings to
-    dictionaries of substring,
-    like original Lingo fingerprint.
+    dictionaries of substring, like original Lingo fingerprint.
 
     Parameters
     ----------
@@ -81,7 +80,7 @@ class LingoFingerprint(FingerprintTransformer):
     """
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "substring_length": [Interval(Integral, 1, None, closed="left")],
         "count": ["boolean"],
@@ -99,6 +98,7 @@ class LingoFingerprint(FingerprintTransformer):
     ):
         super().__init__(
             n_features_out=fp_size,
+            count=count,
             sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,
@@ -106,7 +106,6 @@ class LingoFingerprint(FingerprintTransformer):
         )
         self.fp_size = fp_size
         self.substring_length = substring_length
-        self.count = count
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
@@ -129,9 +128,7 @@ class LingoFingerprint(FingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def smiles_to_dicts(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> list[defaultdict[str, int]]:
+    def smiles_to_dicts(self, X: Sequence[Union[str, Mol]]) -> list[dict[str, int]]:
         """
         Convert SMILES strings to dictionaries of substring counts.
 
@@ -142,7 +139,7 @@ class LingoFingerprint(FingerprintTransformer):
 
         Returns
         -------
-        result: list[defaultdict[str, int]]
+        result: list[dict[str, int]]
             List of dictionaries containing substring counts.
         """
         X = ensure_smiles(X)
@@ -158,7 +155,8 @@ class LingoFingerprint(FingerprintTransformer):
             result_dict: defaultdict[str, int] = defaultdict(int)
             for i in range(len(smiles) - self.substring_length + 1):
                 result_dict[smiles[i : i + self.substring_length]] += 1
-            result.append(result_dict)
+            result.append(dict(result_dict))
+
         return result
 
     def _calculate_fingerprint(
@@ -168,9 +166,10 @@ class LingoFingerprint(FingerprintTransformer):
         X = self._dicts_to_array(X)
         return csr_array(X) if self.sparse else X
 
-    def _dicts_to_array(self, X: list[defaultdict[str, int]]) -> np.ndarray:
+    def _dicts_to_array(self, X: list[dict[str, int]]) -> np.ndarray:
         dtype = np.uint32 if self.count else np.uint8
         result = np.zeros((len(X), self.fp_size), dtype=dtype)
+
         for i, dictionary in enumerate(X):
             for key, value in dictionary.items():
                 string_bytes = key.encode("utf-8")
@@ -180,4 +179,5 @@ class LingoFingerprint(FingerprintTransformer):
                     result[i, hash_index] += value
                 else:
                     result[i, hash_index] = 1
+
         return result

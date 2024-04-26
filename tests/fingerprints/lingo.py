@@ -1,7 +1,8 @@
 import os
+from typing import Union
 
 import numpy as np
-from scipy.sparse import load_npz
+from scipy.sparse import csr_array, load_npz
 
 from skfp.fingerprints import LingoFingerprint
 
@@ -43,14 +44,24 @@ def test_lingo_fingerprint_smiles_to_dict():
     assert X_skfp == expected
 
 
+def load_lingo_file(count: bool, sparse: bool) -> Union[np.ndarray, csr_array]:
+    count_str = "count" if count else "bit"
+    sparse_str = "sparse" if sparse else "fp"
+    extension = "npz" if sparse else "npy"
+    filename = f"lingo_{count_str}_{sparse_str}.{extension}"
+    loader = load_npz if sparse else np.load
+    try:
+        return loader(os.path.join("fingerprints", "data", filename))
+    except FileNotFoundError:
+        return loader(os.path.join("tests", "fingerprints", "data", filename))
+
+
 def test_lingo_fingerprint_bit():
     smiles = ["CC(=O)NCCC1=CNC2=C1C=C(C=C2)OC", "C[n]1cnc2N(C)C(=O)N(C)C(=O)c12"]
     lingo_fp = LingoFingerprint()
     X_skfp = lingo_fp.transform(smiles)
 
-    expected_array = np.load(
-        os.path.join("tests", "fingerprints", "data", "lingo_bit_fp.npy")
-    )
+    expected_array = load_lingo_file(count=False, sparse=False)
 
     assert np.array_equal(X_skfp, expected_array)
     assert X_skfp.shape == (2, 1024)
@@ -63,9 +74,7 @@ def test_lingo_fingerprint_count():
     lingo_fp = LingoFingerprint(count=True)
     X_skfp = lingo_fp.transform(smiles)
 
-    expected_array = np.load(
-        os.path.join("tests", "fingerprints", "data", "lingo_count_fp.npy")
-    )
+    expected_array = load_lingo_file(count=True, sparse=False)
 
     assert np.array_equal(X_skfp, expected_array)
     assert X_skfp.shape == (2, 1024)
@@ -78,9 +87,7 @@ def test_lingo_fingerprint_bit_sparse():
     lingo_fp = LingoFingerprint(sparse=True)
     X_skfp = lingo_fp.transform(smiles)
 
-    expected_array = load_npz(
-        os.path.join("tests", "fingerprints", "data", "lingo_bit_sparse.npz")
-    )
+    expected_array = load_lingo_file(count=False, sparse=True)
 
     assert np.array_equal(X_skfp.data, expected_array.data)
     assert X_skfp.shape == (2, 1024)
@@ -93,9 +100,7 @@ def test_lingo_fingerprint_count_sparse():
     lingo_fp = LingoFingerprint(count=True, sparse=True)
     X_skfp = lingo_fp.transform(smiles)
 
-    expected_array = load_npz(
-        os.path.join("tests", "fingerprints", "data", "lingo_count_sparse.npz")
-    )
+    expected_array = load_lingo_file(count=True, sparse=True)
 
     assert np.array_equal(X_skfp.data, expected_array.data)
     assert X_skfp.shape == (2, 1024)
