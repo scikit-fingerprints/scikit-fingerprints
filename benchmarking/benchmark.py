@@ -23,8 +23,6 @@ N_CORES = [2**i for i in range(MAX_CORES.bit_length())]
 if MAX_CORES > N_CORES[-1]:
     N_CORES.append(MAX_CORES)
 PLOT_DIR = os.path.join("benchmark_times", "benchmark_times_plotted")
-TIME_DIR = "time"
-SPEEDUP_DIR = "speedup"
 SCORE_DIR = os.path.join("benchmark_times", "benchmark_times_saved")
 
 
@@ -111,7 +109,7 @@ def save_combined_plot(
     times: list,
     save: bool = True,
     type: str = "time",
-):
+) -> None:
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
     ax1.set_ylabel("Fingerprints")
@@ -136,6 +134,8 @@ def save_combined_plot(
         ax1.barh(
             fp_names, [n_molecules / time[0, -1] for time in times], color="skyblue"
         )
+    else:
+        return
 
     fig.tight_layout()
 
