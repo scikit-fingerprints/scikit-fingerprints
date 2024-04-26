@@ -4949,16 +4949,14 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects. If `use_3D`
-            is True, only Mol objects with computed conformations and with
-            `conf_id` property are allowed.
+            Sequence containing SMILES strings or RDKit Mol objects.
 
         copy : bool, default=False
             Copy the input X or not.
 
         Returns
         -------
-        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+        X : {ndarray, sparse matrix} of shape (n_samples, 4860)
             Array with fingerprints.
         """
         return super().transform(X, copy)

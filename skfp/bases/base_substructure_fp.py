@@ -1,4 +1,3 @@
-from abc import ABC
 from collections.abc import Sequence
 from typing import Optional, Union
 
@@ -77,6 +76,8 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
         self.patterns = patterns
 
     def _validate_params(self) -> None:
+        from rdkit.Chem import MolFromSmarts
+
         super()._validate_params()
         if not all(isinstance(pattern, str) for pattern in self.patterns):
             raise InvalidParameterError(
@@ -86,6 +87,9 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
             raise InvalidParameterError(
                 "The 'patterns' parameter must be a non-empty list of SMARTS patterns."
             )
+        for pattern in self.patterns:
+            if not MolFromSmarts(pattern):
+                raise InvalidParameterError(f"Got invalid SMARTS pattern: '{pattern}'")
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
