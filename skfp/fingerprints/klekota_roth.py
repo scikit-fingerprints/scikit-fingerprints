@@ -5,7 +5,7 @@ import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
-from skfp.bases.base_substructure_fp import BaseSubstructureFingerprint
+from skfp.bases import BaseSubstructureFingerprint
 
 
 class KlekotaRothFingerprint(BaseSubstructureFingerprint):

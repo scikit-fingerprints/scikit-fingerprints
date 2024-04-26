@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils import Interval
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
+from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
 
 

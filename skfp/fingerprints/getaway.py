@@ -7,7 +7,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils import Interval
 
-from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
+from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import require_mols_with_conf_ids
 
 
