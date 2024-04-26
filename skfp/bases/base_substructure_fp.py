@@ -1,22 +1,27 @@
+from abc import ABC
 from collections.abc import Sequence
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
 
-from .base import FingerprintTransformer
 
-
-class SubstructureFingerprint(FingerprintTransformer):
+class BaseSubstructureFingerprint(BaseFingerprintTransformer):
     """
-    Substructure fingerprint.
+    Base class for substructure fingerprints.
 
-    The implementation uses RDKit. Fingerprint tests for presence of provided molecular patterns.
-    Number of features in fingerprint is equal to the number of patterns it was constructed from.
+    The implementation uses RDKit. Fingerprint tests for presence of provided
+    molecular patterns. Number of features in fingerprint is equal to the number
+    of patterns it was constructed from.
+
+    This class is not meant to be used directly. If you want to use custom SMARTS
+    patterns, inherit from this class and pass the ``patterns`` parameter to the
+    parent constructor.
 
     Parameters
     ----------
@@ -45,25 +50,10 @@ class SubstructureFingerprint(FingerprintTransformer):
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.
-
-    Examples
-    --------
-    >>> from skfp.fingerprints import SubstructureFingerprint
-    >>> patterns = ["c", "C", "[OH]", "C(=O)", "[NH2]"]
-    >>> fp = SubstructureFingerprint(patterns)
-    >>> fp
-    SubstructureFingerprint()
-
-    >>> smiles = ["c1ccccc1", "CC", "CC(=O)C", "CCO"]
-    >>> fp.transform(smiles)
-    array([[1, 0, 0, 0, 0],
-           [0, 1, 0, 0, 0],
-           [0, 1, 0, 1, 0],
-           [0, 1, 1, 0, 0]], dtype=uint8)
     """
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "patterns": [list],
     }
 
@@ -90,7 +80,11 @@ class SubstructureFingerprint(FingerprintTransformer):
         super()._validate_params()
         if not all(isinstance(pattern, str) for pattern in self.patterns):
             raise InvalidParameterError(
-                "The 'patterns' parameter must be a sequence of molecular patterns in SMARTS format."
+                "The 'patterns' parameter must be a sequence of SMARTS patterns."
+            )
+        if not self.patterns:
+            raise InvalidParameterError(
+                "The 'patterns' parameter must be a non-empty list of SMARTS patterns."
             )
 
     def transform(

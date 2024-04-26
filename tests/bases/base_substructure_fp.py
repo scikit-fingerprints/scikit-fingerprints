@@ -3,7 +3,7 @@ import pytest
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.fingerprints.substructure_fp import SubstructureFingerprint
+from skfp.bases.base_substructure_fp import BaseSubstructureFingerprint
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def patterns_smarts_list() -> list[str]:
 def test_substructure_count_fingerprint(
     patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
-    fp = SubstructureFingerprint(patterns_smarts_list, count=True)
+    fp = BaseSubstructureFingerprint(patterns_smarts_list, count=True)
     X_count = fp.transform(substructure_smiles_list)
 
     assert isinstance(X_count, np.ndarray)
@@ -52,7 +52,7 @@ def test_substructure_count_fingerprint(
 def test_substructure_bit_fingerprint(
     patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
-    fp = SubstructureFingerprint(patterns_smarts_list, count=False)
+    fp = BaseSubstructureFingerprint(patterns_smarts_list, count=False)
     X_bit = fp.transform(substructure_smiles_list)
 
     assert isinstance(X_bit, np.ndarray)
@@ -72,7 +72,7 @@ def test_substructure_bit_fingerprint(
 def test_substructure_sparse_count_fingerprint(
     patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
-    fp = SubstructureFingerprint(patterns_smarts_list, count=True, sparse=True)
+    fp = BaseSubstructureFingerprint(patterns_smarts_list, count=True, sparse=True)
     X_count = fp.transform(substructure_smiles_list)
 
     assert isinstance(X_count, csr_array)
@@ -92,7 +92,7 @@ def test_substructure_sparse_count_fingerprint(
 def test_substructure_sparse_bit_fingerprint(
     patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
-    fp = SubstructureFingerprint(patterns_smarts_list, count=False, sparse=True)
+    fp = BaseSubstructureFingerprint(patterns_smarts_list, count=False, sparse=True)
     X_bit = fp.transform(substructure_smiles_list)
     assert isinstance(X_bit, csr_array)
     assert X_bit.dtype == np.uint8
@@ -112,20 +112,33 @@ def test_parameter_constraints_enabled(
     patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
     with pytest.raises(InvalidParameterError) as error:
-        fp = SubstructureFingerprint(patterns_smarts_list, count=42)  # type: ignore
+        fp = BaseSubstructureFingerprint(patterns_smarts_list, count=42)  # type: ignore
         fp.transform(substructure_smiles_list)
 
     assert str(error.value).startswith(
-        "The 'count' parameter of SubstructureFingerprint must be an instance of 'bool'"
+        "The 'count' parameter of BaseSubstructureFingerprint must be an instance of 'bool'"
     )
 
 
 def test_pattern_validation(substructure_smiles_list: list[str]):
     invalid_patterns = [1, True, "abc"]
     with pytest.raises(InvalidParameterError) as error:
-        fp = SubstructureFingerprint(invalid_patterns)  # type: ignore
+        fp = BaseSubstructureFingerprint(invalid_patterns)  # type: ignore
+        fp.transform(substructure_smiles_list)
+
+    print(error.value)
+
+    assert str(error.value).startswith(
+        "The 'patterns' parameter must be a sequence of SMARTS patterns."
+    )
+
+
+def test_empty_patterns_list(substructure_smiles_list: list[str]):
+    empty_patterns = []  # type: ignore
+    with pytest.raises(InvalidParameterError) as error:
+        fp = BaseSubstructureFingerprint(empty_patterns)  # type: ignore
         fp.transform(substructure_smiles_list)
 
     assert str(error.value).startswith(
-        "The 'patterns' parameter must be a sequence of molecular patterns in SMARTS format."
+        "The 'patterns' parameter must be a non-empty list of SMARTS patterns."
     )

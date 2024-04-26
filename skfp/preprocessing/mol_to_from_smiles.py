@@ -4,7 +4,7 @@ from typing import Optional
 
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
-from .base import BasePreprocessor
+from skfp.bases.base_preprocessor import BasePreprocessor
 
 
 class MolFromSmilesTransformer(BasePreprocessor):

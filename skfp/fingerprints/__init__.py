@@ -22,6 +22,5 @@ from .pubchem import PubChemFingerprint
 from .rdf import RDFFingerprint
 from .rdk import RDKitFingerprint
 from .secfp import SECFPFingerprint
-from .substructure_fp import SubstructureFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
 from .whim import WHIMFingerprint

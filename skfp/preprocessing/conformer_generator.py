@@ -24,8 +24,8 @@ from rdkit.ForceField import ForceField
 from sklearn.utils import Interval
 from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
+from skfp.bases.base_preprocessor import BasePreprocessor
 from skfp.parallel import run_in_parallel
-from skfp.preprocessing.base import BasePreprocessor
 
 
 class ConformerGenerator(BasePreprocessor):

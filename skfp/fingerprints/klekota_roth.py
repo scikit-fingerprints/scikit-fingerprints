@@ -5,10 +5,10 @@ import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
-from .substructure_fp import SubstructureFingerprint
+from skfp.bases.base_substructure_fp import BaseSubstructureFingerprint
 
 
-class KlekotaRothFingerprint(SubstructureFingerprint):
+class KlekotaRothFingerprint(BaseSubstructureFingerprint):
     """Klekota-Roth Fingerprint
 
     A substructure fingerprint based on [1]. Tests for presence of 4860 predefined
