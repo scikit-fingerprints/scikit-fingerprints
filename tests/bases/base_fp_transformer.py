@@ -2,11 +2,11 @@ import numpy as np
 import pytest
 from sklearn.utils._param_validation import InvalidParameterError
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.fingerprints import AtomPairFingerprint, MACCSFingerprint
-from skfp.fingerprints.base import FingerprintTransformer
 
 """
-We cannot test most of FingerprintTransformer directly, as it is an abstract base
+We cannot test most of BaseFingerprintTransformer directly, as it is an abstract base
 class (ABC), but its methods are used extensively by inheriting classes. Therefore,
 we use inheriting fingerprints as proxies.
 """
@@ -33,7 +33,7 @@ def test_base_invalid_params(smiles_list):
 def test_base_hash_fingerprint_bits():
     X = [1, 2, 3, 4]
     with pytest.raises(ValueError) as exc_info:
-        FingerprintTransformer._hash_fingerprint_bits(
+        BaseFingerprintTransformer._hash_fingerprint_bits(
             X, fp_size=1, count=False, sparse=False
         )
 

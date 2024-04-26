@@ -9,12 +9,11 @@ from scipy.sparse import csr_array
 from sklearn.utils import Interval
 from sklearn.utils._param_validation import InvalidParameterError
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols, require_mols_with_conf_ids
 
-from .base import FingerprintTransformer
 
-
-class AtomPairFingerprint(FingerprintTransformer):
+class AtomPairFingerprint(BaseFingerprintTransformer):
     """
     Atom Pair fingerprint.
 
@@ -143,7 +142,7 @@ class AtomPairFingerprint(FingerprintTransformer):
     """
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "min_distance": [Interval(Integral, 1, None, closed="left")],
         "max_distance": [Interval(Integral, 1, None, closed="left")],

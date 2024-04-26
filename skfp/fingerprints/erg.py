@@ -8,12 +8,11 @@ from scipy.sparse import csr_array
 from sklearn.utils import Interval
 from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
 
-from .base import FingerprintTransformer
 
-
-class ERGFingerprint(FingerprintTransformer):
+class ERGFingerprint(BaseFingerprintTransformer):
     """
     Extended-Reduced Graph (ERG) fingerprint.
 
@@ -139,7 +138,7 @@ class ERGFingerprint(FingerprintTransformer):
     """
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "fuzz_increment": [Interval(Real, 0.0, None, closed="left")],
         "min_path": [Interval(Integral, 1, None, closed="left")],
         "max_path": [Interval(Integral, 1, None, closed="left")],

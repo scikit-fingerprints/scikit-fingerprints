@@ -8,16 +8,15 @@ from scipy.sparse import csr_array
 from sklearn.utils import Interval
 from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
 
-from .base import FingerprintTransformer
 
-
-class MHFPFingerprint(FingerprintTransformer):
+class MHFPFingerprint(BaseFingerprintTransformer):
     """MinHashed FingerPrint (MHFP) transformer."""
 
     _parameter_constraints: dict = {
-        **FingerprintTransformer._parameter_constraints,
+        **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "radius": [Interval(Integral, 0, None, closed="left")],
         "min_radius": [Interval(Integral, 0, None, closed="left")],

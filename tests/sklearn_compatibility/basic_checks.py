@@ -17,7 +17,7 @@ from sklearn.utils.estimator_checks import (
 
 import skfp.fingerprints
 import skfp.preprocessing
-from skfp.fingerprints.base import FingerprintTransformer
+from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 
 """
 Note that many check functions here needed to be copied from Scikit-learn and
@@ -65,7 +65,7 @@ def test_basic_sklearn_checks_for_preprocessors(
         run_checks(preproc_name, fp)
 
 
-def run_checks(fp_name: str, fp: FingerprintTransformer):
+def run_checks(fp_name: str, fp: BaseFingerprintTransformer):
     checks = [
         check_no_attributes_set_in_init,
         check_fit_score_takes_y,
@@ -87,7 +87,7 @@ def run_checks(fp_name: str, fp: FingerprintTransformer):
             raise
 
 
-def check_fit_score_takes_y(name: str, estimator_orig: FingerprintTransformer):
+def check_fit_score_takes_y(name: str, estimator_orig: BaseFingerprintTransformer):
     """
     Check that all estimators accept an optional y in fit and score,
     so they can be used in pipelines.
@@ -113,7 +113,7 @@ def check_fit_score_takes_y(name: str, estimator_orig: FingerprintTransformer):
 
 
 def check_estimators_pickle(
-    name: str, estimator_orig: FingerprintTransformer, readonly_memmap: bool = False
+    name: str, estimator_orig: BaseFingerprintTransformer, readonly_memmap: bool = False
 ):
     """
     Test that we can pickle all estimators.
@@ -154,7 +154,7 @@ def check_estimators_pickle(
 
 
 def check_transformers_unfitted_stateless(
-    name: str, transformer: FingerprintTransformer
+    name: str, transformer: BaseFingerprintTransformer
 ):
     """
     Check that using transform without prior fitting
