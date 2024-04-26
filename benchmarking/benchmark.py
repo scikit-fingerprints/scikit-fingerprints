@@ -18,7 +18,7 @@ DATASET_NAME = "ogbg-molhiv"
 N_SPLITS = 5
 # N_REPEATS - number of test repetitions - for getting average time score
 N_REPEATS = 5
-MAX_CORES = cpu_count()
+MAX_CORES = cpu_count(only_physical_cores=True)
 N_CORES = [2**i for i in range(MAX_CORES.bit_length())]
 if MAX_CORES > N_CORES[-1]:
     N_CORES.append(MAX_CORES)
