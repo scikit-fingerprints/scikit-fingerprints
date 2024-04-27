@@ -2,10 +2,11 @@ from collections.abc import Sequence
 from typing import Optional, Union
 
 import numpy as np
-from rdkit.Chem import Mol
+from rdkit.Chem import GetMolFrags, Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseSubstructureFingerprint
+from skfp.validators import ensure_mols, ensure_smiles
 
 
 class LaggnerFingerprint(BaseSubstructureFingerprint):
@@ -77,6 +78,11 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         n_jobs: Optional[int] = None,
         verbose: int = 0,
     ):
+        # RDKit does not support multi-component SMARTS (with a dot), so we can't match
+        # the salts pattern "([-1,-2,-3,-4,-5,-6,-7]).([+1,+2,+3,+4,+5,+6,+7])"
+        # (position 299); we compute it manually in .transform(), and here temporarily
+        # replace it with a wildcard pattern "*"
+
         # flake8: noqa: E501
         patterns = [
             "[CX4H3][#6]",
@@ -367,8 +373,8 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             "[OX2;$([r5]1@[C@](!@[OX2,NX3,SX2,FX1,ClX1,BrX1,IX1])@C@C@C1),$([r6]1@[C@](!@[OX2,NX3,SX2,FX1,ClX1,BrX1,IX1])@C@C@C@C1)]",
             "*=*[*]=,#,:[*]",
             "*#*[*]=,#,:[*]",
-            "*&#47[D2]=[D2]/*",
-            "*&#47[D2]=[D2]/*",
+            r"*/[D2]=[D2]\*",
+            "*/[D2]=[D2]/*",
             "[$(*=O),$([#16,#14,#5]),$([#7]([#6]=[OX1]))][#8X2][$(*=O),$([#16,#14,#5]),$([#7]([#6]=[OX1]))]",
             "[FX1,ClX1,BrX1,IX1][!#6]",
             "[F,Cl,Br,I;!$([X1]);!$([X0-])]",
@@ -377,7 +383,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             "[!+0]",
             "[-1,-2,-3,-4,-5,-6,-7]",
             "[+1,+2,+3,+4,+5,+6,+7]",
-            "([-1,-2,-3,-4,-5,-6,-7]).([+1,+2,+3,+4,+5,+6,+7])",
+            "*",  # temporarily replaces "([-1,-2,-3,-4,-5,-6,-7]).([+1,+2,+3,+4,+5,+6,+7])",
             "[$([#7X2,OX1,SX1]=*[!H0;!$([a;!n])]),$([#7X3,OX2,SX2;!H0]*=*),$([#7X3,OX2,SX2;!H0]*:n)]",
             "[$([#7X2,OX1,SX1]=,:**=,:*[!H0;!$([a;!n])]),$([#7X3,OX2,SX2;!H0]*=**=*),$([#7X3,OX2,SX2;!H0]*=,:**:n)]",
             "[!$(*#*)&!D1]-!@[!$(*#*)&!D1]",
@@ -416,3 +422,27 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             Array with fingerprints.
         """
         return super().transform(X, copy)
+
+    def _calculate_fingerprint(
+        self, X: Sequence[Union[str, Mol]]
+    ) -> Union[np.ndarray, csr_array]:
+        # temporarily use dense array, setting bits on CSR array is slow
+        sparse = self.sparse
+        try:
+            self.sparse = False
+            fps = super()._calculate_fingerprint(X)
+        finally:
+            self.sparse = sparse
+
+        smiles_list = ensure_smiles(X)
+
+        for idx, smiles in enumerate(smiles_list):
+            # salt = at least two components, has anion and cation
+            # this can only be 0 or 1
+            multi_component = "." in smiles
+            anion = fps[idx, 297]
+            cation = fps[idx, 298]
+            salt = multi_component & anion & cation
+            fps[idx, 299] = salt
+
+        return csr_array(fps) if self.sparse else fps
