@@ -29,6 +29,9 @@ Fingerprint classes
     ERGFingerprint
     EStateFingerprint
     GETAWAYFingerprint
+    GhoseCrippenFingerprint
+    KlekotaRothFingerprint
+    LaggnerFingerprint
     LingoFingerprint
     MACCSFingerprint
     MAPFingerprint

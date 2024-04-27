@@ -2,11 +2,11 @@ from collections.abc import Sequence
 from typing import Optional, Union
 
 import numpy as np
-from rdkit.Chem import GetMolFrags, Mol
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseSubstructureFingerprint
-from skfp.validators import ensure_mols, ensure_smiles
+from skfp.validators import ensure_smiles
 
 
 class LaggnerFingerprint(BaseSubstructureFingerprint):
@@ -14,8 +14,8 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
     Substructure fingerprint with definitions by Christian Laggner.
 
     A substructure fingerprint based on SMARTS patterns for functional group
-    classification, proposed by Christian Laggner [1]. It is also known as
-    SubstructureFingerprint in Chemistry Development Toolkit (CDK) [2].
+    classification, proposed by Christian Laggner [1]_. It is also known as
+    SubstructureFingerprint in Chemistry Development Toolkit (CDK) [2]_.
     It tests for presence of 307 predefined substructures, designed for functional
     groups of organic compounds, for use in similarity searching.
 

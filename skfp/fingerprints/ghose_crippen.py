@@ -13,10 +13,10 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
     Ghose-Crippen fingerprint.
 
     A substructure fingerprint based on 110 atom types proposed by Ghose and
-    Crippen [1][2]. They are defined for carbon, hydrogen, oxygen, nitrogen, sulfur,
+    Crippen [1]_ [2]_. They are defined for carbon, hydrogen, oxygen, nitrogen, sulfur,
     and halogens, and originally applied for predicting molar refractivities and logP.
 
-    RDKit SMARTS patterns definitions are used [3].
+    RDKit SMARTS patterns definitions are used [3]_.
 
     Parameters
     ----------
