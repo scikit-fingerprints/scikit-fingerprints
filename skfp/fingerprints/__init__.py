@@ -8,7 +8,9 @@ from .ecfp import ECFPFingerprint
 from .erg import ERGFingerprint
 from .estate import EStateFingerprint
 from .getaway import GETAWAYFingerprint
+from .ghose_crippen import GhoseCrippenFingerprint
 from .klekota_roth import KlekotaRothFingerprint
+from .laggner import LaggnerFingerprint
 from .layered import LayeredFingerprint
 from .lingo import LingoFingerprint
 from .maccs import MACCSFingerprint
