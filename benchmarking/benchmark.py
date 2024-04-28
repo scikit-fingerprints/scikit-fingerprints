@@ -54,15 +54,16 @@ def get_times_skfp(X: np.ndarray, transformer_cls: type, **kwargs) -> np.ndarray
     return np.array(result).reshape((len(N_CORES), N_SPLITS))
 
 
-LEGAL_PLOT_TYPES = ["time", "speedup", "fprints_per_second"]
+PLOT_TYPES = ["time", "speedup", "fps_per_second"]
 
 
-def save_plots(
+def make_plot(
+    plot_type: str,
     n_molecules: int,
     times: np.ndarray,
     title: str = "",
     save: bool = True,
-    plot_type: str = "time",
+    format="png",
 ) -> None:
     dir_name = plot_type
 
@@ -75,15 +76,15 @@ def save_plots(
     ax1.set_xlabel("Number of molecules")
 
     if plot_type == "time":
-        ax1.set_ylabel("Time of computation")
+        ax1.set_ylabel("Time of computation [s]")
         for i, y in zip(N_CORES, times):
             ax1.plot(X, y, marker="o", label=f"# cores: {i}")
     elif plot_type == "speedup":
         ax1.set_ylabel("Speedup")
         for i, y in zip(N_CORES[1:], times[1:]):
             ax1.plot(X, times[0] / y, marker="o", label=f"# cores: {i}")
-    elif plot_type == "fprints_per_second":
-        ax1.set_ylabel("Fingerprints / s")
+    elif plot_type == "fps_per_second":
+        ax1.set_ylabel("Fingerprints per second")
         for i, y in zip(N_CORES, times):
             ax1.plot(X, X / y, marker="o", label=f"# cores: {i}")
 
@@ -96,19 +97,20 @@ def save_plots(
 
     if save:
         os.makedirs(os.path.join(PLOT_DIR, dir_name), exist_ok=True)
-        plt.savefig(os.path.join(PLOT_DIR, dir_name, f"{title}.png"))
+        plt.savefig(os.path.join(PLOT_DIR, dir_name, f"{title}.{format}"))
     else:
         plt.show()
 
     plt.close(fig)
 
 
-def save_combined_plot(
+def make_combined_plot(
+    type: str,
     n_molecules: int,
     fingerprints: list,
     times: list,
     save: bool = True,
-    type: str = "time",
+    format="png",
 ) -> None:
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
@@ -118,19 +120,19 @@ def save_combined_plot(
     if type == "time":
         file_name = "times_of_sequential_computation"
         ax1.set_xlabel("Time of computation")
-        ax1.set_title("Times of sequential computation for all fingerprints")
+        ax1.set_title("Sequential computation time [s]")
         ax1.barh(fp_names, [time[0, -1] for time in times], color="skyblue")
     elif type == "speedup":
-        file_name = "speedup_for_all_cores"
+        file_name = f"speedup_for_{MAX_CORES}_cores"
         ax1.set_xlabel("speedup")
-        ax1.set_title("Speedup for all fingerprints")
+        ax1.set_title("Speedup")
         ax1.barh(
-            fp_names, [time[-1, 0] / time[-1, -1] for time in times], color="skyblue"
+            fp_names, [time[0, -1] / time[-1, -1] for time in times], color="skyblue"
         )
-    elif type == "fprints_per_second":
+    elif type == "fps_per_second":
         file_name = "fingerprints_per_second_sequential"
-        ax1.set_xlabel("Fingerprints / s")
-        ax1.set_title("Molecules per second for all fingerprints")
+        ax1.set_xlabel("Fingerprints per second")
+        ax1.set_title("Molecules processed per second")
         ax1.barh(
             fp_names, [n_molecules / time[0, -1] for time in times], color="skyblue"
         )
@@ -141,7 +143,7 @@ def save_combined_plot(
 
     if save:
         os.makedirs(PLOT_DIR, exist_ok=True)
-        plt.savefig(os.path.join(PLOT_DIR, f"{file_name}.png"))
+        plt.savefig(os.path.join(PLOT_DIR, f"{file_name}.{format}"))
     else:
         plt.show()
 
@@ -197,29 +199,29 @@ if __name__ == "__main__":
         WHIMFingerprint,
     ]
 
-    times_for_all_fingerprints = []
+    all_times = []
     for fingerprint in fingerprints:
         if not os.path.exists(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy")):
             times = get_times_skfp(X=X, transformer_cls=fingerprint)
             np.save(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"), times)
         else:
             times = np.load(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"))
-        for plot_type in LEGAL_PLOT_TYPES:
-            save_plots(
+        for plot_type in PLOT_TYPES:
+            make_plot(
+                plot_type=plot_type,
                 n_molecules=n_molecules,
                 times=times,
                 title=fingerprint.__name__,
                 save=True,
-                plot_type=plot_type,
             )
-        times_for_all_fingerprints.append(times)
+        all_times.append(times)
 
-    for plot_type in LEGAL_PLOT_TYPES:
-        save_combined_plot(
+    for plot_type in PLOT_TYPES:
+        make_combined_plot(
+            type=plot_type,
             n_molecules=n_molecules,
             fingerprints=fingerprints,
-            times=times_for_all_fingerprints,
-            type=plot_type,
+            times=all_times,
         )
 
     full_time_end = time()
