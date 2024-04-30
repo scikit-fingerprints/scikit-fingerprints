@@ -8,6 +8,7 @@ __pycache__
 *.svg
 *.pdf
 *.csv
+benchmarking/**/*.npy
 
 docs/modules/generated/
 docs/_build/
