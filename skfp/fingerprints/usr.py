@@ -3,14 +3,11 @@ from copy import deepcopy
 from typing import Optional, Union
 
 import numpy as np
-import scipy.sparse
-from joblib import effective_n_jobs
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.parallel import run_in_parallel
 from skfp.validators import require_mols_with_conf_ids
 
 
@@ -53,35 +50,20 @@ class USRFingerprint(BaseFingerprintTransformer):
             X = deepcopy(X)
             y = deepcopy(y)
 
-        # we have no easy way to pass multiple arguments into parallel function,
-        # so we pass list of tuples instead and unpack them later
-        data = list(zip(X, y))
+        X = super().transform(X)
 
-        n_jobs = effective_n_jobs(self.n_jobs)
-        if n_jobs == 1:
-            X, y = self._calculate_fingerprint(data)  # type: ignore
-        else:
-            results = run_in_parallel(
-                self._calculate_fingerprint,
-                data=data,
-                n_jobs=n_jobs,
-                batch_size=self.batch_size,
-                verbose=self.verbose,
-            )
-            X, y = list(zip(*results))  # type: ignore
-            X = scipy.sparse.vstack(X) if self.sparse else np.vstack(X)
-            y = np.concatenate(y)
+        if self.errors == "ignore":
+            # errors are marked as NaN rows
+            idxs_to_keep = [
+                idx for idx, x in enumerate(X) if not np.any(np.isnan(x.data))
+            ]
+            X = X[idxs_to_keep]
+            y = y[idxs_to_keep]
 
         return X, y
 
-    def _calculate_fingerprint(
-        self, X: Sequence[tuple[Mol, np.ndarray]]  # type: ignore
-    ) -> tuple[Union[np.ndarray, csr_array], np.ndarray]:
+    def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import GetUSR
-
-        X, y = list(zip(*X))
-        X = list(X)
-        y = np.array(y)
 
         X = require_mols_with_conf_ids(X)
 
@@ -89,7 +71,7 @@ class USRFingerprint(BaseFingerprintTransformer):
 
         if self.errors == "raise":
             fps = [get_usr(mol) for mol in X]
-        elif self.errors == "NaN":
+        else:  # self.errors in {"NaN", "ignore"}
             fps = []
             for mol in X:
                 try:
@@ -97,18 +79,5 @@ class USRFingerprint(BaseFingerprintTransformer):
                 except ValueError:
                     fp = np.full(self.n_features_out, np.NaN)
                 fps.append(fp)
-        else:  # self.errors == "ignore"
-            fps = []
-            idxs_to_keep = []
-            for idx, mol in enumerate(X):
-                try:
-                    fps.append(get_usr(mol))
-                    idxs_to_keep.append(idx)
-                except ValueError:
-                    pass
-            y = y[idxs_to_keep] if idxs_to_keep else np.empty(0)
 
-        if self.sparse:
-            return csr_array(fps, dtype=np.float32), y
-        else:
-            return np.array(fps, dtype=np.float32), y
+        return csr_array(fps) if self.sparse else np.array(fps)
