@@ -235,7 +235,7 @@ class ConformerGenerator(BasePreprocessor):
             as input ``n_samples``, but can be less if conformer generation failed and
             ``error_on_gen_fail`` is False.
         """
-        y = np.zeros(len(X))
+        y = np.empty(len(X))
         X, y = self._transform(X, y, copy)
         return X
 
