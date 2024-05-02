@@ -51,6 +51,7 @@ class USRFingerprint(BaseFingerprintTransformer):
     ) -> tuple[Union[np.ndarray, csr_array], np.ndarray]:
         if copy:
             X = deepcopy(X)
+            y = deepcopy(y)
 
         # we have no easy way to pass multiple arguments into parallel function,
         # so we pass list of tuples instead and unpack them later
