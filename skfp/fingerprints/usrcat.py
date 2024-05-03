@@ -22,14 +22,12 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     def __init__(
         self,
         errors: str = "raise",
-        sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         super().__init__(
             n_features_out=60,
-            sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
@@ -67,17 +65,15 @@ class USRCATFingerprint(BaseFingerprintTransformer):
 
         X = require_mols_with_conf_ids(X)
 
-        get_usr = lambda mol: GetUSRCAT(mol, confId=mol.GetIntProp("conf_id"))
-
         if self.errors == "raise":
-            fps = [get_usr(mol) for mol in X]
+            fps = [GetUSRCAT(mol, confId=mol.GetIntProp("conf_id")) for mol in X]
         else:  # self.errors in {"NaN", "ignore"}
             fps = []
             for mol in X:
                 try:
-                    fp = get_usr(mol)
+                    fp = GetUSRCAT(mol, confId=mol.GetIntProp("conf_id"))
                 except ValueError:
                     fp = np.full(self.n_features_out, np.NaN)
                 fps.append(fp)
 
-        return csr_array(fps) if self.sparse else np.array(fps)
+        return np.array(fps)
