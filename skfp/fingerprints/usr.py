@@ -16,7 +16,7 @@ class USRFingerprint(BaseFingerprintTransformer):
     USR (Ultrafast Shape Recognition) fingerprint.
 
     The implementation uses RDKit. This fingerprint characterizes the shape of the
-    molecule by encoding the relative positions of its atoms [1]_, [2]_. Four points
+    molecule by encoding the relative positions of its atoms [1]_ [2]_. Four points
     are considered: molecular centroid (ctd), the closest atom to centroid (cst), the
     farthest atom from centroid (fct), and atom the fartest from fct (ftf). Distances
     from all atoms to each of those four points are computed, and each of those

@@ -45,6 +45,8 @@ Fingerprint classes
     RDKitFingerprint
     SECFPFingerprint
     TopologicalTorsionFingerprint
+    USRFingerprint
+    USRCATFingerprint
     WHIMFingerprint
 
 
