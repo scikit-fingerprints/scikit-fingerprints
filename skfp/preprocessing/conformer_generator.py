@@ -144,7 +144,7 @@ class ConformerGenerator(BasePreprocessor):
     def __init__(
         self,
         num_conformers: int = 1,
-        max_gen_attempts: int = 10000,
+        max_gen_attempts: int = 1000,
         error_on_gen_fail: bool = True,
         optimize_force_field: Optional[str] = None,
         multiple_confs_select: Optional[str] = "min_energy",
@@ -235,7 +235,7 @@ class ConformerGenerator(BasePreprocessor):
             as input ``n_samples``, but can be less if conformer generation failed and
             ``error_on_gen_fail`` is False.
         """
-        y = np.zeros(len(X))
+        y = np.empty(len(X))
         X, y = self._transform(X, y, copy)
         return X
 
@@ -319,7 +319,8 @@ class ConformerGenerator(BasePreprocessor):
             conf_id = embedder(mol, params=embed_params)
 
         if conf_id == -1:
-            # turn off conditions
+            # even more tries, turn off conditions
+            embed_params.maxIterations = 10 * self.max_gen_attempts
             embed_params.enforceChirality = False
             embed_params.ignoreSmoothingFailures = True
             conf_id = embedder(mol, params=embed_params)

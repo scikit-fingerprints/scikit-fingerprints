@@ -26,4 +26,6 @@ from .rdf import RDFFingerprint
 from .rdk import RDKitFingerprint
 from .secfp import SECFPFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
+from .usr import USRFingerprint
+from .usrcat import USRCATFingerprint
 from .whim import WHIMFingerprint

@@ -13,7 +13,13 @@ def test_individual_set_output(mols_conformers_list):
         if not inspect.isclass(obj):
             continue
 
-        fp = obj()
+        # USR and USRCAT don't work for molecules with 3 or fewer atoms, so we use
+        # NaNs there
+        if "USR" in name:
+            fp = obj(errors="NaN")
+        else:
+            fp = obj()
+
         fp.set_output(transform="pandas")
         output = fp.transform(mols_conformers_list)
         if not isinstance(output, pd.DataFrame):
@@ -32,8 +38,13 @@ def test_global_set_output(mols_conformers_list):
             if not inspect.isclass(obj):
                 continue
 
-            # check that class properly sets the output format
-            fp = obj()
+            # USR and USRCAT don't work for molecules with 3 or fewer atoms, so we use
+            # NaNs there
+            if "USR" in name:
+                fp = obj(errors="NaN")
+            else:
+                fp = obj()
+
             output = fp.transform(mols_conformers_list)
             if not isinstance(output, pd.DataFrame):
                 raise AssertionError(

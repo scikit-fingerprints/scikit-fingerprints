@@ -1,6 +1,7 @@
 import inspect
 import pickle
 from functools import partial
+from typing import Type
 
 import numpy as np
 from sklearn import clone
@@ -38,12 +39,18 @@ def test_basic_sklearn_checks_for_fingerprints(mols_conformers_list):
     X = mols_conformers_list[:n_samples]
     y = np.arange(n_samples) % 2
 
-    for fp_name, obj in inspect.getmembers(skfp.fingerprints):
+    for name, obj in inspect.getmembers(skfp.fingerprints):
         if not inspect.isclass(obj):
             continue
 
-        fp = obj()
-        run_checks(fp_name, fp)
+        # USR and USRCAT don't work for molecules with 3 or fewer atoms, so we use
+        # NaNs there
+        if "USR" in name:
+            fp = obj(errors="NaN")
+        else:
+            fp = obj()
+
+        run_checks(name, fp)
 
 
 def test_basic_sklearn_checks_for_preprocessors(
@@ -52,17 +59,17 @@ def test_basic_sklearn_checks_for_preprocessors(
     global X, y
     y = np.arange(n_samples) % 2
 
-    for preproc_name, obj in inspect.getmembers(skfp.preprocessing):
+    for name, obj in inspect.getmembers(skfp.preprocessing):
         if not inspect.isclass(obj):
             continue
 
-        if "MolFromSmiles" in preproc_name:
+        if "MolFromSmiles" in name:
             X = smallest_smiles_list[:n_samples]
         else:
             X = smallest_mols_list[:n_samples]
 
         fp = obj()
-        run_checks(preproc_name, fp)
+        run_checks(name, fp)
 
 
 def run_checks(fp_name: str, fp: BaseFingerprintTransformer):
