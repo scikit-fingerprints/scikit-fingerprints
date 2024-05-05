@@ -7,6 +7,7 @@ from .e3fp_fp import E3FPFingerprint
 from .ecfp import ECFPFingerprint
 from .erg import ERGFingerprint
 from .estate import EStateFingerprint
+from .functional_groups import FunctionalGroupsFingerprint
 from .getaway import GETAWAYFingerprint
 from .ghose_crippen import GhoseCrippenFingerprint
 from .klekota_roth import KlekotaRothFingerprint

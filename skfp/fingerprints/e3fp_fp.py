@@ -127,9 +127,9 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     >>> mols = conf_gen.transform(mols)
     >>> fp.transform(mols)
     array([[0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0],
-       [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
     """
 
     _parameter_constraints: dict = {
