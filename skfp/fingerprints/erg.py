@@ -132,9 +132,9 @@ class ERGFingerprint(BaseFingerprintTransformer):
 
     >>> fp.transform(smiles)
     array([[0., 0., 0., ..., 0., 0., 0.],
-       [0., 0., 0., ..., 0., 0., 0.],
-       [0., 0., 0., ..., 0., 0., 0.],
-       [0., 0., 0., ..., 0., 0., 0.]])
+           [0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.]])
     """
 
     _parameter_constraints: dict = {

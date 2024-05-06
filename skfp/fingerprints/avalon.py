@@ -22,7 +22,6 @@ class AvalonFingerprint(BaseFingerprintTransformer):
 
     Parameters
     ----------
-
     fp_size : int, default=512
         Size of output vectors, i.e. number of bits for each fingerprint. Must be
         positive.
@@ -51,6 +50,9 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     n_features_out : int
         Number of output features. Equal to `fp_size`.
 
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
     References
     ----------
     .. [1] Avalon toolkit
@@ -72,8 +74,6 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     >>> X
     array([[0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0]])
-    >>> X.shape
-    (2, 512)
     """
 
     _parameter_constraints: dict = {

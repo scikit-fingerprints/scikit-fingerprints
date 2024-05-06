@@ -76,7 +76,7 @@ class LingoFingerprint(BaseFingerprintTransformer):
     LingoFingerprint()
     >>> fp.transform(smiles)
     array([[0, 0, 0, ..., 0, 0, 0],
-       [0, 1, 0, ..., 0, 0, 0]], dtype=uint8)
+           [0, 1, 0, ..., 0, 0, 0]], dtype=uint8)
     """
 
     _parameter_constraints: dict = {
