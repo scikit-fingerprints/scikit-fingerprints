@@ -43,7 +43,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         X = ensure_mols(X)
 
-        X = [self._get_pubchem_fingerprint(x) for x in X]
+        X = [self._get_pubchem_fingerprint(mol) for mol in X]
         return csr_array(X) if self.sparse else np.vstack(X)
 
     def _get_pubchem_fingerprint(self, mol: Mol) -> Union[np.ndarray, csr_array]:

@@ -42,7 +42,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
 
         X = ensure_mols(X)
 
-        X = np.array([FingerprintMol(x) for x in X])
+        X = np.array([FingerprintMol(mol) for mol in X])
         if self.variant == "bit":
             X = (X[:, 0] > 0).astype(np.uint8)
         elif self.variant == "count":

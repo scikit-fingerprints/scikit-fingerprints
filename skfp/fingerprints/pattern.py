@@ -5,7 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
+from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -47,9 +47,9 @@ class PatternFingerprint(BaseFingerprintTransformer):
         X = ensure_mols(X)
         X = [
             RDKitPatternFingerprint(
-                x, fpSize=self.fp_size, tautomerFingerprints=self.tautomers
+                mol, fpSize=self.fp_size, tautomerFingerprints=self.tautomers
             )
-            for x in X
+            for mol in X
         ]
 
         if self.sparse:

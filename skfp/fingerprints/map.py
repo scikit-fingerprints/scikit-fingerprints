@@ -12,8 +12,7 @@ from rdkit.Chem import MolToSmiles, PathToSubmol
 from rdkit.Chem.rdchem import Mol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
-from sklearn.utils._param_validation import StrOptions
+from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -63,7 +62,9 @@ class MAPFingerprint(BaseFingerprintTransformer):
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         X = ensure_mols(X)
-        X = np.stack([self._calculate_single_mol_fingerprint(x) for x in X], dtype=int)
+        X = np.stack(
+            [self._calculate_single_mol_fingerprint(mol) for mol in X], dtype=int
+        )
 
         if self.variant == "bit":
             X = (X > 0).astype(np.uint8)

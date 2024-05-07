@@ -5,8 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
-from sklearn.utils._param_validation import InvalidParameterError, StrOptions
+from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -189,12 +188,12 @@ class ERGFingerprint(BaseFingerprintTransformer):
         X = np.array(
             [
                 GetErGFingerprint(
-                    x,
+                    mol,
                     fuzzIncrement=fuzz,
                     minPath=self.min_path,
                     maxPath=self.max_path,
                 )
-                for x in X
+                for mol in X
             ]
         )
 

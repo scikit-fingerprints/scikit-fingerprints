@@ -5,7 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
+from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -129,9 +129,9 @@ class AvalonFingerprint(BaseFingerprintTransformer):
         X = ensure_mols(X)
 
         if self.count:
-            X = [GetAvalonCountFP(x, nBits=self.fp_size).ToList() for x in X]
+            X = [GetAvalonCountFP(mol, nBits=self.fp_size).ToList() for mol in X]
         else:
-            X = [GetAvalonFP(x, nBits=self.fp_size) for x in X]
+            X = [GetAvalonFP(mol, nBits=self.fp_size) for mol in X]
 
         dtype = np.uint32 if self.count else np.uint8
 

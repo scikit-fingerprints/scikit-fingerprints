@@ -10,8 +10,7 @@ from e3fp.pipeline import fprints_from_mol
 from rdkit import RDLogger
 from rdkit.Chem import Mol, MolToSmiles
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
-from sklearn.utils._param_validation import InvalidParameterError
+from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import require_mols_with_conf_ids

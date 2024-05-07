@@ -5,7 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
+from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -62,8 +62,12 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
         )
 
         if self.count:
-            X = [gen.GetCountFingerprintAsNumPy(x) for x in X]
+            X = [gen.GetCountFingerprintAsNumPy(mol) for mol in X]
         else:
-            X = [gen.GetFingerprintAsNumPy(x) for x in X]
+            X = [gen.GetFingerprintAsNumPy(mol) for mol in X]
 
-        return csr_array(X) if self.sparse else np.array(X)
+        dtype = np.uint32 if self.count else np.uint8
+        if self.sparse:
+            return csr_array(X, dtype=dtype)
+        else:
+            return np.array(X, dtype=dtype)

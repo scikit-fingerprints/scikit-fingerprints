@@ -26,6 +26,7 @@ from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
 from skfp.bases import BasePreprocessor
 from skfp.parallel import run_in_parallel
+from skfp.validators import ensure_mols
 
 
 class ConformerGenerator(BasePreprocessor):
@@ -247,6 +248,8 @@ class ConformerGenerator(BasePreprocessor):
         if copy:
             X = deepcopy(X)
             y = deepcopy(y)
+
+        X = ensure_mols(X)
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:

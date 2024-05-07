@@ -8,7 +8,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
+from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_smiles
@@ -143,18 +143,18 @@ class LingoFingerprint(BaseFingerprintTransformer):
             List of dictionaries containing substring counts.
         """
         X = ensure_smiles(X)
-        # we are doing this according to the original paper
-        # which aimed for reducing the number of possible substrings
-        # and improving statistical sampling in the QSPR models.
-        X = [re.sub(r"[123456789]", "0", x) for x in X]
-        X = [re.sub(r"Cl", "L", x) for x in X]
-        X = [re.sub(r"Br", "R", x) for x in X]
+
+        # based on the original paper, we reduce the number of possible substrings
+        # to improve statistical sampling in the QSPR models
+        X = [re.sub(r"[123456789]", "0", smi) for smi in X]
+        X = [re.sub(r"Cl", "L", smi) for smi in X]
+        X = [re.sub(r"Br", "R", smi) for smi in X]
 
         result = []
-        for smiles in X:
+        for smi in X:
             result_dict: defaultdict[str, int] = defaultdict(int)
-            for i in range(len(smiles) - self.substring_length + 1):
-                result_dict[smiles[i : i + self.substring_length]] += 1
+            for i in range(len(smi) - self.substring_length + 1):
+                result_dict[smi[i : i + self.substring_length]] += 1
             result.append(dict(result_dict))
 
         return result

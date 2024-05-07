@@ -43,7 +43,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
         X = ensure_mols(X)
 
         calc = Calculator(descriptors, ignore_3D=not self.use_3D)
-        X = [calc(x) for x in X]
+        X = [calc(mol) for mol in X]
 
         return (
             csr_array(X, dtype=np.float32)

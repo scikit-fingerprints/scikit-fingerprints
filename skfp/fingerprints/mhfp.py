@@ -5,8 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
-from sklearn.utils._param_validation import InvalidParameterError, StrOptions
+from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -86,7 +85,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
 
         if self.variant in {"bit", "count"}:
             X = np.mod(X, self.fp_size)
-            X = np.stack([np.bincount(x, minlength=self.fp_size) for x in X])
+            X = np.stack([np.bincount(fp, minlength=self.fp_size) for fp in X])
             if self.variant == "bit":
                 X = (X > 0).astype(np.uint8)
             else:
