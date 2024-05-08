@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scikit-fingerprints"
-version = "1.5.0"
+version = "1.4.1"
 description = "Library for effective molecular fingerprints calculation"
 authors = [
     "Scikit-Fingerprints Development Team <scikitfingerprints@gmail.com>",
