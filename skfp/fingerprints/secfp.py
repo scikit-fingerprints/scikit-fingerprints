@@ -5,8 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
-from sklearn.utils._param_validation import InvalidParameterError
+from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -72,7 +71,7 @@ class SECFPFingerprint(BaseFingerprintTransformer):
         encoder = MHFPEncoder(self.fp_size, self.random_state)
         X = [
             encoder.EncodeSECFPMol(
-                x,
+                mol,
                 length=self.fp_size,
                 radius=self.radius,
                 min_radius=self.min_radius,
@@ -80,7 +79,7 @@ class SECFPFingerprint(BaseFingerprintTransformer):
                 isomeric=self.isomeric,
                 kekulize=self.kekulize,
             )
-            for x in X
+            for mol in X
         ]
 
         if self.sparse:

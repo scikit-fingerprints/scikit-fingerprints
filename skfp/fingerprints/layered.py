@@ -5,8 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils import Interval
-from sklearn.utils._param_validation import InvalidParameterError
+from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
@@ -63,13 +62,13 @@ class LayeredFingerprint(BaseFingerprintTransformer):
         X = ensure_mols(X)
         X = [
             RDKitLayeredFingerprint(
-                x,
+                mol,
                 fpSize=self.fp_size,
                 minPath=self.min_path,
                 maxPath=self.max_path,
                 branchedPaths=self.branched_paths,
             )
-            for x in X
+            for mol in X
         ]
 
         if self.sparse:

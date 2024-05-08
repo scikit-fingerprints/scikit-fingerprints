@@ -5,6 +5,7 @@ from typing import Optional
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 from skfp.bases import BasePreprocessor
+from skfp.validators import ensure_mols, ensure_smiles
 
 
 class MolFromSmilesTransformer(BasePreprocessor):
@@ -24,10 +25,11 @@ class MolFromSmilesTransformer(BasePreprocessor):
     def transform(self, X: Sequence[str], copy: bool = False) -> list[Mol]:
         # no parallelization, too fast to benefit from it
         self._validate_params()
+        X = ensure_smiles(X)
         replacements = self.replacements if self.replacements else {}
         return [
-            MolFromSmiles(x, sanitize=self.sanitize, replacements=replacements)
-            for x in X
+            MolFromSmiles(smi, sanitize=self.sanitize, replacements=replacements)
+            for smi in X
         ]
 
 
@@ -63,9 +65,10 @@ class MolToSmilesTransformer(BasePreprocessor):
     def transform(self, X: Sequence[Mol], copy: bool = False) -> list[str]:
         # no parallelization, too fast to benefit from it
         self._validate_params()
+        X = ensure_mols(X)
         return [
             MolToSmiles(
-                x,
+                mol,
                 isomericSmiles=self.isomeric_smiles,
                 kekuleSmiles=self.kekule_smiles,
                 rootedAtAtom=self.rooted_at_atom,
@@ -74,5 +77,5 @@ class MolToSmilesTransformer(BasePreprocessor):
                 allHsExplicit=self.all_hs_explicit,
                 doRandom=self.do_random,
             )
-            for x in X
+            for mol in X
         ]
