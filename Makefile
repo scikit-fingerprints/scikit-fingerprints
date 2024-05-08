@@ -9,7 +9,7 @@ install-dev: ## Install development dependencies, pre-commit hooks and poetry pl
 	pre-commit install
 
 docs: ## Re-generate documentation
-	rm -r docs/modules/generated
+	rm -r docs/modules/generated || true
 	$(MAKE) -C docs clean html
 
 test-coverage: ## Run tests and calculate test coverage
