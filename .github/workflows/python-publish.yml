@@ -21,16 +21,6 @@ jobs:
     - name: Install Poetry
       uses: abatilo/actions-poetry@v3
 
-    # - name: Configure Poetry for TestPyPI
-    #   run: >-
-    #     poetry config repositories.testpypi https://test.pypi.org/legacy/
-    #     && poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_API_TOKEN }}
-
-    # - name: Build and publish to TestPyPI
-    #   run: >-
-    #     poetry build
-    #     && poetry publish --repository testpypi
-
     - name: Configure Poetry for PyPI
       run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
 
