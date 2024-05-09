@@ -1,20 +1,20 @@
 name: Publish Python package to PyPI
 
 on:
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch: # allow running manually from the Actions tab
+  release:
+    types: [published]
+
+permissions:
+  contents: read
 
 jobs:
-  build-and-publish:
-    name: Publish Python package to PyPI
+  deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
 
     - name: Set up Python 3.9
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v5
       with:
         python-version: 3.9
 
@@ -25,7 +25,6 @@ jobs:
       run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
 
     - name: Build and publish to PyPI
-      if: startsWith(github.ref, 'refs/tags')
       run: >-
         poetry build
         && poetry publish
