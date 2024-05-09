@@ -14,6 +14,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.duration",
     "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
 ]
 
 autodoc_default_options = {
@@ -28,6 +29,10 @@ exclude_patterns = [
     "_build",
     "Thumbs.db",
 ]
+
+intersphinx_mapping = {
+    "sklearn": ("https://scikit-learn.org/stable/", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 
