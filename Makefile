@@ -1,20 +1,23 @@
-.PHONY: install-dev docs help
+.PHONY: setup docs test test-coverage help
 .DEFAULT_GOAL := help
 
-install-dev: ## Install development dependencies, pre-commit hooks and poetry plugin
+setup: ## Install development dependencies, pre-commit hooks and poetry plugin
 	# check if poetry is installed
 	poetry --version || (echo "Poetry is not installed. Please install it from https://python-poetry.org/docs/#installation" && exit 1)
-	poetry install --with dev,doc --sync --no-root
+	poetry install --with dev,doc --sync
 	poetry self add poetry-plugin-sort
-	pre-commit install
+	poetry run pre-commit install
 
 docs: ## Re-generate documentation
-	rm -r docs/modules/generated || true
-	$(MAKE) -C docs clean html
+	-rm -r docs/modules/generated
+	poetry run $(MAKE) -C docs clean html
+
+test: ## Run tests
+	poetry run pytest tests
 
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files
-	pytest --cov=skfp tests
+	poetry run pytest --cov=skfp tests
 	-rm -rf .tmp_coverage_files
 
 help:
