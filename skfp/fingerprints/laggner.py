@@ -51,7 +51,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         OpenBabel
         <https://raw.githubusercontent.com/openbabel/openbabel/master/data/SMARTS_InteLigand.txt>`_
 
-    .. [1] `egonw
+    .. [2] `egonw
         "SubstructureFingerprinter"
         Chemistry Development Toolkit (CDK) API reference
         <https://cdk.github.io/cdk/1.5/docs/api/org/openscience/cdk/fingerprint/SubstructureFingerprinter.html>`_
