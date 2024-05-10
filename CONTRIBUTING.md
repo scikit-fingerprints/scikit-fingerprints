@@ -11,7 +11,7 @@ collaboration.
 ### Reporting Issues
 
 If you find a bug, have a question, or want to propose a new feature, please open an issue on
-our [GitHub repository](https://github.com/Arch4ngel21/scikit-fingerprints.git). Be sure to include as much detail as
+our [GitHub repository](https://github.com/scikit-fingerprints/scikit-fingerprints.git). Be sure to include as much detail as
 possible, such as a clear description, steps to reproduce the issue, and any relevant screenshots or error messages.
 
 ### Pull Requests
@@ -72,7 +72,7 @@ For other operating systems, please refer to Makefile for the commands to run.
 
 ### Testing
 
-Before submitting a pull request, please make sure to run the tests to ensure that your changes do not introduce
+Before submitting a pull request, make sure to run the tests to ensure that your changes do not introduce
 regressions.
 To run tests, execute `make test` in the main directory of the repository.
 If necessary, add new tests to cover your code. Also, please be sure that you do not violate any code style
@@ -84,8 +84,7 @@ If you are contributing new features or changes, please update the documentation
 the documentation in the `docs` directory.
 
 Run `make docs` in the main directory of the repository to build the documentation. This command will generate HTML
-files in
-the `docs/_build/html` directory.
+files in the `docs/_build/html` directory.
 
 To view the documentation, open the `docs/_build/html/index.html` file in your browser.
 
@@ -98,4 +97,4 @@ action if necessary to maintain a welcoming and respectful community.
 
 By contributing to this project, you agree that your contributions will be licensed under the MIT License.
 
-Thank you for your contribution! Your efforts help make Scikit-Fingerprints library better for everyone.
+Thank you for your contribution! Your efforts help make scikit-fingerprints library better for everyone.

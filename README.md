@@ -32,11 +32,13 @@ chemical analysis. However, existing Python libraries for computing molecular fi
 user-friendliness, and support for modern programming standards. This project aims to address these shortcomings by
 creating an efficient and accessible Python library for molecular fingerprint computation.
 
+You can find the documentation [HERE](https://scikit-fingerprints.github.io/scikit-fingerprints/)
+
 - The library offers various functions that accept molecule descriptors (e.g., SMILES) and fingerprint parameters,
   returning the specified fingerprints.
 - It's open-source and available for installation via pip.
 - The library has been designed for ease of use, minimizing the need for extensive training.
-- Compatibility with the standard Python ML stack, based on Scikit-Learn interfaces, has been a top priority.
+- Compatibility with the standard Python ML stack, based on scikit-learn interfaces, has been a top priority.
 
 ## Supported platforms
 
