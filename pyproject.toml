@@ -9,13 +9,19 @@ authors = [
     "Piotr Ludynia <piotrztych@gmail.com>",
     "Michal Szafarczyk <adammichal657@gmail.com>",
 ]
-repository = "https://github.com/Arch4ngel21/scikit-fingerprints"
+repository = "https://github.com/scikit-fingerprints/scikit-fingerprints"
+documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints/"
+keywords = ["molecular fingerprints", "molecular descriptors", "cheminformatics"]
 license = "MIT"
 packages = [
     { include = "skfp" }
 ]
 
 readme = "README.md"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
+
 
 [tool.poetry.dependencies]
 python = "^3.9"

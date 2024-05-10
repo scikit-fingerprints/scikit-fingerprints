@@ -1,17 +1,25 @@
 # scikit-fingerprints
 
-A Python library for efficient computation of molecular fingerprints
+[![PyPI version](https://badge.fury.io/py/scikit-fingerprints.svg)](https://badge.fury.io/py/scikit-fingerprints)
+[![](https://img.shields.io/pypi/dm/scikit-fingerprints)](https://pypi.org/project/scikit-fingerprints/)
+[![Downloads](https://static.pepy.tech/badge/scikit-fingerprints)](https://pepy.tech/project/scikit-fingerprints)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/pypi/scikit-fingerprints)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE.md)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/scikit-fingerprints.svg)](https://pypi.org/project/scikit-fingerprints/)
+[![Contributors](https://img.shields.io/github/contributors/scikit-fingerprints/scikit-fingerprints)](https://github.com/scikit-fingerprints/scikit-fingerprints/graphs/contributors)
+[![check](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/python-test.yml/badge.svg)](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/python-test.yml)
 
-Click [HERE](https://scikit-fingerprints.github.io/scikit-fingerprints/) to see the Documentation.
+[scikit-fingerprints](https://scikit-fingerprints.github.io/scikit-fingerprints/) is a Python library for efficient
+computation of molecular fingerprints.
 
 ## Table of Contents
 
 - [Description](#description)
-- [General Project Vision](#general-project-vision)
-- [Library Description](#library-description)
+- [Supported platforms](#supported-platforms)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Technologies Used](#technologies-used)
+- [Basic Usage](#basic-usage)
+- [General Project Vision](#general-project-vision)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -23,6 +31,14 @@ Molecular fingerprints are crucial in various scientific fields, including drug 
 chemical analysis. However, existing Python libraries for computing molecular fingerprints often lack performance,
 user-friendliness, and support for modern programming standards. This project aims to address these shortcomings by
 creating an efficient and accessible Python library for molecular fingerprint computation.
+
+You can find the documentation [HERE](https://scikit-fingerprints.github.io/scikit-fingerprints/)
+
+- The library offers various functions that accept molecule descriptors (e.g., SMILES) and fingerprint parameters,
+  returning the specified fingerprints.
+- It's open-source and available for installation via pip.
+- The library has been designed for ease of use, minimizing the need for extensive training.
+- Compatibility with the standard Python ML stack, based on scikit-learn interfaces, has been a top priority.
 
 ## Supported platforms
 
@@ -38,6 +54,18 @@ You can install the library using pip:
 
 ```bash
 pip install scikit-fingerprints
+```
+
+## Basic Usage
+```python
+from skfp.fingerprints import AtomPairFingerprint
+
+smiles_list = ['O=S(=O)(O)CCS(=O)(=O)O', 'O=C(O)c1ccccc1O']
+
+atom_pair_fingerprint = AtomPairFingerprint()
+X_skfp = atom_pair_fingerprint.transform(smiles_list)
+
+print(X_skfp)
 ```
 
 ## General Project Vision
@@ -56,14 +84,6 @@ features:
   compatibility and familiarity for users familiar with these tools.
 
 - **Extensibility:** Users should be able to customize and extend the library to suit their specific needs.
-
-## Library Description
-
-- The library offers various functions that accept molecule descriptors (e.g., SMILES) and fingerprint parameters,
-  returning the specified fingerprints.
-- It's open-source and available for installation via pip.
-- The library has been designed for ease of use, minimizing the need for extensive training.
-- Compatibility with the standard Python ML stack, based on Scikit-Learn interfaces, has been a top priority.
 
 ## Contributing
 
