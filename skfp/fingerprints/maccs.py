@@ -17,9 +17,15 @@ class MACCSFingerprint(BaseFingerprintTransformer):
     publicly available MDL definitions, and refined by Greg Landrum for RDKit [1]_.
     Note that full public definitions are not available, and packages differ [2]_.
 
+    Only 165 out of 167 bits are used. 0th bit is always zero, to keep 1-based
+    indexing. 1st bit is also always zero, since it means "ISOTOPE", not supported
+    by RDKit. Consider removing them before to further processing, e.g. using
+    ``VarianceThreshold``.
+
     Count variant is an original one. It counts substructures instead of only checking
     for their existence. It also has fewer features, because RDKit MACCS has separate
-    features checking e.g. the number of oxygens. The ordering of features also differs.
+    features checking e.g. the number of oxygens. The ordering of features also differs,
+    and there are no constant zero features.
 
     Parameters
     ----------
@@ -40,8 +46,8 @@ class MACCSFingerprint(BaseFingerprintTransformer):
 
     Attributes
     ----------
-    n_features_out : int = 166 or 159.
-        Number of output features, size of fingerprints. Equal to 166 for the bit
+    n_features_out : int = 167 or 159.
+        Number of output features, size of fingerprints. Equal to 167 for the bit
         variant, and 159 for count.
 
     requires_conformers : bool = False
@@ -79,7 +85,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-        n_features_out = 159 if count else 166
+        n_features_out = 159 if count else 167
         super().__init__(
             n_features_out=n_features_out,
             count=count,
