@@ -15,7 +15,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
 
     A substructure fingerprint based on SMARTS patterns for functional group
     classification, proposed by Christian Laggner [1]_. It is also known as
-    SubstructureFingerprint in Chemistry Development Toolkit (CDK) [2]_.
+    SubstructureFingerprint in Chemistry Development Kit (CDK) [2]_.
     It tests for presence of 307 predefined substructures, designed for functional
     groups of organic compounds, for use in similarity searching.
 
@@ -53,7 +53,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
 
     .. [2] `egonw
         "SubstructureFingerprinter"
-        Chemistry Development Toolkit (CDK) API reference
+        Chemistry Development Kit (CDK) API reference
         <https://cdk.github.io/cdk/1.5/docs/api/org/openscience/cdk/fingerprint/SubstructureFingerprinter.html>`_
 
     Examples

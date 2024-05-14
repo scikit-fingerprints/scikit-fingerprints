@@ -16,7 +16,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
 
     This is a custom implementation of descriptor-based PubChem substructure
     fingerprint, based on official PubChem definitions [1]_ and Chemistry Development
-    Toolkit (CDK) implementation [2]_, including fixes proposed by Andrew Dalke [3]_.
+    Kit (CDK) implementation [2]_, including fixes proposed by Andrew Dalke [3]_.
     In particular, it works correctly with implicit hydrogens.
 
     Results can be slightly different from PubChem API due to usage of RDKit aromaticity
@@ -61,7 +61,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
     .. [1] PubChem Substructure Fingerprint
         https://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
 
-    .. [2] Chemistry Development Toolkit (CDK) PubchemFingerprinter
+    .. [2] Chemistry Development Kit (CDK) PubchemFingerprinter
         https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/PubchemFingerprinter.html
 
     .. [3] `Andrew Dalke
