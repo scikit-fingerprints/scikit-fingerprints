@@ -122,7 +122,6 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
 
     .. [3] `Greg Landrum
         "Simulating count fingerprints"
-        RDKit blog 2021
         <https://greglandrum.github.io/rdkit-blog/posts/2021-07-06-simulating-counts.html>`_
 
     Examples
