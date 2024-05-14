@@ -10,7 +10,66 @@ from skfp.validators import ensure_mols
 
 
 class MACCSFingerprint(BaseFingerprintTransformer):
-    """MACCS fingerprint."""
+    """
+    MACCS fingerprint.
+
+    The implementation uses RDKit. This is a substructure fingerprint, based on
+    publicly available MDL definitions, and refined by Greg Landrum for RDKit [1]_.
+    Note that full public definitions are not available, and packages differ [2]_.
+
+    Count variant is an original one. It counts substructures instead of only checking
+    for their existence. It also has fewer features, because RDKit MACCS has separate
+    features checking e.g. the number of oxygens. The ordering of features also differs.
+
+    Parameters
+    ----------
+    count : bool, default=False
+        Whether to return binary (bit) features, or the count-based variant.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    verbose : int, default=0
+        Controls the verbosity when computing fingerprints.
+
+    Attributes
+    ----------
+    n_features_out : int = 166 or 159.
+        Number of output features, size of fingerprints. Equal to 166 for the bit
+        variant, and 159 for count.
+
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    References
+    ----------
+    .. [1] RDKit MACCS implementation
+        https://github.com/rdkit/rdkit/blob/3457c1eb60846ea821e4a319f3505933027d3cf8/rdkit/Chem/MACCSkeys.py
+
+    .. [2] Andrew Dalke
+        "MACCS key 44"
+        http://www.dalkescientific.com/writings/diary/archive/2014/10/17/maccs_key_44.html
+
+    Examples
+    --------
+    >>> from skfp.fingerprints import MACCSFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = MACCSFingerprint()
+    >>> fp
+    MACCSFingerprint()
+
+    >>> fp.transform(smiles)
+    array([[0, 0, 0, ..., 1, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 1, 0, 0]], dtype=uint8)
+    """
 
     def __init__(
         self,
@@ -46,6 +105,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)
 
     def _get_maccs_patterns_counts(self, mol: Mol) -> list[int]:
+        # flake8: noqa: E501
         smarts_list = [
             None,  # fragments
             None,  # atomic num >103 - idx 0
@@ -173,9 +233,9 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             "[C;H2,H3][!#6;!#1][C;H2,H3]",  # CH2QCH2
             "[#8]~*~*~*~[#8]",  # OAAAO
             # QHAACH2A
-            "[$([!#6;!#1;!H0]~*~*~[CH2]~*),$([!#6;!#1;!H0;R]1@[R]@[R]@[CH2;R]1),$([!#6;!#1;!H0]~[R]1@[R]@[CH2;R]1)]",  # noqa: E501
+            "[$([!#6;!#1;!H0]~*~*~[CH2]~*),$([!#6;!#1;!H0;R]1@[R]@[R]@[CH2;R]1),$([!#6;!#1;!H0]~[R]1@[R]@[CH2;R]1)]",
             # QHAAACH2A
-            "[$([!#6;!#1;!H0]~*~*~*~[CH2]~*),$([!#6;!#1;!H0;R]1@[R]@[R]@[R]@[CH2;R]1),$([!#6;!#1;!H0]~[R]1@[R]@[R]@[CH2;R]1),$([!#6;!#1;!H0]~*~[R]1@[R]@[CH2;R]1)]",  # noqa: E501
+            "[$([!#6;!#1;!H0]~*~*~*~[CH2]~*),$([!#6;!#1;!H0;R]1@[R]@[R]@[R]@[CH2;R]1),$([!#6;!#1;!H0]~[R]1@[R]@[R]@[CH2;R]1),$([!#6;!#1;!H0]~*~[R]1@[R]@[CH2;R]1)]",
             "[#8]~[#6](~[#7])~[#6]",  # OC(N)C
             "[!#6;!#1]~[CH3]",  # QCH3
             "[#7]~*~*~[#8]",  # NAAO
@@ -196,7 +256,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             "[$([CH3]~*~*~[CH2]~*),$([CH3]~*1~*~[CH2]1)]",  # CH3AACH2A
             "[$(*~[CH2]~[CH2]~*),$(*1~[CH2]~[CH2]1)]",  # ACH2CH2A
             "*~[#7](~*)~*",  # AN(A)A
-            "[$(*~[CH2]~*~*~*~[CH2]~*),$([R]1@[CH2;R]@[R]@[R]@[R]@[CH2;R]1),$(*~[CH2]~[R]1@[R]@[R]@[CH2;R]1),$(*~[CH2]~*~[R]1@[R]@[CH2;R]1)]",  # noqa: E501
+            "[$(*~[CH2]~*~*~*~[CH2]~*),$([R]1@[CH2;R]@[R]@[R]@[R]@[CH2;R]1),$(*~[CH2]~[R]1@[R]@[R]@[CH2;R]1),$(*~[CH2]~*~[R]1@[R]@[CH2;R]1)]",
             # ACH2AAACH2A
             "[$(*~[CH2]~*~*~[CH2]~*),$([R]1@[CH2]@[R]@[R]@[CH2;R]1),$(*~[CH2]~[R]1@[R]@[CH2;R]1)]",  # ACH2AACH2A
             "[#8]~*~[CH2]~*",  # OACH2A

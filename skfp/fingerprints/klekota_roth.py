@@ -9,7 +9,8 @@ from skfp.bases import BaseSubstructureFingerprint
 
 
 class KlekotaRothFingerprint(BaseSubstructureFingerprint):
-    """Klekota-Roth Fingerprint
+    """
+    Klekota-Roth Fingerprint
 
     A substructure fingerprint based on [1]_. Tests for presence of 4860 predefined
     substructures which are predisposed for bioactivity.
