@@ -57,6 +57,7 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] Avalon toolkit
         https://sourceforge.net/projects/avalontoolkit/
+
     .. [2] `Gedeck, Peter, Bernhard Rohde, and Christian Bartels
         "QSAR − How Good Is It in Practice? Comparison of Descriptor Sets on an Unbiased
         Cross Section of Corporate Data Sets."
