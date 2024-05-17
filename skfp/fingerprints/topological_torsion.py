@@ -141,7 +141,7 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
         """
-        Compute Atom Pair fingerprints.
+        Compute Topological Torsion fingerprints.
 
         Parameters
         ----------
