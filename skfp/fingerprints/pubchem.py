@@ -3,23 +3,85 @@ from collections.abc import Sequence
 from typing import Optional, Union
 
 import numpy as np
-from rdkit.Chem import AddHs, Mol
+from rdkit.Chem import GetSymmSSSR, Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.validators import ensure_mols
 
-"""
-Note: this fingerprint may give slightly different vectors than PubChem API!
-This is because we use aromaticity models from RDKit, and ring features may
-be counted differently due to this. This is typically only a very small subset
-of bits, though. In particular, all SMARTS patterns exactly follow the original
-NCGC (NIH) Java code.
-"""
-
 
 class PubChemFingerprint(BaseFingerprintTransformer):
-    """PubChem fingerprint."""
+    """
+    PubChem fingerprint, also known as CACTVS fingerprint.
+
+    This is a custom implementation of descriptor-based PubChem substructure
+    fingerprint, based on official PubChem definitions [1]_ and Chemistry Development
+    Kit (CDK) implementation [2]_, including fixes proposed by Andrew Dalke [3]_.
+    In particular, it works correctly with implicit hydrogens.
+
+    Results can be slightly different from PubChem API due to usage of RDKit aromaticity
+    model and symmetrized SSSR.
+
+    Count version of this fingerprint uses counts instead of inequalities (e.g. count
+    of carbons instead of C>=2, C>=4, ..., C>=32), and counts occurrences of SMARTS
+    patterns (substructures) instead of only checking for their existence.
+
+    Parameters
+    ----------
+    count : bool, default=False
+        Whether to return binary (bit) features, or the count-based variant.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    verbose : int, default=0
+        Controls the verbosity when computing fingerprints.
+
+    Attributes
+    ----------
+    n_features_out : int = 881 or 757.
+        Number of output features, size of fingerprints. Equal to 881 for the bit
+        variant, and 757 for count.
+
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    References
+    ----------
+    .. [1] PubChem Substructure Fingerprint
+        https://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
+
+    .. [2] Chemistry Development Kit (CDK) PubchemFingerprinter
+        https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/PubchemFingerprinter.html
+
+    .. [3] `Andrew Dalke
+        "Implementing the CACTVS/PubChem substructure keys"
+        <http://www.dalkescientific.com/writings/diary/archive/2011/01/20/implementing_cactvs_keys.html>`_
+
+    Examples
+    --------
+    >>> from skfp.fingerprints import PubChemFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = PubChemFingerprint()
+    >>> fp
+    PubChemFingerprint()
+
+    >>> fp.transform(smiles)
+    array([[0, 0, 0, ..., 0, 0, 0],
+           [1, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [1, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+    """
 
     def __init__(
         self,
@@ -29,8 +91,9 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
+        n_features_out = 757 if count else 881
         super().__init__(
-            n_features_out=881,
+            n_features_out=n_features_out,
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
@@ -47,9 +110,6 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         return csr_array(X) if self.sparse else np.vstack(X)
 
     def _get_pubchem_fingerprint(self, mol: Mol) -> Union[np.ndarray, csr_array]:
-        # PubChem's definition requires hydrogens to be present
-        mol = AddHs(mol)
-
         atom_counts = self._get_atom_counts(mol)
         ring_counts = self._get_ESSSR_ring_counts(mol)
         atom_pair_counts = self._get_atom_pair_counts(mol)
@@ -285,13 +345,14 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         counts: dict[str, int] = defaultdict(int)
         for atom in mol.GetAtoms():
             counts[atom.GetSymbol()] += 1
+            counts["H"] += atom.GetNumImplicitHs()  # implicit hydrogens
+
         return counts
 
     def _get_ESSSR_ring_counts(self, mol: Mol) -> dict[str, int]:
         counts: dict[str, int] = defaultdict(int)
 
-        ring_info = mol.GetRingInfo()
-        for ring in ring_info.BondRings():
+        for ring in GetSymmSSSR(mol):
             ring = self._get_ring_stats(mol, ring)
             size = ring["size"]
 
@@ -340,8 +401,10 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "has_heteroatom": False,
         }
 
-        for bond_idx in ring:
-            bond = mol.GetBondWithIdx(bond_idx)
+        for i, atom_idx in enumerate(ring):
+            atom_idx_2 = ring[i + 1] if i + 1 < len(ring) else ring[0]
+
+            bond = mol.GetBondBetweenAtoms(atom_idx, atom_idx_2)
             atom_1_type = bond.GetBeginAtom().GetSymbol()
             atom_2_type = bond.GetEndAtom().GetSymbol()
 
@@ -438,27 +501,27 @@ class PubChemFingerprint(BaseFingerprintTransformer):
 
     def _get_atom_pair_counts(self, mol: Mol) -> list[int]:
         smarts_list = [
-            "[Li]~[H]",
+            "[Li&!H0]",
             "[Li]~[Li]",
-            "[Li]~[B]",
+            "[Li]~[#5]",
             "[Li]~[#6]",
             "[Li]~[#8]",
             "[Li]~[F]",
             "[Li]~[#15]",
             "[Li]~[#16]",
             "[Li]~[Cl]",
-            "[#5]~[H]",
+            "[#5&!H0]",
             "[#5]~[#5]",
             "[#5]~[#6]",
             "[#5]~[#7]",
             "[#5]~[#8]",
             "[#5]~[F]",
-            "[#5]~[Si]",
+            "[#5]~[#14]",
             "[#5]~[#15]",
             "[#5]~[#16]",
             "[#5]~[Cl]",
             "[#5]~[Br]",
-            "[#6]~[H]",
+            "[#6&!H0]",
             "[#6]~[#6]",
             "[#6]~[#7]",
             "[#6]~[#8]",
@@ -466,42 +529,42 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#6]~[Na]",
             "[#6]~[Mg]",
             "[#6]~[Al]",
-            "[#6]~[Si]",
+            "[#6]~[#14]",
             "[#6]~[#15]",
             "[#6]~[#16]",
             "[#6]~[Cl]",
-            "[#6]~[As]",
-            "[#6]~[Se]",
+            "[#6]~[#33]",
+            "[#6]~[#34]",
             "[#6]~[Br]",
             "[#6]~[I]",
-            "[#7]~[H]",
+            "[#7&!H0]",
             "[#7]~[#7]",
             "[#7]~[#8]",
             "[#7]~[F]",
-            "[#7]~[Si]",
+            "[#7]~[#14]",
             "[#7]~[#15]",
             "[#7]~[#16]",
             "[#7]~[Cl]",
             "[#7]~[Br]",
-            "[#8]~[H]",
+            "[#8&!H0]",
             "[#8]~[#8]",
             "[#8]~[Mg]",
             "[#8]~[Na]",
             "[#8]~[Al]",
-            "[#8]~[Si]",
+            "[#8]~[#14]",
             "[#8]~[#15]",
             "[#8]~[K]",
             "[F]~[#15]",
             "[F]~[#16]",
-            "[Al]~[H]",
+            "[Al&!H0]",
             "[Al]~[Cl]",
-            "[Si]~[H]",
-            "[Si]~[Si]",
-            "[Si]~[Cl]",
-            "[#15]~[H]",
+            "[#14&!H0]",
+            "[#14]~[#14]",
+            "[#14]~[Cl]",
+            "[#15&!H0]",
             "[#15]~[#15]",
-            "[As]~[H]",
-            "[As]~[As]",
+            "[#33&!H0]",
+            "[#33]~[#33]",
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
@@ -509,52 +572,52 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         smarts_list = [
             "[#6](~Br)(~[#6])",
             "[#6](~Br)(~[#6])(~[#6])",
-            "[#6](~[Br])([H])",
+            "[#6&!H0]~[Br]",
             "[#6](~[Br])(:[c])",
             "[#6](~[Br])(:[n])",
             "[#6](~[#6])(~[#6])",
             "[#6](~[#6])(~[#6])(~[#6])",
             "[#6](~[#6])(~[#6])(~[#6])(~[#6])",
-            "[#6](~[#6])(~[#6])(~[#6])([H])",
+            "[#6H1](~[#6])(~[#6])(~[#6])",
             "[#6](~[#6])(~[#6])(~[#6])(~[#7])",
             "[#6](~[#6])(~[#6])(~[#6])(~[#8])",
-            "[#6](~[#6])(~[#6])([H])(~[#7])",
-            "[#6](~[#6])(~[#6])([H])(~[#8])",
+            "[#6H1](~[#6])(~[#6])(~[#7])",
+            "[#6H1](~[#6])(~[#6])(~[#8])",
             "[#6](~[#6])(~[#6])(~[#7])",
             "[#6](~[#6])(~[#6])(~[#8])",
             "[#6](~[#6])(~[Cl])",
-            "[#6](~[#6])(~[Cl])([H])",
-            "[#6](~[#6])([H])",
-            "[#6](~[#6])([H])(~[#7])",
-            "[#6](~[#6])([H])(~[#8])",
-            "[#6](~[#6])([H])(~[#8])(~[#8])",
-            "[#6](~[#6])([H])(~[#15])",
-            "[#6](~[#6])([H])(~[#16])",
+            "[#6&!H0](~[#6])(~[Cl])",
+            "[#6H,#6H2,#6H3,#6H4]~[#6]",
+            "[#6&!H0](~[#6])(~[#7])",
+            "[#6&!H0](~[#6])(~[#8])",
+            "[#6H1](~[#6])(~[#8])(~[#8])",
+            "[#6&!H0](~[#6])(~[#15])",
+            "[#6&!H0](~[#6])(~[#16])",
             "[#6](~[#6])(~[I])",
             "[#6](~[#6])(~[#7])",
             "[#6](~[#6])(~[#8])",
             "[#6](~[#6])(~[#16])",
-            "[#6](~[#6])(~[Si])",
+            "[#6](~[#6])(~[#14])",
             "[#6](~[#6])(:c)",
             "[#6](~[#6])(:c)(:c)",
             "[#6](~[#6])(:c)(:n)",
             "[#6](~[#6])(:n)",
             "[#6](~[#6])(:n)(:n)",
             "[#6](~[Cl])(~[Cl])",
-            "[#6](~[Cl])([H])",
+            "[#6&!H0](~[Cl])",
             "[#6](~[Cl])(:c)",
             "[#6](~[F])(~[F])",
             "[#6](~[F])(:c)",
-            "[#6]([H])(~[#7])",
-            "[#6]([H])(~[#8])",
-            "[#6]([H])(~[#8])(~[#8])",
-            "[#6]([H])(~[#16])",
-            "[#6]([H])(~[Si])",
-            "[#6]([H])(:c)",
-            "[#6]([H])(:c)(:c)",
-            "[#6]([H])(:c)(:n)",
-            "[#6]([H])(:n)",
-            "[#6]([H])([H])([H])",
+            "[#6&!H0](~[#7])",
+            "[#6&!H0](~[#8])",
+            "[#6&!H0](~[#8])(~[#8])",
+            "[#6&!H0](~[#16])",
+            "[#6&!H0](~[#14])",
+            "[#6&!H0]:c",
+            "[#6&!H0](:c)(:c)",
+            "[#6&!H0](:c)(:n)",
+            "[#6&!H0](:n)",
+            "[#6H3]",
             "[#6](~[#7])(~[#7])",
             "[#6](~[#7])(:c)",
             "[#6](~[#7])(:c)(:c)",
@@ -572,30 +635,30 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#6](:n)(:n)",
             "[#7](~[#6])(~[#6])",
             "[#7](~[#6])(~[#6])(~[#6])",
-            "[#7](~[#6])(~[#6])([H])",
-            "[#7](~[#6])([H])",
-            "[#7](~[#6])([H])(~[#7])",
+            "[#7&!H0](~[#6])(~[#6])",
+            "[#7&!H0](~[#6])",
+            "[#7&!H0](~[#6])(~[#7])",
             "[#7](~[#6])(~[#8])",
             "[#7](~[#6])(:c)",
             "[#7](~[#6])(:c)(:c)",
-            "[#7]([H])(~[#7])",
-            "[#7]([H])(:c)",
-            "[#7]([H])(:c)(:c)",
+            "[#7&!H0](~[#7])",
+            "[#7&!H0](:c)",
+            "[#7&!H0](:c)(:c)",
             "[#7](~[#8])(~[#8])",
             "[#7](~[#8])(:o)",
             "[#7](:c)(:c)",
             "[#7](:c)(:c)(:c)",
             "[#8](~[#6])(~[#6])",
-            "[#8](~[#6])([H])",
+            "[#8&!H0](~[#6])",
             "[#8](~[#6])(~[#15])",
-            "[#8]([H])(~[#16])",
+            "[#8&!H0](~[#16])",
             "[#8](:c)(:c)",
             "[#15](~[#6])(~[#6])",
             "[#15](~[#8])(~[#8])",
             "[#16](~[#6])(~[#6])",
-            "[#16](~[#6])([H])",
+            "[#16&!H0](~[#6])",
             "[#16](~[#6])(~[#8])",
-            "[Si](~[#6])(~[#6])",
+            "[#14](~[#6])(~[#6])",
         ]
         return self._get_smarts_match_counts(mol, smarts_list)
 
@@ -613,15 +676,15 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#15]=,:[#8]",
             "[#15]=,:[#15]",
             "[#6](#[#6])(-,:[#6])",
-            "[#6](#[#6])([H])",
+            "[#6&!H0](#[#6])",
             "[#6](#[#7])(-,:[#6])",
             "[#6](-,:[#6])(-,:[#6])(=,:[#6])",
             "[#6](-,:[#6])(-,:[#6])(=,:[#7])",
             "[#6](-,:[#6])(-,:[#6])(=,:[#8])",
             "[#6](-,:[#6])([Cl])(=,:[#8])",
-            "[#6](-,:[#6])([H])(=,:[#6])",
-            "[#6](-,:[#6])([H])(=,:[#7])",
-            "[#6](-,:[#6])([H])(=,:[#8])",
+            "[#6&!H0](-,:[#6])(=,:[#6])",
+            "[#6&!H0](-,:[#6])(=,:[#7])",
+            "[#6&!H0](-,:[#6])(=,:[#8])",
             "[#6](-,:[#6])(-,:[#7])(=,:[#6])",
             "[#6](-,:[#6])(-,:[#7])(=,:[#7])",
             "[#6](-,:[#6])(-,:[#7])(=,:[#8])",
@@ -630,10 +693,10 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#6](-,:[#6])(=,:[#7])",
             "[#6](-,:[#6])(=,:[#8])",
             "[#6]([Cl])(=,:[#8])",
-            "[#6]([H])(-,:[#7])(=,:[#6])",
-            "[#6]([H])(=,:[#6])",
-            "[#6]([H])(=,:[#7])",
-            "[#6]([H])(=,:[#8])",
+            "[#6&!H0](-,:[#7])(=,:[#6])",
+            "[#6&!H0](=,:[#6])",
+            "[#6&!H0](=,:[#7])",
+            "[#6&!H0](=,:[#8])",
             "[#6](-,:[#7])(=,:[#6])",
             "[#6](-,:[#7])(=,:[#7])",
             "[#6](-,:[#7])(=,:[#8])",
@@ -653,7 +716,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#6]-,:[#6]-,:[#6]#[#6]",
             "[#8]-,:[#6]-,:[#6]=,:[#7]",
             "[#8]-,:[#6]-,:[#6]=,:[#8]",
-            "[#7]:[#6]-,:[#16]-[#1]",
+            "[#7]:[#6]-,:[#16&!H0]",
             "[#7]-,:[#6]-,:[#6]=,:[#6]",
             "[#8]=,:[#16]-,:[#6]-,:[#6]",
             "[#7]#[#6]-,:[#6]=,:[#6]",
@@ -668,7 +731,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#16]-,:[#6]=,:[#7]-,:[#6]",
             "[#6]-,:[#8]-,:[#6]=,:[#6]",
             "[#7]-,:[#7]-,:[#6]:[#6]",
-            "[#16]-,:[#6]=,:[#7]-,:[#1]",
+            "[#16]-,:[#6]=,:[#7&!H0]",
             "[#16]-,:[#6]-,:[#16]-,:[#6]",
             "[#6]:[#16]:[#6]-,:[#6]",
             "[#8]-,:[#16]-,:[#6]:[#6]",
@@ -678,65 +741,65 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#7]:[#6]:[#6]:[#7]",
             "[#7]-,:[#6]:[#7]:[#7]",
             "[#7]-,:[#6]=,:[#7]-,:[#6]",
-            "[#7]-,:[#6]=,:[#7]-,:[#1]",
+            "[#7]-,:[#6]=,:[#7&!H0]",
             "[#7]-,:[#6]-,:[#16]-,:[#6]",
             "[#6]-,:[#6]-,:[#6]=,:[#6]",
-            "[#6]-,:[#7]:[#6]-,:[#1]",
+            "[#6]-,:[#7]:[#6&!H0]",
             "[#7]-,:[#6]:[#8]:[#6]",
             "[#8]=,:[#6]-,:[#6]:[#6]",
             "[#8]=,:[#6]-,:[#6]:[#7]",
             "[#6]-,:[#7]-,:[#6]:[#6]",
-            "[#7]:[#7]-,:[#6]-,:[#1]",
+            "[#7]:[#7]-,:[#6&!H0]",
             "[#8]-,:[#6]:[#6]:[#7]",
             "[#8]-,:[#6]=,:[#6]-,:[#6]",
             "[#7]-,:[#6]:[#6]:[#7]",
             "[#6]-,:[#16]-,:[#6]:[#6]",
             "[Cl]-,:[#6]:[#6]-,:[#6]",
-            "[#7]-,:[#6]=,:[#6]-,:[#1]",
-            "[Cl]-,:[#6]:[#6]-,:[#1]",
+            "[#7]-,:[#6]=,:[#6&!H0]",
+            "[Cl]-,:[#6]:[#6&!H0]",
             "[#7]:[#6]:[#7]-,:[#6]",
             "[Cl]-,:[#6]:[#6]-,:[#8]",
             "[#6]-,:[#6]:[#7]:[#6]",
             "[#6]-,:[#6]-,:[#16]-,:[#6]",
             "[#16]=,:[#6]-,:[#7]-,:[#6]",
             "[Br]-,:[#6]:[#6]-,:[#6]",
-            "[#1]-,:[#7]-,:[#7]-,:[#1]",
-            "[#16]=,:[#6]-,:[#7]-,:[#1]",
-            "[#6]-,:[As]-[#8]-,:[#1]",
-            "[#16]:[#6]:[#6]-,:[#1]",
+            "[#7&!H0]-,:[#7&!H0]",
+            "[#16]=,:[#6]-,:[#7&!H0]",
+            "[#6]-,:[#33]-[#8&!H0]",
+            "[#16]:[#6]:[#6&!H0]",
             "[#8]-,:[#7]-,:[#6]-,:[#6]",
             "[#7]-,:[#7]-,:[#6]-,:[#6]",
-            "[#1]-,:[#6]=,:[#6]-,:[#1]",
+            "[#6H,#6H2,#6H3]=,:[#6H,#6H2,#6H3]",
             "[#7]-,:[#7]-,:[#6]-,:[#7]",
             "[#8]=,:[#6]-,:[#7]-,:[#7]",
             "[#7]=,:[#6]-,:[#7]-,:[#6]",
             "[#6]=,:[#6]-,:[#6]:[#6]",
-            "[#6]:[#7]-,:[#6]-,:[#1]",
-            "[#6]-,:[#7]-,:[#7]-,:[#1]",
+            "[#6]:[#7]-,:[#6&!H0]",
+            "[#6]-,:[#7]-,:[#7&!H0]",
             "[#7]:[#6]:[#6]-,:[#6]",
             "[#6]-,:[#6]=,:[#6]-,:[#6]",
-            "[As]-,:[#6]:[#6]-,:[#1]",
+            "[#33]-,:[#6]:[#6&!H0]",
             "[Cl]-,:[#6]:[#6]-,:[Cl]",
-            "[#6]:[#6]:[#7]-,:[#1]",
-            "[#1]-,:[#7]-,:[#6]-,:[#1]",
+            "[#6]:[#6]:[#7&!H0]",
+            "[#7&!H0]-,:[#6&!H0]",
             "[Cl]-,:[#6]-,:[#6]-,:[Cl]",
             "[#7]:[#6]-,:[#6]:[#6]",
             "[#16]-,:[#6]:[#6]-,:[#6]",
-            "[#16]-,:[#6]:[#6]-,:[#1]",
+            "[#16]-,:[#6]:[#6&!H0]",
             "[#16]-,:[#6]:[#6]-,:[#7]",
             "[#16]-,:[#6]:[#6]-,:[#8]",
             "[#8]=,:[#6]-,:[#6]-,:[#6]",
             "[#8]=,:[#6]-,:[#6]-,:[#7]",
             "[#8]=,:[#6]-,:[#6]-,:[#8]",
             "[#7]=,:[#6]-,:[#6]-,:[#6]",
-            "[#7]=,:[#6]-,:[#6]-,:[#1]",
-            "[#6]-,:[#7]-,:[#6]-,:[#1]",
+            "[#7]=,:[#6]-,:[#6&!H0]",
+            "[#6]-,:[#7]-,:[#6&!H0]",
             "[#8]-,:[#6]:[#6]-,:[#6]",
-            "[#8]-,:[#6]:[#6]-,:[#1]",
+            "[#8]-,:[#6]:[#6&!H0]",
             "[#8]-,:[#6]:[#6]-,:[#7]",
             "[#8]-,:[#6]:[#6]-,:[#8]",
             "[#7]-,:[#6]:[#6]-,:[#6]",
-            "[#7]-,:[#6]:[#6]-,:[#1]",
+            "[#7]-,:[#6]:[#6&!H0]",
             "[#7]-,:[#6]:[#6]-,:[#7]",
             "[#8]-,:[#6]-,:[#6]:[#6]",
             "[#7]-,:[#6]-,:[#6]:[#6]",
@@ -747,9 +810,9 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[Br]-,:[#6]-,:[#6]-,:[#6]",
             "[#7]=,:[#6]-,:[#6]=,:[#6]",
             "[#6]=,:[#6]-,:[#6]-,:[#6]",
-            "[#7]:[#6]-,:[#8]-,:[#1]",
+            "[#7]:[#6]-,:[#8&!H0]",
             "[#8]=,:[#7]-,:c:c",
-            "[#8]-,:[#6]-,:[#7]-,:[#1]",
+            "[#8]-,:[#6]-,:[#7&!H0]",
             "[#7]-,:[#6]-,:[#7]-,:[#6]",
             "[Cl]-,:[#6]-,:[#6]=,:[#8]",
             "[Br]-,:[#6]-,:[#6]=,:[#8]",
@@ -761,12 +824,12 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "N#[#6]-,:[#6]-,:[#6]",
             "[#7]-,:[#6]-,:[#6]-,:[#7]",
             "[#6]:[#6]-,:[#6]-,:[#6]",
-            "[#1]-[#6]-,:[#8]-,:[#1]",
+            "[#6&!H0]-,:[#8&!H0]",
             "n:c:n:c",
             "[#8]-,:[#6]-,:[#6]=,:[#6]",
             "[#8]-,:[#6]-,:[#6]:[#6]-,:[#6]",
             "[#8]-,:[#6]-,:[#6]:[#6]-,:[#8]",
-            "[#7]=,:[#6]-,:[#6]:[#6]-,:[#1]",
+            "[#7]=,:[#6]-,:[#6]:[#6&!H0]",
             "c:c-,:[#7]-,:c:c",
             "[#6]-,:[#6]:[#6]-,:c:c",
             "[#8]=,:[#6]-,:[#6]-,:[#6]-,:[#6]",
@@ -777,10 +840,10 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "c:c-,:[#6]=,:[#6]-,:[#6]",
             "[#6]-,:[#6]:[#6]-,:[#7]-,:[#6]",
             "[#6]-,:[#16]-,:[#6]-,:[#6]-,:[#6]",
-            "[#7]-,:[#6]:[#6]-,:[#8]-,:[#1]",
+            "[#7]-,:[#6]:[#6]-,:[#8&!H0]",
             "[#8]=,:[#6]-,:[#6]-,:[#6]=,:[#8]",
             "[#6]-,:[#6]:[#6]-,:[#8]-,:[#6]",
-            "[#6]-,:[#6]:[#6]-,:[#8]-,:[#1]",
+            "[#6]-,:[#6]:[#6]-,:[#8&!H0]",
             "[Cl]-,:[#6]-,:[#6]-,:[#6]-,:[#6]",
             "[#7]-,:[#6]-,:[#6]-,:[#6]-,:[#6]",
             "[#7]-,:[#6]-,:[#6]-,:[#6]-,:[#7]",
@@ -789,7 +852,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#7]=,:[#6]-,:[#7]-,:[#6]-,:[#6]",
             "[#8]=,:[#6]-,:[#6]-,:c:c",
             "[Cl]-,:[#6]:[#6]:[#6]-,:[#6]",
-            "[#1]-,:[#6]-,:[#6]=,:[#6]-,:[#1]",
+            "[#6H,#6H2,#6H3]-,:[#6]=,:[#6H,#6H2,#6H3]",
             "[#7]-,:[#6]:[#6]:[#6]-,:[#6]",
             "[#7]-,:[#6]:[#6]:[#6]-,:[#7]",
             "[#8]=,:[#6]-,:[#6]-,:[#7]-,:[#6]",
@@ -807,7 +870,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#6]-,:[#6]-,:[#8]-,:[#6]-,:[#6]",
             "[#7]-,:[#6]-,:[#6]-,:[#8]-,:[#6]",
             "c:c:n:n:c",
-            "[#6]-,:[#6]-,:[#6]-,:[#8]-,:[#1]",
+            "[#6]-,:[#6]-,:[#6]-,:[#8&!H0]",
             "c:[#6]-,:[#6]-,:[#6]:c",
             "[#8]-,:[#6]-,:[#6]=,:[#6]-,:[#6]",
             "c:c-,:[#8]-,:[#6]-,:[#6]",
@@ -817,15 +880,15 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#8]=,:[#6]-,:[#6]:[#6]-,:[#7]",
             "[#8]=,:[#6]-,:[#6]:[#6]-,:[#8]",
             "[#6]-,:[#8]-,:[#6]:[#6]-,:[#6]",
-            "[#8]=,:[As]-,:[#6]:c:c",
+            "[#8]=,:[#33]-,:[#6]:c:c",
             "[#6]-,:[#7]-,:[#6]-,:[#6]:c",
             "[#16]-,:[#6]:c:c-,:[#7]",
             "[#8]-,:[#6]:[#6]-,:[#8]-,:[#6]",
-            "[#8]-,:[#6]:[#6]-,:[#8]-,:[#1]",
+            "[#8]-,:[#6]:[#6]-,:[#8&!H0]",
             "[#6]-,:[#6]-,:[#8]-,:[#6]:c",
             "[#7]-,:[#6]-,:[#6]:[#6]-,:[#6]",
             "[#6]-,:[#6]-,:[#6]:[#6]-,:[#6]",
-            "[#7]-,:[#7]-,:[#6]-,:[#7]-[#1]",
+            "[#7]-,:[#7]-,:[#6]-,:[#7&!H0]",
             "[#6]-,:[#7]-,:[#6]-,:[#7]-,:[#6]",
             "[#8]-,:[#6]-,:[#6]-,:[#6]-,:[#6]",
             "[#8]-,:[#6]-,:[#6]-,:[#6]-,:[#7]",
@@ -833,10 +896,10 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#6]=,:[#6]-,:[#6]-,:[#6]-,:[#6]",
             "[#8]-,:[#6]-,:[#6]-,:[#6]=,:[#6]",
             "[#8]-,:[#6]-,:[#6]-,:[#6]=,:[#8]",
-            "[#1]-[#6]-,:[#6]-,:[#7]-,:[#1]",
+            "[#6&!H0]-,:[#6]-,:[#7&!H0]",
             "[#6]-,:[#6]=,:[#7]-,:[#7]-,:[#6]",
             "[#8]=,:[#6]-,:[#7]-,:[#6]-,:[#6]",
-            "[#8]=,:[#6]-,:[#7]-,:[#6]-,:[#1]",
+            "[#8]=,:[#6]-,:[#7]-,:[#6&!H0]",
             "[#8]=,:[#6]-,:[#7]-,:[#6]-,:[#7]",
             "[#8]=,:[#7]-,:[#6]:[#6]-,:[#7]",
             "[#8]=,:[#7]-,:c:c-,:[#8]",
@@ -853,16 +916,16 @@ class PubChemFingerprint(BaseFingerprintTransformer):
             "[#6]-,:[#6]=,:[#6]-,:[#6]-,:[#6]",
             "[#8]-,:[#6]-,:[#8]-,:[#6]-,:[#6]",
             "[#8]-,:[#6]-,:[#6]-,:[#8]-,:[#6]",
-            "[#8]-,:[#6]-,:[#6]-,:[#8]-,:[#1]",
+            "[#8]-,:[#6]-,:[#6]-,:[#8&!H0]",
             "[#6]-,:[#6]=,:[#6]-,:[#6]=,:[#6]",
             "[#7]-,:[#6]:[#6]-,:[#6]-,:[#6]",
             "[#6]=,:[#6]-,:[#6]-,:[#8]-,:[#6]",
-            "[#6]=,:[#6]-,:[#6]-,:[#8]-,:[#1]",
+            "[#6]=,:[#6]-,:[#6]-,:[#8&!H0]",
             "[#6]-,:[#6]:[#6]-,:[#6]-,:[#6]",
             "[Cl]-,:[#6]:[#6]-,:[#6]=,:[#8]",
             "[Br]-,:[#6]:c:c-,:[#6]",
             "[#8]=,:[#6]-,:[#6]=,:[#6]-,:[#6]",
-            "[#8]=,:[#6]-,:[#6]=,:[#6]-,:[#1]",
+            "[#8]=,:[#6]-,:[#6]=,:[#6&!H0]",
             "[#8]=,:[#6]-,:[#6]=,:[#6]-,:[#7]",
             "[#7]-,:[#6]-,:[#7]-,:[#6]:c",
             "[Br]-,:[#6]-,:[#6]-,:[#6]:c",

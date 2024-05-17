@@ -100,7 +100,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     requires_conformers : bool
         Whether the fingerprint is 3D-based and requires molecules with conformers as
         inputs, with ``conf_id`` integer property set. This depends on the ``use_3D``
-        attribute, and has the same value as that parameter.
+        parameter, and has the same value.
 
     See Also
     --------
@@ -122,7 +122,6 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
 
     .. [3] `Greg Landrum
         "Simulating count fingerprints"
-        RDKit blog 2021
         <https://greglandrum.github.io/rdkit-blog/posts/2021-07-06-simulating-counts.html>`_
 
     Examples
