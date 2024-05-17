@@ -16,9 +16,9 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
     Topological Torsion fingerprint.
 
     The implementation uses RDKit. This is a hashed fingerprint, where
-    the hashed fragments are computed based on topological torsions.
+    the hashed fragments are computed based on topological torsions [1].
 
-    A topological torsion is defined as a sequence of 4 triplets:
+    A topological torsion is defined in as a sequence of 4 triplets:
     (NPI-TYPE-NBR)-(NPI-TYPE-NBR)-(NPI-TYPE-NBR)-(NPI-TYPE-NBR)
 
     It is a linear sequence of consecutively bonded non-hydrogen atoms where:
@@ -43,7 +43,7 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
 
     count_simulation : bool, default=True
         Whether to use count simulation for approximating feature counts.
-        See [3] for details.
+        See [2] for details.
 
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
