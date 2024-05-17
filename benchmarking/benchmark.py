@@ -154,10 +154,11 @@ if __name__ == "__main__":
     if not os.path.exists(SCORE_DIR):
         os.makedirs(SCORE_DIR)
 
-    GraphPropPredDataset(name=DATASET_NAME, root="../dataset")
-    dataset = pd.read_csv(
-        f"../dataset/{'_'.join(DATASET_NAME.split('-'))}/mapping/mol.csv.gz"
+    GraphPropPredDataset(name=DATASET_NAME, root=os.path.join("..", "dataset"))
+    dataset_path = os.path.join(
+        "..", "dataset", "_".join(DATASET_NAME.split("-")), "mapping", "mol.csv.gz"
     )
+    dataset = pd.read_csv(dataset_path)
 
     if os.path.exists("mols_with_conformers.npy"):
         X = np.load("mols_with_conformers.npy", allow_pickle=True)
