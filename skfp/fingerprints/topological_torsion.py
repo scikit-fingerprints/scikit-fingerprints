@@ -18,15 +18,15 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
     The implementation uses RDKit. This is a hashed fingerprint, where
     the hashed fragments are computed based on topological torsions [1]_.
 
-    A topological torsion is defined as a sequence of 4 triplets:
-    (NPI-TYPE-NBR)-(NPI-TYPE-NBR)-(NPI-TYPE-NBR)-(NPI-TYPE-NBR)
+    A topological torsion is defined as a linear sequence of consecutively bonded heavy (non-hydrogen):
+    (atom 1 type)-(atom 2 type)-(atom 3 type)-(atom 4 type)
 
-    It is a linear sequence of consecutively bonded non-hydrogen atoms where:
-    - NPI refers to the number of pi bond electrons for a given atom
-    - TYPE refers to the atomic type of given atom
-    - NBR is the number of non-hydrogen branches attached to it
+    Atom type takes into consideration:
+    - the number of atom's pi bond electrons
+    - the atomic type
+    - the number of non-hydrogen branches attached to the atom
 
-    This example of 4 atom path is the most default use of topological torsion.
+    This example of 4 atom path is the canonical version of topological torsion.
     The number of atoms can be adjusted (using `torsion_atom_count` parameter).
 
     Parameters
@@ -78,8 +78,7 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
     References
     ----------
     .. [1] `Ramaswamy Nilakantan, Norman Bauman, J. Scott Dixon, R. Venkataraghavan
-        "Topological torsion: a new molecular descriptor for SAR applications.
-        Comparison with other descriptors"
+        "Topological torsion: a new molecular descriptor for SAR applications. Comparison with other descriptors"
         J. Chem. Inf. Comput. Sci. 1987, 27, 82-85
         <https://pubs.acs.org/doi/10.1021/ci00054a008>`_
 
@@ -146,9 +145,7 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects. If `use_3D`
-            is True, only Mol objects with computed conformations and with
-            `conf_id` property are allowed.
+            Sequence containing SMILES strings or RDKit Mol objects.
 
         copy : bool, default=False
             Copy the input X or not.
