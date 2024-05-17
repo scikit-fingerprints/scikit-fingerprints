@@ -137,6 +137,29 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
         self.torsion_atom_count = torsion_atom_count
         self.count_simulation = count_simulation
 
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute Atom Pair fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit Mol objects. If `use_3D`
+            is True, only Mol objects with computed conformations and with
+            `conf_id` property are allowed.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
