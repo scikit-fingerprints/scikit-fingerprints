@@ -60,8 +60,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         Whether to include chirality information when computing atom types.
 
     count_simulation : bool, default=True
-        Whether to use count simulation for approximating feature counts.
-        See [3] for details.
+        Whether to use count simulation for approximating feature counts [3]_.
 
     use_3D : bool, default=False
         Whether to use 3D Euclidean distance matrix. If False, uses topological
@@ -72,7 +71,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
 
     scale_by_hac: bool or int, default=False
         Whether to scale count fingerprint by the heavy atom count (HAC) to
-        obtain a proportionality to molecule size [2]. If integer value is given,
+        obtain a proportionality to molecule size [2]_. If integer value is given,
         scaling uses given power of HAC, e.g. `scale_by_hac=2` divides counts by
         squared HAC. Values are expressed as percentages in range [0, 100].
 

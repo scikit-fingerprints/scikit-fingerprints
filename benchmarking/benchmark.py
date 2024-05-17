@@ -1,3 +1,4 @@
+import inspect
 import os
 from time import time
 
@@ -115,27 +116,26 @@ def make_combined_plot(
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
     ax1.set_ylabel("Fingerprints")
-    fp_names = [fp.__name__ for fp in fingerprints]
+    fp_names = [fp.__name__.removesuffix("Fingerprint") for fp in fingerprints]
 
     if type == "time":
         file_name = "times_of_sequential_computation"
         ax1.set_xlabel("Time of computation")
         ax1.set_title("Sequential computation time [s]")
-        ax1.barh(fp_names, [time[0, -1] for time in times], color="skyblue")
+        times_to_plot = [time[0, -1] for time in times]
+        ax1.barh(fp_names, times_to_plot, color="skyblue")
     elif type == "speedup":
         file_name = f"speedup_for_{MAX_CORES}_cores"
         ax1.set_xlabel("speedup")
         ax1.set_title("Speedup")
-        ax1.barh(
-            fp_names, [time[0, -1] / time[-1, -1] for time in times], color="skyblue"
-        )
+        times_to_plot = [time[0, -1] / time[-1, -1] for time in times]
+        ax1.barh(fp_names, times_to_plot, color="skyblue")
     elif type == "fps_per_second":
         file_name = "fingerprints_per_second_sequential"
         ax1.set_xlabel("Fingerprints per second")
         ax1.set_title("Molecules processed per second")
-        ax1.barh(
-            fp_names, [n_molecules / time[0, -1] for time in times], color="skyblue"
-        )
+        times_to_plot = [n_molecules / time[0, -1] for time in times]
+        ax1.barh(fp_names, times_to_plot, color="skyblue")
     else:
         return
 
@@ -154,19 +154,19 @@ if __name__ == "__main__":
     if not os.path.exists(SCORE_DIR):
         os.makedirs(SCORE_DIR)
 
-    GraphPropPredDataset(name=DATASET_NAME, root="../dataset")
-    dataset = pd.read_csv(
-        f"../dataset/{'_'.join(DATASET_NAME.split('-'))}/mapping/mol.csv.gz"
+    GraphPropPredDataset(name=DATASET_NAME, root=os.path.join("..", "dataset"))
+    dataset_path = os.path.join(
+        "..", "dataset", "_".join(DATASET_NAME.split("-")), "mapping", "mol.csv.gz"
     )
+    dataset = pd.read_csv(dataset_path)
 
     if os.path.exists("mols_with_conformers.npy"):
         X = np.load("mols_with_conformers.npy", allow_pickle=True)
     else:
         X = dataset["smiles"][:10000]
         X = MolFromSmilesTransformer().transform(X)
-        X = np.array(
-            ConformerGenerator(n_jobs=-1, error_on_gen_fail=False).transform(X)
-        )
+        X = ConformerGenerator(n_jobs=-1, error_on_gen_fail=False).transform(X)
+        X = np.array(X)
         np.save("mols_with_conformers.npy", X, allow_pickle=True)
 
     n_molecules = X.shape[0]
@@ -181,8 +181,13 @@ if __name__ == "__main__":
         ECFPFingerprint,
         ERGFingerprint,
         EStateFingerprint,
+        FunctionalGroupsFingerprint,
         GETAWAYFingerprint,
+        GhoseCrippenFingerprint,
+        KlekotaRothFingerprint,
+        LaggnerFingerprint,
         LayeredFingerprint,
+        LingoFingerprint,
         MACCSFingerprint,
         MAPFingerprint,
         MHFPFingerprint,
@@ -196,16 +201,22 @@ if __name__ == "__main__":
         RDKitFingerprint,
         SECFPFingerprint,
         TopologicalTorsionFingerprint,
+        USRFingerprint,
+        USRCATFingerprint,
         WHIMFingerprint,
     ]
 
     all_times = []
     for fingerprint in fingerprints:
-        if not os.path.exists(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy")):
-            times = get_times_skfp(X=X, transformer_cls=fingerprint)
-            np.save(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"), times)
+        fingerprint_save_path = os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy")
+        if not os.path.exists(fingerprint_save_path):
+            kwargs = {}
+            if "errors" in inspect.signature(fingerprint).parameters:
+                kwargs["errors"] = "ignore"
+            times = get_times_skfp(X=X, transformer_cls=fingerprint, **kwargs)
+            np.save(fingerprint_save_path, times)
         else:
-            times = np.load(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"))
+            times = np.load(fingerprint_save_path)[: len(N_CORES)]
         for plot_type in PLOT_TYPES:
             make_plot(
                 plot_type=plot_type,

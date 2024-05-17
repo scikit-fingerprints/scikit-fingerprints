@@ -209,7 +209,6 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     def _calculate_single_mol_fingerprint(
         self, mol: Mol
     ) -> Union[np.ndarray, csr_array]:
-
         # e3fp requires "_Name" property to be set
         mol.SetProp("_Name", MolToSmiles(mol))
 
