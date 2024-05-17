@@ -115,7 +115,7 @@ def make_combined_plot(
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
     ax1.set_ylabel("Fingerprints")
-    fp_names = [fp.__name__ for fp in fingerprints]
+    fp_names = [fp.__name__[:-11] for fp in fingerprints]
 
     if type == "time":
         file_name = "times_of_sequential_computation"
@@ -181,8 +181,13 @@ if __name__ == "__main__":
         ECFPFingerprint,
         ERGFingerprint,
         EStateFingerprint,
+        FunctionalGroupsFingerprint,
         GETAWAYFingerprint,
+        GhoseCrippenFingerprint,
+        KlekotaRothFingerprint,
+        LaggnerFingerprint,
         LayeredFingerprint,
+        LingoFingerprint,
         MACCSFingerprint,
         MAPFingerprint,
         MHFPFingerprint,
@@ -196,16 +201,25 @@ if __name__ == "__main__":
         RDKitFingerprint,
         SECFPFingerprint,
         TopologicalTorsionFingerprint,
+        USRFingerprint,
+        USRCATFingerprint,
         WHIMFingerprint,
     ]
 
     all_times = []
     for fingerprint in fingerprints:
         if not os.path.exists(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy")):
-            times = get_times_skfp(X=X, transformer_cls=fingerprint)
+            kwargs = (
+                {"errors": "ignore"}
+                if fingerprint.__name__ in ["USRFingerprint", "USRCATFingerprint"]
+                else {}
+            )
+            times = get_times_skfp(X=X, transformer_cls=fingerprint, **kwargs)
             np.save(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"), times)
         else:
-            times = np.load(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"))
+            times = np.load(os.path.join(SCORE_DIR, f"{fingerprint.__name__}.npy"))[
+                : len(N_CORES)
+            ]
         for plot_type in PLOT_TYPES:
             make_plot(
                 plot_type=plot_type,
