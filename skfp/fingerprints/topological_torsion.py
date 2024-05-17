@@ -42,8 +42,7 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
         The number of atoms to be included in the torsion.
 
     count_simulation : bool, default=True
-        Whether to use count simulation for approximating feature counts.
-        See [2]_ for details.
+        Whether to use count simulation for approximating feature counts [2]_.
 
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.

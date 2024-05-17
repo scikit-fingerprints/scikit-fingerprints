@@ -60,8 +60,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         Whether to include chirality information when computing atom types.
 
     count_simulation : bool, default=True
-        Whether to use count simulation for approximating feature counts.
-        See [3]_ for details.
+        Whether to use count simulation for approximating feature counts [3]_.
 
     use_3D : bool, default=False
         Whether to use 3D Euclidean distance matrix. If False, uses topological
