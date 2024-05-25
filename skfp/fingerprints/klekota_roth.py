@@ -29,6 +29,10 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
         See Scikit-learn documentation on ``n_jobs`` for more details.
 
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
     verbose : int, default=0
         Controls the verbosity when computing fingerprints.
 
@@ -67,6 +71,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
         # flake8: noqa: E501
