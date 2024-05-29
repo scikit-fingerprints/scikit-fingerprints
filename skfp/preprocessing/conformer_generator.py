@@ -21,8 +21,7 @@ from rdkit.Chem.rdForceFieldHelpers import (
     UFFGetMoleculeForceField,
 )
 from rdkit.ForceField import ForceField
-from sklearn.utils import Interval
-from sklearn.utils._param_validation import InvalidParameterError, StrOptions
+from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BasePreprocessor
 from skfp.parallel import run_in_parallel
