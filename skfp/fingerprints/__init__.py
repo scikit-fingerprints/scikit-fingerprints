@@ -19,6 +19,7 @@ from .map import MAPFingerprint
 from .mhfp import MHFPFingerprint
 from .mordred_fp import MordredFingerprint
 from .morse import MORSEFingerprint
+from .mqns import MQNsFingerprint
 from .pattern import PatternFingerprint
 from .pharmacophore import PharmacophoreFingerprint
 from .physiochemical_properties import PhysiochemicalPropertiesFingerprint
