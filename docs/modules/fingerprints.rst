@@ -29,6 +29,7 @@ Fingerprints
     MAPFingerprint
     MHFPFingerprint
     MORSEFingerprint
+    MQNsFingerprint
     PatternFingerprint
     PharmacophoreFingerprint
     PhysiochemicalPropertiesFingerprint
