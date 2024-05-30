@@ -15,14 +15,16 @@ class USRFingerprint(BaseFingerprintTransformer):
     """
     USR (Ultrafast Shape Recognition) fingerprint.
 
-    The implementation uses RDKit. This fingerprint characterizes the shape of the
-    molecule by encoding the relative positions of its atoms [1]_ [2]_. Four points
-    are considered: molecular centroid (ctd), the closest atom to centroid (cst), the
-    farthest atom from centroid (fct), and atom the fartest from fct (ftf). Distances
-    from all atoms to each of those four points are computed, and each of those
-    distributions is summarized its first three moments: mean, variance, and skewness.
-    Concretely, standard deviation and cubic root of skewness are used to keep the same
-    unit. This results in 12 descriptors.
+    The implementation uses RDKit. This is a descriptor-based fingerprint, which
+    characterizes the shape of the molecule by encoding the relative positions of its
+    atoms [1]_ [2]_.
+
+    Four points are considered: molecular centroid (ctd), the closest atom to centroid (cst),
+    the farthest atom from centroid (fct), and atom the fartest from fct (ftf). Distances
+    from all atoms to each of those four points are computed, and each of those distributions
+    is summarized its first three moments: mean, variance, and skewness. Concretely, standard
+    deviation and cubic root of skewness are used to keep the same unit. This results in
+    12 descriptors.
 
     This is a 3D fingerprint, and requries molecules with ``conf_id`` integer property
     set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.

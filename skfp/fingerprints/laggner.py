@@ -404,6 +404,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
 
@@ -411,7 +412,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
         """
-        Compute CDK substructure fingerprints.
+        Compute Laggner fingerprints.
 
         Parameters
         ----------

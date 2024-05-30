@@ -4943,6 +4943,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             count=count,
             sparse=sparse,
             n_jobs=n_jobs,
+            batch_size=batch_size,
             verbose=verbose,
         )
 

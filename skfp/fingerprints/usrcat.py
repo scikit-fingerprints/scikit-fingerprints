@@ -15,12 +15,14 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     """
     USRCAT (Ultrafast Shape Recognition with CREDO Atom Types) fingerprint.
 
-    The implementation uses RDKit. This fingerprint extends the USR fingerprint by
-    additionally considering pharmacophoric atom types [1]_. Firstly, the four
-    reference points are computed, and they are used in all five feature groups. Each
-    group is processed exactly the same, i.e. distance distributions to reference
-    points are calculated, and features from the first three moments (mean, standard
-    deviation, cubic root of skewness) are computed. This results in 12 features.
+    The implementation uses RDKit. This is a descriptor-based fingerprint, extending
+    the USR fingerprint by additionally considering pharmacophoric atom types [1]_.
+
+    Firstly, the four reference points are computed, and they are used in all five
+    feature groups. Each group is processed exactly the same, i.e. distance distributions
+    to reference points are calculated, and features from the first three moments
+    (mean, standard deviation, cubic root of skewness) are computed. This results in
+    12 features.
 
     USRCAT expands on USR by considering 4 additional subsets of atoms, based on their
     pharmacophoric types: hydrophobic, aromatic, hydrogen bond donor or acceptor atoms.
