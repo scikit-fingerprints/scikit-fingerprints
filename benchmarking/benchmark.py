@@ -64,7 +64,7 @@ def make_plot(
     times: np.ndarray,
     title: str = "",
     save: bool = True,
-    format="png",
+    format="pdf",
 ) -> None:
     dir_name = plot_type
 
@@ -111,7 +111,7 @@ def make_combined_plot(
     fingerprints: list,
     times: list,
     save: bool = True,
-    format="png",
+    format="pdf",
 ) -> None:
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
@@ -193,6 +193,7 @@ if __name__ == "__main__":
         MHFPFingerprint,
         MordredFingerprint,
         MORSEFingerprint,
+        MQNsFingerprint,
         PatternFingerprint,
         PharmacophoreFingerprint,
         PhysiochemicalPropertiesFingerprint,
@@ -222,7 +223,7 @@ if __name__ == "__main__":
                 plot_type=plot_type,
                 n_molecules=n_molecules,
                 times=times,
-                title=fingerprint.__name__,
+                title=fingerprint.__name__.removesuffix("Fingerprint"),
                 save=True,
             )
         all_times.append(times)
