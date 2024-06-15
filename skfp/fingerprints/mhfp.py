@@ -86,8 +86,8 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     :class:`ECFPFingerprint` : Related fingerprint, which uses atom invariants instead
         of raw SMILES strings.
 
-    :class:`MHFPFingerprint` : Related fingerprint, which uses MinHash to perform hashing
-        and can compute raw hashes, instead of folded vectors.
+    :class:`SECFPFingerprint` : Related fingerprint, which hashes subgraph SMILES and
+        folds the resulting vector.
 
     References
     ----------
