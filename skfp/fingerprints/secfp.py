@@ -33,7 +33,7 @@ class SECFPFingerprint(BaseFingerprintTransformer):
         Size of output vectors, i.e. number of bits for each fingerprint. Must be
         positive.
 
-    radius : int, default=2
+    radius : int, default=3
         Number of iterations performed, i.e. maximum radius of resulting subgraphs.
         Another common notation uses diameter, therefore ECFP4 has radius 2.
 
