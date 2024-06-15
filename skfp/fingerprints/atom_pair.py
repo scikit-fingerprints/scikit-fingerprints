@@ -105,6 +105,9 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     --------
     :class:`TopologicalTorsionFingerprint` : Related fingerprint, but uses 4-atom paths.
 
+    :class:`SECFPFingerprint` : Related fingerprint, which additionally uses circular
+        substructures around each atom like ECFP fingerprint.
+
     References
     ----------
     .. [1] `Raymond E. Carhart, Dennis H. Smith, and R. Venkataraghavan
