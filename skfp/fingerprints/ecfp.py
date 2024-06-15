@@ -23,8 +23,8 @@ class ECFPFingerprint(BaseFingerprintTransformer):
     atom (one "hop" on the graph). Each subgraph during iteration is hashed,
     and the resulting hashes are folded to the `fp_size` length.
 
-    Each subgraph get an identifier based on atom types in their radius, which is
-    thenhashed. Atom types (invariants) by default are based on Daylight invariants:
+    Each subgraph gets an identifier based on atom types in its radius, which is
+    then hashed. Atom types (invariants) by default are based on Daylight invariants:
 
     - number of heavy neighbors
     - valence (excluding hydrogen neighbors)
@@ -59,7 +59,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         subgraphs.
 
     include_ring_membership : bool, default=True
-        Whether to check if atom is part of a when computing atom types.
+        Whether to check if atom is part of a ring when computing atom types.
 
     count_simulation : bool, default=False
         Whether to use count simulation for approximating feature counts [2]_.
