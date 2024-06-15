@@ -77,7 +77,7 @@ class USRFingerprint(BaseFingerprintTransformer):
 
     .. [2] `Pedro J. Ballester
         "Ultrafast shape recognition: method and applications"
-        Future medicinal chemistry 3.1 (2011): 65-78
+        Future Medicinal Chemistry 3.1 (2011): 65-78
         <https://www.future-science.com/doi/abs/10.4155/fmc.10.280>`_
 
     Examples

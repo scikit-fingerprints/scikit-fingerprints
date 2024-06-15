@@ -73,7 +73,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Adrian M. Schreyer and Tom Blundell
         "USRCAT: real-time ultrafast shape recognition with pharmacophoric constraints"
-        J Cheminform 4, 27 (2012)
+        Journal of Cheminformatics 4, 27 (2012)
         <https://jcheminf.biomedcentral.com/articles/10.1186/1758-2946-4-27#citeas>`_
 
     Examples

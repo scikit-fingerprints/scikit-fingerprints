@@ -51,7 +51,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
     ----------
     .. [1] `Arup K. Ghose and Gordon M. Crippen
         "Atomic Physicochemical Parameters for Three-Dimensional Structure-Directed Quantitative Structure-Activity Relationships I. Partition Coefficients as a Measure of Hydrophobicity"
-        Journal of computational chemistry 7.4 (1986): 565-577.
+        Journal of Computational Chemistry 7.4 (1986): 565-577.
         <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcc.540070419>`_
 
     .. [2] `Arup K. Ghose and Gordon M. Crippen
