@@ -1,10 +1,8 @@
-import operator
 import re
-from functools import reduce
 
 from sklearn.utils.parallel import delayed
 
-from skfp.parallel import ProgressParallel, run_in_parallel
+from skfp.utils.parallel import ProgressParallel, run_in_parallel
 
 
 def test_progress_parallel(capsys):
