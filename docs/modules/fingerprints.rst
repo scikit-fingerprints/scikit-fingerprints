@@ -24,6 +24,7 @@ Fingerprints
     GhoseCrippenFingerprint
     KlekotaRothFingerprint
     LaggnerFingerprint
+    LayeredFingerprint
     LingoFingerprint
     MACCSFingerprint
     MAPFingerprint
