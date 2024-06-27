@@ -1,6 +1,6 @@
 import pytest
 
-from skfp.validators import ensure_mols, ensure_smiles, require_mols_with_conf_ids
+from skfp.utils.validators import ensure_mols, ensure_smiles, require_mols_with_conf_ids
 
 
 def test_ensure_mols(mols_list):

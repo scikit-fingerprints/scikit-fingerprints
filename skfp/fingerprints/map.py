@@ -15,7 +15,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import ensure_mols
+from skfp.utils.validators import ensure_mols
 
 """
 Code inspired by the original work of the authors of the MAP4 Fingerprint:

@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import ensure_mols
+from skfp.utils.validators import ensure_mols
 
 
 class MHFPFingerprint(BaseFingerprintTransformer):

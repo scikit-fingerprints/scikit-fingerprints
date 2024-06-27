@@ -6,7 +6,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import ensure_mols, require_mols_with_conf_ids
+from skfp.utils.validators import ensure_mols, require_mols_with_conf_ids
 
 
 class AutocorrFingerprint(BaseFingerprintTransformer):

@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import require_mols_with_conf_ids
+from skfp.utils.validators import require_mols_with_conf_ids
 
 
 class USRCATFingerprint(BaseFingerprintTransformer):
