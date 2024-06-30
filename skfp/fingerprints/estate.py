@@ -7,11 +7,88 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import ensure_mols
+from skfp.utils.validators import ensure_mols
 
 
 class EStateFingerprint(BaseFingerprintTransformer):
-    """EState fingerprint."""
+    """
+    Electrotopological State (EState) fingerprint.
+
+    The implementation uses RDKit. This is a descriptor-based fingerprint, where
+    bits measure contributions of different atom types, based on their electronic
+    and topological properties. Based on `variant` argument, either counts of
+    different atom types, or sums of their properties are computed.
+
+    The idea is to represent the intrinsic electronic state of the atom, in the context
+    of the particular molecule, i.e. taking into consideration the electronic influence
+    of all other atoms and the molecule topology (structure).
+
+    79 atom types are used, as defined in the original paper [1]_. For practical
+    implementation, they are formulated as SMARTS patterns, selecting individual
+    atoms of particular type [3]_ [4]_. Generally, they take into consideration:
+
+    - atom element
+    - valence state (including aromaticity)
+    - number of bonded hydrogens
+    - in some cases, the identity of other bonded atoms
+
+    Parameters
+    ----------
+    variant : {"bit", "count", "sum"}, default="sum"
+        Fingerprint variant. Default "sum" results in the sum of EState indices
+        for each atom type. "count" results in integer vector with counts of atoms
+        of particular types, and "bit" simply denotes existence of given atom types.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    verbose : int, default=0
+        Controls the verbosity when computing fingerprints.
+
+    Attributes
+    ----------
+    n_features_out : int
+        Number of output features. Equal to `fp_size`.
+
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    References
+    ----------
+    .. [1] `Lowell H. Hall and Lemont B. Kier
+        "Electrotopological State Indices for Atom Types: A Novel Combination of Electronic,
+        Topological, and Valence State Information"
+        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
+        <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
+
+    .. [2] `Greg Landrum and Rational Discovery LLC
+        RDKit - EState Atom Types
+        <https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/EState/AtomTypes.py>`_
+
+    Examples
+    --------
+    >>> from skfp.fingerprints import EStateFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = EStateFingerprint()
+    >>> fp
+    EStateFingerprint()
+
+    >>> fp.transform(smiles)
+    array([[0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.]])
+    """
 
     _parameter_constraints: dict = {
         **BaseFingerprintTransformer._parameter_constraints,

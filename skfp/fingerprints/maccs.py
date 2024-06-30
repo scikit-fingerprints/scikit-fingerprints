@@ -6,7 +6,7 @@ from rdkit.Chem import Mol, MolToSmiles
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import ensure_mols
+from skfp.utils.validators import ensure_mols
 
 
 class MACCSFingerprint(BaseFingerprintTransformer):

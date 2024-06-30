@@ -7,7 +7,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
-from skfp.validators import ensure_mols
+from skfp.utils.validators import ensure_mols
 
 
 class BaseSubstructureFingerprint(BaseFingerprintTransformer):

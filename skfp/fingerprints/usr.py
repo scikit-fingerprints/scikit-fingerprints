@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import require_mols_with_conf_ids
+from skfp.utils.validators import require_mols_with_conf_ids
 
 
 class USRFingerprint(BaseFingerprintTransformer):
@@ -77,7 +77,7 @@ class USRFingerprint(BaseFingerprintTransformer):
 
     .. [2] `Pedro J. Ballester
         "Ultrafast shape recognition: method and applications"
-        Future medicinal chemistry 3.1 (2011): 65-78
+        Future Medicinal Chemistry 3.1 (2011): 65-78
         <https://www.future-science.com/doi/abs/10.4155/fmc.10.280>`_
 
     Examples

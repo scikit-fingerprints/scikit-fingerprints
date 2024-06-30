@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import ensure_mols, require_mols_with_conf_ids
+from skfp.utils.validators import ensure_mols, require_mols_with_conf_ids
 
 
 class PharmacophoreFingerprint(BaseFingerprintTransformer):

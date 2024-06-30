@@ -9,7 +9,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import ensure_mols, require_mols_with_conf_ids
+from skfp.utils.validators import ensure_mols, require_mols_with_conf_ids
 
 
 class AtomPairFingerprint(BaseFingerprintTransformer):
@@ -104,6 +104,9 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     See Also
     --------
     :class:`TopologicalTorsionFingerprint` : Related fingerprint, but uses 4-atom paths.
+
+    :class:`SECFPFingerprint` : Related fingerprint, which additionally uses circular
+        substructures around each atom like ECFP fingerprint.
 
     References
     ----------

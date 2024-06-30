@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.validators import require_mols_with_conf_ids
+from skfp.utils.validators import require_mols_with_conf_ids
 
 
 class USRCATFingerprint(BaseFingerprintTransformer):
@@ -73,7 +73,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Adrian M. Schreyer and Tom Blundell
         "USRCAT: real-time ultrafast shape recognition with pharmacophoric constraints"
-        J Cheminform 4, 27 (2012)
+        Journal of Cheminformatics 4, 27 (2012)
         <https://jcheminf.biomedcentral.com/articles/10.1186/1758-2946-4-27#citeas>`_
 
     Examples
