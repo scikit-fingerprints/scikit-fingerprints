@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from joblib import cpu_count
+from matplotlib.ticker import MultipleLocator
 from ogb.graphproppred import GraphPropPredDataset
 
 from skfp.fingerprints import *
@@ -115,8 +116,10 @@ def make_combined_plot(
 ) -> None:
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
-    ax1.set_ylabel("Fingerprints")
     fp_names = [fp.__name__.removesuffix("Fingerprint") for fp in fingerprints]
+
+    fp_names.reverse()
+    times.reverse()
 
     if type == "time":
         file_name = "times_of_sequential_computation"
@@ -126,10 +129,11 @@ def make_combined_plot(
         ax1.barh(fp_names, times_to_plot, color="skyblue")
     elif type == "speedup":
         file_name = f"speedup_for_{MAX_CORES}_cores"
-        ax1.set_xlabel("speedup")
+        ax1.set_xlabel("Speedup")
         ax1.set_title("Speedup")
         times_to_plot = [time[0, -1] / time[-1, -1] for time in times]
         ax1.barh(fp_names, times_to_plot, color="skyblue")
+        ax1.xaxis.set_major_locator(MultipleLocator(1))
     elif type == "fps_per_second":
         file_name = "fingerprints_per_second_sequential"
         ax1.set_xlabel("Fingerprints per second")
