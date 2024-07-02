@@ -22,6 +22,7 @@ N_SPLITS = 5
 N_REPEATS = 5
 MAX_CORES = cpu_count(only_physical_cores=True)
 N_CORES = [2**i for i in range(MAX_CORES.bit_length())]
+# N_CORES = [1,16]
 if MAX_CORES > N_CORES[-1]:
     N_CORES.append(MAX_CORES)
 PLOT_DIR = os.path.join("benchmark_times", "benchmark_times_plotted")
@@ -47,7 +48,7 @@ def get_times_skfp(X: np.ndarray, transformer_cls: type, **kwargs) -> np.ndarray
                 print(f" - - - - repeat : {i}/{N_REPEATS - 1}")
                 # select random molecules - data_fraction part of the dataset
                 start = time()
-                transformer = transformer_cls(n_jobs=n_jobs, **kwargs)
+                transformer = transformer_cls(n_jobs=n_jobs, batch_size=1, **kwargs)
                 _ = transformer.transform(X[:idx])
                 end = time()
                 times.append(end - start)
@@ -118,8 +119,8 @@ def make_combined_plot(
     ax1 = fig.add_subplot()
     fp_names = [fp.__name__.removesuffix("Fingerprint") for fp in fingerprints]
 
-    fp_names.reverse()
-    times.reverse()
+    fp_names = fp_names[::-1]
+    times = times[::-1]
 
     if type == "time":
         file_name = "times_of_sequential_computation"
@@ -186,7 +187,7 @@ if __name__ == "__main__":
         ERGFingerprint,
         EStateFingerprint,
         FunctionalGroupsFingerprint,
-        GETAWAYFingerprint,
+        # GETAWAYFingerprint,
         GhoseCrippenFingerprint,
         KlekotaRothFingerprint,
         LaggnerFingerprint,
@@ -222,6 +223,12 @@ if __name__ == "__main__":
             np.save(fingerprint_save_path, times)
         else:
             times = np.load(fingerprint_save_path)[: len(N_CORES)]
+        all_times.append(times)
+
+        if fingerprint.__name__ == "PharmacophoreFingerprint":
+            continue
+
+        print(fingerprint.__name__)
         for plot_type in PLOT_TYPES:
             make_plot(
                 plot_type=plot_type,
@@ -230,7 +237,6 @@ if __name__ == "__main__":
                 title=fingerprint.__name__.removesuffix("Fingerprint"),
                 save=True,
             )
-        all_times.append(times)
 
     for plot_type in PLOT_TYPES:
         make_combined_plot(
