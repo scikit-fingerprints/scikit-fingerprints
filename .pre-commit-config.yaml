@@ -18,7 +18,6 @@ repos:
     rev: 7.0.0
     hooks:
       - id: flake8
-        # TODO: refactor this directory and then enable
         exclude: ^benchmarking
 
   - repo: https://github.com/PyCQA/isort
@@ -42,6 +41,15 @@ repos:
       - id: poetry-plugin-sort
         name: poetry-plugin-sort
         entry: poetry sort
+        language: system
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: poetry-audit-plugin
+        name: poetry-audit-plugin
+        # TODO: remove jinja2 once Safety issue is resolved: https://github.com/pyupio/safety/issues/539
+        entry: poetry audit --ignore-package=jinja2
         language: system
         pass_filenames: false
 
