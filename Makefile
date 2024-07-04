@@ -7,6 +7,7 @@ setup: ## Install development dependencies, pre-commit hooks and poetry plugin
 	poetry install --with dev,doc --sync
 	poetry self add poetry-plugin-export
 	poetry self add poetry-plugin-sort
+	poetry self add poetry-audit-plugin
 	poetry run pre-commit install
 
 docs: ## Re-generate documentation
