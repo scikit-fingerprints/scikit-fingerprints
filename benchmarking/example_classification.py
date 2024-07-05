@@ -106,7 +106,7 @@ for dataset_name, property_name in dataset_params:
 
         end = time()
         execution_time = end - start
-        print(f" - Time of fingerprints computing : {round(execution_time,2)}s")
+        print(f" - Time of fingerprints computing : {round(execution_time, 2)}s")
         records[-1]["execution_time"] = execution_time
 
         if fp_transformer in descriptor_fingerprints:
@@ -143,7 +143,7 @@ for dataset_name, property_name in dataset_params:
             score_valid = np.average(scores_valid)
             std_valid = np.std(scores_valid)
 
-            print(f" - - ROC AUC score for {clf_name} : {int(100*score)}%")
+            print(f" - - ROC AUC score for {clf_name} : {int(100 * score)}%")
             records[-1][clf_name + "_mean"] = score
             records[-1][clf_name + "_std"] = std
             records[-1][clf_name + "_valid_mean"] = score_valid
