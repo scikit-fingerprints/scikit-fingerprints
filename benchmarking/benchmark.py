@@ -8,7 +8,7 @@ import pandas as pd
 from joblib import cpu_count
 from ogb.graphproppred import GraphPropPredDataset
 
-from skfp.fingerprints import *
+import skfp.fingerprints as fps
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
 DATASET_NAME = "ogbg-molhiv"
@@ -174,36 +174,36 @@ if __name__ == "__main__":
     print(f"Number of molecules : {n_molecules}")
 
     fingerprints = [
-        AtomPairFingerprint,
-        AutocorrFingerprint,
-        AvalonFingerprint,
-        E3FPFingerprint,
-        ECFPFingerprint,
-        ERGFingerprint,
-        EStateFingerprint,
-        FunctionalGroupsFingerprint,
-        GETAWAYFingerprint,
-        GhoseCrippenFingerprint,
-        KlekotaRothFingerprint,
-        LaggnerFingerprint,
-        LayeredFingerprint,
-        LingoFingerprint,
-        MACCSFingerprint,
-        MAPFingerprint,
-        MHFPFingerprint,
-        MordredFingerprint,
-        MORSEFingerprint,
-        PatternFingerprint,
-        PharmacophoreFingerprint,
-        PhysiochemicalPropertiesFingerprint,
-        PubChemFingerprint,
-        RDFFingerprint,
-        RDKitFingerprint,
-        SECFPFingerprint,
-        TopologicalTorsionFingerprint,
-        USRFingerprint,
-        USRCATFingerprint,
-        WHIMFingerprint,
+        fps.AtomPairFingerprint,
+        fps.AutocorrFingerprint,
+        fps.AvalonFingerprint,
+        fps.E3FPFingerprint,
+        fps.ECFPFingerprint,
+        fps.ERGFingerprint,
+        fps.EStateFingerprint,
+        fps.FunctionalGroupsFingerprint,
+        fps.GETAWAYFingerprint,
+        fps.GhoseCrippenFingerprint,
+        fps.KlekotaRothFingerprint,
+        fps.LaggnerFingerprint,
+        fps.LayeredFingerprint,
+        fps.LingoFingerprint,
+        fps.MACCSFingerprint,
+        fps.MAPFingerprint,
+        fps.MHFPFingerprint,
+        fps.MordredFingerprint,
+        fps.MORSEFingerprint,
+        fps.PatternFingerprint,
+        fps.PharmacophoreFingerprint,
+        fps.PhysiochemicalPropertiesFingerprint,
+        fps.PubChemFingerprint,
+        fps.RDFFingerprint,
+        fps.RDKitFingerprint,
+        fps.SECFPFingerprint,
+        fps.TopologicalTorsionFingerprint,
+        fps.USRFingerprint,
+        fps.USRCATFingerprint,
+        fps.WHIMFingerprint,
     ]
 
     all_times = []
