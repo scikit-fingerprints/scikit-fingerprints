@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.8
+    rev: 1.7.9
     hooks:
       - id: bandit
         # turn off assert errors for tests
@@ -15,7 +15,7 @@ repos:
       - id: black
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
         exclude: ^benchmarking
@@ -53,8 +53,15 @@ repos:
         language: system
         pass_filenames: false
 
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.3
+    hooks:
+      - id: python-safety-dependencies-check
+        files: pyproject.toml
+        args: ["--groups=dev", "--short-report", "--disable-optional-telemetry"]
+
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         args: [ "--py39-plus" ]
