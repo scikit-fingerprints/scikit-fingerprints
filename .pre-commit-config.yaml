@@ -44,15 +44,6 @@ repos:
         language: system
         pass_filenames: false
 
-  - repo: local
-    hooks:
-      - id: poetry-audit-plugin
-        name: poetry-audit-plugin
-        # TODO: remove jinja2 once Safety issue is resolved: https://github.com/pyupio/safety/issues/539
-        entry: poetry audit --ignore-package=jinja2
-        language: system
-        pass_filenames: false
-
   - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
     rev: v1.3.3
     hooks:
