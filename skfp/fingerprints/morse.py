@@ -6,7 +6,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import require_mols_with_conf_ids
+from skfp.utils import require_mols_with_conf_ids
 
 
 class MORSEFingerprint(BaseFingerprintTransformer):

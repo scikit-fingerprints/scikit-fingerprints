@@ -6,7 +6,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseSubstructureFingerprint
-from skfp.utils.validators import ensure_smiles
+from skfp.utils import ensure_smiles
 
 
 class LaggnerFingerprint(BaseSubstructureFingerprint):

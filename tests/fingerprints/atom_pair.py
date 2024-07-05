@@ -165,6 +165,14 @@ def test_atom_pair_squared_hac_scaling(smiles_list, mols_list):
     assert X_skfp.shape == (len(smiles_list), atom_pair_fp.fp_size)
 
 
+def test_hac_scaling_empty_mol():
+    # empty molecule will get division by zero, which is expected, since HAC is zero
+    smiles_list = [""]
+    atom_pair_fp = AtomPairFingerprint(count=True, scale_by_hac=True)
+    with pytest.raises(ZeroDivisionError):
+        atom_pair_fp.transform(smiles_list)
+
+
 def test_atom_pair_wrong_distances(smiles_list):
     atom_pair_fp = AtomPairFingerprint(min_distance=3, max_distance=2)
     with pytest.raises(InvalidParameterError):

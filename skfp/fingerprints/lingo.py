@@ -11,7 +11,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_smiles
+from skfp.utils import ensure_smiles
 
 
 class LingoFingerprint(BaseFingerprintTransformer):

@@ -1,5 +1,6 @@
 import re
 
+import pytest
 from sklearn.utils.parallel import delayed
 
 from skfp.utils.parallel import ProgressParallel, run_in_parallel
@@ -27,7 +28,7 @@ def test_progress_parallel(capsys):
     assert re.search(r"it/s", stderr)
 
 
-def test_run_in_parallel(capsys):
+def test_run_in_parallel():
     func = lambda X: [x + 1 for x in X]
     data = list(range(100))
     result_sequential = func(data)
@@ -35,7 +36,7 @@ def test_run_in_parallel(capsys):
     assert result_sequential == result_parallel
 
 
-def test_run_in_parallel_batch_size(capsys):
+def test_run_in_parallel_batch_size():
     func = lambda X: [x + 1 for x in X]
     data = list(range(100))
     result_sequential = func(data)
@@ -43,3 +44,12 @@ def test_run_in_parallel_batch_size(capsys):
         func, data, n_jobs=-1, batch_size=1, flatten_results=True
     )
     assert result_sequential == result_parallel
+
+
+def test_run_in_parallel_invalid_batch_size():
+    func = lambda X: [x + 1 for x in X]
+    data = list(range(100))
+    with pytest.raises(ValueError) as exc_info:
+        run_in_parallel(func, data, n_jobs=-1, batch_size=-1, flatten_results=True)
+
+    assert "batch_size must be positive" in str(exc_info)

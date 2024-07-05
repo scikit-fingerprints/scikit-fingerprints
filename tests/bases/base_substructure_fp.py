@@ -120,17 +120,24 @@ def test_parameter_constraints_enabled(
     )
 
 
-def test_pattern_validation(substructure_smiles_list: list[str]):
+def test_non_smarts_pattern(substructure_smiles_list: list[str]):
     invalid_patterns = [1, True, "abc"]
     with pytest.raises(InvalidParameterError) as error:
         fp = BaseSubstructureFingerprint(invalid_patterns)  # type: ignore
         fp.transform(substructure_smiles_list)
 
-    print(error.value)
-
     assert str(error.value).startswith(
         "The 'patterns' parameter must be a sequence of SMARTS patterns."
     )
+
+
+def test_invalid_mol_pattern(substructure_smiles_list: list[str]):
+    invalid_patterns = ["X"]
+    with pytest.raises(InvalidParameterError) as error:
+        fp = BaseSubstructureFingerprint(invalid_patterns)  # type: ignore
+        fp.transform(substructure_smiles_list)
+
+    assert str(error.value).startswith("Got invalid SMARTS pattern")
 
 
 def test_empty_patterns_list(substructure_smiles_list: list[str]):

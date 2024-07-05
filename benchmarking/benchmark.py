@@ -165,7 +165,7 @@ if __name__ == "__main__":
     else:
         X = dataset["smiles"][:10000]
         X = MolFromSmilesTransformer().transform(X)
-        X = ConformerGenerator(n_jobs=-1, error_on_gen_fail=False).transform(X)
+        X = ConformerGenerator(n_jobs=-1, errors="filter").transform(X)
         X = np.array(X)
         np.save("mols_with_conformers.npy", X, allow_pickle=True)
 

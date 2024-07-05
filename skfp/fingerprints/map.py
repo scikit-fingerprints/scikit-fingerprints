@@ -15,7 +15,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 """
 Code inspired by the original work of the authors of the MAP4 Fingerprint:
@@ -39,7 +39,6 @@ class MAPFingerprint(BaseFingerprintTransformer):
         radius: int = 2,
         variant: str = "bit",
         sparse: bool = False,
-        count: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
         verbose: int = 0,
@@ -48,7 +47,6 @@ class MAPFingerprint(BaseFingerprintTransformer):
         super().__init__(
             n_features_out=fp_size,
             sparse=sparse,
-            count=count,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
@@ -164,12 +162,12 @@ class MAPFingerprint(BaseFingerprintTransformer):
                 ordered = sorted([env_a_radius, env_b_radius])
                 shingle = f"{ordered[0]}|{dist}|{ordered[1]}"
 
-                if self.count:
+                if self.variant == "count":
                     shingle_dict[shingle] += 1
                 else:
                     shingles.append(shingle)
 
-        if self.count:
+        if self.variant == "count":
             # shingle in format:
             # (radius i neighborhood of atom A) | (distance between atoms A and B) | \
             # (radius i neighborhood of atom B) | (shingle count)

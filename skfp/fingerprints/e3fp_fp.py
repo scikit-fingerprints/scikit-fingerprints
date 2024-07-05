@@ -13,7 +13,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import require_mols_with_conf_ids
+from skfp.utils import require_mols_with_conf_ids
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.

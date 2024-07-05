@@ -7,7 +7,7 @@ from rdkit.Chem import GetSymmSSSR, Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 class PubChemFingerprint(BaseFingerprintTransformer):
