@@ -44,6 +44,7 @@ mypy = "*"
 pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
+xenon = "*"
 
 [tool.poetry.group.test]
 optional = true
