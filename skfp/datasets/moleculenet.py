@@ -24,6 +24,7 @@ from skfp.datasets.utils import fetch_dataset, get_smiles_and_labels
         ],
         "data_dir": [None, str, os.PathLike],
         "as_frame": ["boolean"],
+        "verbose": ["boolean"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -31,6 +32,7 @@ def load_moleculenet_benchmark(
     subset: Optional[str] = None,
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frames: bool = False,
+    verbose: bool = False,
 ) -> Union[list[tuple[str, pd.DataFrame]], list[tuple[str, list[str], np.ndarray]]]:
     regression_datasets = [
         ("ESOL", load_esol),
@@ -78,13 +80,13 @@ def load_moleculenet_benchmark(
     if as_frames:
         # list of tuples (dataset_name, DataFrame)
         datasets = [
-            (dataset_name, load_function(data_dir, as_frame=True))
+            (dataset_name, load_function(data_dir, as_frame=True, verbose=verbose))
             for dataset_name, load_function in dataset_functions
         ]
     else:
         # list of tuples (dataset_name, SMILES, y)
         datasets = [
-            (dataset_name, *load_function(data_dir, as_frame=False))
+            (dataset_name, *load_function(data_dir, as_frame=False, verbose=verbose))
             for dataset_name, load_function in dataset_functions
         ]
 
@@ -92,20 +94,23 @@ def load_moleculenet_benchmark(
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_esol(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ESOL (Estimated SOLubility) [1]_ dataset.
+    Load and return the ESOL (Estimated SOLubility) [1]_ [2]_ dataset.
 
     The task is to predict aqueous solubility. Targets are log-transformed,
     and the unit is log mols per litre (log Mol/L).
-
-    In MoleculeNet benchmark [2]_, it belongs to the Physical Chemistry category.
 
     =================   ==============
     Tasks                            1
@@ -123,6 +128,9 @@ def load_esol(
     as_frame : bool, default=False
         If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D float vector).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
 
     Returns
     -------
@@ -143,20 +151,30 @@ def load_esol(
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
     """
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_ESOL", filename="esol.csv")
+    df = fetch_dataset(
+        data_dir,
+        dataset_name="MoleculeNet_ESOL",
+        filename="esol.csv",
+        verbose=verbose,
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_freesolv(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the FreeSolv (Free Solvation Database) [1]_ dataset.
+    Load and return the FreeSolv (Free Solvation Database) [1]_ [2]_ dataset.
 
     The task is to predict hydration free energy of small molecules in water.
     Targets are in kcal/mol.
@@ -178,6 +196,9 @@ def load_freesolv(
         If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D float vector).
 
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
     Returns
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
@@ -192,106 +213,310 @@ def load_freesolv(
         with input files"
         J Comput Aided Mol Des 28, 711–720 (2014)
         <https://link.springer.com/article/10.1007/s10822-014-9747-x>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
     """
     df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_FreeSolv", filename="freesolv.csv"
+        data_dir,
+        dataset_name="MoleculeNet_FreeSolv",
+        filename="freesolv.csv",
+        verbose=verbose,
     )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_lipophilicity(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load and return the Lipophilicity (Free Solvation Database) [1]_ dataset.
+
+    The task is to predict octanol/water distribution coefficient (logD) at pH 7.4.
+    Targets are already log transformed, and are a unitless ratio.
+
+    =================   ==============
+    Tasks                            1
+    Task type               regression
+    Total samples                 4200
+    Recommended split         scaffold
+    =================   ==============
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        returns SMILES as list of strings, and labels as a NumPy array (1D float vector).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns: "SMILES", "label"
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
     df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_Lipophilicity", filename="lipophilicity.csv"
+        data_dir,
+        dataset_name="MoleculeNet_Lipophilicity",
+        filename="lipophilicity.csv",
+        verbose=verbose,
     )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_pcba(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_PCBA", filename="pcba.csv")
+    """
+    Load and return the PCBA (PubChem BioAssay) [1]_ [2]_ dataset.
+
+    The task is to predict biological activity against 128 bioassays, generated
+    by high-throughput screening (HTS). All tasks are binary active/non-active.
+
+    Note that targets have missing values. Algorithms should be evaluated only on
+    present labels. For training data, you may want to impute them, e.g. with zeros.
+
+    =================   ========================
+    Tasks                                    128
+    Task type           multitask classification
+    Total samples                         437929
+    Recommended split                   scaffold
+    =================   ========================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and 128 label columns,
+        with names corresponding to biological activities. Otherwise, returns SMILES as
+        list of strings, and labels as a NumPy array (2D integer array).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns "SMILES" and 128 label columns
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Ramsundar, Bharath, et al.
+        "Massively multitask networks for drug discovery"
+        arXiv:1502.02072 (2015)
+        <https://arxiv.org/abs/1502.02072>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
+    df = fetch_dataset(
+        data_dir, dataset_name="MoleculeNet_PCBA", filename="pcba.csv", verbose=verbose
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_muv(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_MUV", filename="muv.csv")
+    """
+    Load and return the MUV (Maximum Unbiased Validation) [1]_ [2]_ dataset.
+
+    The task is to predict 17 targets designed for validation of virtual screening
+    techniques, based on PubChem BioAssays. All tasks are binary.
+
+    Note that targets have missing values. Algorithms should be evaluated only on
+    present labels. For training data, you may want to impute them, e.g. with zeros.
+
+    =================   ========================
+    Tasks                                     17
+    Task type           multitask classification
+    Total samples                          93087
+    Recommended split                   scaffold
+    =================   ========================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and 17 label columns,
+        with names corresponding to MUV targets (see [1]_ for details). Otherwise,
+        returns SMILES as list of strings, and labels as a NumPy array (2D integer array).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns "SMILES" and 17 label columns
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Ramsundar, Bharath, et al.
+        "Massively multitask networks for drug discovery"
+        arXiv:1502.02072 (2015)
+        <https://arxiv.org/abs/1502.02072>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
+    df = fetch_dataset(
+        data_dir, dataset_name="MoleculeNet_MUV", filename="muv.csv", verbose=verbose
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_hiv(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_HIV", filename="hiv.csv")
+    df = fetch_dataset(
+        data_dir, dataset_name="MoleculeNet_HIV", filename="hiv.csv", verbose=verbose
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_bace(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_BACE", filename="bace.csv")
+    df = fetch_dataset(
+        data_dir, dataset_name="MoleculeNet_BACE", filename="bace.csv", verbose=verbose
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_bbbp(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_BBBP", filename="bbbp.csv")
+    df = fetch_dataset(
+        data_dir, dataset_name="MoleculeNet_BBBP", filename="bbbp.csv", verbose=verbose
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_tox21(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_Tox21", filename="tox21.csv")
+    df = fetch_dataset(
+        data_dir,
+        dataset_name="MoleculeNet_Tox21",
+        filename="tox21.csv",
+        verbose=verbose,
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_toxcast(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     df = fetch_dataset(
         data_dir, dataset_name="MoleculeNet_ToxCast", filename="toxcast.csv"
@@ -300,24 +525,39 @@ def load_toxcast(
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_sider(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(data_dir, dataset_name="MoleculeNet_SIDER", filename="sider.csv")
+    df = fetch_dataset(
+        data_dir,
+        dataset_name="MoleculeNet_SIDER",
+        filename="sider.csv",
+        verbose=verbose,
+    )
     return df if as_frame else get_smiles_and_labels(df)
 
 
 @validate_params(
-    {"data_dir": [None, str, os.PathLike], "as_frame": ["boolean"]},
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
     prefer_skip_nested_validation=True,
 )
 def load_clintox(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
+    verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     df = fetch_dataset(
         data_dir, dataset_name="MoleculeNet_ClinTox", filename="clintox.csv"
