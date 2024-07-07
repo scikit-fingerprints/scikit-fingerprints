@@ -112,12 +112,13 @@ def load_esol(
     The task is to predict aqueous solubility. Targets are log-transformed,
     and the unit is log mols per litre (log Mol/L).
 
-    =================   ==============
-    Tasks                            1
-    Task type               regression
-    Total samples                 1128
-    Recommended split         scaffold
-    =================   ==============
+    ==================   ==============
+    Tasks                             1
+    Task type                regression
+    Total samples                  1128
+    Recommended split          scaffold
+    Recommended metric             RMSE
+    ==================   ==============
 
     Parameters
     ----------
@@ -179,12 +180,13 @@ def load_freesolv(
     The task is to predict hydration free energy of small molecules in water.
     Targets are in kcal/mol.
 
-    =================   ==============
-    Tasks                            1
-    Task type               regression
-    Total samples                  642
-    Recommended split         scaffold
-    =================   ==============
+    ==================   ==============
+    Tasks                             1
+    Task type                regression
+    Total samples                   642
+    Recommended split          scaffold
+    Recommended metric             RMSE
+    ==================   ==============
 
     Parameters
     ----------
@@ -247,12 +249,13 @@ def load_lipophilicity(
     The task is to predict octanol/water distribution coefficient (logD) at pH 7.4.
     Targets are already log transformed, and are a unitless ratio.
 
-    =================   ==============
-    Tasks                            1
-    Task type               regression
-    Total samples                 4200
-    Recommended split         scaffold
-    =================   ==============
+    ==================   ==============
+    Tasks                             1
+    Task type                regression
+    Total samples                  4200
+    Recommended split          scaffold
+    Recommended metric             RMSE
+    ==================   ==============
 
     Parameters
     ----------
@@ -298,26 +301,24 @@ def load_lipophilicity(
     },
     prefer_skip_nested_validation=True,
 )
-def load_pcba(
+def load_bace(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the PCBA (PubChem BioAssay) [1]_ [2]_ dataset.
+    Load and return the BACE [1]_ [2]_ dataset.
 
-    The task is to predict biological activity against 128 bioassays, generated
-    by high-throughput screening (HTS). All tasks are binary active/non-active.
+    The task is to predict binding results for a set of inhibitors of human
+    β-secretase 1 (BACE-1).
 
-    Note that targets have missing values. Algorithms should be evaluated only on
-    present labels. For training data, you may want to impute them, e.g. with zeros.
-
-    =================   ========================
-    Tasks                                    128
-    Task type           multitask classification
-    Total samples                         437929
-    Recommended split                   scaffold
-    =================   ========================
+    ==================   ==============
+    Tasks                             1
+    Task type            classification
+    Total samples                  1513
+    Recommended split          scaffold
+    Recommended metric            AUROC
+    ==================   ==============
 
     Parameters
     ----------
@@ -326,9 +327,9 @@ def load_pcba(
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns "SMILES" and 128 label columns,
-        with names corresponding to biological activities. Otherwise, returns SMILES as
-        list of strings, and labels as a NumPy array (2D integer array).
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
+        vector).
 
     verbose : bool, default=False
         If True, progress bar will be shown for downloading or loading files.
@@ -337,15 +338,16 @@ def load_pcba(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the `as_frame` argument, one of:
-        - Pandas DataFrame with columns "SMILES" and 128 label columns
+        - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
 
     References
     ----------
-    .. [1] `Ramsundar, Bharath, et al.
-        "Massively multitask networks for drug discovery"
-        arXiv:1502.02072 (2015)
-        <https://arxiv.org/abs/1502.02072>`_
+    .. [1] `Govindan Subramanian et al.
+        "Computational Modeling of β-Secretase 1 (BACE-1) Inhibitors Using
+        Ligand Based Approaches"
+        J. Chem. Inf. Model. 2016, 56, 10, 1936–1949
+        <https://pubs.acs.org/doi/10.1021/acs.jcim.6b00290>`_
 
     .. [2] `Zhenqin Wu et al.
         "MoleculeNet: a benchmark for molecular machine learning"
@@ -353,7 +355,200 @@ def load_pcba(
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
     """
     df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_PCBA", filename="pcba.csv", verbose=verbose
+        data_dir, dataset_name="MoleculeNet_BACE", filename="bace.csv", verbose=verbose
+    )
+    return df if as_frame else get_smiles_and_labels(df)
+
+
+@validate_params(
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_bbbp(
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    as_frame: bool = False,
+    verbose: bool = False,
+) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load and return the BBBP (Blood-Brain Barrier Penetration) [1]_ [2]_ dataset.
+
+    The task is to predict blood-brain barrier penetration (barrier permeability)
+    of small drug-like molecules.
+
+    ==================   ==============
+    Tasks                             1
+    Task type            classification
+    Total samples                  2039
+    Recommended split          scaffold
+    Recommended metric            AUROC
+    ==================   ==============
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
+        vector).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns: "SMILES", "label"
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Ines Filipa Martins et al.
+        "A Bayesian Approach to in Silico Blood-Brain Barrier Penetration Modeling"
+        J. Chem. Inf. Model. 2012, 52, 6, 1686–1697
+        <https://pubs.acs.org/doi/10.1021/ci300124c>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
+    df = fetch_dataset(
+        data_dir, dataset_name="MoleculeNet_BBBP", filename="bbbp.csv", verbose=verbose
+    )
+    return df if as_frame else get_smiles_and_labels(df)
+
+
+@validate_params(
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_hiv(
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    as_frame: bool = False,
+    verbose: bool = False,
+) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load and return the HIV [1]_ [2]_ dataset.
+
+    The task is to predict ability of molecules to inhibit HIV replication.
+
+    ==================   ==============
+    Tasks                             1
+    Task type            classification
+    Total samples                 41127
+    Recommended split          scaffold
+    Recommended metric            AUROC
+    ==================   ==============
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
+        vector).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns: "SMILES", "label"
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `AIDS Antiviral Screen Data
+        <https://wiki.nci.nih.gov/display/NCIDTPdata/AIDS+Antiviral+Screen+Data>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
+    df = fetch_dataset(
+        data_dir, dataset_name="MoleculeNet_HIV", filename="hiv.csv", verbose=verbose
+    )
+    return df if as_frame else get_smiles_and_labels(df)
+
+
+@validate_params(
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_clintox(
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    as_frame: bool = False,
+    verbose: bool = False,
+) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load and return the ClinTox [1]_ dataset.
+
+    The task is to predict drug approval viability, by predicting clinical trial
+    toxicity and final FDA approval status. Both tasks are binary.
+
+    ==================   ========================
+    Tasks                                       2
+    Task type            multitask classification
+    Total samples                            1478
+    Recommended split                    scaffold
+    Recommended metric                      AUROC
+    ==================   ========================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and 2 label columns,
+        FDA approval and clinical trial toxicity. Otherwise, returns SMILES as list
+        of strings,and labels as a NumPy array (2D integer array).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns "SMILES" and 2 label columns
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
+    df = fetch_dataset(
+        data_dir,
+        dataset_name="MoleculeNet_ClinTox",
+        filename="clintox.csv",
+        verbose=verbose,
     )
     return df if as_frame else get_smiles_and_labels(df)
 
@@ -380,12 +575,13 @@ def load_muv(
     Note that targets have missing values. Algorithms should be evaluated only on
     present labels. For training data, you may want to impute them, e.g. with zeros.
 
-    =================   ========================
-    Tasks                                     17
-    Task type           multitask classification
-    Total samples                          93087
-    Recommended split                   scaffold
-    =================   ========================
+    ==================   ========================
+    Tasks                                      17
+    Task type            multitask classification
+    Total samples                           93087
+    Recommended split                    scaffold
+    Recommended metric               AUPRC, AUROC
+    ==================   ========================
 
     Parameters
     ----------
@@ -395,8 +591,9 @@ def load_muv(
 
     as_frame : bool, default=False
         If True, returns the raw DataFrame with columns "SMILES" and 17 label columns,
-        with names corresponding to MUV targets (see [1]_ for details). Otherwise,
-        returns SMILES as list of strings, and labels as a NumPy array (2D integer array).
+        with names corresponding to MUV targets (see [1]_ and [2]_ for details).
+        Otherwise, returns SMILES as list of strings, and labels as a NumPy array.
+        Labels are 2D NumPy float array with binary labels and missing values.
 
     verbose : bool, default=False
         If True, progress bar will be shown for downloading or loading files.
@@ -434,51 +631,64 @@ def load_muv(
     },
     prefer_skip_nested_validation=True,
 )
-def load_hiv(
+def load_sider(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load and return the SIDER (Side Effect Resource) [1]_ [2]_ dataset.
+
+    The task is to predict adverse drug reactions (ADRs) as drug side effects to
+    27 system organ classes in MedDRA classification. All tasks are binary.
+
+    ==================   ========================
+    Tasks                                      27
+    Task type            multitask classification
+    Total samples                            1427
+    Recommended split                    scaffold
+    Recommended metric                      AUROC
+    ==================   ========================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and 27 label columns,
+        with names corresponding to MedDRA system organ classes (see [1]_ for details).
+        Otherwise, returns SMILES as list of strings,and labels as a NumPy array (2D
+        integer array).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns "SMILES" and 27 label columns
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Han Altae-Tran et al.
+        "Low Data Drug Discovery with One-Shot Learning"
+        ACS Cent. Sci. 2017, 3, 4, 283–293
+        <https://pubs.acs.org/doi/10.1021/acscentsci.6b00367>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
     df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_HIV", filename="hiv.csv", verbose=verbose
-    )
-    return df if as_frame else get_smiles_and_labels(df)
-
-
-@validate_params(
-    {
-        "data_dir": [None, str, os.PathLike],
-        "as_frame": ["boolean"],
-        "verbose": ["boolean"],
-    },
-    prefer_skip_nested_validation=True,
-)
-def load_bace(
-    data_dir: Optional[Union[str, os.PathLike]] = None,
-    as_frame: bool = False,
-    verbose: bool = False,
-) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_BACE", filename="bace.csv", verbose=verbose
-    )
-    return df if as_frame else get_smiles_and_labels(df)
-
-
-@validate_params(
-    {
-        "data_dir": [None, str, os.PathLike],
-        "as_frame": ["boolean"],
-        "verbose": ["boolean"],
-    },
-    prefer_skip_nested_validation=True,
-)
-def load_bbbp(
-    data_dir: Optional[Union[str, os.PathLike]] = None,
-    as_frame: bool = False,
-    verbose: bool = False,
-) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_BBBP", filename="bbbp.csv", verbose=verbose
+        data_dir,
+        dataset_name="MoleculeNet_SIDER",
+        filename="sider.csv",
+        verbose=verbose,
     )
     return df if as_frame else get_smiles_and_labels(df)
 
@@ -496,6 +706,55 @@ def load_tox21(
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load and return the Tox21 [1]_ [2]_ dataset.
+
+    The task is to predict 12 toxicity targets, including nuclear receptors and
+    stress response pathways. All tasks are binary.
+
+    Note that targets have missing values. Algorithms should be evaluated only on
+    present labels. For training data, you may want to impute them, e.g. with zeros.
+
+    ==================   ========================
+    Tasks                                      12
+    Task type            multitask classification
+    Total samples                            7831
+    Recommended split                    scaffold
+    Recommended metric                      AUROC
+    ==================   ========================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and 12 label columns,
+        with names corresponding to toxicity targets (see [1]_ and [2]_ for details).
+        Otherwise, returns SMILES as list of strings, and labels as a NumPy array.
+        Labels are 2D NumPy float array with binary labels and missing values.
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns "SMILES" and 12 label columns
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Tox21 Challenge
+        <https://tripod.nih.gov/tox21/challenge/>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
     df = fetch_dataset(
         data_dir,
         dataset_name="MoleculeNet_Tox21",
@@ -518,29 +777,61 @@ def load_toxcast(
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_ToxCast", filename="toxcast.csv"
-    )
-    return df if as_frame else get_smiles_and_labels(df)
+    """
+    Load and return the ToxCast [1]_ [2]_ dataset.
 
+    The task is to predict 617 toxicity targets from a large library of compounds
+    based on in vitro high-throughput screening. All tasks are binary.
 
-@validate_params(
-    {
-        "data_dir": [None, str, os.PathLike],
-        "as_frame": ["boolean"],
-        "verbose": ["boolean"],
-    },
-    prefer_skip_nested_validation=True,
-)
-def load_sider(
-    data_dir: Optional[Union[str, os.PathLike]] = None,
-    as_frame: bool = False,
-    verbose: bool = False,
-) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    Note that targets have missing values. Algorithms should be evaluated only on
+    present labels. For training data, you may want to impute them, e.g. with zeros.
+
+    ==================   ========================
+    Tasks                                     617
+    Task type            multitask classification
+    Total samples                            8575
+    Recommended split                    scaffold
+    Recommended metric                      AUROC
+    ==================   ========================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and 617 label columns,
+        with names corresponding to toxicity targets (see [1]_ and [2]_ for details).
+        Otherwise, returns SMILES as list of strings, and labels as a NumPy array.
+        Labels are 2D NumPy float array with binary labels and missing values.
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns "SMILES" and 617 label columns
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Ann M. Richard et al.
+        "ToxCast Chemical Landscape: Paving the Road to 21st Century Toxicology"
+        Chem. Res. Toxicol. 2016, 29, 8, 1225–1251
+        <https://pubs.acs.org/doi/10.1021/acs.chemrestox.6b00135>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
     df = fetch_dataset(
         data_dir,
-        dataset_name="MoleculeNet_SIDER",
-        filename="sider.csv",
+        dataset_name="MoleculeNet_ToxCast",
+        filename="toxcast.csv",
         verbose=verbose,
     )
     return df if as_frame else get_smiles_and_labels(df)
@@ -554,12 +845,64 @@ def load_sider(
     },
     prefer_skip_nested_validation=True,
 )
-def load_clintox(
+def load_pcba(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load and return the PCBA (PubChem BioAssay) [1]_ [2]_ dataset.
+
+    The task is to predict biological activity against 128 bioassays, generated
+    by high-throughput screening (HTS). All tasks are binary active/non-active.
+
+    Note that targets have missing values. Algorithms should be evaluated only on
+    present labels. For training data, you may want to impute them, e.g. with zeros.
+
+    ==================   ========================
+    Tasks                                     128
+    Task type            multitask classification
+    Total samples                          437929
+    Recommended split                    scaffold
+    Recommended metric               AUPRC, AUROC
+    ==================   ========================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and 128 label columns,
+        with names corresponding to biological activities (see [1]_ and [2]_ for details).
+        Otherwise, returns SMILES as list of strings, and labels as a NumPy array.
+        Labels are 2D NumPy float array with binary labels and missing values.
+
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns "SMILES" and 128 label columns
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Ramsundar, Bharath, et al.
+        "Massively multitask networks for drug discovery"
+        arXiv:1502.02072 (2015)
+        <https://arxiv.org/abs/1502.02072>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
     df = fetch_dataset(
-        data_dir, dataset_name="MoleculeNet_ClinTox", filename="clintox.csv"
+        data_dir, dataset_name="MoleculeNet_PCBA", filename="pcba.csv", verbose=verbose
     )
     return df if as_frame else get_smiles_and_labels(df)
