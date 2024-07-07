@@ -1,3 +1,4 @@
+import os
 import shutil
 
 import numpy as np
@@ -8,13 +9,13 @@ from skfp.datasets.utils import get_data_home_dir, get_smiles_and_labels
 
 def test_get_data_home_dir():
     default_dir = get_data_home_dir(None, dataset_name="test")
-    assert default_dir.endswith("scikit_learn_data/test")
+    assert default_dir.endswith(os.path.join("scikit_learn_data", "test"))
 
     try:
         custom_dir = get_data_home_dir(data_dir="./data", dataset_name="test")
     finally:
         shutil.rmtree("data")
-    assert custom_dir == "data/test"
+    assert custom_dir == os.path.join("data", "test")
 
 
 def test_get_smiles_and_labels():
