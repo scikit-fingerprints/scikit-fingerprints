@@ -159,14 +159,12 @@ def load_freesolv(
     Load and return the FreeSolv (Free Solvation Database) [1]_ dataset.
 
     The task is to predict hydration free energy of small molecules in water.
-
-    The task is to predict aqueous solubility. Targets are log-transformed,
-    and the unit is log mols per litre (log Mol/L).
+    Targets are in kcal/mol.
 
     =================   ==============
     Tasks                            1
     Task type               regression
-    Total samples                 1128
+    Total samples                  642
     Recommended split         scaffold
     =================   ==============
 
@@ -189,10 +187,11 @@ def load_freesolv(
 
     References
     ----------
-    .. [1] `John S. Delaney
-        "ESOL: Estimating Aqueous Solubility Directly from Molecular Structure"
-        J. Chem. Inf. Comput. Sci. 2004, 44, 3, 1000–1005
-        <https://pubs.acs.org/doi/10.1021/ci034243x>`_
+    .. [1] `Mobley, D.L., Guthrie, J.P.
+        "FreeSolv: a database of experimental and calculated hydration free energies,
+        with input files"
+        J Comput Aided Mol Des 28, 711–720 (2014)
+        <https://link.springer.com/article/10.1007/s10822-014-9747-x>`_
     """
     df = fetch_dataset(
         data_dir, dataset_name="MoleculeNet_FreeSolv", filename="freesolv.csv"
