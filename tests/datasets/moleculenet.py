@@ -113,7 +113,7 @@ def test_load_bace():
 
     assert len(smiles_list) == 1513
     assert y.shape == (1513,)
-    assert np.issubdtype(y.dtype, int)
+    assert np.issubdtype(y.dtype, np.integer)
     assert np.all(np.isin(y, [0, 1]))
     assert df.shape == (1513, 2)
 
@@ -135,7 +135,7 @@ def test_load_bbbp():
 
     assert len(smiles_list) == 2039
     assert y.shape == (2039,)
-    assert np.issubdtype(y.dtype, int)
+    assert np.issubdtype(y.dtype, np.integer)
     assert np.all(np.isin(y, [0, 1]))
     assert df.shape == (2039, 2)
 
@@ -157,7 +157,7 @@ def test_load_hiv():
 
     assert len(smiles_list) == 41127
     assert y.shape == (41127,)
-    assert np.issubdtype(y.dtype, int)
+    assert np.issubdtype(y.dtype, np.integer)
     assert np.all(np.isin(y, [0, 1]))
     assert df.shape == (41127, 2)
 
@@ -179,7 +179,7 @@ def test_load_clintox():
 
     assert len(smiles_list) == 1477
     assert y.shape == (1477, 2)
-    assert np.issubdtype(y.dtype, int)
+    assert np.issubdtype(y.dtype, np.integer)
     assert np.all(np.isin(y, [0, 1]))
     assert np.sum(np.isnan(y)) == 0
     assert df.shape == (1477, 3)
@@ -224,7 +224,7 @@ def test_load_sider():
 
     assert len(smiles_list) == 1427
     assert y.shape == (1427, 27)
-    assert np.issubdtype(y.dtype, int)
+    assert np.issubdtype(y.dtype, np.integer)
     assert np.all(np.isin(y, [0, 1]))
     assert np.sum(np.isnan(y)) == 0
     assert df.shape == (1427, 28)
