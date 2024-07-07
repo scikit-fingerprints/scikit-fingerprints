@@ -39,6 +39,7 @@ python = "^3.9"
 
 datasketch = "*"
 e3fp = "*"
+huggingface_hub = "*"
 joblib = "*"
 mordredcommunity = "*"
 numpy = "^1.20.0"
