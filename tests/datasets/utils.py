@@ -1,3 +1,5 @@
+import shutil
+
 import numpy as np
 import pandas as pd
 
@@ -8,7 +10,10 @@ def test_get_data_home_dir():
     default_dir = get_data_home_dir(None, dataset_name="test")
     assert default_dir.endswith("scikit_learn_data/test")
 
-    custom_dir = get_data_home_dir(data_dir="./data", dataset_name="test")
+    try:
+        custom_dir = get_data_home_dir(data_dir="./data", dataset_name="test")
+    finally:
+        shutil.rmtree("data")
     assert custom_dir == "data/test"
 
 
