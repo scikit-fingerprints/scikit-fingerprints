@@ -838,7 +838,7 @@ def load_toxcast(
     ==================   ========================
     Tasks                                     617
     Task type            multitask classification
-    Total samples                            8575
+    Total samples                            8576
     Recommended split                    scaffold
     Recommended metric                      AUROC
     ==================   ========================

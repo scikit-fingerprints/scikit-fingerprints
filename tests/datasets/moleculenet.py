@@ -203,14 +203,14 @@ def test_load_muv():
     assert len(smiles_list) == 93087
     assert y.shape == (93087, 17)
     assert np.issubdtype(y.dtype, float)
-    assert np.all(np.allclose(y, [0, 1]) | np.isnan(y))
+    assert np.all(np.isin(y, [0, 1]) | np.isnan(y))
     assert df.shape == (93087, 18)
 
     df_smiles = df["SMILES"].tolist()
     df_y = df.drop(columns="SMILES").values
 
     assert smiles_list == df_smiles
-    assert np.array_equal(y, df_y)
+    assert np.array_equal(y, df_y, equal_nan=True)
 
 
 def test_load_sider():
@@ -248,14 +248,14 @@ def test_load_tox21():
     assert len(smiles_list) == 7831
     assert y.shape == (7831, 12)
     assert np.issubdtype(y.dtype, float)
-    assert np.all(np.allclose(y, [0, 1]) | np.isnan(y))
+    assert np.all(np.isin(y, [0, 1]) | np.isnan(y))
     assert df.shape == (7831, 13)
 
     df_smiles = df["SMILES"].tolist()
     df_y = df.drop(columns="SMILES").values
 
     assert smiles_list == df_smiles
-    assert np.array_equal(y, df_y)
+    assert np.array_equal(y, df_y, equal_nan=True)
 
 
 def test_load_toxcast():
@@ -267,17 +267,17 @@ def test_load_toxcast():
     assert isinstance(y, np.ndarray)
     assert isinstance(df, pd.DataFrame)
 
-    assert len(smiles_list) == 8575
-    assert y.shape == (8575, 617)
+    assert len(smiles_list) == 8576
+    assert y.shape == (8576, 617)
     assert np.issubdtype(y.dtype, float)
-    assert np.all(np.allclose(y, [0, 1]) | np.isnan(y))
-    assert df.shape == (8575, 618)
+    assert np.all(np.isin(y, [0, 1]) | np.isnan(y))
+    assert df.shape == (8576, 618)
 
     df_smiles = df["SMILES"].tolist()
     df_y = df.drop(columns="SMILES").values
 
     assert smiles_list == df_smiles
-    assert np.array_equal(y, df_y)
+    assert np.array_equal(y, df_y, equal_nan=True)
 
 
 def test_load_pcba():
@@ -292,11 +292,11 @@ def test_load_pcba():
     assert len(smiles_list) == 437929
     assert y.shape == (437929, 128)
     assert np.issubdtype(y.dtype, float)
-    assert np.all(np.allclose(y, [0, 1]) | np.isnan(y))
+    assert np.all(np.isin(y, [0, 1]) | np.isnan(y))
     assert df.shape == (437929, 129)
 
     df_smiles = df["SMILES"].tolist()
     df_y = df.drop(columns="SMILES").values
 
     assert smiles_list == df_smiles
-    assert np.array_equal(y, df_y)
+    assert np.array_equal(y, df_y, equal_nan=True)
