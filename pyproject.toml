@@ -53,6 +53,7 @@ optional = true
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+xenon = "*"
 
 [tool.poetry.group.doc]
 optional = true
