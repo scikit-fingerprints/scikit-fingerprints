@@ -38,7 +38,8 @@ def get_data_home_dir(
     if data_dir is None:
         data_dir = Path(get_sklearn_data_home()) / dataset_name
     else:
-        Path(data_dir).mkdir(parents=True, exist_ok=True)
+        data_dir = Path(data_dir) / dataset_name
+        data_dir.mkdir(parents=True, exist_ok=True)
 
     return str(data_dir)
 
@@ -68,7 +69,10 @@ def get_smiles_and_labels(df: pd.DataFrame) -> tuple[list[str], np.ndarray]:
     """
     Extract SMILES and labels (one or more) from the given DataFrame. Assumes
     that SMILES strings are in "SMILES" column, and all other columns are labels.
+    If there is only a single task, labels are returned as a vector.
     """
     smiles = df.pop("SMILES").tolist()
     labels = df.values
+    if labels.shape[1] == 1:
+        labels = labels.ravel()
     return smiles, labels

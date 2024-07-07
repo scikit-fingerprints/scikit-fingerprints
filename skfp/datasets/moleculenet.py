@@ -34,6 +34,55 @@ def load_moleculenet_benchmark(
     as_frames: bool = False,
     verbose: bool = False,
 ) -> Union[list[tuple[str, pd.DataFrame]], list[tuple[str, list[str], np.ndarray]]]:
+    """
+    Load and return the MoleculeNet [1]_ benchmark datasets.
+
+    Datasets have varied molecular property prediction tasks: regression, single-task,
+    and multitask classification. Scaffold split is recommended for all of them,
+    following Open Graph Benchmark [2]_. They differ in recommended metrics. For more
+    details, see loading functions for particular datasets.
+
+    Often only a subset of those datasets is used for benchmarking, e.g. only
+    single-task datasets, or only classification datasets and excluding PCBA (due to its
+    large size). A subset of datasets can be selected by using `subset` argument.
+
+    Dataset names are also returned (case-sensitive). Datasets, grouped by task, are:
+
+    - regression: ESOL, FreeSolv, Lipophilicity
+    - single-task classification: BACE, BBBP, HIV
+    - multitask classification: ClinTox, MUV, SIDER, Tox21, ToxCast, PCBA
+
+    Parameters
+    ----------
+    subset : {None, "regression", "classification", "classification_single_task",
+              "classification_multitask", "classification_no_pcba"}
+        If not None, returns the given subset of datasets.
+
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frames : bool, default=False
+        If True, returns the raw DataFrame for each dataset. Otherwise, returns SMILES
+        as a list of strings, and labels as a NumPy array for each dataset.
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the `as_frame` argument, one of:
+        - Pandas DataFrame with columns: "SMILES", "label"
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
     regression_datasets = [
         ("ESOL", load_esol),
         ("FreeSolv", load_freesolv),
@@ -511,7 +560,7 @@ def load_clintox(
     ==================   ========================
     Tasks                                       2
     Task type            multitask classification
-    Total samples                            1478
+    Total samples                            1477
     Recommended split                    scaffold
     Recommended metric                      AUROC
     ==================   ========================
