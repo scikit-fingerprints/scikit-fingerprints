@@ -15,6 +15,7 @@ extensions = [
     "sphinx.ext.duration",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
+    "sphinx_copybutton",
 ]
 
 autodoc_default_options = {
@@ -37,3 +38,5 @@ intersphinx_mapping = {
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = "pydata_sphinx_theme"
+
+copybutton_exclude = ".linenos, .gp, .go"

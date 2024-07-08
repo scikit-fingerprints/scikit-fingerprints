@@ -78,6 +78,7 @@ optional = true
 [tool.poetry.group.doc.dependencies]
 pydata-sphinx-theme = "*"
 sphinx = "*"
+sphinx-copybutton = "*"
 
 [tool.poetry.group.eval]
 optional = true
