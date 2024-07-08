@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils.validators import ensure_smiles
 
 
 class SECFPFingerprint(BaseFingerprintTransformer):
@@ -155,13 +155,13 @@ class SECFPFingerprint(BaseFingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 
-        X = ensure_mols(X)
+        X = ensure_smiles(X)
 
-        # bulk function does not work
+        # bulk function does not work, see https://github.com/rdkit/rdkit/issues/7263
         encoder = MHFPEncoder(self.fp_size, self.random_state)
         X = [
-            encoder.EncodeSECFPMol(
-                mol,
+            encoder.EncodeSECFPSmiles(
+                smiles,
                 length=self.fp_size,
                 radius=self.radius,
                 min_radius=self.min_radius,
@@ -169,7 +169,7 @@ class SECFPFingerprint(BaseFingerprintTransformer):
                 isomeric=self.isomeric_smiles,
                 kekulize=self.kekulize,
             )
-            for mol in X
+            for smiles in X
         ]
 
         if self.sparse:
