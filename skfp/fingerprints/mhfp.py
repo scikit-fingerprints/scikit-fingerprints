@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils import ensure_mols
+from skfp.utils.validators import ensure_smiles
 
 
 class MHFPFingerprint(BaseFingerprintTransformer):
@@ -165,11 +165,11 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 
-        X = ensure_mols(X)
+        X = ensure_smiles(X)
 
         # outputs raw hash values, not feature vectors!
         encoder = MHFPEncoder(self.fp_size, self.random_state)
-        X = MHFPEncoder.EncodeMolsBulk(
+        X = MHFPEncoder.EncodeSmilesBulk(
             encoder,
             X,
             radius=self.radius,
