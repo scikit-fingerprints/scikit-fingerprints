@@ -40,3 +40,15 @@ intersphinx_mapping = {
 html_theme = "pydata_sphinx_theme"
 
 copybutton_exclude = ".linenos, .gp, .go"
+
+
+html_theme_options = {
+    "header_links_before_dropdown": 2,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/scikit-fingerprints/scikit-fingerprints",
+            "icon": "fa-brands fa-github",
+        },
+    ],
+}
