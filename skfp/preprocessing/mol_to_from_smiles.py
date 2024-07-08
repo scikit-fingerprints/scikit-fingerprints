@@ -5,7 +5,7 @@ from typing import Optional
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 from skfp.bases import BasePreprocessor
-from skfp.utils.validators import ensure_mols, ensure_smiles
+from skfp.utils import ensure_mols, ensure_smiles
 
 
 class MolFromSmilesTransformer(BasePreprocessor):

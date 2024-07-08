@@ -4,12 +4,12 @@ from numbers import Integral
 from typing import Optional, Union
 
 import numpy as np
-from rdkit.Chem import Mol
+from rdkit.Chem import Mol, MolToSmiles
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols, require_mols_with_conf_ids
+from skfp.utils import ensure_mols, require_mols_with_conf_ids
 
 
 class AtomPairFingerprint(BaseFingerprintTransformer):
@@ -73,7 +73,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         Whether to scale count fingerprint by the heavy atom count (HAC) to
         obtain a proportionality to molecule size [2]_. If integer value is given,
         scaling uses given power of HAC, e.g. `scale_by_hac=2` divides counts by
-        squared HAC. Values are expressed as percentages in range [0, 100].
+        squared HAC. Using squared HAC results in values range [0, 1].
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -259,5 +259,12 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         return csr_array(fps) if self.sparse else np.array(fps)
 
     def _scale_by_hac(self, fingerprint: np.ndarray, mol: Mol) -> np.ndarray:
-        scale_factor = mol.GetNumHeavyAtoms() ** self.scale_by_hac
+        hac = mol.GetNumHeavyAtoms()
+        scale_factor = hac**self.scale_by_hac
+        if scale_factor == 0:
+            raise ZeroDivisionError(
+                f"Got zero HAC scaling factor for SMILES '{MolToSmiles(mol)}' with "
+                f"{hac} heavy atoms and scaling exponent {int(self.scale_by_hac)}"
+            )
+
         return (100 * fingerprint) / scale_factor

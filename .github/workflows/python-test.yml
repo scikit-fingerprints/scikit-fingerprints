@@ -33,7 +33,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v3
         with:
-          poetry-plugins: "poetry-plugin-sort"
+          poetry-plugins: "poetry-plugin-export poetry-plugin-sort"
 
       - name: Setup a local virtual environment
         run: |
