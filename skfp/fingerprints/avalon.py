@@ -72,9 +72,9 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     >>> fp
     AvalonFingerprint()
     >>> X = fp.transform(smiles)
-    >>> X
+    >>> X # doctest: +ELLIPSIS
     array([[0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0]])
+           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
     """
 
     _parameter_constraints: dict = {

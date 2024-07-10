@@ -93,11 +93,12 @@ class MQNsFingerprint(BaseFingerprintTransformer):
     >>> fp
     MQNsFingerprint()
 
-    >>> fp.transform(smiles)
+    >>> fp.transform(smiles) # doctest: +ELLIPSIS
     array([[0, 0, 0, ..., 0, 0, 0],
            [2, 0, 0, ..., 0, 0, 0],
            [1, 0, 0, ..., 0, 0, 0],
-           [2, 0, 0, ..., 0, 0, 0]], dtype=uint32)
+           [2, 0, 0, ..., 0, 0, 0]],
+          dtype=uint32)
     """
 
     def __init__(

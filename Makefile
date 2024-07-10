@@ -12,7 +12,7 @@ setup: ## Install development dependencies, pre-commit hooks and poetry plugin
 
 docs: ## Re-generate documentation
 	-rm -r docs/modules/generated
-	poetry run $(MAKE) -C docs clean html
+	poetry run $(MAKE) -C docs clean html doctest
 
 test: ## Run tests
 	poetry run black . --check --diff

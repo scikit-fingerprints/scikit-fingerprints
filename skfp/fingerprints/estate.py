@@ -83,11 +83,12 @@ class EStateFingerprint(BaseFingerprintTransformer):
     >>> fp
     EStateFingerprint()
 
-    >>> fp.transform(smiles)
-    array([[0., 0., 0., ..., 0., 0., 0.],
-           [0., 0., 0., ..., 0., 0., 0.],
-           [0., 0., 0., ..., 0., 0., 0.],
-           [0., 0., 0., ..., 0., 0., 0.]])
+    >>> fp.transform(smiles) # doctest: +ELLIPSIS
+    array([[0.        , 0.        , ..., 0.        , 0.        ],
+           [0.        , 0.        , ..., 0.        , 0.        ],
+           [0.        , 0.        , ..., 0.        , 0.        ],
+           [0.        , 0.        , ..., 0.        , 0.        ]])
+
     """
 
     _parameter_constraints: dict = {
