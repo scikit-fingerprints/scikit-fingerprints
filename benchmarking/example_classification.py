@@ -89,7 +89,7 @@ for dataset_name, property_name in dataset_params:
     X_valid_conf, y_valid = conf_gen.transform_x_y(X_valid_mols, np.array(y_valid))
     X_test_conf, y_test = conf_gen.transform_x_y(X_test_mols, np.array(y_test))
 
-    records = []
+    records: list[dict] = []
 
     np.random.seed(42)
 

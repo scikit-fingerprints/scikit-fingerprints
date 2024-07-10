@@ -15,6 +15,9 @@ docs: ## Re-generate documentation
 	poetry run $(MAKE) -C docs clean html
 
 test: ## Run tests
+	black . --check --diff
+	isort . --check-only --profile black
+	poetry sort --check
 	poetry run pytest tests
 
 test-coverage: ## Run tests and calculate test coverage
