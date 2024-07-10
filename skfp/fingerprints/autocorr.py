@@ -97,11 +97,9 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
     >>> fp
     AutocorrFingerprint()
 
-    >>> fp.transform(smiles)
-    array([[1.204, 0.847, 0.   , ..., 0.   , 0.   ,
-            0.   ],
-           [1.153, 0.773, 0.   , ..., 0.   , 0.   ,
-            0.   ]])
+    >>> fp.transform(smiles) # doctest: +ELLIPSIS
+    array([[ 1.204,  0.847,  0.   ,  ...,  0.   ,  0.   ,  0.   ],
+           [ 1.153,  0.773,  0.   ,  ...,  0.   ,  0.   ,  0.   ]])
     """
 
     _parameter_constraints: dict = {

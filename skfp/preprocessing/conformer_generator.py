@@ -127,11 +127,8 @@ class ConformerGenerator(BasePreprocessor):
 
     >>> mol_from_smiles = MolFromSmilesTransformer()
     >>> mols = mol_from_smiles.transform(smiles)
-    >>> conf_gen.transform(mols)
-    [<rdkit.Chem.rdchem.Mol,
-    <rdkit.Chem.rdchem.Mol,
-    <rdkit.Chem.rdchem.Mol,
-    <rdkit.Chem.rdchem.Mol]
+    >>> conf_gen.transform(mols) # doctest: +ELLIPSIS
+    [<rdkit.Chem.PropertyMol.PropertyMol...>, ..., <rdkit.Chem.PropertyMol.PropertyMol...>]
     """
 
     _parameter_constraints: dict = {
