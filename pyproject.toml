@@ -67,6 +67,8 @@ xenon = "*"
 optional = true
 
 [tool.poetry.group.test.dependencies]
+black = "*"
+isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
