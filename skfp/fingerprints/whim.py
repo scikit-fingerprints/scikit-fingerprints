@@ -16,12 +16,12 @@ class WHIMFingerprint(BaseFingerprintTransformer):
 
     _parameter_constraints: dict = {
         **BaseFingerprintTransformer._parameter_constraints,
-        "clip_val": [Interval(Real, 0, None, closed="left")],
+        "clip_val": [None, Interval(Real, 0, None, closed="left")],
     }
 
     def __init__(
         self,
-        clip_val: int = np.iinfo(np.int32).max,
+        clip_val: float = 2147483647,  # max int32 value
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
@@ -42,5 +42,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
 
         X = require_mols_with_conf_ids(X)
         X = [CalcWHIM(mol, confId=mol.GetIntProp("conf_id")) for mol in X]
-        X = np.clip(X, -self.clip_val, self.clip_val)
+        if self.clip_val is not None:
+            X = np.clip(X, -self.clip_val, self.clip_val)
+
         return csr_array(X) if self.sparse else np.array(X)
