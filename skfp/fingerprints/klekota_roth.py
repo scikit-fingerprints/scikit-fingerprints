@@ -49,7 +49,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
     .. [1] `Klekota, Justin, and Frederick P Roth.
         “Chemical substructures that enrich for biological activity.”
         Bioinformatics (Oxford, England) vol. 24,21 (2008): 2518-25.
-        https://pubmed.ncbi.nlm.nih.gov/18784118/
+        <https://pubmed.ncbi.nlm.nih.gov/18784118/>`_
 
     Examples
     --------

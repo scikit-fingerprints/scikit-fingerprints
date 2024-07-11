@@ -78,11 +78,11 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
 
     .. [3] `Rajarshi Guha
         "Autocorrelation Descriptors"
-        http://www.rguha.net/writing/notes/desc/node2.html`_
+        <http://www.rguha.net/writing/notes/desc/node2.html>`_
 
     .. [4] `Roberto Todeschini and Viviana Consonni
         "Molecular Descriptors for Chemoinformatics"
-        https://onlinelibrary.wiley.com/doi/book/10.1002/9783527628766`_
+        <https://onlinelibrary.wiley.com/doi/book/10.1002/9783527628766>`_
 
     .. [5] `Guillaume Godin
         "3D	descriptors in RDKit"
