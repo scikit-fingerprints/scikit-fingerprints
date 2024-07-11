@@ -12,7 +12,85 @@ from skfp.utils import ensure_mols, require_mols_with_conf_ids
 
 
 class PharmacophoreFingerprint(BaseFingerprintTransformer):
-    """Pharmacophore fingerprint."""
+    """
+    Pharmacophore fingerprint.
+
+    The implementation uses RDKit. This is a hashed fingerprint, where
+    the hashed fragments are computed based on pharmacophoric structures designed
+    by Alberto Gobbi and Dieter Poppinger [1]_.
+
+    A pharmacophoric structure is as a sequence:
+    PH1 D12 PH2 D23 PH3 D13
+
+    Where PH type is a pharmacophoric type defined as regex in SMARTS language.
+    D is a topological distance between these pharmacophoric types in the molecule.
+    Distance values are limited to 8. In case distance exceeds this value, it is still set to 8.
+    Such sequence is then hashed to create the result vector.
+
+    The structure described above is a pharmacophoric triangle (3-point).
+    Our implementation also hashes pharmacophoric pairs (2-point):
+    PH1 D12 PH2
+
+    Parameters
+    ----------
+    variant: {"raw_bits", "bit", "count"} = "raw_bits"
+        Whether to fold the raw bits output of the fingerprint into the size defined by fp_size
+        If set to ``"count"`` the occurences will be summed.
+
+    fp_size : int, default=2048
+        Size of output vectors, i.e. number of bits for each fingerprint. Must be
+        positive.
+
+    use_3D : bool, default=False
+        Whether to use 3D Euclidean distance matrix. If False, only uses topological
+        distances on molecular graph.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    verbose : int, default=0
+        Controls the verbosity when computing fingerprints.
+
+    Attributes
+    ----------
+    n_features_out : int
+        Number of output features, size of fingerprints. Equal to `fp_size`.
+
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    References
+    ----------
+    .. [1] `A Gobbi, D Poppinger
+        "Genetic optimization of combinatorial libraries"
+        Biotechnology and Bioengineering: Volume 61, Issue 1, Winter 1998, Pages 47-54
+        <https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0290(199824)61:1%3C47::AID-BIT9%3E3.0.CO;2-Z>`_
+
+    Examples
+    --------
+    >>> from skfp.fingerprints import PharmacophoreFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = PharmacophoreFingerprint()
+    >>> fp
+    PharmacophoreFingerprint()
+
+    >>> fp.transform(smiles)
+    array([[0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+
+    """
 
     _parameter_constraints: dict = {
         **BaseFingerprintTransformer._parameter_constraints,
