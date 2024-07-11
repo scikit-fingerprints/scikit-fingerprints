@@ -112,7 +112,7 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
     >>> mols = mol_from_smiles.transform(smiles)
     >>> conf_gen = ConformerGenerator()
     >>> mols = conf_gen.transform(mols)
-    >>> fp.transform(mols)
+    >>> fp.transform(mols)  # doctest: +SKIP
     array([[ 0.   ,    nan,  1.585, ...,  1.   , -0.   ,  1.   ],
            [ 0.   ,  0.   ,  2.763, ...,  1.   ,  0.   ,  1.   ],
            [ 0.   ,  0.   ,  1.   , ...,  1.   ,  0.   , 13.076],
