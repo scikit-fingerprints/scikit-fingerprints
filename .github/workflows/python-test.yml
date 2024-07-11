@@ -54,3 +54,23 @@ jobs:
 
       - name: Run tests with pytest
         run: poetry run make test
+
+  ci-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v3
+
+      - name: Install the project dependencies
+        run: poetry install --with doc
+
+      - name: Build documentation
+        run: poetry run make docs
