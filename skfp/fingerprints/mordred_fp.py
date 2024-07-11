@@ -14,9 +14,9 @@ class MordredFingerprint(BaseFingerprintTransformer):
     """
     Mordred fingerprint.
 
-    The implementation uses `mordredcommunity` [3]_ library. This is a fingerprint
-    based on many 2D, and optionally 3D, molecular descriptors, originally
-    included in the Mordred [2]_ library.
+    The implementation uses `mordredcommunity` [3]_ library. This is a descriptor-based
+    fingerprint, implementing a very large number of 2D, and optionally 3D, molecular
+    descriptors, originally implemented in the Mordred [2]_ library.
 
     Descriptors include simple counts (e.g. atom types, rings), topological indices,
     computed properties (e.g. ClogP, polarizability), and more. For a full list, see
