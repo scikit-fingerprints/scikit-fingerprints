@@ -18,8 +18,8 @@ class RDFFingerprint(BaseFingerprintTransformer):
     distances.
 
     RDF function can be interpreted as the probability distribution of finding
-    an atom in a spherical volume of given radius r, and is defined for all
-    atoms i and j in the molecule as:
+    an atom in a spherical volume of given radius `r`, and is defined for all
+    atoms i and j with distance :math:`r_{ij}` in the molecule with N atoms as:
 
     .. math::
 
@@ -66,6 +66,11 @@ class RDFFingerprint(BaseFingerprintTransformer):
         Value is always True, as this fingerprint is 3D based. It always requires
         molecules with conformers as inputs, with ``conf_id`` integer property set.
 
+    See Also
+    --------
+    :class:`MORSEFingerprint` : Related fingerprint, which uses scattered electron
+        intensity instead of radial distribution function.
+
     References
     ----------
     .. [1] RDKit IState discussion
@@ -89,7 +94,7 @@ class RDFFingerprint(BaseFingerprintTransformer):
 
     .. [6] `Hemmer, Markus C., Valentin Steinhauer, and Johann Gasteiger
         "Deriving the 3D structure of organic molecules from their infrared spectra"
-        Vibrational spectroscopy 19.1 (1999): 151-164.
+        Vibrational spectroscopy 19.1 (1999): 151-164
         <https://www.sciencedirect.com/science/article/pii/S0924203199000144>`_
 
     Examples
