@@ -112,7 +112,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
     >>> mols = mol_from_smiles.transform(smiles)
     >>> conf_gen = ConformerGenerator()
     >>> mols = conf_gen.transform(mols)
-    >>> fp.transform(mols)
+    >>> fp.transform(mols)  # doctest: +ELLIPSIS
     array([[ 3.0000e+00,  2.3090e+00,  9.0900e-01, ..., -1.3000e-02,
             -8.3000e-02, -5.3000e-02],
            [ 2.8000e+01,  1.2408e+01, -8.1900e-01, ...,  3.5400e-01,
