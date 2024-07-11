@@ -92,7 +92,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
         <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Godin_3D_Descriptors.pdf>`_
 
     .. [6] `Roberto Todeschini and Paola Gramatica
-        "The Whim Theory: New 3D Molecular Descriptors for Qsar in Environmental Modelling"
+        "The WHIM Theory: New 3D Molecular Descriptors for QSAR in Environmental Modelling"
         SAR and QSAR in Environmental Research, 7(1–4), 89–115
         <https://www.tandfonline.com/doi/abs/10.1080/10629369708039126>`_
 
