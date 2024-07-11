@@ -10,7 +10,7 @@ on:
 
 # cancel previous runs on a new commit
 concurrency:
-  group: ${{ github.head_ref }}
+  group: ${{ github.head_ref }}-docs
   cancel-in-progress: true
 
 
