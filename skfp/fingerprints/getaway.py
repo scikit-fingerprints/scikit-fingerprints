@@ -26,7 +26,8 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
     The influence matrix R, measuring strength of interatomic interactions, is then
     defined based on atom leverages and their spatial distances.
 
-    GETAWAY descriptors consist of 273 features (see [3]_ [4]_ [5]_ for precise definitions):
+    GETAWAY descriptors consist of 273 features (see [3]_ [4]_ [5]_ [6]_ for precise
+    definitions):
     - 7 related to general molecule shape, defined only on H and R matrices
     - 7 sets of autocorrelation descriptors, each defined on topological distances
       (shortest paths) from 0 to 8 (inclusive)
@@ -91,6 +92,12 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
         "3D	descriptors in RDKit"
         UGM 2017
         <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Godin_3D_Descriptors.pdf>`_
+
+    .. [6] `Viviana Consonni, Roberto Todeschini, and Manuela Pavan
+        "Structure/Response Correlations and Similarity/Diversity Analysis by GETAWAY Descriptors.
+        1. Theory of the Novel 3D Molecular Descriptors"
+        J. Chem. Inf. Comput. Sci. 2002, 42, 3, 682–692
+        <https://pubs.acs.org/doi/abs/10.1021/ci015504a>`_
 
     Examples
     --------
