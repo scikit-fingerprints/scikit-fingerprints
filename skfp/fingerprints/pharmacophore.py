@@ -15,35 +15,42 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     """
     Pharmacophore fingerprint.
 
-    The implementation uses RDKit. This is a hashed fingerprint, where
-    the hashed fragments are computed based on pharmacophoric structures designed
-    by Alberto Gobbi and Dieter Poppinger [1]_.
+    The implementation uses RDKit. This is a hashed fingerprint, where fragments are
+    computed based on N-point tuples, using pharmacophoric points.
 
-    A pharmacophoric structure is as a sequence:
-    PH1 D12 PH2 D23 PH3 D13
+    An N-point pharmacophoric structure encodes N pharmacophoric points and pairwise
+    distances between them, e.g. 3-point pharmacophore uses 6-element tuples
+    (P1 D12 P2 D23 P3 D13). P is a pharmacophoric point, atom or subgraph, of a particular
+    type (see below), and Dij is a topological distance (shortest path) between points
+    i and j. Distance values are limited to 8 (higher values are capped at 8).
 
-    Where PH type is a pharmacophoric type defined as regex in SMARTS language.
-    D is a topological distance between these pharmacophoric types in the molecule.
-    Distance values are limited to 8. In case distance exceeds this value, it is still set to 8.
-    Such sequence is then hashed to create the result vector.
+    Pharmacophoric point types are (based on SMARTS patterns definitions from [1]_):
+    - hydrophobic atom
+    - hydrogen bond donor
+    - hydrogen bond acceptor
+    - aromatic attachment
+    - aliphatic attachment
+    - "unusual" atom (not H, C, N, O, F, S, Cl, Br, I)
+    - basic group
+    - acidic group
 
-    The structure described above is a pharmacophoric triangle (3-point).
-    Our implementation also hashes pharmacophoric pairs (2-point):
-    PH1 D12 PH2
+    Those structures can be returned as raw bits, results in 39972-element vector. By
+    default, they are folded into a shorter length vector. Both 2-point and 3-point
+    pharmacophores (pharmacophoric pairs and triangles) are used.
 
     Parameters
     ----------
     variant: {"raw_bits", "bit", "count"} = "raw_bits"
-        Whether to fold the raw bits output of the fingerprint into the size defined by fp_size
-        If set to ``"count"`` the occurences will be summed.
+        Whether to fold the raw bits output of the fingerprint into the size defined
+        by fp_size. If set to ``"count"`` the occurences will be summed.
 
     fp_size : int, default=2048
         Size of output vectors, i.e. number of bits for each fingerprint. Must be
         positive.
 
     use_3D : bool, default=False
-        Whether to use 3D Euclidean distance matrix. If False, only uses topological
-        distances on molecular graph.
+        Whether to use 3D Euclidean distance matrix, instead of topological distance.
+        Binning is used to discretize values into values 0-8.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -66,8 +73,10 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     n_features_out : int
         Number of output features, size of fingerprints. Equal to `fp_size`.
 
-    requires_conformers : bool = False
-        This fingerprint uses only 2D molecular graphs and does not require conformers.
+    requires_conformers : bool
+        Whether the fingerprint is 3D-based and requires molecules with conformers as
+        inputs, with ``conf_id`` integer property set. This depends on the ``use_3D``
+        parameter, and has the same value.
 
     References
     ----------
