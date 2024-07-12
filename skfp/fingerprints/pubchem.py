@@ -58,11 +58,11 @@ class PubChemFingerprint(BaseFingerprintTransformer):
 
     References
     ----------
-    .. [1] PubChem Substructure Fingerprint
-        https://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
+    .. [1] `PubChem Substructure Fingerprint
+        <https://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt>`_
 
-    .. [2] Chemistry Development Kit (CDK) PubchemFingerprinter
-        https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/PubchemFingerprinter.html
+    .. [2] `Chemistry Development Kit (CDK) PubchemFingerprinter
+        <https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/PubchemFingerprinter.html>`_
 
     .. [3] `Andrew Dalke
         "Implementing the CACTVS/PubChem substructure keys"

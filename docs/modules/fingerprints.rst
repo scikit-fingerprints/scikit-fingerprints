@@ -29,6 +29,7 @@ Fingerprints
     MACCSFingerprint
     MAPFingerprint
     MHFPFingerprint
+    MordredFingerprint
     MORSEFingerprint
     MQNsFingerprint
     PatternFingerprint

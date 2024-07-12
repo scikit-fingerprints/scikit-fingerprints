@@ -62,9 +62,9 @@ class MACCSFingerprint(BaseFingerprintTransformer):
     .. [1] RDKit MACCS implementation
         https://github.com/rdkit/rdkit/blob/3457c1eb60846ea821e4a319f3505933027d3cf8/rdkit/Chem/MACCSkeys.py
 
-    .. [2] Andrew Dalke
+    .. [2] `Andrew Dalke
         "MACCS key 44"
-        http://www.dalkescientific.com/writings/diary/archive/2014/10/17/maccs_key_44.html
+        <http://www.dalkescientific.com/writings/diary/archive/2014/10/17/maccs_key_44.html>`_
 
     Examples
     --------

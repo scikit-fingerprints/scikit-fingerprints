@@ -55,8 +55,8 @@ class AvalonFingerprint(BaseFingerprintTransformer):
 
     References
     ----------
-    .. [1] Avalon toolkit
-        https://sourceforge.net/projects/avalontoolkit/
+    .. [1] `Avalon toolkit
+        <https://sourceforge.net/projects/avalontoolkit/>`_
 
     .. [2] `Gedeck, Peter, Bernhard Rohde, and Christian Bartels
         "QSAR − How Good Is It in Practice? Comparison of Descriptor Sets on an Unbiased
@@ -72,7 +72,7 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     >>> fp
     AvalonFingerprint()
     >>> X = fp.transform(smiles)
-    >>> X # doctest: +ELLIPSIS
+    >>> X  # doctest: +ELLIPSIS
     array([[0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
     """

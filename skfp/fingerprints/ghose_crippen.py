@@ -69,7 +69,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
     >>> fp
     GhoseCrippenFingerprint()
 
-    >>> fp.transform(smiles) # doctest: +ELLIPSIS
+    >>> fp.transform(smiles)  # doctest: +ELLIPSIS
     array([[0, 0, 0, ..., 0, 0, 0],
            [0, 1, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
