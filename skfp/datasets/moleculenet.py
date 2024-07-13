@@ -35,7 +35,7 @@ def load_moleculenet_benchmark(
     verbose: bool = False,
 ) -> Union[list[tuple[str, pd.DataFrame]], list[tuple[str, list[str], np.ndarray]]]:
     """
-    Load and return the MoleculeNet [1]_ benchmark datasets.
+    Load and return the MoleculeNet benchmark datasets.
 
     Datasets have varied molecular property prediction tasks: regression, single-task,
     and multitask classification. Scaffold split is recommended for all of them,
@@ -156,7 +156,7 @@ def load_esol(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ESOL (Estimated SOLubility) [1]_ [2]_ dataset.
+    Load and return the ESOL (Estimated SOLubility) dataset.
 
     The task is to predict aqueous solubility. Targets are log-transformed,
     and the unit is log mols per litre (log Mol/L).
@@ -224,7 +224,7 @@ def load_freesolv(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the FreeSolv (Free Solvation Database) [1]_ [2]_ dataset.
+    Load and return the FreeSolv (Free Solvation Database) dataset.
 
     The task is to predict hydration free energy of small molecules in water.
     Targets are in kcal/mol.
@@ -293,7 +293,7 @@ def load_lipophilicity(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Lipophilicity (Free Solvation Database) [1]_ dataset.
+    Load and return the Lipophilicity (Free Solvation Database) dataset.
 
     The task is to predict octanol/water distribution coefficient (logD) at pH 7.4.
     Targets are already log transformed, and are a unitless ratio.
@@ -356,7 +356,7 @@ def load_bace(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the BACE [1]_ [2]_ dataset.
+    Load and return the BACE dataset.
 
     The task is to predict binding results for a set of inhibitors of human
     β-secretase 1 (BACE-1).
@@ -423,7 +423,7 @@ def load_bbbp(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the BBBP (Blood-Brain Barrier Penetration) [1]_ [2]_ dataset.
+    Load and return the BBBP (Blood-Brain Barrier Penetration) dataset.
 
     The task is to predict blood-brain barrier penetration (barrier permeability)
     of small drug-like molecules.
@@ -489,7 +489,7 @@ def load_hiv(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the HIV [1]_ [2]_ dataset.
+    Load and return the HIV dataset.
 
     The task is to predict ability of molecules to inhibit HIV replication.
 
@@ -552,7 +552,7 @@ def load_clintox(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ClinTox [1]_ dataset.
+    Load and return the ClinTox dataset.
 
     The task is to predict drug approval viability, by predicting clinical trial
     toxicity and final FDA approval status. Both tasks are binary.
@@ -616,7 +616,7 @@ def load_muv(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the MUV (Maximum Unbiased Validation) [1]_ [2]_ dataset.
+    Load and return the MUV (Maximum Unbiased Validation) dataset.
 
     The task is to predict 17 targets designed for validation of virtual screening
     techniques, based on PubChem BioAssays. All tasks are binary.
@@ -686,7 +686,7 @@ def load_sider(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the SIDER (Side Effect Resource) [1]_ [2]_ dataset.
+    Load and return the SIDER (Side Effect Resource) dataset.
 
     The task is to predict adverse drug reactions (ADRs) as drug side effects to
     27 system organ classes in MedDRA classification. All tasks are binary.
@@ -756,7 +756,7 @@ def load_tox21(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Tox21 [1]_ [2]_ dataset.
+    Load and return the Tox21 dataset.
 
     The task is to predict 12 toxicity targets, including nuclear receptors and
     stress response pathways. All tasks are binary.
@@ -827,7 +827,7 @@ def load_toxcast(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ToxCast [1]_ [2]_ dataset.
+    Load and return the ToxCast dataset.
 
     The task is to predict 617 toxicity targets from a large library of compounds
     based on in vitro high-throughput screening. All tasks are binary.
@@ -900,7 +900,7 @@ def load_pcba(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the PCBA (PubChem BioAssay) [1]_ [2]_ dataset.
+    Load and return the PCBA (PubChem BioAssay) dataset.
 
     The task is to predict biological activity against 128 bioassays, generated
     by high-throughput screening (HTS). All tasks are binary active/non-active.
