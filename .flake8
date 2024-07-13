@@ -4,3 +4,6 @@ exclude = .git,__pycache__,old,build,dist
 ignore = E203, E266, E731, W503, F403, F401
 max-complexity = 18
 select = B,C,E,F,W,T4,B9
+
+per-file-ignores =
+    benchmarking/fp_tuning.py:C901
