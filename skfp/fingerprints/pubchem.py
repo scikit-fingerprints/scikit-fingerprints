@@ -413,13 +413,13 @@ class PubChemFingerprint(BaseFingerprintTransformer):
 
             stats["size"] += 1
             stats["aromatic"] &= aromatic
-            stats["saturated_or_aromatic"] &= single | aromatic
-            stats["unsaturated_and_non_aromatic"] &= ~single & ~aromatic
-            stats["carbon_only"] &= (atom_1_type == "C") & (atom_2_type == "C")
-            stats["has_nitrogen"] |= (atom_1_type == "N") | (atom_2_type == "N")
-            stats["has_heteroatom"] |= (atom_1_type == "C") | (atom_2_type == "H")
+            stats["saturated_or_aromatic"] &= single or aromatic
+            stats["unsaturated_and_non_aromatic"] &= not single and not aromatic
+            stats["carbon_only"] &= (atom_1_type == "C") and (atom_2_type == "C")
+            stats["has_nitrogen"] |= (atom_1_type == "N") or (atom_2_type == "N")
+            stats["has_heteroatom"] |= (atom_1_type == "C") or (atom_2_type == "H")
 
-        stats["hetero_aromatic"] = ~stats["carbon_only"] & stats["aromatic"]
+        stats["hetero_aromatic"] = not stats["carbon_only"] and stats["aromatic"]
 
         return stats
 
