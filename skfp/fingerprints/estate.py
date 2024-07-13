@@ -71,7 +71,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
         J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
         <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
 
-    .. [2] `Greg Landrum and Rational Discovery LLC
+    .. [2] `Gregory Landrum and Rational Discovery LLC
         RDKit - EState Atom Types
         <https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/EState/AtomTypes.py>`_
 

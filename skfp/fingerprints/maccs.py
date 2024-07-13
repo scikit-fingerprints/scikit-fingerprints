@@ -14,7 +14,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
     MACCS fingerprint.
 
     The implementation uses RDKit. This is a substructure fingerprint, based on
-    publicly available MDL definitions, and refined by Greg Landrum for RDKit [1]_.
+    publicly available MDL definitions, and refined by Gregory Landrum for RDKit [1]_.
     Note that full public definitions are not available, and packages differ [2]_.
 
     Only 165 out of 167 bits are used. 0th bit is always zero, to keep 1-based

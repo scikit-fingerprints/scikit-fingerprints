@@ -122,7 +122,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         J. Chem. Inf. Model. 2014, 54, 7, 1892–1907
         <https://pubs.acs.org/doi/10.1021/ci500232g>`_
 
-    .. [3] `Greg Landrum
+    .. [3] `Gregory Landrum
         "Simulating count fingerprints"
         <https://greglandrum.github.io/rdkit-blog/posts/2021-07-06-simulating-counts.html>`_
 
