@@ -10,6 +10,7 @@ import skfp.fingerprints as fps
 from skfp.bases import BaseFingerprintTransformer
 from skfp.datasets.moleculenet import load_moleculenet_benchmark
 from skfp.preprocessing import MolFromSmilesTransformer
+from skfp.utils import no_rdkit_logs
 
 
 def fp_name_to_fp(fp_name: str) -> tuple[BaseFingerprintTransformer, dict]:
@@ -197,14 +198,15 @@ if __name__ == "__main__":
         ]:
             print(fp_name)
             fp, fp_params_grid = fp_name_to_fp(fp_name)
-            auroc_default, auroc_tuned, diff = train_and_tune_fp_classifier(
-                mols_train=mols_train,
-                mols_test=mols_test,
-                y_train=y_train,
-                y_test=y_test,
-                fp=fp,
-                fp_params_grid=fp_params_grid,
-            )
+            with no_rdkit_logs():
+                auroc_default, auroc_tuned, diff = train_and_tune_fp_classifier(
+                    mols_train=mols_train,
+                    mols_test=mols_test,
+                    y_train=y_train,
+                    y_test=y_test,
+                    fp=fp,
+                    fp_params_grid=fp_params_grid,
+                )
             print(
                 f"AUROC default {auroc_default:.1%}, tuned {auroc_tuned:.1%}, diff: {diff:.1%}"
             )
