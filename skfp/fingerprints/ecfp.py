@@ -106,7 +106,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         J. Chem. Inf. Model. 2010, 50, 5, 742–754
         <https://pubs.acs.org/doi/10.1021/ci100050t>`_
 
-    .. [2] `Greg Landrum
+    .. [2] `Gregory Landrum
         "Simulating count fingerprints"
         <https://greglandrum.github.io/rdkit-blog/posts/2021-07-06-simulating-counts.html>`_
 
