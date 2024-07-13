@@ -109,7 +109,7 @@ class MolToSmilesTransformer(BasePreprocessor):
 
     >>> mols = mol_from_smiles.transform(smiles)
     >>> mol_to_smiles.transform(mols)
-        ['O', 'CC', '[C-]#N', 'CC=O']
+    ['O', 'CC', '[C-]#N', 'CC=O']
     """
 
     _parameter_constraints: dict = {
