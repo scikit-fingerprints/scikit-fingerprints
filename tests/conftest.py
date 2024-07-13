@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 import pandas as pd
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -13,12 +16,7 @@ def pytest_addoption(parser) -> None:
 
 @pytest.fixture(scope="session")
 def smiles_list(request: FixtureRequest) -> list[str]:
-    # handle different paths, e.g. from CLI and PyCharm
-    try:
-        smiles = _load_smiles("hiv_mol.csv.zip")
-    except Exception:
-        smiles = _load_smiles("tests/hiv_mol.csv.zip")
-
+    smiles = _load_test_data_smiles()
     return smiles[: int(request.config.getoption("--num_mols"))]
 
 
@@ -33,13 +31,7 @@ def smallest_smiles_list(request: FixtureRequest) -> list[str]:
     Returns shortest SMILES, i.e. for smallest molecules, for use with
     computationally demanding fingerprints.
     """
-
-    # handle different paths, e.g. from CLI and PyCharm
-    try:
-        smiles = _load_smiles("hiv_mol.csv.zip")
-    except Exception:
-        smiles = _load_smiles("tests/hiv_mol.csv.zip")
-
+    smiles = _load_test_data_smiles()
     smiles.sort(key=len)
     return smiles[: int(request.config.getoption("--num_mols"))]
 
@@ -58,5 +50,25 @@ def mols_conformers_list(smallest_mols_list) -> list[PropertyMol]:
     return conf_gen.transform(smallest_mols_list)
 
 
-def _load_smiles(file_path: str) -> list[str]:
-    return pd.read_csv(file_path)["smiles"].tolist()
+def _load_test_data_smiles() -> pd.DataFrame:
+    # handle different paths and execution directories, e.g. from CLI and PyCharm
+    if os.getcwd().endswith("scikit-fingerprints"):
+        df = pd.read_csv(os.path.join("tests", "hiv_mol.csv.zip"))
+    elif os.getcwd().endswith("tests"):
+        df = pd.read_csv("hiv_mol.csv.zip")
+    else:
+        curr_dir = Path(os.getcwd()).parent
+        counter = 1
+        while counter < 3:
+            try:
+                filepath = os.path.join(str(curr_dir), "hiv_mol.csv.zip")
+                df = pd.read_csv(filepath)
+                break
+            except FileNotFoundError:
+                curr_dir = curr_dir.parent
+                counter += 1
+
+        if counter >= 3:
+            raise FileNotFoundError("File hiv_mol.csv.zip not found")
+
+    return df["smiles"].tolist()

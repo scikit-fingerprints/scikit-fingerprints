@@ -13,10 +13,10 @@ from skfp.utils import ensure_mols
 
 class RDKitFingerprint(BaseFingerprintTransformer):
     """
-    Pattern fingerprint.
+    RDKit fingerprint.
 
     This fingerprint is an RDKit original [1]_. This is a hashed fingerprint,
-    where fragments are created from small subgraphs on themolecular graph.
+    where fragments are created from small subgraphs on the molecular graph.
 
     For a given molecule, all paths between `min_path` and `max_path` (inclusive)
     are extracted and hashed, based on bond invariants (see below). Those are any
@@ -83,6 +83,11 @@ class RDKitFingerprint(BaseFingerprintTransformer):
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    See Also
+    --------
+    :class:`LayeredFingerprint` : Related fingerprint, but uses different atom and bond
+        types to set multiple bits.
 
     References
     ----------
