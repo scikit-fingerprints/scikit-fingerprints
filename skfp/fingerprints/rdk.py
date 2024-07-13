@@ -12,16 +12,117 @@ from skfp.utils import ensure_mols
 
 
 class RDKitFingerprint(BaseFingerprintTransformer):
-    """RDKit fingerprint."""
+    """
+    Pattern fingerprint.
+
+    This fingerprint is an RDKit original [1]_. This is a hashed fingerprint,
+    where fragments are created from small subgraphs on themolecular graph.
+
+    For a given molecule, all paths between `min_path` and `max_path` (inclusive)
+    are extracted and hashed, based on bond invariants (see below). Those are any
+    subgraphs, unless `linear_paths_only` is set to True. Note that all explicit
+    atoms, including hydrogens if present, are used.
+
+    Each subgraph is hashed. Based on this hash value, `nBitsPerHash` pseudorandom
+    numbers are generated and used to set bits in the resulting fingerprint. Finally,
+    it is folded to `fp_size` length.
+
+    Subgraphs are identified based on bonds constituting them. Bonds invariants (types,
+    features) take into consideration:
+
+    - atomic numbers and aromaticity of bonded atoms
+    - degrees of bonded atoms
+    - bond type/order (single, double, triple, aromatic)
+
+    Parameters
+    ----------
+    fp_size : int, default=2048
+        Size of output vectors, i.e. number of bits for each fingerprint. Must be
+        positive.
+
+    min_path : int, default=1
+        Minimal length of paths used, in bonds. Default value means that at least
+        2-atom subgraphs are used.
+
+    max_path : int, default=7
+        Maximal length of paths used, in bonds.
+
+    use_bond_order : bool, default=True
+        Whether to take bond order (type) into consideration when hashing subgraphs.
+        False means that only graph topology (subgraph shape) is used.
+
+    num_bits_per_feature : int, default=2
+        How many bits to set for each subgraph.
+
+    linear_paths_only : bool, default=False
+        Whether to use only linear paths, instead of any subgraphs.
+
+    count_simulation : bool, default=True
+        Whether to use count simulation for approximating feature counts [3]_.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    verbose : int, default=0
+        Controls the verbosity when computing fingerprints.
+
+    Attributes
+    ----------
+    n_features_out : int
+        Number of output features, size of fingerprints. Equal to `fp_size`.
+
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    References
+    ----------
+    .. [1] `Gregory Landrum
+        "Fingerprints in the RDKit"
+        UGM 2012
+        <https://www.rdkit.org/UGM/2012/Landrum_RDKit_UGM.Fingerprints.Final.pptx.pdf>`_
+
+    .. [2] `Daylight documentation
+        "Fingerprints - Screening and Similarity"
+        <https://www.daylight.com/dayhtml/doc/theory/theory.finger.html>`_
+
+    .. [3] `Greg Landrum
+        "Simulating count fingerprints"
+        <https://greglandrum.github.io/rdkit-blog/posts/2021-07-06-simulating-counts.html>`_
+
+    Examples
+    --------
+    >>> from skfp.fingerprints import RDKitFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = RDKitFingerprint()
+    >>> fp
+    RDKitFingerprint()
+
+    >>> fp.transform(smiles)
+    array([[0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+    """
 
     _parameter_constraints: dict = {
         **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "min_path": [Interval(Integral, 1, None, closed="left")],
         "max_path": [Interval(Integral, 1, None, closed="left")],
-        "use_hs": ["boolean"],
         "use_bond_order": ["boolean"],
         "num_bits_per_feature": [Interval(Integral, 1, None, closed="left")],
+        "linear_paths_only": ["boolean"],
+        "count_simulation": ["boolean"],
     }
 
     def __init__(
@@ -29,9 +130,10 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         fp_size: int = 2048,
         min_path: int = 1,
         max_path: int = 7,
-        use_hs: bool = True,
         use_bond_order: bool = True,
         num_bits_per_feature: int = 2,
+        linear_paths_only: bool = False,
+        count_simulation: bool = False,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
@@ -49,9 +151,10 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         self.fp_size = fp_size
         self.min_path = min_path
         self.max_path = max_path
-        self.use_hs = use_hs
         self.use_bond_order = use_bond_order
         self.num_bits_per_feature = num_bits_per_feature
+        self.linear_paths_only = linear_paths_only
+        self.count_simulation = count_simulation
 
     def _validate_params(self) -> None:
         super()._validate_params()
@@ -72,11 +175,10 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         gen = GetRDKitFPGenerator(
             minPath=self.min_path,
             maxPath=self.max_path,
-            useHs=self.use_hs,
             useBondOrder=self.use_bond_order,
-            countSimulation=self.count,
             fpSize=self.fp_size,
             numBitsPerFeature=self.num_bits_per_feature,
+            countSimulation=self.count_simulation,
         )
 
         if self.count:

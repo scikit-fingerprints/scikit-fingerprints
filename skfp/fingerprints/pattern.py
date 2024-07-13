@@ -15,8 +15,8 @@ class PatternFingerprint(BaseFingerprintTransformer):
     """
     Pattern fingerprint.
 
-    The implementation uses RDKit. This is a hashed fingerprint, where
-    fragments are created from very generic SMARTS patterns, taking into
+    This fingerprint is an RDKit original [1]_. This is a hashed fingerprint,
+    where fragments are created from very generic SMARTS patterns, taking into
     consideration only atom and bond types (including bond aromaticity).
 
     For each pattern, its occurrences are detected and hashed, including
@@ -69,10 +69,15 @@ class PatternFingerprint(BaseFingerprintTransformer):
     n_features_out : int
         Number of output features, size of fingerprints. Equal to `fp_size`.
 
-    requires_conformers : bool
-        Whether the fingerprint is 3D-based and requires molecules with conformers as
-        inputs, with ``conf_id`` integer property set. This depends on the ``use_3D``
-        parameter, and has the same value.
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    References
+    ----------
+    .. [1] `Gregory Landrum
+        "Fingerprints in the RDKit"
+        UGM 2012
+        <https://www.rdkit.org/UGM/2012/Landrum_RDKit_UGM.Fingerprints.Final.pptx.pdf>`_
 
     Examples
     --------
