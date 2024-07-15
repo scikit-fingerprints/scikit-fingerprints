@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import require_mols_with_conf_ids
+from skfp.utils import require_mols_with_conf_ids
 
 
 class USRCATFingerprint(BaseFingerprintTransformer):
@@ -91,17 +91,17 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     >>> mols = conf_gen.transform(mols)
     >>> fp.transform(mols)
     array([[ 1.33723405,  0.39526642, -0.90192794,  1.34623889,  0.73604224,
-        -0.65044688,  2.00626805,  1.0036678 , -0.95792307,  1.78586959,
-         0.94315243, -0.78539494,  0.64006787,  0.        ,  0.        ,
-         0.        ,  0.        ,  0.        ,  2.31078831,  0.        ,
-         0.        ,  1.10534475,  0.        ,  0.        ,  0.        ,
-         0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-         0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-         0.        ,  1.75727917,  0.        ,  0.        ,  2.31078831,
-         0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-         3.19576752,  0.        ,  0.        ,  0.        ,  0.        ,
-         0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-         0.        ,  0.        ,  0.        ,  0.        ,  0.        ]])
+            -0.65044688,  2.00626805,  1.0036678 , -0.95792307,  1.78586959,
+             0.94315243, -0.78539494,  0.64006787,  0.        ,  0.        ,
+             0.        ,  0.        ,  0.        ,  2.31078831,  0.        ,
+             0.        ,  1.10534475,  0.        ,  0.        ,  0.        ,
+             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+             0.        ,  1.75727917,  0.        ,  0.        ,  2.31078831,
+             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+             3.19576752,  0.        ,  0.        ,  0.        ,  0.        ,
+             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+             0.        ,  0.        ,  0.        ,  0.        ,  0.        ]])
     """
 
     _parameter_constraints: dict = {

@@ -4,7 +4,6 @@ Preprocessing
 
 .. automodule:: skfp.preprocessing
 
-:mod: `skfp.preprocessing`: Utility functions for preprocessing
 =========================================================
 
 .. py:currentmodule:: skfp.preprocessing
@@ -15,4 +14,5 @@ Preprocessing
 
     ConformerGenerator
     MolFromSmilesTransformer
+    MolStandardizer
     MolToSmilesTransformer

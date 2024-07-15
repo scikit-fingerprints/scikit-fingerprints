@@ -6,7 +6,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols, require_mols_with_conf_ids
+from skfp.utils import ensure_mols, require_mols_with_conf_ids
 
 
 class AutocorrFingerprint(BaseFingerprintTransformer):
@@ -78,11 +78,11 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
 
     .. [3] `Rajarshi Guha
         "Autocorrelation Descriptors"
-        http://www.rguha.net/writing/notes/desc/node2.html`_
+        <http://www.rguha.net/writing/notes/desc/node2.html>`_
 
     .. [4] `Roberto Todeschini and Viviana Consonni
         "Molecular Descriptors for Chemoinformatics"
-        https://onlinelibrary.wiley.com/doi/book/10.1002/9783527628766`_
+        <https://onlinelibrary.wiley.com/doi/book/10.1002/9783527628766>`_
 
     .. [5] `Guillaume Godin
         "3D	descriptors in RDKit"
@@ -97,11 +97,9 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
     >>> fp
     AutocorrFingerprint()
 
-    >>> fp.transform(smiles)
-    array([[1.204, 0.847, 0.   , ..., 0.   , 0.   ,
-            0.   ],
-           [1.153, 0.773, 0.   , ..., 0.   , 0.   ,
-            0.   ]])
+    >>> fp.transform(smiles)  # doctest: +ELLIPSIS
+    array([[ 1.204,  0.847,  0.   ,  ...,  0.   ,  0.   ,  0.   ],
+           [ 1.153,  0.773,  0.   ,  ...,  0.   ,  0.   ,  0.   ]])
     """
 
     _parameter_constraints: dict = {

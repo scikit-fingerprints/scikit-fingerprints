@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 class ECFPFingerprint(BaseFingerprintTransformer):
@@ -106,7 +106,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         J. Chem. Inf. Model. 2010, 50, 5, 742–754
         <https://pubs.acs.org/doi/10.1021/ci100050t>`_
 
-    .. [2] `Greg Landrum
+    .. [2] `Gregory Landrum
         "Simulating count fingerprints"
         <https://greglandrum.github.io/rdkit-blog/posts/2021-07-06-simulating-counts.html>`_
 

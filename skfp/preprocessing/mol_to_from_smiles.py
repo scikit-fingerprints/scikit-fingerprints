@@ -1,14 +1,47 @@
 from collections.abc import Sequence
-from numbers import Integral
 from typing import Optional
 
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 from skfp.bases import BasePreprocessor
-from skfp.utils.validators import ensure_mols, ensure_smiles
+from skfp.utils import ensure_mols, ensure_smiles
 
 
 class MolFromSmilesTransformer(BasePreprocessor):
+    """
+    Creates RDKit `Mol` objects from SMILES strings.
+
+    Parameters
+    ----------
+    sanitize : bool, default=True
+        Whether to perform sanitization [1]_, i.e. basic validity checks, on created
+        molecules.
+
+    replacements : dict, default=None
+        If provided, will be used to do string substitution of abbreviations in the
+        input SMILES.
+
+    References
+    ----------
+    .. [1] `Gregory Landrum
+        "The RDKit Book: Molecular Sanitization"
+        <https://www.rdkit.org/docs/RDKit_Book.html#molecular-sanitization>`_
+
+    Examples
+    --------
+    >>> from skfp.preprocessing import MolFromSmilesTransformer
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> mol_from_smiles = MolFromSmilesTransformer()
+    >>> mol_from_smiles
+    MolFromSmilesTransformer()
+
+    >>> mol_from_smiles.transform(smiles)  # doctest: +SKIP
+        [<rdkit.Chem.rdchem.Mol object at ...>,
+         <rdkit.Chem.rdchem.Mol object at ...>,
+         <rdkit.Chem.rdchem.Mol object at ...>,
+         <rdkit.Chem.rdchem.Mol object at ...>]
+    """
+
     _parameter_constraints: dict = {
         "sanitize": ["boolean"],
         "replacements": [dict, None],
@@ -34,10 +67,54 @@ class MolFromSmilesTransformer(BasePreprocessor):
 
 
 class MolToSmilesTransformer(BasePreprocessor):
+    """
+    Creates SMILES strings from RDKit `Mol` objects.
+
+    Parameters
+    ----------
+    isomeric_smiles : bool, default=True
+        Whether to include information about stereochemistry.
+
+    kekule_smiles : bool, default=False
+        Whether to use the Kekule form (no aromatic bonds).
+
+    canonical : bool, default=True
+        Whether to canonicalize the molecule. This results in a reproducible
+        SMILES, given the same input molecule (if `do_random` is not used).
+
+    all_bonds_explicit : bool, default=False
+        Whether to explicitly indicate all bond orders.
+
+    all_hs_explicit : bool, default=False
+        Whether to explicitly indicate all hydrogens.
+
+    do_random : bool, default=False
+        If True, randomizes the traversal of the molecule graph, generating
+        random SMILES.
+
+    References
+    ----------
+    .. [1] `Gregory Landrum
+        "The RDKit Book: Molecular Sanitization"
+        <https://www.rdkit.org/docs/RDKit_Book.html#molecular-sanitization>`_
+
+    Examples
+    --------
+    >>> from skfp.preprocessing import MolFromSmilesTransformer, MolToSmilesTransformer
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> mol_from_smiles = MolFromSmilesTransformer()
+    >>> mol_to_smiles = MolToSmilesTransformer()
+    >>> mol_to_smiles
+    MolToSmilesTransformer()
+
+    >>> mols = mol_from_smiles.transform(smiles)
+    >>> mol_to_smiles.transform(mols)
+    ['O', 'CC', '[C-]#N', 'CC=O']
+    """
+
     _parameter_constraints: dict = {
         "isomeric_smiles": ["boolean"],
         "kekule_smiles": ["boolean"],
-        "rooted_at_atom": [Integral],
         "canonical": ["boolean"],
         "all_bonds_explicit": ["boolean"],
         "all_hs_explicit": ["boolean"],
@@ -48,7 +125,6 @@ class MolToSmilesTransformer(BasePreprocessor):
         self,
         isomeric_smiles: bool = True,
         kekule_smiles: bool = False,
-        rooted_at_atom: int = -1,
         canonical: bool = True,
         all_bonds_explicit: bool = False,
         all_hs_explicit: bool = False,
@@ -56,7 +132,6 @@ class MolToSmilesTransformer(BasePreprocessor):
     ):
         self.isomeric_smiles = isomeric_smiles
         self.kekule_smiles = kekule_smiles
-        self.rooted_at_atom = rooted_at_atom
         self.canonical = canonical
         self.all_bonds_explicit = all_bonds_explicit
         self.all_hs_explicit = all_hs_explicit
@@ -71,7 +146,6 @@ class MolToSmilesTransformer(BasePreprocessor):
                 mol,
                 isomericSmiles=self.isomeric_smiles,
                 kekuleSmiles=self.kekule_smiles,
-                rootedAtAtom=self.rooted_at_atom,
                 canonical=self.canonical,
                 allBondsExplicit=self.all_bonds_explicit,
                 allHsExplicit=self.all_hs_explicit,

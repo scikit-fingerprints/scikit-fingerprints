@@ -15,16 +15,100 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
-
-"""
-Code inspired by the original work of the authors of the MAP4 Fingerprint:
-https://github.com/reymond-group/map4
-"""
+from skfp.utils import ensure_mols
 
 
 class MAPFingerprint(BaseFingerprintTransformer):
-    """MAP fingerprint."""
+    """
+    MinHashed Atom Pair fingerprint (MAP).
+
+    Implementation is based on the official MAP4 paper and code [1]_ [2]_. This is a
+    hashed fingerprint, using the ideas from Atom Pair and SECFP fingerprints.
+
+    It computes fragments based on pairs of atoms, using circular
+    substructures around each atom represented with SMILES (like SECFP) and length
+    of shortest path between them (like Atom Pair), and then hashes the resulting
+    triplet using MinHash fingerprint.
+
+    Subgraphs are created around each atom with increasing radius, starting
+    with just an atom itself. It is then transformed into a canonical SMILES.
+    In each iteration, it is increased by another atom (one "hop" on the graph).
+
+    For each pair of atoms, length of the shortest path is created. Then, for
+    each radius from 1 up to the given maximal radius, the triplet is created:
+    (atom 1 SMILES, shortest path length, atom 2 SMILES). They are then hashed
+    using MinHash algorithm.
+
+    Parameters
+    ----------
+    fp_size : int, default=2048
+        Size of output vectors. Depending on the `variant` argument, those are either
+        raw hashes, bits, or counts. Must be positive.
+
+    radius : int, default=2
+        Number of iterations performed, i.e. maximum radius of resulting subgraphs.
+        Another common notation uses diameter, therefore MAP4 has radius 2.
+
+    variant : {"raw_hashes", "bit", "count"}, default="bit"
+        Which variant to fingerprint to use. `"raw_hashes"` returns MinHash values.
+        `"bit"` folds values into binary vector, and `"count"` uses folding with
+        counting.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    verbose : int, default=0
+        Controls the verbosity when computing fingerprints.
+
+    Attributes
+    ----------
+    n_features_out : int
+        Number of output features. Equal to `fp_size`.
+
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
+
+    See Also
+    --------
+    :class:`AtomPairFingerprint` : Related fingerprint, which uses atom invariants and
+        folding.
+
+    :class:`SECFPFingerprint` : Related fingerprint, which only uses SMILES of circular
+        subgraph around each atom.
+
+    References
+    ----------
+    .. [1] `Alice Capecchi, Daniel Probst and Jean-Louis Reymond
+        "One molecular fingerprint to rule them all: drugs, biomolecules, and the metabolome"
+        J Cheminform 12, 43 (2020)
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-020-00445-4>`_
+
+    .. [2] `https://github.com/reymond-group/map4`
+
+    Examples
+    --------
+    >>> from skfp.fingerprints import MAPFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = MAPFingerprint()
+    >>> fp
+    MAPFingerprint()
+
+    >>> fp.transform(smiles)
+    array([[0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0],
+           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+    """
 
     _parameter_constraints: dict = {
         **BaseFingerprintTransformer._parameter_constraints,
@@ -39,7 +123,6 @@ class MAPFingerprint(BaseFingerprintTransformer):
         radius: int = 2,
         variant: str = "bit",
         sparse: bool = False,
-        count: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
         verbose: int = 0,
@@ -48,7 +131,6 @@ class MAPFingerprint(BaseFingerprintTransformer):
         super().__init__(
             n_features_out=fp_size,
             sparse=sparse,
-            count=count,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
@@ -164,12 +246,12 @@ class MAPFingerprint(BaseFingerprintTransformer):
                 ordered = sorted([env_a_radius, env_b_radius])
                 shingle = f"{ordered[0]}|{dist}|{ordered[1]}"
 
-                if self.count:
+                if self.variant == "count":
                     shingle_dict[shingle] += 1
                 else:
                     shingles.append(shingle)
 
-        if self.count:
+        if self.variant == "count":
             # shingle in format:
             # (radius i neighborhood of atom A) | (distance between atoms A and B) | \
             # (radius i neighborhood of atom B) | (shingle count)

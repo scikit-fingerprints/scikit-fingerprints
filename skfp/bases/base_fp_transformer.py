@@ -17,7 +17,7 @@ from sklearn.base import (
 )
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.utils.parallel import run_in_parallel
+from skfp.utils import run_in_parallel
 
 """
 If you get MaybeEncodingError, first check any worker functions for exceptions!
