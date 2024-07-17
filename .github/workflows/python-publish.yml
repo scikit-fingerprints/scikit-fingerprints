@@ -14,23 +14,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Update version
-        run: |
-          OLD_VERSION=$(grep ^version pyproject.toml | cut -d '"' -f 2)
-          OLD_VERSION="\"$OLD_VERSION\""
-          NEW_VERSION="${{ github.event.release.tag_name }}"
-          NEW_VERSION="\"${NEW_VERSION:1}\""  # remove "v" prefix
-          echo $NEW_VERSION
-          sed -i "s/version = ${OLD_VERSION}/version = $NEW_VERSION/g" pyproject.toml
-
-      - name: Commit & push changes
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git commit -a -m "Update version number to ${NEW_VERSION}"
-          git push
-
-
       - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
@@ -38,6 +21,9 @@ jobs:
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v3
+
+      - name: Install Poetry plugins
+        run: poetry self add poetry-version-plugin
 
       - name: Configure Poetry for PyPI
         run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
