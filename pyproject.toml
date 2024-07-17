@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scikit-fingerprints"
-version = "1.6.1"
+version = "0.0.0"   # version is read with poetry-version-plugin on GitHub release from Git tag
 description = "Library for effective molecular fingerprints calculation"
 authors = ["Scikit-Fingerprints Development Team <scikitfingerprints@gmail.com>"]
 repository = "https://github.com/scikit-fingerprints/scikit-fingerprints"
@@ -88,6 +88,9 @@ optional = true
 [tool.poetry.group.eval.dependencies]
 lightgbm = "*"
 ogb = "*"
+
+[tool.poetry-version-plugin]
+source = "git-tag"
 
 [tool.pytest.ini_options]
 python_files = "*.py"
