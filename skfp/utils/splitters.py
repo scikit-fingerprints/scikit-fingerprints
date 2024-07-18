@@ -11,10 +11,10 @@ from skfp.utils.validators import ensure_mols
 
 def scaffold_train_test_split(
     data: Sequence[Union[str, Mol]],
-    train_size: float = None,
-    test_size: float = None,
-    include_chirality: bool = False,    
+    train_size: float = 0.8,
+    test_size: float = 0.2,
     return_indices: bool = False,
+    include_chirality: bool = False,
 ) -> Union[
     tuple[list[str], list[str]],
     tuple[list[Mol], list[Mol]],
@@ -37,18 +37,18 @@ def scaffold_train_test_split(
     data : sequence
         Sequence representing either SMILES strings or RDKit 'Mol' objects.
 
-    train_size : float, default=None
-        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size. 
+    train_size : float, default=0.8
+        The fraction of data to be used for the train sub.
 
-    test_size : float, default=None
-        The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
-
-    include_chirality: bool, default=False
-        Whether to take chirality of molecules into consideration.
+    test_size : float, default=0.2
+        The fraction of data to be used for the test sub.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets.
+
+    include_chirality: bool, default=False
+        Whether to take chirality of molecules into consideration.
 
     Returns
     ----------
@@ -65,12 +65,7 @@ def scaffold_train_test_split(
     .. [2] Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande (2017).
     MoleculeNet: A Benchmark for Molecular Machine Learning. Chemical Science, 9(2), 513-530.
     """
-    if train_size is None and test_size is None:
-        raise ValueError("Either train_size or test_size must be provided.")
-    if train_size is None:
-        train_size = 1.0 - test_size
-    elif test_size is None:
-        test_size = 1.0 - train_size
+    np.testing.assert_almost_equal(train_size + test_size, 1.0)
 
     scaffolds = _create_scaffolds(list(data), include_chirality)
     scaffold_sets = sorted(scaffolds.values(), key=len)
@@ -86,13 +81,11 @@ def scaffold_train_test_split(
             test_ids.extend(scaffold_set)
 
     if return_indices:
-        train_subset = train_ids
-        test_subset = test_ids
+        return train_ids, test_ids
     else:
-        train_subset = _get_data_from_indices(data, scaffolds, train_ids)
-        test_subset = _get_data_from_indices(data, scaffolds, test_ids)
-
-    return train_subset, test_subset
+        return _get_data_from_indices(
+            data, scaffolds, train_ids
+        ), _get_data_from_indices(data, scaffolds, test_ids)
 
 
 def scaffold_train_valid_test_split(
@@ -100,8 +93,8 @@ def scaffold_train_valid_test_split(
     train_size: float = 0.8,
     test_size: float = 0.1,
     valid_size: float = 0.1,
-    include_chirality: bool = False,
     return_indices: bool = False,
+    include_chirality: bool = False,
 ) -> Union[
     tuple[list[str], list[str], list[str]],
     tuple[list[Mol], list[Mol], list[Mol]],
@@ -134,12 +127,13 @@ def scaffold_train_valid_test_split(
     valid_size : float, default=0.1
         The fraction of data to be used for the test subset.
 
-    include_chirality: bool, default=False
-        Whether to take chirality of molecules into consideration.
-
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets.
+
+    include_chirality: bool, default=False
+        Whether to take chirality of molecules into consideration.
+
 
     Returns
     ----------
@@ -177,15 +171,13 @@ def scaffold_train_valid_test_split(
             test_ids.extend(scaffold_set)
 
     if return_indices:
-        train_subset = train_ids
-        valid_subset = valid_ids
-        test_subset = test_ids
+        return train_ids, valid_ids, test_ids
     else:
-        train_subset = _get_data_from_indices(data, scaffolds, train_ids)
-        valid_subset = _get_data_from_indices(data, scaffolds, valid_ids)
-        test_subset = _get_data_from_indices(data, scaffolds, test_ids)
-    
-    return train_subset, valid_subset, test_subset
+        return (
+            _get_data_from_indices(data, scaffolds, train_ids),
+            _get_data_from_indices(data, scaffolds, valid_ids),
+            _get_data_from_indices(data, scaffolds, test_ids),
+        )
 
 
 def _create_scaffolds(
