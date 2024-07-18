@@ -68,6 +68,55 @@ def test_load_ogb_splits():
         assert len(test) > 0
         assert all(isinstance(idx, int) for idx in test)
 
+        assert len(train) > len(valid)
+        assert len(train) > len(test)
+
+
+def test_load_ogb_splits_as_dict():
+    dataset_names = [
+        "ESOL",
+        "FreeSolv",
+        "Lipophilicity",
+        "BACE",
+        "BBBP",
+        "HIV",
+        "ClinTox",
+        "MUV",
+        "SIDER",
+        "Tox21",
+        "ToxCast",
+        "PCBA",
+    ]
+    for dataset_name in dataset_names:
+        train, valid, test = load_ogb_splits(dataset_name)
+        split_idxs = load_ogb_splits(dataset_name, as_dict=True)
+        assert isinstance(split_idxs, dict)
+        assert set(split_idxs.keys()) == {"train", "valid", "test"}
+        assert split_idxs["train"] == train
+        assert split_idxs["valid"] == valid
+        assert split_idxs["test"] == test
+
+
+def test_load_ogb_splits_lengths():
+    dataset_lengths = {
+        "ESOL": 1128,
+        "FreeSolv": 642,
+        "Lipophilicity": 4200,
+        "BACE": 1513,
+        "BBBP": 2039,
+        "HIV": 41127,
+        "ClinTox": 1477,
+        "MUV": 93087,
+        "SIDER": 1427,
+        "Tox21": 7831,
+        "ToxCast": 8576,
+        "PCBA": 437929,
+    }
+    for dataset_name, expected_length in dataset_lengths.items():
+        train, valid, test = load_ogb_splits(dataset_name)
+        loaded_length = len(train) + len(valid) + len(test)
+        assert loaded_length == expected_length
+
 
 def test_load_esol():
     smiles_list, y = load_esol()
