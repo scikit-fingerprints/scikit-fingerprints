@@ -11,6 +11,7 @@ from skfp.datasets.moleculenet import (
     load_lipophilicity,
     load_moleculenet_benchmark,
     load_muv,
+    load_ogb_splits,
     load_pcba,
     load_sider,
     load_tox21,
@@ -33,10 +34,39 @@ def test_load_moleculenet_benchmark():
         "ToxCast",
         "PCBA",
     ]
-
     benchmark_full = load_moleculenet_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
     assert benchmark_names == dataset_names
+
+
+def test_load_ogb_splits():
+    dataset_names = [
+        "ESOL",
+        "FreeSolv",
+        "Lipophilicity",
+        "BACE",
+        "BBBP",
+        "HIV",
+        "ClinTox",
+        "MUV",
+        "SIDER",
+        "Tox21",
+        "ToxCast",
+        "PCBA",
+    ]
+    for dataset_name in dataset_names:
+        train, valid, test = load_ogb_splits(dataset_name)
+        assert isinstance(train, list)
+        assert len(train) > 0
+        assert all(isinstance(idx, int) for idx in train)
+
+        assert isinstance(valid, list)
+        assert len(valid) > 0
+        assert all(isinstance(idx, int) for idx in valid)
+
+        assert isinstance(test, list)
+        assert len(test) > 0
+        assert all(isinstance(idx, int) for idx in test)
 
 
 def test_load_esol():
