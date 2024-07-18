@@ -61,6 +61,7 @@ mypy = "*"
 pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
+setuptools = "*"  # to avoid PyCharm errors
 xenon = "*"
 
 [tool.poetry.group.test]
