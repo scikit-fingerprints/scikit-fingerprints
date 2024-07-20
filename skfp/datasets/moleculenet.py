@@ -162,6 +162,7 @@ def load_moleculenet_benchmark(
                 }
             )
         ],
+        "data_dir": [None, str, os.PathLike],
         "as_frame": ["boolean"],
         "verbose": ["boolean"],
     },

@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import pytest
+from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.datasets.moleculenet import (
     load_bace,
@@ -116,6 +118,15 @@ def test_load_ogb_splits_lengths():
         train, valid, test = load_ogb_splits(dataset_name)
         loaded_length = len(train) + len(valid) + len(test)
         assert loaded_length == expected_length
+
+
+def test_load_ogb_splits_nonexistent_dataset():
+    with pytest.raises(InvalidParameterError) as error:
+        load_ogb_splits("nonexistent")
+
+    assert str(error.value).startswith(
+        "The 'dataset_name' parameter of load_ogb_splits must be a str among"
+    )
 
 
 def test_load_esol():
