@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.utils._param_validation import StrOptions, validate_params
 
-from skfp.datasets.utils import fetch_dataset, get_smiles_and_labels
+from skfp.datasets.utils import fetch_dataset, fetch_splits, get_smiles_and_labels
 
 
 @validate_params(
@@ -140,6 +140,97 @@ def load_moleculenet_benchmark(
         ]
 
     return datasets
+
+
+@validate_params(
+    {
+        "dataset_name": [
+            StrOptions(
+                {
+                    "ESOL",
+                    "FreeSolv",
+                    "Lipophilicity",
+                    "BACE",
+                    "BBBP",
+                    "HIV",
+                    "ClinTox",
+                    "MUV",
+                    "SIDER",
+                    "Tox21",
+                    "ToxCast",
+                    "PCBA",
+                }
+            )
+        ],
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_ogb_splits(
+    dataset_name: str,
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    as_dict: bool = False,
+    verbose: bool = False,
+) -> Union[tuple[list[int], list[int], list[int]], dict[str, list[int]]]:
+    """
+    Load and return the MoleculeNet dataset splits from Open Graph Benchmark (OGB) [1]_.
+
+    OGB uses precomputed scaffold split with 80/10/10% split between train/valid/test
+    subsets. Test set consists of the smallest scaffold groups, and follows MoleculeNet
+    paper [2]_. Those splits are widely used in literature.
+
+    Dataset names here are the same as returned by `load_moleculenet_benchmark` function,
+    and are case-sensitive.
+
+    Parameters
+    ----------
+    dataset_name : {"ESOL", "FreeSolv", "Lipophilicity","BACE", "BBBP", "HIV", "ClinTox",
+        "MUV", "SIDER", "Tox21", "ToxCast", "PCBA"}
+        Name of the dataset to loads splits for.
+
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If `None`, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_dict : bool, default=False
+        If True, returns the splits as dictionary with keys "train", "valid" and "test",
+        and index lists as values. Otherwise returns three lists with splits indexes.
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : tuple(list[int], list[int], list[int]) or dict
+        Depending on the `as_dict` argument, one of:
+        - three lists of integer indexes
+        - dictionary with "train", "valid" and "test" keys, and values as lists with
+          splits indexes
+
+    References
+    ----------
+    .. [1] `Hu, Weihua, et al.
+        "Open Graph Benchmark: Datasets for Machine Learning on Graphs."
+        Advances in Neural Information Processing Systems 33 (2020): 22118-22133.
+        <https://papers.neurips.cc/paper/2020/file/fb60d411a5c5b72b2e7d3527cfc84fd0-Paper.pdf>`_
+
+    .. [2] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    """
+    splits = fetch_splits(
+        data_dir,
+        dataset_name=f"MoleculeNet_{dataset_name}",
+        filename=f"ogb_splits_{dataset_name.lower()}.json",
+        verbose=verbose,
+    )
+    if as_dict:
+        return splits
+    else:
+        return splits["train"], splits["valid"], splits["test"]
 
 
 @validate_params(

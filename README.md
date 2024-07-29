@@ -90,7 +90,21 @@ features:
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of
 conduct, and the process for submitting pull requests to us.
 
+## Citing
+
+If you use scikit-fingerprints in your work, please cite [our paper, available on ArXiv](https://arxiv.org/abs/2407.13291):
+```
+@misc{scikit-fingeprints,
+      title={Scikit-fingerprints: easy and efficient computation of molecular fingerprints in Python}, 
+      author={Jakub Adamczyk and Piotr Ludynia},
+      year={2024},
+      eprint={2407.13291},
+      archivePrefix={arXiv},
+      primaryClass={cs.SE},
+      url={https://arxiv.org/abs/2407.13291}, 
+}
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
