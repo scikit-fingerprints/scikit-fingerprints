@@ -11,8 +11,6 @@ from skfp.utils.splitters import (
 @pytest.fixture
 def all_molecules() -> list[str]:
     all_smiles: list[str] = [
-        "CCO",
-        "CCN",
         "CCC",
         "CCCl",
         "CCBr",
@@ -71,6 +69,8 @@ def test_train_test_split_total_molecule_count(all_molecules):
         all_molecules, train_size=0.8, test_size=0.2
     )
     assert len(train_split) + len(test_split) == len(all_molecules)
+    assert len(train_split) == 8
+    assert len(test_split) == 2
 
 
 def test_train_valid_test_split_total_molecule_count(all_molecules):
@@ -79,6 +79,9 @@ def test_train_valid_test_split_total_molecule_count(all_molecules):
     )
 
     assert len(train_split) + len(valid_split) + len(test_split) == len(all_molecules)
+    assert len(train_split) == 8
+    assert len(valid_split) == 1
+    assert len(test_split) == 1
 
 
 def test_test_split_smaller_than_train_split(all_molecules):
@@ -87,6 +90,8 @@ def test_test_split_smaller_than_train_split(all_molecules):
     )
 
     assert len(train_split) < len(test_split)
+    assert len(train_split) == 7
+    assert len(test_split) == 3
 
 
 def test_train_split_larger_than_valid_and_test_splits(all_molecules):
@@ -96,6 +101,9 @@ def test_train_split_larger_than_valid_and_test_splits(all_molecules):
 
     assert len(train_split) < len(valid_split)
     assert len(valid_split) < len(test_split)
+    assert len(train_split) == 7
+    assert len(valid_split) == 2
+    assert len(test_split) == 1
 
 
 def test_scaffold_creation_total_count(all_molecules):

@@ -3,14 +3,16 @@ import warnings
 from collections import defaultdict
 from collections.abc import Sequence
 from itertools import chain
+from numbers import Integral
 from typing import Any, Optional, Union
 
 import numpy as np
-import sklearn.utils as skutils
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
+from sklearn.utils import _safe_indexing
+from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
-from skfp.utils.validators import Interval, RealNotInt, ensure_mols, validate_params
+from skfp.utils.validators import ensure_mols
 
 
 @validate_params(
@@ -19,12 +21,12 @@ from skfp.utils.validators import Interval, RealNotInt, ensure_mols, validate_pa
         "additional_data": ["list"],
         "train_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(numbers.Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, float("inf"), closed="left"),
             None,
         ],
         "test_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(numbers.Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, float("inf"), closed="left"),
             None,
         ],
         "include_chirality": ["boolean"],
@@ -33,7 +35,7 @@ from skfp.utils.validators import Interval, RealNotInt, ensure_mols, validate_pa
 )
 def scaffold_train_test_split(
     data: Sequence[Union[str, Mol]],
-    *additional_data: list[Sequence],
+    *additional_data: Sequence,
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
     include_chirality: bool = False,
@@ -51,6 +53,9 @@ def scaffold_train_test_split(
     generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
     to the time split, assuming that new molecules (test set) will be structurally different in terms of
     scaffolds from the training set.
+    Note that there are limitations to this functionality. For example, disconnected molecules or
+    molecules with no rings will not get a scaffold, resulting in them being grouped together
+    regardless of their structure.
 
     The split is fully deterministic, with the smallest scaffold sets assigned to the test
     subset and the rest to the training subset.
@@ -102,7 +107,7 @@ def scaffold_train_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     """
-    _validate_split_sizes(train_size=train_size, test_size=test_size)
+    _validate_split_sizes(train_size, test_size)
     train_size, test_size = _fill_missing_sizes(train_size, test_size)
     scaffolds = _create_scaffolds(list(data), include_chirality)
     scaffold_sets = sorted(scaffolds.values(), key=len)
@@ -144,17 +149,17 @@ def scaffold_train_test_split(
         "additional_data": ["list"],
         "train_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(numbers.Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, float("inf"), closed="left"),
             None,
         ],
         "valid_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(numbers.Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, float("inf"), closed="left"),
             None,
         ],
         "test_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(numbers.Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, float("inf"), closed="left"),
             None,
         ],
         "include_chirality": ["boolean"],
@@ -163,7 +168,7 @@ def scaffold_train_test_split(
 )
 def scaffold_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
-    *additional_data: list[Sequence],
+    *additional_data: Sequence,
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
     valid_size: Optional[float] = None,
@@ -188,6 +193,9 @@ def scaffold_train_valid_test_split(
     generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
     to the time split, assuming that new molecules (test set) will be structurally different in terms of
     scaffolds from the training set.
+    Note that there are limitations to this functionality. For example, disconnected molecules or
+    molecules with no rings will not get a scaffold, resulting in them being grouped together
+    regardless of their structure.
 
     The split is fully deterministic, with the smallest scaffold sets assigned to the test or validation
     subset and the rest to the training subset.
@@ -247,7 +255,6 @@ def scaffold_train_valid_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     """
-    _validate_split_sizes(train_size, test_size)
     train_size, valid_size, test_size = _split_size(train_size, valid_size, test_size)
 
     scaffolds = _create_scaffolds(list(data), include_chirality)
@@ -302,53 +309,19 @@ def _calculate_missing_sizes(
 ) -> tuple[float, float, float]:
     """
     Calculate the missing sizes for train, validation, and test sets if they are not provided.
-
-    Parameters
-    ----------
-    train_size : float or None
-        The proportion of the data to use for training.
-    valid_size : float or None
-        The proportion of the data to use for validation.
-    test_size : float or None
-        The proportion of the data to use for testing.
-
-    Returns
-    -------
-    tuple
-        A tuple containing the proportions for training, validation, and testing sets.
     """
     if train_size is None and test_size is None and valid_size is None:
         return 0.8, 0.1, 0.1
 
-    if train_size is None and test_size is None:
-        raise ValueError("Either train_size or test_size must be provided")
+    if train_size is None or valid_size is None or test_size is None:
+        raise ValueError(
+            "All of train_size, valid_size, and test_size must be provided."
+        )
 
     if valid_size == 0.0:
         warnings.warn(
             "Validation set will not be returned since valid_size was set to 0.0."
             "Consider using train_test_split instead."
-        )
-
-    if train_size is None:
-        if test_size is not None and valid_size is not None:
-            train_size = 1 - test_size - valid_size
-        else:
-            raise ValueError(
-                "Cannot determine train_size. Provide test_size and valid_size."
-            )
-
-    elif test_size is None:
-        if train_size is not None and valid_size is not None:
-            test_size = 1 - train_size - valid_size
-        else:
-            raise ValueError(
-                "Cannot determine test_size. Provide train_size and valid_size."
-            )
-
-    elif valid_size is None:
-        valid_size = 0.0
-        warnings.warn(
-            "valid_size set to 0, consider using scaffold_train_test_split() instead"
         )
 
     return train_size, test_size, valid_size
@@ -357,16 +330,6 @@ def _calculate_missing_sizes(
 def _check_subsets(*subsets: list) -> None:
     """
     Check if any of the provided subsets is empty.
-
-    Parameters
-    ----------
-    subsets : list
-        The subsets to check.
-
-    Raises
-    ------
-    ValueError
-        If any of the subsets is empty.
     """
     for subset in subsets:
         if len(subset) == 0:
@@ -380,19 +343,6 @@ def _create_scaffolds(
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
     This implementation uses Bemis-Murcko scaffolds [1]_ to group molecules.
     Each scaffold is represented as a SMILES string.
-
-    Parameters
-    ----------
-    data : sequence
-        List of SMILES strings or RDKit `Mol` objects.
-    include_chirality : bool, default=False
-        Whether to take chirality of molecules into consideration.
-
-    Returns
-    -------
-    dict
-        A dictionary where keys are Bemis-Murcko scaffolds (as SMILES strings) and
-        values are lists of indices pointing to molecules sharing the same scaffold.
     """
     scaffolds = defaultdict(list)
     molecules = ensure_mols(data)
@@ -411,26 +361,10 @@ def _fill_missing_sizes(
 ) -> tuple[float, float]:
     """
     Fill in missing sizes for train and test sets based on the provided sizes.
-
-    Parameters
-    ----------
-    train_size : float or None
-        The proportion of the data to use for training.
-    test_size : float or None
-        The proportion of the data to use for testing.
-
-    Returns
-    -------
-    tuple
-        A tuple containing the proportions for training and testing sets.
-
-    Raises
-    ------
-    ValueError
-        If neither train_size nor test_size is provided.
     """
     if train_size is None and test_size is None:
-        raise ValueError("Either train_size or test_size must be provided")
+        train_size = 0.8
+        test_size = 0.2
     if train_size is None:
         if test_size is not None:
             train_size = 1 - test_size
@@ -446,18 +380,6 @@ def _get_data_from_indices(
 ) -> list[Union[str, Mol]]:
     """
     Helper function to retrieve data elements from specified indices.
-
-    Parameters
-    ----------
-    data : sequence
-        List of SMILES strings or RDKit `Mol` objects.
-    indices : sequence
-        List of indices to retrieve from `data`.
-
-    Returns
-    -------
-    list
-        List of data elements at the specified indices.
     """
     indices = set(indices)
     return [data[idx] for idx in indices]
@@ -468,22 +390,10 @@ def _split_additional_data(
 ) -> list[Sequence[Any]]:
     """
     Split additional data based on indices lists.
-
-    Parameters
-    ----------
-    additional_data : list
-        List of additional data sequences to be split.
-    indices_lists : list of lists
-        List of lists where each inner list contains indices for splitting.
-
-    Returns
-    -------
-    list
-        A list of sequences where each sequence is split according to the indices provided.
     """
     return list(
         chain.from_iterable(
-            (skutils._safe_indexing(a, indices),)
+            (_safe_indexing(a, indices),)
             for a in additional_data
             for indices in indices_lists
         )
@@ -495,20 +405,6 @@ def _split_ids(
 ) -> tuple[list[int], list[int]]:
     """
     Split IDs into training and testing sets based on scaffold sets.
-
-    Parameters
-    ----------
-    scaffold_sets : list
-        List of lists where each list contains IDs corresponding to a scaffold.
-    total_data_len : int
-        Total number of data samples.
-    test_size : float
-        Proportion of the data to be used for testing.
-
-    Returns
-    -------
-    tuple
-        A tuple containing two lists: training IDs and testing IDs.
     """
     train_ids: list[int] = []
     test_ids: list[int] = []
@@ -531,22 +427,6 @@ def _split_ids_three_sets(
 ) -> tuple[list[int], list[int], list[int]]:
     """
     Split IDs into training, validation, and testing sets based on scaffold sets.
-
-    Parameters
-    ----------
-    scaffold_sets : list
-        List of lists where each list contains IDs corresponding to a scaffold.
-    total_data_len : int
-        Total number of data samples.
-    test_size : float
-        Proportion of the data to be used for testing.
-    valid_size : float
-        Proportion of the data to be used for validation.
-
-    Returns
-    -------
-    tuple
-        A tuple containing three lists: training IDs, validation IDs, and testing IDs.
     """
     train_ids: list[int] = []
     valid_ids: list[int] = []
@@ -572,25 +452,6 @@ def _split_size(
 ) -> tuple[float, float, float]:
     """
     Ensure the sum of train_size, valid_size, and test_size equals 1.0 and provide default values if necessary.
-
-    Parameters
-    ----------
-    train_size : float or None
-        The proportion of the data to use for training.
-    valid_size : float or None
-        The proportion of the data to use for validation.
-    test_size : float or None
-        The proportion of the data to use for testing.
-
-    Returns
-    -------
-    tuple
-        A tuple containing the proportions for training, validation, and testing sets.
-
-    Raises
-    ------
-    ValueError
-        If the sum of train_size, valid_size, and test_size does not equal 1.0.
     """
     train_size, test_size, valid_size = _calculate_missing_sizes(
         train_size, test_size, valid_size
@@ -607,18 +468,6 @@ def _validate_split_sizes(
 ) -> None:
     """
     Validate that the provided train_size and test_size are correct and sum to 1.0.
-
-    Parameters
-    ----------
-    train_size : float or None
-        The proportion of the data to use for training.
-    test_size : float or None
-        The proportion of the data to use for testing.
-
-    Raises
-    ------
-    ValueError
-        If neither train_size nor test_size is provided, or if their sum does not equal 1.0.
     """
     if train_size is None and test_size is None:
         raise ValueError("Either train_size or test_size must be provided")
