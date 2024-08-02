@@ -1,8 +1,6 @@
-import numbers
 from collections.abc import Sequence
-from typing import Any, Callable, Union
+from typing import Any
 
-import numpy as np
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
 

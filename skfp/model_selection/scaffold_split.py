@@ -1,4 +1,3 @@
-import numbers
 import warnings
 from collections import defaultdict
 from collections.abc import Sequence
@@ -9,9 +8,15 @@ from typing import Any, Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
-from sklearn.utils import _safe_indexing
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
+from skfp.model_selection.utils import (
+    ensure_nonempty_list,
+    fill_missing_sizes,
+    get_data_from_indices,
+    split_additional_data,
+    validate_train_valid_test_split_sizes,
+)
 from skfp.utils.validators import ensure_mols
 
 
@@ -41,9 +46,11 @@ def scaffold_train_test_split(
     include_chirality: bool = False,
     return_indices: bool = False,
 ) -> Union[
-    tuple[list[Union[str, Mol]], list[Union[str, Mol]], list[Sequence[Any]]],
-    tuple[list[int], list[int], list[Sequence[Any]]],
-    tuple[list[int], list[int]],
+    tuple[
+        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
+    ],
+    tuple[Sequence, ...],
+    tuple[Sequence[int], Sequence[int]],
 ]:
     """
     Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
@@ -53,7 +60,8 @@ def scaffold_train_test_split(
     generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
     to the time split, assuming that new molecules (test set) will be structurally different in terms of
     scaffolds from the training set.
-    Note that there are limitations to this functionality. For example, disconnected molecules or
+
+    This approach is known to have certain limitations. In particular, disconnected molecules or
     molecules with no rings will not get a scaffold, resulting in them being grouped together
     regardless of their structure.
 
@@ -72,27 +80,25 @@ def scaffold_train_test_split(
 
     train_size : float, default=None
         The fraction of data to be used for the train subset. If None, it is set to 1 - test_size.
+        If test_size is also None, it will be set to 0.8.
 
     test_size : float, default=None
         The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
+        If train_size is also None, it will be set to 0.2.
 
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets.
+        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
     Returns
     ----------
-    subsets : tuple[list, list]
-        A tuple of train and test subsets. The format depends on `return_indices`:
-        - if `return_indices` is False, returns lists of SMILES strings
-        or RDKit `Mol` objects depending on the input
-        - if `return_indices` is True, returns lists of indices
-    additional_data_splitted: list[sequence]:
-        the method may return any additional data splitted in the same way as
-        provided SMILES
+    subsets : tuple[list, list, ...]
+    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
+    depending on the input type. If `return_indices` is True, only lists of indices are returned,
+    and any additional data is ignored.
 
     References
     ----------
@@ -107,15 +113,37 @@ def scaffold_train_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     """
-    _validate_split_sizes(train_size, test_size)
-    train_size, test_size = _fill_missing_sizes(train_size, test_size)
+    if train_size is None and test_size is None:
+        raise ValueError("Either train_size or test_size must be provided")
+    if (
+        train_size is not None
+        and test_size is not None
+        and not np.isclose(train_size + test_size, 1.0)
+    ):
+        raise ValueError("train_size and test_size must sum to 1.0")
+
+    train_size, test_size = fill_missing_sizes(train_size, test_size)
     scaffolds = _create_scaffolds(list(data), include_chirality)
     scaffold_sets = sorted(scaffolds.values(), key=len)
 
     train_ids: list[int] = []
     test_ids: list[int] = []
+    desired_test_size = int(test_size * len(data))
 
-    train_ids, test_ids = _split_ids(scaffold_sets, len(data), test_size)
+    for scaffold_set in scaffold_sets:
+        if len(test_ids) < desired_test_size:
+            test_ids.extend(scaffold_set)
+        else:
+            train_ids.extend(scaffold_set)
+
+    if not train_ids:
+        raise ValueError(
+            "Train set is empty. Adjust the train_size or check provided data."
+        )
+    if not test_ids:
+        raise ValueError(
+            "Test set is empty. Adjust the test_size or check provided data."
+        )
 
     train_subset: list[Any] = []
     test_subset: list[Any] = []
@@ -124,21 +152,22 @@ def scaffold_train_test_split(
         train_subset = train_ids
         test_subset = test_ids
     else:
-        train_subset = _get_data_from_indices(data, train_ids)
-        test_subset = _get_data_from_indices(data, test_ids)
+        train_subset = get_data_from_indices(data, train_ids)
+        test_subset = get_data_from_indices(data, test_ids)
 
-    _check_subsets(train_subset, test_subset)
+    ensure_nonempty_list(train_subset)
+    ensure_nonempty_list(test_subset)
 
     additional_data_split: list[Sequence[Any]] = []
 
     additional_data_split = (
-        _split_additional_data(list(additional_data), [train_ids, test_ids])
+        split_additional_data(list(additional_data), [train_ids, test_ids])
         if additional_data
         else []
     )
 
     if additional_data:
-        return train_subset, test_subset, additional_data_split
+        return train_subset, test_subset, *additional_data_split
     else:
         return train_subset, test_subset
 
@@ -170,20 +199,19 @@ def scaffold_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
-    test_size: Optional[float] = None,
     valid_size: Optional[float] = None,
+    test_size: Optional[float] = None,
     include_chirality: bool = False,
     return_indices: bool = False,
 ) -> Union[
-    tuple[list[Union[str, Mol]], list[Union[str, Mol]], list[Union[str, Mol]]],
-    tuple[list[int], list[int], list[int]],
     tuple[
-        list[Union[str, Mol]],
-        list[Union[str, Mol]],
-        list[Union[str, Mol]],
-        list[Sequence[Any]],
+        Sequence[Union[str, Mol]],
+        Sequence[Union[str, Mol]],
+        Sequence[Union[str, Mol]],
+        Sequence[Sequence[Any]],
     ],
-    tuple[list[int], list[int], list[int], list[Sequence[Any]]],
+    tuple[Sequence, ...],
+    tuple[Sequence[int], Sequence[int], Sequence[int]],
 ]:
     """
     Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
@@ -193,11 +221,12 @@ def scaffold_train_valid_test_split(
     generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
     to the time split, assuming that new molecules (test set) will be structurally different in terms of
     scaffolds from the training set.
-    Note that there are limitations to this functionality. For example, disconnected molecules or
+
+    This approach is known to have certain limitations. In particular, disconnected molecules or
     molecules with no rings will not get a scaffold, resulting in them being grouped together
     regardless of their structure.
 
-    The split is fully deterministic, with the smallest scaffold sets assigned to the test or validation
+    The split is fully deterministic, with the smallest scaffold sets assigned to the test
     subset and the rest to the training subset.
 
     The split fractions (train_size, test_size) must sum to 1.
@@ -229,18 +258,14 @@ def scaffold_train_valid_test_split(
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets.
+        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
     Returns
     ----------
-    subsets : tuple[list, list, list]
-        A tuple of train, validation, and test subsets. The format depends on `return_indices`:
-        - if `return_indices` is False, returns lists of SMILES strings
-        or RDKit `Mol` objects depending on the input
-        - if `return_indices` is True, returns lists of indices
-    additional_data_splitted: list[sequence]:
-        the method may return any additional data splitted in the same way as
-        provided SMILES
+    subsets : tuple[list, list, ...]
+    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
+    depending on the input type. If `return_indices` is True, only lists of indices are returned,
+    and any additional data is ignored.
 
     References
     ----------
@@ -255,7 +280,9 @@ def scaffold_train_valid_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     """
-    train_size, valid_size, test_size = _split_size(train_size, valid_size, test_size)
+    train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
+        train_size, valid_size, test_size
+    )
 
     scaffolds = _create_scaffolds(list(data), include_chirality)
     scaffold_sets = sorted(scaffolds.values(), key=len)
@@ -263,10 +290,25 @@ def scaffold_train_valid_test_split(
     train_ids: list[int] = []
     valid_ids: list[int] = []
     test_ids: list[int] = []
+    desired_test_size = int(test_size * len(data))
+    desired_valid_size = int((test_size + valid_size) * len(data))
 
-    train_ids, valid_ids, test_ids = _split_ids_three_sets(
-        scaffold_sets, len(data), test_size, valid_size
-    )
+    for scaffold_set in scaffold_sets:
+        if len(test_ids) < desired_test_size:
+            test_ids.extend(scaffold_set)
+        elif len(valid_ids) < desired_valid_size:
+            valid_ids.extend(scaffold_set)
+        else:
+            train_ids.extend(scaffold_set)
+
+    if not train_ids:
+        raise ValueError(
+            "Train set is empty. Adjust the train_size or check provided data."
+        )
+    if not test_ids:
+        raise ValueError(
+            "Test set is empty. Adjust the test_size or check provided data."
+        )
 
     train_subset: list[Any] = []
     valid_subset: list[Any] = []
@@ -277,11 +319,12 @@ def scaffold_train_valid_test_split(
         valid_subset = valid_ids
         test_subset = test_ids
     else:
-        train_subset = _get_data_from_indices(data, train_ids)
-        valid_subset = _get_data_from_indices(data, valid_ids)
-        test_subset = _get_data_from_indices(data, test_ids)
+        train_subset = get_data_from_indices(data, train_ids)
+        valid_subset = get_data_from_indices(data, valid_ids)
+        test_subset = get_data_from_indices(data, test_ids)
 
-    _check_subsets(train_subset, test_subset)
+    ensure_nonempty_list(train_subset)
+    ensure_nonempty_list(valid_subset)
 
     if len(valid_subset) == 0:
         warnings.warn(
@@ -291,49 +334,15 @@ def scaffold_train_valid_test_split(
     additional_data_split: list[Sequence[Any]] = []
 
     additional_data_split = (
-        _split_additional_data(list(additional_data), [train_ids, valid_ids, test_ids])
+        split_additional_data(list(additional_data), [train_ids, valid_ids, test_ids])
         if additional_data
         else []
     )
 
     if additional_data:
-        return train_subset, valid_subset, test_subset, additional_data_split
+        return train_subset, valid_subset, test_subset, *additional_data_split
     else:
         return train_subset, valid_subset, test_subset
-
-
-def _calculate_missing_sizes(
-    train_size: Optional[float],
-    valid_size: Optional[float],
-    test_size: Optional[float],
-) -> tuple[float, float, float]:
-    """
-    Calculate the missing sizes for train, validation, and test sets if they are not provided.
-    """
-    if train_size is None and test_size is None and valid_size is None:
-        return 0.8, 0.1, 0.1
-
-    if train_size is None or valid_size is None or test_size is None:
-        raise ValueError(
-            "All of train_size, valid_size, and test_size must be provided."
-        )
-
-    if valid_size == 0.0:
-        warnings.warn(
-            "Validation set will not be returned since valid_size was set to 0.0."
-            "Consider using train_test_split instead."
-        )
-
-    return train_size, test_size, valid_size
-
-
-def _check_subsets(*subsets: list) -> None:
-    """
-    Check if any of the provided subsets is empty.
-    """
-    for subset in subsets:
-        if len(subset) == 0:
-            raise ValueError("One of the subsets is empty.")
 
 
 def _create_scaffolds(
@@ -341,7 +350,7 @@ def _create_scaffolds(
 ) -> dict[str, list]:
     """
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
-    This implementation uses Bemis-Murcko scaffolds [1]_ to group molecules.
+    This implementation uses Bemis-Murcko scaffolds to group molecules.
     Each scaffold is represented as a SMILES string.
     """
     scaffolds = defaultdict(list)
@@ -354,126 +363,3 @@ def _create_scaffolds(
         scaffolds[scaffold].append(ind)
 
     return scaffolds
-
-
-def _fill_missing_sizes(
-    train_size: Optional[float], test_size: Optional[float]
-) -> tuple[float, float]:
-    """
-    Fill in missing sizes for train and test sets based on the provided sizes.
-    """
-    if train_size is None and test_size is None:
-        train_size = 0.8
-        test_size = 0.2
-    if train_size is None:
-        if test_size is not None:
-            train_size = 1 - test_size
-        else:
-            raise ValueError("test_size must be provided when train_size is None")
-    elif test_size is None:
-        test_size = 1 - train_size
-    return train_size, test_size
-
-
-def _get_data_from_indices(
-    data: Sequence[Union[str, Mol]], indices: Sequence[int]
-) -> list[Union[str, Mol]]:
-    """
-    Helper function to retrieve data elements from specified indices.
-    """
-    indices = set(indices)
-    return [data[idx] for idx in indices]
-
-
-def _split_additional_data(
-    additional_data: list[Sequence[Any]], *indices_lists: list[list[int]]
-) -> list[Sequence[Any]]:
-    """
-    Split additional data based on indices lists.
-    """
-    return list(
-        chain.from_iterable(
-            (_safe_indexing(a, indices),)
-            for a in additional_data
-            for indices in indices_lists
-        )
-    )
-
-
-def _split_ids(
-    scaffold_sets: list[list[int]], total_data_len: int, test_size: float
-) -> tuple[list[int], list[int]]:
-    """
-    Split IDs into training and testing sets based on scaffold sets.
-    """
-    train_ids: list[int] = []
-    test_ids: list[int] = []
-    desired_test_size = int(test_size * total_data_len)
-
-    for scaffold_set in scaffold_sets:
-        if len(test_ids) < desired_test_size:
-            test_ids.extend(scaffold_set)
-        else:
-            train_ids.extend(scaffold_set)
-
-    return train_ids, test_ids
-
-
-def _split_ids_three_sets(
-    scaffold_sets: list[list[int]],
-    total_data_len: int,
-    test_size: float,
-    valid_size: float,
-) -> tuple[list[int], list[int], list[int]]:
-    """
-    Split IDs into training, validation, and testing sets based on scaffold sets.
-    """
-    train_ids: list[int] = []
-    valid_ids: list[int] = []
-    test_ids: list[int] = []
-    desired_test_size = int(test_size * total_data_len)
-    desired_valid_size = int((test_size + valid_size) * total_data_len)
-
-    for scaffold_set in scaffold_sets:
-        if len(test_ids) < desired_test_size:
-            test_ids.extend(scaffold_set)
-        elif len(valid_ids) < desired_valid_size:
-            valid_ids.extend(scaffold_set)
-        else:
-            train_ids.extend(scaffold_set)
-
-    return train_ids, valid_ids, test_ids
-
-
-def _split_size(
-    train_size: Optional[float],
-    valid_size: Optional[float],
-    test_size: Optional[float],
-) -> tuple[float, float, float]:
-    """
-    Ensure the sum of train_size, valid_size, and test_size equals 1.0 and provide default values if necessary.
-    """
-    train_size, test_size, valid_size = _calculate_missing_sizes(
-        train_size, test_size, valid_size
-    )
-
-    if not np.isclose(train_size + test_size + valid_size, 1.0):
-        raise ValueError("train_size, test_size, and valid_size must sum to 1.0")
-
-    return train_size, test_size, valid_size
-
-
-def _validate_split_sizes(
-    train_size: Optional[float], test_size: Optional[float]
-) -> None:
-    """
-    Validate that the provided train_size and test_size are correct and sum to 1.0.
-    """
-    if train_size is None and test_size is None:
-        raise ValueError("Either train_size or test_size must be provided")
-    if (
-        train_size is not None
-        and test_size is not None
-        and not np.isclose(train_size + test_size, 1.0)
-    ):
-        raise ValueError("train_size and test_size must sum to 1.0")

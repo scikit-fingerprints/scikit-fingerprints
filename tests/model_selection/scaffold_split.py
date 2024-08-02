@@ -1,7 +1,7 @@
 import pytest
 from rdkit import Chem
 
-from skfp.utils.splitters import (
+from skfp.model_selection.scaffold_split import (
     _create_scaffolds,
     scaffold_train_test_split,
     scaffold_train_valid_test_split,
