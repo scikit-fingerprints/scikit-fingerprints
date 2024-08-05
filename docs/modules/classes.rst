@@ -10,7 +10,6 @@ This is the class and function reference of scikit-fingerprints.
     bases
     datasets
     fingerprints
+    model_selection
     preprocessing
-
-
-
+    utils
