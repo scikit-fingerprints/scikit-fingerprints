@@ -6,7 +6,6 @@ setup: ## Install development dependencies, pre-commit hooks and poetry plugin
 	poetry --version || (echo "Poetry is not installed. Please install it from https://python-poetry.org/docs/#installation" && exit 1)
 	poetry install --with dev,doc --sync
 	poetry self add poetry-plugin-export
-	poetry self add poetry-plugin-sort
 	poetry run pre-commit install
 
 docs: ## Re-generate documentation

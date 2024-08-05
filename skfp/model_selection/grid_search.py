@@ -30,10 +30,10 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
     2. Compute fingerprint
     3. Optimize estimator hyperparameters
 
-    This way, computer fingerprint representations are efficiently used for many sets of
+    This way, computed fingerprint representations are efficiently used for many sets of
     estimator hyperparameters. This is useful when tuning classifier or fingerprint and
     classifier. When only fingerprint is tuned, combination of `Pipeline` and `GridSearchCV`
-    is enough. The difference is particularly significant for more computationally
+    is enough. The difference is particularly significant for more computationally heavy
     fingerprints and large grids for estimators.
 
     Note that much of the behavior is controlled via passed `estimator_cv` object, e.g.
@@ -50,7 +50,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         through fingerprint hyperparameter grid.
 
     fp_param_grid : dict or list[dict]
-        Dictionary with fingerprint hyperparameters names (`str`) as keys and lists of
+        Dictionary with names of fingerprint hyperparameters (`str`) as keys and lists of
         hyperparameter settings to try as values, or a list of such dictionaries, in which
         case the grids spanned by each dictionary in the list are explored. This enables
         searching over any sequence of hyperparameter settings.
@@ -68,7 +68,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
     Attributes
     ----------
     cv_results_ : list[dict]
-        List of dictionaries, where each one represents contains the set of hyperparameters
+        List of dictionaries, where each one represents the set of hyperparameters
         (names and values) and `"score"` key with the cross-validated performance of the
         pipeline with those hyperparameters.
 
