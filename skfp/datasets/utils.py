@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 from typing import Optional, Union
@@ -24,7 +25,26 @@ def fetch_dataset(
     """
     data_home_dir = get_data_home_dir(data_dir, dataset_name)
     dataset_dir = hf_hub_download(data_home_dir, dataset_name, verbose)
-    return pd.read_csv(Path(dataset_dir) / filename)
+    filepath = Path(dataset_dir) / filename
+    return pd.read_csv(filepath)
+
+
+def fetch_splits(
+    data_dir: Optional[Union[str, os.PathLike]],
+    dataset_name: str,
+    filename: str,
+    verbose: bool = False,
+) -> dict[str, list[int]]:
+    """
+    Fetch the dataset splits from HuggingFace Hub. Returns loaded JSON with split
+    names as keys (e.g. train, valid, test), and lists of indexes as values.
+    """
+    data_home_dir = get_data_home_dir(data_dir, dataset_name)
+    dataset_dir = hf_hub_download(data_home_dir, dataset_name, verbose)
+    filepath = Path(dataset_dir) / filename
+    print(filepath)
+    with open(filepath) as file:
+        return json.load(file)
 
 
 def get_data_home_dir(
