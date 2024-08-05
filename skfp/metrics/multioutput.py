@@ -15,17 +15,69 @@ from sklearn.metrics import (
     roc_auc_score,
     root_mean_squared_error,
 )
+from sklearn.utils._param_validation import validate_params
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_accuracy_score(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     *args,
     **kwargs,
 ) -> float:
+    """
+    Accuracy score for multioutput problems, which returns the average value over
+    all tasks. Missing values in target labels are ignored.
+
+    Any additional arguments are passed to the underlying `accuracy_score` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float or int
+        Average accuracy value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_accuracy_score
+    >>> y_pred = [[0, 0], [0, 1]]
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> multioutput_accuracy_score(y_true, y_pred)
+    0.75
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
+    >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    0.5
+    """
     return _safe_multioutput_metric(accuracy_score, y_true, y_pred, *args, **kwargs)
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_score": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_auroc_score(
     y_true: np.ndarray,
     y_score: np.ndarray,
@@ -42,6 +94,13 @@ def multioutput_auroc_score(
     )
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_score": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_auprc_score(
     y_true: np.ndarray,
     y_score: np.ndarray,
@@ -54,6 +113,13 @@ def multioutput_auprc_score(
     )
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_balanced_accuracy_score(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -65,6 +131,13 @@ def multioutput_balanced_accuracy_score(
     )
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_cohen_kappa_score(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -74,6 +147,13 @@ def multioutput_cohen_kappa_score(
     return _safe_multioutput_metric(cohen_kappa_score, y_true, y_pred, *args, **kwargs)
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_f1_score(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -83,6 +163,13 @@ def multioutput_f1_score(
     return _safe_multioutput_metric(f1_score, y_true, y_pred, *args, **kwargs)
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_matthews_corr_coef(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -92,6 +179,13 @@ def multioutput_matthews_corr_coef(
     return _safe_multioutput_metric(matthews_corrcoef, y_true, y_pred, *args, **kwargs)
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_mean_absolute_error(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -103,6 +197,13 @@ def multioutput_mean_absolute_error(
     )
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_mean_squared_error(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -112,6 +213,13 @@ def multioutput_mean_squared_error(
     return _safe_multioutput_metric(mean_squared_error, y_true, y_pred, *args, **kwargs)
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_precision_score(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -121,6 +229,13 @@ def multioutput_precision_score(
     return _safe_multioutput_metric(precision_score, y_true, y_pred, *args, **kwargs)
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_recall_score(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -130,6 +245,13 @@ def multioutput_recall_score(
     return _safe_multioutput_metric(recall_score, y_true, y_pred, *args, **kwargs)
 
 
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def multioutput_root_mean_squared_error(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -149,6 +271,11 @@ def _safe_multioutput_metric(
     *args,
     **kwargs,
 ) -> float:
+    if not isinstance(y_true, np.ndarray):
+        y_true = np.array(y_true)
+    if not isinstance(y_pred, np.ndarray):
+        y_pred = np.array(y_pred)
+
     if y_true.ndim == 1:
         y_true = y_true.reshape(-1, 1)
     elif y_true.ndim > 2:
