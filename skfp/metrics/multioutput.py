@@ -65,8 +65,8 @@ def multioutput_accuracy_score(
     >>> y_pred = [[0, 0], [0, 1]]
     >>> multioutput_accuracy_score(y_true, y_pred)
     0.75
-    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
     >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
     >>> multioutput_accuracy_score(y_true, y_pred)
     0.5
     """
@@ -91,6 +91,7 @@ def multioutput_auroc_score(
     multioutput problems, which returns the average value over all tasks. Missing
     values in target labels are ignored. Columns with constant true value are also
     ignored, so that this function can be safely used e.g. in cross-validation.
+    Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `roc_auc_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -153,8 +154,7 @@ def multioutput_auprc_score(
     """
     Area Under Precision-Recall Curve (AUPRC / AUC PRC / average precision) score for
     multioutput problems, which returns the average value over all tasks. Missing
-    values in target labels are ignored. Columns with constant true value are also
-    ignored, so that this function can be safely used e.g. in cross-validation.
+    values in target labels are ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `average_precision_score`
     function, see `scikit-learn documentation <sklearn>`_ for more information.
@@ -209,6 +209,45 @@ def multioutput_balanced_accuracy_score(
     *args,
     **kwargs,
 ) -> float:
+    """
+    Balanced accuracy (average recall) score for multioutput problems, which returns
+    the average value over all tasks. Missing values in target labels are ignored.
+    Also supports single-task evaluation.
+
+    Any additional arguments are passed to the underlying `balanced_accuracy_score` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average balanced accuracy value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_balanced_accuracy_score
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_pred = [[0, 0], [0, 1]]
+    >>> multioutput_balanced_accuracy_score(y_true, y_pred)
+    0.75
+    >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
+    >>> multioutput_balanced_accuracy_score(y_true, y_pred)
+    0.5
+    """
     return _safe_multioutput_metric(
         balanced_accuracy_score, y_true, y_pred, *args, **kwargs
     )
@@ -227,6 +266,45 @@ def multioutput_cohen_kappa_score(
     *args,
     **kwargs,
 ) -> float:
+    """
+    Cohen's kappa score for multioutput problems, which returns the average value over
+    all tasks. Missing values in target labels are ignored. Also supports single-task
+    evaluation.
+
+    Any additional arguments are passed to the underlying `cohen_kappa_score` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average Cohen's kappa value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_cohen_kappa_score
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_pred = [[0, 0], [0, 1]]
+    >>> multioutput_cohen_kappa_score(y_true, y_pred)
+    0.5
+    >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
+    >>> multioutput_cohen_kappa_score(y_true, y_pred)
+    0.5
+    """
     return _safe_multioutput_metric(cohen_kappa_score, y_true, y_pred, *args, **kwargs)
 
 
@@ -243,6 +321,46 @@ def multioutput_f1_score(
     *args,
     **kwargs,
 ) -> float:
+    """
+    F1 score for multioutput problems, which returns the average value over all tasks.
+    Missing values in target labels are ignored. Columns with constant true value are
+    also ignored, which differs from default scikit-learn behavior (it returns value 0
+    by default). Also supports single-task evaluation.
+
+    Any additional arguments are passed to the underlying `f1_score` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average F1 score value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_f1_score
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_pred = [[0, 0], [0, 1]]
+    >>> multioutput_f1_score(y_true, y_pred)
+    0.5
+    >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
+    >>> multioutput_f1_score(y_true, y_pred)
+    0.0
+    """
     return _safe_multioutput_metric(f1_score, y_true, y_pred, *args, **kwargs)
 
 
