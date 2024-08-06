@@ -118,12 +118,12 @@ def multioutput_auroc_score(
     --------
     >>> import numpy as np
     >>> from skfp.metrics import multioutput_auroc_score
-    >>> y_true = [[0, 1], [1, 1]]
-    >>> y_score = [[1, 0], [1, 0]]
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_score = [[0.75, 0.0], [0.9, 0.0]]
     >>> multioutput_auroc_score(y_true, y_score)
     0.5
-    >>> y_true = [[0, 1], [1, 1], [0, 1]]
-    >>> y_score = [[1, 0], [1, np.nan], [np.nan, 0]]
+    >>> y_true = [[0, 0], [1, np.nan], [np.nan, 1]]
+    >>> y_score = [[0.75, 0.0], [0.25, 0.0], [0.0, 0.25]]
     >>> multioutput_auroc_score(y_true, y_score)
     0.5
     """
@@ -150,7 +150,47 @@ def multioutput_auprc_score(
     *args,
     **kwargs,
 ) -> float:
-    # scikit-learn calls AUPRC "average precision"
+    """
+    Area Under Precision-Recall Curve (AUPRC / AUC PRC / average precision) score for
+    multioutput problems, which returns the average value over all tasks. Missing
+    values in target labels are ignored. Columns with constant true value are also
+    ignored, so that this function can be safely used e.g. in cross-validation.
+
+    Any additional arguments are passed to the underlying `average_precision_score`
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_score : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Target scores, i.e. probability of the class with the greater label for each
+        output** of the classifier.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average AUPRC value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_auprc_score
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_score = [[0.75, 0.0], [0.9, 0.0]]
+    >>> multioutput_auprc_score(y_true, y_score)
+    0.75
+    >>> y_true = [[0, 0], [1, np.nan], [np.nan, 1]]
+    >>> y_score = [[0.75, 0.0], [0.25, 0.0], [0.0, 0.25]]
+    >>> multioutput_auprc_score(y_true, y_score)
+    0.75
+    """
     return _safe_multioutput_metric(
         average_precision_score, y_true, y_score, *args, **kwargs
     )
