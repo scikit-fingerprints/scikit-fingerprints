@@ -377,6 +377,45 @@ def multioutput_matthews_corr_coef(
     *args,
     **kwargs,
 ) -> float:
+    """
+    Matthews Correlation Coefficient (MCC) for multioutput problems, which returns the
+    average value over all tasks. Missing values in target labels are ignored. Also
+    supports single-task evaluation.
+
+    Any additional arguments are passed to the underlying `matthews_corrcoef` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.matthews_corrcoef.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average MCC value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_matthews_corr_coef
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_pred = [[0, 0], [0, 1]]
+    >>> multioutput_matthews_corr_coef(y_true, y_pred)
+    0.5
+    >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
+    >>> multioutput_matthews_corr_coef(y_true, y_pred)
+    0.0
+    """
     return _safe_multioutput_metric(matthews_corrcoef, y_true, y_pred, *args, **kwargs)
 
 
@@ -393,6 +432,45 @@ def multioutput_mean_absolute_error(
     *args,
     **kwargs,
 ) -> float:
+    """
+    Mean absolute error (MAE) for multioutput problems, which returns the average
+    value over all tasks. Missing values in target labels are ignored. Also supports
+    single-task evaluation.
+
+    Any additional arguments are passed to the underlying `mean_absolute_error` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_absolute_error.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average MAE value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_mean_absolute_error
+    >>> y_true = [[0.5, 1], [-1, 1], [7, -6]]
+    >>> y_pred = [[0, 2], [-1, 2], [8, -5]]
+    >>> multioutput_mean_absolute_error(y_true, y_pred)
+    0.75
+    >>> y_true = [[0.5, 1], [-1, 1], [np.nan, 10], [-10, np.nan]]
+    >>> y_pred = [[0, 2], [-1, 2], [-3, 8], [-10, 5]]
+    >>> multioutput_mean_absolute_error(y_true, y_pred)
+    0.75
+    """
     return _safe_multioutput_metric(
         mean_absolute_error, y_true, y_pred, *args, **kwargs
     )
@@ -411,6 +489,45 @@ def multioutput_mean_squared_error(
     *args,
     **kwargs,
 ) -> float:
+    """
+    Mean squared error (MSE) for multioutput problems, which returns the average
+    value over all tasks. Missing values in target labels are ignored. Also supports
+    single-task evaluation.
+
+    Any additional arguments are passed to the underlying `mean_squared_error` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_squared_error.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average MSE value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_mean_squared_error
+    >>> y_true = [[0.5, 1], [-1, 1], [7, -6]]
+    >>> y_pred = [[0, 2], [-1, 2], [8, -5]]
+    >>> multioutput_mean_squared_error(y_true, y_pred)
+    0.708...
+    >>> y_true = [[0.5, 1], [-1, 1], [np.nan, 10], [-10, np.nan]]
+    >>> y_pred = [[0, 2], [-1, 2], [-3, 8], [-10, 5]]
+    >>> multioutput_mean_squared_error(y_true, y_pred)
+    1.041...
+    """
     return _safe_multioutput_metric(mean_squared_error, y_true, y_pred, *args, **kwargs)
 
 
@@ -427,7 +544,49 @@ def multioutput_precision_score(
     *args,
     **kwargs,
 ) -> float:
-    return _safe_multioutput_metric(precision_score, y_true, y_pred, *args, **kwargs)
+    """
+    Precision score for multioutput problems, which returns the average value over
+    all tasks. Missing values in target labels are ignored. Warnings are not raised
+    for columns with constant false prediction, and 0.0 is assumed. Also supports
+    single-task evaluation.
+
+    Any additional arguments are passed to the underlying `precision_score` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float or int
+        Average precision value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_precision_score
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_pred = [[0, 0], [0, 1]]
+    >>> multioutput_precision_score(y_true, y_pred)
+    0.5
+    >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
+    >>> multioutput_precision_score(y_true, y_pred)
+    0.0
+    """
+    return _safe_multioutput_metric(
+        precision_score, y_true, y_pred, zero_division=0.0, *args, **kwargs
+    )
 
 
 @validate_params(
@@ -443,6 +602,45 @@ def multioutput_recall_score(
     *args,
     **kwargs,
 ) -> float:
+    """
+    Recall score for multioutput problems, which returns the average value over
+    all tasks. Missing values in target labels are ignored. Also supports single-task
+    evaluation.
+
+    Any additional arguments are passed to the underlying `recall_score` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float or int
+        Average recall value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_recall_score
+    >>> y_true = [[0, 0], [1, 1]]
+    >>> y_pred = [[0, 0], [0, 1]]
+    >>> multioutput_recall_score(y_true, y_pred)
+    0.5
+    >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
+    >>> y_pred = [[0, 0], [0, 0], [1, 0]]
+    >>> multioutput_recall_score(y_true, y_pred)
+    0.0
+    """
     return _safe_multioutput_metric(recall_score, y_true, y_pred, *args, **kwargs)
 
 
@@ -459,6 +657,45 @@ def multioutput_root_mean_squared_error(
     *args,
     **kwargs,
 ) -> float:
+    """
+    Root mean squared error (RMSE) for multioutput problems, which returns the average
+    value over all tasks. Missing values in target labels are ignored. Also supports
+    single-task evaluation.
+
+    Any additional arguments are passed to the underlying `root_mean_squared_error` function,
+    see `scikit-learn documentation <sklearn>`_ for more information.
+
+    .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.root_mean_squared_error.html
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average RMSE value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_root_mean_squared_error
+    >>> y_true = [[0.5, 1], [-1, 1], [7, -6]]
+    >>> y_pred = [[0, 2], [-1, 2], [8, -5]]
+    >>> multioutput_root_mean_squared_error(y_true, y_pred)
+    0.822...
+    >>> y_true = [[0.5, 1], [-1, 1], [np.nan, 10], [-10, np.nan]]
+    >>> y_pred = [[0, 2], [-1, 2], [-3, 8], [-10, 5]]
+    >>> multioutput_root_mean_squared_error(y_true, y_pred)
+    0.851...
+    """
     return _safe_multioutput_metric(
         root_mean_squared_error, y_true, y_pred, *args, **kwargs
     )
