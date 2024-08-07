@@ -32,9 +32,10 @@ def multioutput_accuracy_score(
     **kwargs,
 ) -> float:
     """
-    Accuracy score for multioutput problems, which returns the average value over
-    all tasks. Missing values in target labels are ignored. Also supports single-task
-    evaluation.
+    Accuracy score for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `accuracy_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -88,10 +89,11 @@ def multioutput_auroc_score(
 ) -> float:
     """
     Area Under Receiver Operating Characteristic curve (AUROC / ROC AUC) score for
-    multioutput problems, which returns the average value over all tasks. Missing
-    values in target labels are ignored. Columns with constant true value are also
-    ignored, so that this function can be safely used e.g. in cross-validation.
-    Also supports single-task evaluation.
+    multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Columns with constant true value are also ignored, so that this function
+    can be safely used e.g. in cross-validation. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `roc_auc_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -122,7 +124,7 @@ def multioutput_auroc_score(
     >>> y_true = [[0, 0], [1, 1]]
     >>> y_score = [[0.75, 0.0], [0.9, 0.0]]
     >>> multioutput_auroc_score(y_true, y_score)
-    0.5
+    0.75
     >>> y_true = [[0, 0], [1, np.nan], [np.nan, 1]]
     >>> y_score = [[0.75, 0.0], [0.25, 0.0], [0.0, 0.25]]
     >>> multioutput_auroc_score(y_true, y_score)
@@ -153,8 +155,10 @@ def multioutput_auprc_score(
 ) -> float:
     """
     Area Under Precision-Recall Curve (AUPRC / AUC PRC / average precision) score for
-    multioutput problems, which returns the average value over all tasks. Missing
-    values in target labels are ignored. Also supports single-task evaluation.
+    multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `average_precision_score`
     function, see `scikit-learn documentation <sklearn>`_ for more information.
@@ -210,9 +214,10 @@ def multioutput_balanced_accuracy_score(
     **kwargs,
 ) -> float:
     """
-    Balanced accuracy (average recall) score for multioutput problems, which returns
-    the average value over all tasks. Missing values in target labels are ignored.
-    Also supports single-task evaluation.
+    Balanced accuracy (average recall) score for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `balanced_accuracy_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -267,9 +272,10 @@ def multioutput_cohen_kappa_score(
     **kwargs,
 ) -> float:
     """
-    Cohen's kappa score for multioutput problems, which returns the average value over
-    all tasks. Missing values in target labels are ignored. Also supports single-task
-    evaluation.
+    Cohen's kappa score for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `cohen_kappa_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -303,7 +309,7 @@ def multioutput_cohen_kappa_score(
     >>> y_true = [[0, np.nan], [1, np.nan], [np.nan, np.nan]]
     >>> y_pred = [[0, 0], [0, 0], [1, 0]]
     >>> multioutput_cohen_kappa_score(y_true, y_pred)
-    0.5
+    0.0
     """
     return _safe_multioutput_metric(cohen_kappa_score, y_true, y_pred, *args, **kwargs)
 
@@ -322,10 +328,12 @@ def multioutput_f1_score(
     **kwargs,
 ) -> float:
     """
-    F1 score for multioutput problems, which returns the average value over all tasks.
-    Missing values in target labels are ignored. Columns with constant true value are
-    also ignored, which differs from default scikit-learn behavior (it returns value 0
-    by default). Also supports single-task evaluation.
+    F1 score for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Columns with constant true value are also ignored, which differs from
+    default scikit-learn behavior (it returns value 0 by default). Also supports
+    single-task evaluation.
 
     Any additional arguments are passed to the underlying `f1_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -378,9 +386,10 @@ def multioutput_matthews_corr_coef(
     **kwargs,
 ) -> float:
     """
-    Matthews Correlation Coefficient (MCC) for multioutput problems, which returns the
-    average value over all tasks. Missing values in target labels are ignored. Also
-    supports single-task evaluation.
+    Matthews Correlation Coefficient (MCC) for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `matthews_corrcoef` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -433,9 +442,10 @@ def multioutput_mean_absolute_error(
     **kwargs,
 ) -> float:
     """
-    Mean absolute error (MAE) for multioutput problems, which returns the average
-    value over all tasks. Missing values in target labels are ignored. Also supports
-    single-task evaluation.
+    Mean absolute error (MAE) for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `mean_absolute_error` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -490,9 +500,10 @@ def multioutput_mean_squared_error(
     **kwargs,
 ) -> float:
     """
-    Mean squared error (MSE) for multioutput problems, which returns the average
-    value over all tasks. Missing values in target labels are ignored. Also supports
-    single-task evaluation.
+    Mean squared error (MSE) for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `mean_squared_error` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -545,10 +556,11 @@ def multioutput_precision_score(
     **kwargs,
 ) -> float:
     """
-    Precision score for multioutput problems, which returns the average value over
-    all tasks. Missing values in target labels are ignored. Warnings are not raised
-    for columns with constant false prediction, and 0.0 is assumed. Also supports
-    single-task evaluation.
+    Precision score for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Warnings are not raised for columns with constant false prediction,
+    and 0.0 is assumed. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `precision_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -568,7 +580,7 @@ def multioutput_precision_score(
 
     Returns
     -------
-    score : float or int
+    score : float
         Average precision value over all tasks.
 
     Examples
@@ -603,9 +615,10 @@ def multioutput_recall_score(
     **kwargs,
 ) -> float:
     """
-    Recall score for multioutput problems, which returns the average value over
-    all tasks. Missing values in target labels are ignored. Also supports single-task
-    evaluation.
+    Recall score for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `recall_score` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
@@ -625,7 +638,7 @@ def multioutput_recall_score(
 
     Returns
     -------
-    score : float or int
+    score : float
         Average recall value over all tasks.
 
     Examples
@@ -658,9 +671,10 @@ def multioutput_root_mean_squared_error(
     **kwargs,
 ) -> float:
     """
-    Root mean squared error (RMSE) for multioutput problems, which returns the average
-    value over all tasks. Missing values in target labels are ignored. Also supports
-    single-task evaluation.
+    Root mean squared error (RMSE) for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
 
     Any additional arguments are passed to the underlying `root_mean_squared_error` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
