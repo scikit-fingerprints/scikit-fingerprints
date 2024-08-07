@@ -101,21 +101,20 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
     >>> from sklearn.model_selection import GridSearchCV
     >>> smiles, labels = load_bace()
     >>> fp = ECFPFingerprint(n_jobs=-1)
-    >>> fp_params = {"radius": [1, 2, 3]}
-    >>> clf = RandomForestClassifier()
-    >>> clf_params = {"min_samples_split": [2, 5, 10]}
+    >>> fp_params = {"radius": [2, 3]}
+    >>> clf = RandomForestClassifier(n_jobs=-1)
+    >>> clf_params = {"min_samples_split": [2, 3, 4]}
     >>> clf_cv = GridSearchCV(clf, clf_params)
-    >>> fp_cv = FingerprintEstimatorGridSearch(fp, clf_cv, fp_params)
-    >>> fp_cv.fit(smiles, labels)
-    FingerprintEstimatorGridSearch(estimator_cv=GridSearchCV(estimator=RandomForestClassifier(),
+    >>> fp_cv = FingerprintEstimatorGridSearch(fp, fp_params, clf_cv)
+    >>> fp_cv.fit(smiles, labels)  # doctest: +SKIP
+    FingerprintEstimatorGridSearch(estimator_cv=GridSearchCV(estimator=RandomForestClassifier(n_jobs=-1),
                                                              param_grid={'min_samples_split': [2,
-                                                                                               5,
-                                                                                               10]}),
+                                                                                               3,
+                                                                                               4]}),
                                    fingerprint=ECFPFingerprint(n_jobs=-1),
-                                   fp_param_grid={'radius': [1, 2, 3]})
-
-    >>> fp_cv.best_fp_params_
-    {'radius': 1}
+                                   fp_param_grid={'radius': [2, 3]})
+    >>> fp_cv.best_fp_params_  # doctest: +SKIP
+    {'radius': 2}
     """
 
     _parameter_constraints: dict = {

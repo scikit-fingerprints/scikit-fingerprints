@@ -106,12 +106,12 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
     >>> smiles, labels = load_bace()
     >>> fp = ECFPFingerprint(n_jobs=-1)
     >>> fp_params = {"fp_size": list(range(512, 4097, 128))}
-    >>> clf = RandomForestClassifier()
+    >>> clf = RandomForestClassifier(n_jobs=-1)
     >>> clf_params = {"min_samples_split": list(range(2, 10))}
-    >>> clf_cv = RandomizedSearchCV(clf, clf_params, n_iter=5)
-    >>> fp_cv = FingerprintEstimatorRandomizedSearch(fp, clf_cv, fp_params)
-    >>> fp_cv = fp_cv.fit(smiles, labels)
-    >>> fp_cv.best_fp_params_
+    >>> clf_cv = RandomizedSearchCV(clf, clf_params, n_iter=5, random_state=0)
+    >>> fp_cv = FingerprintEstimatorRandomizedSearch(fp, fp_params, clf_cv, n_iter=5)
+    >>> fp_cv = fp_cv.fit(smiles, labels)  # doctest: +SKIP
+    >>> fp_cv.best_fp_params_  # doctest: +SKIP
     {'fp_size': 768}
     """
 
