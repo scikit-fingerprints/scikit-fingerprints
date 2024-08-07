@@ -1,5 +1,8 @@
+from typing import Union
+
 import pytest
 from rdkit import Chem
+from rdkit.Chem import Mol
 
 from skfp.model_selection.scaffold_split import (
     _create_scaffolds,
@@ -18,8 +21,8 @@ def all_molecules() -> list[str]:
         "C1CCC1",
         "C1CCCC1",
         "C1CCCCC1",
-        "C1CC1.OCC",
-        "C1CCC1.OCC",
+        "CCO",
+        "CCN",
         "CC.OCC",
     ]
 
@@ -51,6 +54,14 @@ def benzodiazepines() -> list[str]:
     return [Chem.MolFromSmiles(smiles) for smiles in benzodiazepines_smiles]
 
 
+def additional_data() -> tuple[
+    tuple[str, str, str, str],
+    tuple[int, int, int, int],
+    tuple[bool, bool, bool, bool],
+]:
+    return (("a", "b", "c", "d"), (1, 2, 3, 4), (True, False, True, False))
+
+
 @pytest.fixture
 def monosaccharides() -> list[str]:
     monosaccharides_smiles: list[str] = [
@@ -64,6 +75,20 @@ def monosaccharides() -> list[str]:
     return [Chem.MolFromSmiles(smiles) for smiles in monosaccharides_smiles]
 
 
+def test_scaffold_train_test_split_default(all_molecules):
+    train, test = scaffold_train_test_split(all_molecules)
+    assert len(train) == 8
+    assert len(test) == 2
+
+
+def test_scaffold_train_test_split_custom_sizes(all_molecules):
+    train, test = scaffold_train_test_split(
+        all_molecules, train_size=0.7, test_size=0.3
+    )
+    assert len(train) == 7
+    assert len(test) == 3
+
+
 def test_train_test_split_total_molecule_count(all_molecules):
     train_split, test_split = scaffold_train_test_split(
         all_molecules, train_size=0.8, test_size=0.2
@@ -71,6 +96,17 @@ def test_train_test_split_total_molecule_count(all_molecules):
     assert len(train_split) + len(test_split) == len(all_molecules)
     assert len(train_split) == 8
     assert len(test_split) == 2
+
+
+def test_scaffold_train_test_split_with_additional_data(all_molecules, additional_data):
+    train, test, train_additional, test_additional = scaffold_train_test_split(
+        all_molecules, additional_data, train_size=0.7, test_size=0.3
+    )
+
+    assert len(train) == 7
+    assert len(test) == 3
+    assert len(train_additional) == 7
+    assert len(test_additional) == 3
 
 
 def test_train_valid_test_split_total_molecule_count(all_molecules):
@@ -89,7 +125,7 @@ def test_test_split_smaller_than_train_split(all_molecules):
         all_molecules, train_size=0.7, test_size=0.3
     )
 
-    assert len(train_split) < len(test_split)
+    assert len(train_split) > len(test_split)
     assert len(train_split) == 7
     assert len(test_split) == 3
 
@@ -99,8 +135,8 @@ def test_train_split_larger_than_valid_and_test_splits(all_molecules):
         all_molecules, train_size=0.7, valid_size=0.2, test_size=0.1
     )
 
-    assert len(train_split) < len(valid_split)
-    assert len(valid_split) < len(test_split)
+    assert len(train_split) > len(valid_split)
+    assert len(valid_split) > len(test_split)
     assert len(train_split) == 7
     assert len(valid_split) == 2
     assert len(test_split) == 1

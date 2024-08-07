@@ -12,9 +12,9 @@ from sklearn.utils._param_validation import Interval, RealNotInt, validate_param
 
 from skfp.model_selection.utils import (
     ensure_nonempty_list,
-    fill_missing_sizes,
     get_data_from_indices,
     split_additional_data,
+    validate_train_test_sizes,
     validate_train_valid_test_split_sizes,
 )
 from skfp.utils.validators import ensure_mols
@@ -22,21 +22,22 @@ from skfp.utils.validators import ensure_mols
 
 @validate_params(
     {
-        "data": ["sequence"],
-        "additional_data": ["list"],
+        "data": ["array-like"],
+        "additional_data": ["tuple"],
         "train_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, None, closed="left"),
             None,
         ],
         "test_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, None, closed="left"),
             None,
         ],
         "include_chirality": ["boolean"],
         "return_indices": ["boolean"],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def scaffold_train_test_split(
     data: Sequence[Union[str, Mol]],
@@ -113,16 +114,7 @@ def scaffold_train_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     """
-    if train_size is None and test_size is None:
-        raise ValueError("Either train_size or test_size must be provided")
-    if (
-        train_size is not None
-        and test_size is not None
-        and not np.isclose(train_size + test_size, 1.0)
-    ):
-        raise ValueError("train_size and test_size must sum to 1.0")
-
-    train_size, test_size = fill_missing_sizes(train_size, test_size)
+    train_size, test_size = validate_train_test_sizes(train_size, test_size)
     scaffolds = _create_scaffolds(list(data), include_chirality)
     scaffold_sets = sorted(scaffolds.values(), key=len)
 
@@ -174,26 +166,27 @@ def scaffold_train_test_split(
 
 @validate_params(
     {
-        "data": ["sequence"],
-        "additional_data": ["list"],
+        "data": ["array-like"],
+        "additional_data": ["tuple"],
         "train_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, None, closed="left"),
             None,
         ],
         "valid_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, None, closed="left"),
             None,
         ],
         "test_size": [
             Interval(RealNotInt, 0, 1, closed="neither"),
-            Interval(Integral, 1, float("inf"), closed="left"),
+            Interval(Integral, 1, None, closed="left"),
             None,
         ],
         "include_chirality": ["boolean"],
         "return_indices": ["boolean"],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def scaffold_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
@@ -301,15 +294,6 @@ def scaffold_train_valid_test_split(
         else:
             train_ids.extend(scaffold_set)
 
-    if not train_ids:
-        raise ValueError(
-            "Train set is empty. Adjust the train_size or check provided data."
-        )
-    if not test_ids:
-        raise ValueError(
-            "Test set is empty. Adjust the test_size or check provided data."
-        )
-
     train_subset: list[Any] = []
     valid_subset: list[Any] = []
     test_subset: list[Any] = []
@@ -324,13 +308,12 @@ def scaffold_train_valid_test_split(
         test_subset = get_data_from_indices(data, test_ids)
 
     ensure_nonempty_list(train_subset)
-    ensure_nonempty_list(valid_subset)
+    ensure_nonempty_list(test_subset)
 
     if len(valid_subset) == 0:
         warnings.warn(
             "Warning: Valid subset is empty. Consider using scaffold_train_test_split instead."
         )
-
     additional_data_split: list[Sequence[Any]] = []
 
     additional_data_split = (
@@ -356,10 +339,10 @@ def _create_scaffolds(
     scaffolds = defaultdict(list)
     molecules = ensure_mols(data)
 
-    for ind, molecule in enumerate(molecules):
+    for idx, mol in enumerate(molecules):
         scaffold = MurckoScaffold.MurckoScaffoldSmiles(
-            mol=molecule, includeChirality=include_chirality
+            mol=mol, includeChirality=include_chirality
         )
-        scaffolds[scaffold].append(ind)
+        scaffolds[scaffold].append(idx)
 
     return scaffolds

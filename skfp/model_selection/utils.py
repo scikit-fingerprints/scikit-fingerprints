@@ -16,15 +16,14 @@ def ensure_nonempty_list(subset: list) -> None:
         raise ValueError("One of the subsets is empty.")
 
 
-def fill_missing_sizes(
+def validate_train_test_sizes(
     train_size: Optional[float], test_size: Optional[float]
 ) -> tuple[float, float]:
     """
     Fill in missing sizes for train and test sets based on the provided sizes.
     """
     if train_size is None and test_size is None:
-        train_size = 0.8
-        test_size = 0.2
+        return 0.8, 0.2
     if train_size is None:
         if test_size is not None:
             train_size = 1 - test_size
