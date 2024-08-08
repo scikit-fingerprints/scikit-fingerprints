@@ -12,4 +12,5 @@ Model selection
     :nosignatures:
     :toctree: generated/
 
-    FingerprintGridSearchCV
+    FingerprintEstimatorGridSearch
+    FingerprintEstimatorRandomizedSearch
