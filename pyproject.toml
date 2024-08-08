@@ -38,6 +38,7 @@ readme = "README.md"
 python = "^3.9"
 
 datasketch = "*"
+descriptastorus = "*"
 e3fp = "*"
 huggingface_hub = "*"
 joblib = "*"
