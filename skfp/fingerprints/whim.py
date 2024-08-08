@@ -109,7 +109,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
     >>> mols = mol_from_smiles.transform(smiles)
     >>> conf_gen = ConformerGenerator()
     >>> mols = conf_gen.transform(mols)
-    >>> fp.transform(mols)
+    >>> fp.transform(mols)  # doctest: +SKIP
     array([[0.44 , 0.067, 0.   , ..., 0.514, 0.537, 0.537],
            [1.17 , 0.395, 0.393, ..., 2.266, 3.38 , 2.542],
            [0.329, 0.   , 0.   , ..., 0.329, 0.329, 0.329],

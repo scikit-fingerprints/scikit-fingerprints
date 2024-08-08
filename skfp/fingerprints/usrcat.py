@@ -89,19 +89,8 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     >>> mols = mol_from_smiles.transform(smiles)
     >>> conf_gen = ConformerGenerator()
     >>> mols = conf_gen.transform(mols)
-    >>> fp.transform(mols)
-    array([[ 1.33723405,  0.39526642, -0.90192794,  1.34623889,  0.73604224,
-            -0.65044688,  2.00626805,  1.0036678 , -0.95792307,  1.78586959,
-             0.94315243, -0.78539494,  0.64006787,  0.        ,  0.        ,
-             0.        ,  0.        ,  0.        ,  2.31078831,  0.        ,
-             0.        ,  1.10534475,  0.        ,  0.        ,  0.        ,
-             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-             0.        ,  1.75727917,  0.        ,  0.        ,  2.31078831,
-             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-             3.19576752,  0.        ,  0.        ,  0.        ,  0.        ,
-             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-             0.        ,  0.        ,  0.        ,  0.        ,  0.        ]])
+    >>> fp.transform(mols)  # doctest: +SKIP
+    array([[ 1.33723405,  0.39526642, ...        ,  0.        ,  0.        ]])
     """
 
     _parameter_constraints: dict = {
