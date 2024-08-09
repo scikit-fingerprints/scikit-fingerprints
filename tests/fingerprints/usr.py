@@ -22,11 +22,7 @@ def test_usr_bit_fingerprint(mols_conformers_3_plus_atoms):
         ]
     )
 
-    diff_idxs = (np.abs(X_skfp - X_rdkit) >= 1e-3).nonzero()
-    for i, idxs in enumerate(diff_idxs):
-        print(X_skfp[idxs], X_rdkit[idxs])
-
-    assert np.allclose(X_skfp, X_rdkit, atol=1e-2)
+    assert np.allclose(X_skfp, X_rdkit, atol=1e-3)
     assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 12)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
@@ -47,7 +43,7 @@ def test_usr_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
     X_rdkit = np.array(X_rdkit)
     y_rdkit = np.array(y_rdkit)
 
-    assert np.allclose(X_skfp, X_rdkit, atol=1e-2)
+    assert np.allclose(X_skfp, X_rdkit, atol=1e-3)
     assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 12)
     assert np.issubdtype(X_skfp.dtype, np.floating)
     assert np.array_equal(y_skfp, y_rdkit)
