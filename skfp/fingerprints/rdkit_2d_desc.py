@@ -17,7 +17,8 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
 
     The implementation uses descriptastorus [1]_ and RDKit. This fingerprint consists
     of 200 2D descriptors available in RDKit (almost all). List of all features is
-    available in descriptastorus code and in the supplementary material of [2]_.
+    available in descriptastorus code and in the supplementary material of the original
+    paper[2]_.
 
     Normalized variant uses cumulative distribution function (CDF) normalization, as
     proposed in [2]_. Distributions for normalization have been determined using a
