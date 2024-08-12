@@ -25,7 +25,8 @@ from .pharmacophore import PharmacophoreFingerprint
 from .physiochemical_properties import PhysiochemicalPropertiesFingerprint
 from .pubchem import PubChemFingerprint
 from .rdf import RDFFingerprint
-from .rdk import RDKitFingerprint
+from .rdkit_2d_desc import RDKit2DDescriptorsFingerprint
+from .rdkit_fp import RDKitFingerprint
 from .secfp import SECFPFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
 from .usr import USRFingerprint
