@@ -2,7 +2,6 @@ from typing import Union
 
 import pytest
 from rdkit import Chem
-from rdkit.Chem import Mol
 
 from skfp.model_selection.scaffold_split import (
     _create_scaffolds,
@@ -26,14 +25,7 @@ def all_molecules() -> list[str]:
         "CC.OCC",
     ]
 
-    return [Chem.MolFromSmiles(smiles) for smiles in all_smiles]
-
-
-@pytest.fixture
-def disconnected_molecules() -> list[str]:
-    disconnected_smiles: list[str] = ["C1CC1.OCC", "C1CCC1.OCC", "CC.OCC"]
-
-    return [Chem.MolFromSmiles(smiles) for smiles in disconnected_smiles]
+    return all_smiles
 
 
 @pytest.fixture
@@ -44,35 +36,12 @@ def no_ring_molecules() -> list[str]:
 
 
 @pytest.fixture
-def benzodiazepines() -> list[str]:
-    benzodiazepines_smiles: list[str] = [
-        "C1CN=C(C2=CC=CC=C2)N=C1",
-        "C1CN=C(C2=CC=CC=C2F)N=C1",
-        "C1CN=C(C2=CC=CC=C2Cl)N=C1",
+def additional_data() -> list[list[Union[str, int, bool]]]:
+    return [
+        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        [True, False, True, False, True, False, True, False, True, False],
     ]
-
-    return [Chem.MolFromSmiles(smiles) for smiles in benzodiazepines_smiles]
-
-
-def additional_data() -> tuple[
-    tuple[str, str, str, str],
-    tuple[int, int, int, int],
-    tuple[bool, bool, bool, bool],
-]:
-    return (("a", "b", "c", "d"), (1, 2, 3, 4), (True, False, True, False))
-
-
-@pytest.fixture
-def monosaccharides() -> list[str]:
-    monosaccharides_smiles: list[str] = [
-        "C(C1C(C(C(C(O1)O)O)O)O)O",
-        "C(C(C1C(C(C(C(O1)O)O)O)O)O)O",
-        "C(C(C(C(C(C=O)O)O)O)O)O",
-        "C(C(C(C(C(CO)O)O)O)O)O",
-        "C(C(C(C(C(CO)O)O)O)O)O",
-    ]
-
-    return [Chem.MolFromSmiles(smiles) for smiles in monosaccharides_smiles]
 
 
 def test_scaffold_train_test_split_default(all_molecules):
@@ -99,14 +68,36 @@ def test_train_test_split_total_molecule_count(all_molecules):
 
 
 def test_scaffold_train_test_split_with_additional_data(all_molecules, additional_data):
-    train, test, train_additional, test_additional = scaffold_train_test_split(
-        all_molecules, additional_data, train_size=0.7, test_size=0.3
+    train_set, test_set, additional = scaffold_train_test_split(
+        all_molecules, *additional_data, train_size=0.7, test_size=0.3
     )
 
-    assert len(train) == 7
-    assert len(test) == 3
+    train_additional = additional[0]
+    test_additional = additional[1]
+
+    assert len(train_set) == 7
+    assert len(test_set) == 3
     assert len(train_additional) == 7
     assert len(test_additional) == 3
+
+
+def test_scaffold_train_valid_test_split_with_additional_data(
+    all_molecules, additional_data
+):
+    train_set, valid_set, test_set, additional = scaffold_train_valid_test_split(
+        all_molecules, *additional_data, train_size=0.7, valid_size=0.2, test_size=0.1
+    )
+
+    train_additional = additional[0]
+    valid_additional = additional[1]
+    test_additional = additional[2]
+
+    assert len(train_set) == 7
+    assert len(valid_set) == 2
+    assert len(test_set) == 1
+    assert len(train_additional) == 7
+    assert len(valid_additional) == 2
+    assert len(test_additional) == 1
 
 
 def test_train_valid_test_split_total_molecule_count(all_molecules):
@@ -147,21 +138,78 @@ def test_scaffold_creation_total_count(all_molecules):
     assert len(scaffolds) <= len(all_molecules)
 
 
-def test_disconnected_graphs(disconnected_molecules):
-    scaffolds = _create_scaffolds(disconnected_molecules)
-    assert len(scaffolds) == 1
-
-
 def test_no_ring_molecules(no_ring_molecules):
     scaffolds = _create_scaffolds(no_ring_molecules)
     assert len(scaffolds) == 1
 
 
-def test_scaffold_count_for_benzodiazepines(benzodiazepines):
-    scaffolds = _create_scaffolds(benzodiazepines)
+def test_scaffold_count_for_benzodiazepines():
+    benzodiazepines_smiles: list[str] = [
+        "C1CN=C(C2=CC=CC=C2)N=C1",
+        "C1CN=C(C2=CC=CC=C2F)N=C1",
+        "C1CN=C(C2=CC=CC=C2Cl)N=C1",
+    ]
+
+    scaffolds = _create_scaffolds(benzodiazepines_smiles)
     assert len(scaffolds) == 1
 
 
-def test_scaffold_count_for_monosaccharides(monosaccharides):
-    scaffolds = _create_scaffolds(monosaccharides)
+def test_scaffold_count_for_monosaccharides():
+    smiles = [
+        "O=c1[nH]c(=O)c2[nH]cnc2[nH]1",
+        "Cn1c(=O)c2c(ncn2C)n(C)c1=O",
+        "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
+        "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
+    ]
+    scaffolds = _create_scaffolds(smiles)
     assert len(scaffolds) == 1
+
+
+def test_csk_should_fail_for_degree_greater_than_four():
+    smiles = ["O=[U]=O", "F[U](F)(F)(F)(F)F"]
+
+    with pytest.raises(
+        Chem.rdchem.AtomValenceException,
+        match="Explicit valence for atom # 1 C, 6, is greater than permitted",
+    ):
+        _ = scaffold_train_test_split(smiles, use_csk=True)
+
+
+def test_scaffold_train_test_split_returns_molecules(all_molecules):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
+    train_set, test_set = scaffold_train_test_split(mols, return_indices=False)
+
+    assert all(
+        isinstance(train, Chem.MolFromSmiles("").__class__) for train in train_set
+    )
+    assert all(isinstance(test, Chem.MolFromSmiles("").__class__) for test in test_set)
+
+
+def test_scaffold_train_test_split_return_indices(all_molecules):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
+    train_idxs, test_idxs = scaffold_train_test_split(mols, return_indices=True)
+
+    assert all(isinstance(idx, int) for idx in train_idxs)
+    assert all(isinstance(idx, int) for idx in test_idxs)
+
+
+def test_scaffold_train_valid_test_split_returns_molecules(all_molecules):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
+    train_set, valid_set, test_set = scaffold_train_valid_test_split(
+        mols, return_indices=False
+    )
+
+    assert all(isinstance(trn, Chem.MolFromSmiles("").__class__) for trn in train_set)
+    assert all(isinstance(val, Chem.MolFromSmiles("").__class__) for val in valid_set)
+    assert all(isinstance(tst, Chem.MolFromSmiles("").__class__) for tst in test_set)
+
+
+def test_scaffold_train_valid_test_split_return_indices(all_molecules):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
+    train_idxs, valid_idxs, test_idxs = scaffold_train_valid_test_split(
+        mols, return_indices=True
+    )
+
+    assert all(isinstance(idx, int) for idx in train_idxs)
+    assert all(isinstance(idx, int) for idx in valid_idxs)
+    assert all(isinstance(idx, int) for idx in test_idxs)

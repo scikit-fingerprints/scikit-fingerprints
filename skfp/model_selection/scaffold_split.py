@@ -1,11 +1,9 @@
 import warnings
 from collections import defaultdict
 from collections.abc import Sequence
-from itertools import chain
 from numbers import Integral
 from typing import Any, Optional, Union
 
-import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
@@ -35,6 +33,7 @@ from skfp.utils.validators import ensure_mols
             None,
         ],
         "include_chirality": ["boolean"],
+        "use_csk": ["boolean"],
         "return_indices": ["boolean"],
     },
     prefer_skip_nested_validation=True,
@@ -45,6 +44,7 @@ def scaffold_train_test_split(
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
     include_chirality: bool = False,
+    use_csk: bool = False,
     return_indices: bool = False,
 ) -> Union[
     tuple[
@@ -61,6 +61,12 @@ def scaffold_train_test_split(
     generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
     to the time split, assuming that new molecules (test set) will be structurally different in terms of
     scaffolds from the training set.
+
+    The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
+    and the skeleton scaffold (which does not). [3]_
+    This functionality only works correctly for molecules where all atoms have a degree of 4 or less. Molecules
+    with atoms having a degree greater than 4 may be skipped because core structure scaffolds (CSKs) with carbons can't
+    handle these cases properly.
 
     This approach is known to have certain limitations. In particular, disconnected molecules or
     molecules with no rings will not get a scaffold, resulting in them being grouped together
@@ -90,6 +96,9 @@ def scaffold_train_test_split(
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
 
+    use_csk: bool, default=False
+        Whether to use molecule's skeleton or the core structure scaffold (including atom types).
+
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
@@ -113,53 +122,49 @@ def scaffold_train_test_split(
         Chemical Science, 9(2), 513-530.
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
+    .. [3] ` Bemis-Murcko scaffolds and their variants
+        https://github.com/rdkit/rdkit/discussions/6844` _
+
+
     """
     train_size, test_size = validate_train_test_sizes(train_size, test_size)
-    scaffolds = _create_scaffolds(list(data), include_chirality)
+    scaffolds = _create_scaffolds(data, include_chirality, use_csk)
     scaffold_sets = sorted(scaffolds.values(), key=len)
 
-    train_ids: list[int] = []
-    test_ids: list[int] = []
+    train_idxs: list[int] = []
+    test_idxs: list[int] = []
     desired_test_size = int(test_size * len(data))
 
     for scaffold_set in scaffold_sets:
-        if len(test_ids) < desired_test_size:
-            test_ids.extend(scaffold_set)
+        if len(test_idxs) < desired_test_size:
+            test_idxs.extend(scaffold_set)
         else:
-            train_ids.extend(scaffold_set)
+            train_idxs.extend(scaffold_set)
 
-    if not train_ids:
-        raise ValueError(
-            "Train set is empty. Adjust the train_size or check provided data."
-        )
-    if not test_ids:
-        raise ValueError(
-            "Test set is empty. Adjust the test_size or check provided data."
-        )
+    ensure_nonempty_list(train_idxs)
+    ensure_nonempty_list(test_idxs)
 
     train_subset: list[Any] = []
     test_subset: list[Any] = []
 
     if return_indices:
-        train_subset = train_ids
-        test_subset = test_ids
+        train_subset = train_idxs
+        test_subset = test_idxs
     else:
-        train_subset = get_data_from_indices(data, train_ids)
-        test_subset = get_data_from_indices(data, test_ids)
+        train_subset = get_data_from_indices(data, train_idxs)
+        test_subset = get_data_from_indices(data, test_idxs)
 
     ensure_nonempty_list(train_subset)
     ensure_nonempty_list(test_subset)
 
-    additional_data_split: list[Sequence[Any]] = []
-
-    additional_data_split = (
-        split_additional_data(list(additional_data), [train_ids, test_ids])
+    additional_data_split: list[Sequence[Any]] = (
+        split_additional_data(list(additional_data), train_idxs, test_idxs)
         if additional_data
         else []
     )
 
     if additional_data:
-        return train_subset, test_subset, *additional_data_split
+        return train_subset, test_subset, additional_data_split
     else:
         return train_subset, test_subset
 
@@ -184,6 +189,7 @@ def scaffold_train_test_split(
             None,
         ],
         "include_chirality": ["boolean"],
+        "use_csk": ["boolean"],
         "return_indices": ["boolean"],
     },
     prefer_skip_nested_validation=True,
@@ -195,6 +201,7 @@ def scaffold_train_valid_test_split(
     valid_size: Optional[float] = None,
     test_size: Optional[float] = None,
     include_chirality: bool = False,
+    use_csk: bool = False,
     return_indices: bool = False,
 ) -> Union[
     tuple[
@@ -214,6 +221,12 @@ def scaffold_train_valid_test_split(
     generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
     to the time split, assuming that new molecules (test set) will be structurally different in terms of
     scaffolds from the training set.
+
+    The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
+    and the skeleton scaffold (which does not). [3]_
+    This functionality only works correctly for molecules where all atoms have a degree of 4 or less. Molecules
+    with atoms having a degree greater than 4 may be skipped because core structure scaffolds (CSKs) with carbons can't
+    handle these cases properly.
 
     This approach is known to have certain limitations. In particular, disconnected molecules or
     molecules with no rings will not get a scaffold, resulting in them being grouped together
@@ -249,6 +262,9 @@ def scaffold_train_valid_test_split(
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
 
+    use_csk: bool, default=False
+        Whether to use molecule's skeleton or the core structure scaffold (including atom types).
+
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
@@ -272,40 +288,43 @@ def scaffold_train_valid_test_split(
         Chemical Science, 9(2), 513-530.
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
+    .. [3] ` Bemis-Murcko scaffolds and their variants
+        https://github.com/rdkit/rdkit/discussions/6844` _
+
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size
     )
 
-    scaffolds = _create_scaffolds(list(data), include_chirality)
+    scaffolds = _create_scaffolds(data, include_chirality, use_csk)
     scaffold_sets = sorted(scaffolds.values(), key=len)
 
-    train_ids: list[int] = []
+    train_idxs: list[int] = []
     valid_ids: list[int] = []
-    test_ids: list[int] = []
+    test_idxs: list[int] = []
     desired_test_size = int(test_size * len(data))
-    desired_valid_size = int((test_size + valid_size) * len(data))
+    desired_valid_size = int(valid_size * len(data))
 
     for scaffold_set in scaffold_sets:
-        if len(test_ids) < desired_test_size:
-            test_ids.extend(scaffold_set)
+        if len(test_idxs) < desired_test_size:
+            test_idxs.extend(scaffold_set)
         elif len(valid_ids) < desired_valid_size:
             valid_ids.extend(scaffold_set)
         else:
-            train_ids.extend(scaffold_set)
+            train_idxs.extend(scaffold_set)
 
     train_subset: list[Any] = []
     valid_subset: list[Any] = []
     test_subset: list[Any] = []
 
     if return_indices:
-        train_subset = train_ids
+        train_subset = train_idxs
         valid_subset = valid_ids
-        test_subset = test_ids
+        test_subset = test_idxs
     else:
-        train_subset = get_data_from_indices(data, train_ids)
+        train_subset = get_data_from_indices(data, train_idxs)
         valid_subset = get_data_from_indices(data, valid_ids)
-        test_subset = get_data_from_indices(data, test_ids)
+        test_subset = get_data_from_indices(data, test_idxs)
 
     ensure_nonempty_list(train_subset)
     ensure_nonempty_list(test_subset)
@@ -314,35 +333,39 @@ def scaffold_train_valid_test_split(
         warnings.warn(
             "Warning: Valid subset is empty. Consider using scaffold_train_test_split instead."
         )
-    additional_data_split: list[Sequence[Any]] = []
 
-    additional_data_split = (
-        split_additional_data(list(additional_data), [train_ids, valid_ids, test_ids])
+    additional_data_split: list[Sequence[Any]] = (
+        split_additional_data(list(additional_data), train_idxs, valid_ids, test_idxs)
         if additional_data
         else []
     )
 
     if additional_data:
-        return train_subset, valid_subset, test_subset, *additional_data_split
+        return train_subset, valid_subset, test_subset, additional_data_split
     else:
         return train_subset, valid_subset, test_subset
 
 
 def _create_scaffolds(
-    data: list[Union[str, Mol]], include_chirality: bool = False
+    data: Sequence[Union[str, Mol]], include_chirality: bool = False, use_csk=False
 ) -> dict[str, list]:
     """
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
-    This implementation uses Bemis-Murcko scaffolds to group molecules.
-    Each scaffold is represented as a SMILES string.
+    This function groups molecules by their Bemis-Murcko scaffold, which can be generated
+    as either the core structure scaffold (with atom types) or the skeleton scaffold
+    (without atom types). Scaffolds can optionally include chirality information.
     """
     scaffolds = defaultdict(list)
     molecules = ensure_mols(data)
 
     for idx, mol in enumerate(molecules):
-        scaffold = MurckoScaffold.MurckoScaffoldSmiles(
-            mol=mol, includeChirality=include_chirality
-        )
+        if use_csk:
+            scaffold = MurckoScaffold.MakeScaffoldGeneric(mol=mol)
+        else:
+            scaffold = MurckoScaffold.MurckoScaffoldSmiles(
+                mol=mol, includeChirality=include_chirality
+            )
+
         scaffolds[scaffold].append(idx)
 
     return scaffolds

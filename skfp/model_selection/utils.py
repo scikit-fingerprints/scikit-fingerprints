@@ -8,12 +8,12 @@ from rdkit.Chem import Mol
 from sklearn.utils import _safe_indexing
 
 
-def ensure_nonempty_list(subset: list) -> None:
+def ensure_nonempty_list(data: list) -> None:
     """
-    Check if the provided subset is empty.
+    Check if the provided list is empty.
     """
-    if len(subset) == 0:
-        raise ValueError("One of the subsets is empty.")
+    if len(data) == 0:
+        raise ValueError("Provided list is empty.")
 
 
 def validate_train_test_sizes(
@@ -31,6 +31,10 @@ def validate_train_test_sizes(
             raise ValueError("test_size must be provided when train_size is None")
     elif test_size is None:
         test_size = 1 - train_size
+
+    if not np.isclose(test_size + train_size, 1.0):
+        raise ValueError("train_size and test_size must sum to 1.0")
+
     return train_size, test_size
 
 
@@ -44,11 +48,12 @@ def get_data_from_indices(
 
 
 def split_additional_data(
-    additional_data: list[Sequence[Any]], *indices_lists: list[list[int]]
+    additional_data: list[Sequence[Any]], *indices_lists: list[int]
 ) -> list[Sequence[Any]]:
     """
     Split additional data based on indices lists.
     """
+    # This method causes some issues
     return list(
         chain.from_iterable(
             (_safe_indexing(a, indices),)

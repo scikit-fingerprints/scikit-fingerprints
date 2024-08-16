@@ -12,3 +12,5 @@ benchmarking/**/*.npy
 
 docs/modules/generated/
 docs/_build/
+
+.tmp_coverage_files/

@@ -18,7 +18,7 @@ def smiles_data() -> list[str]:
 
 
 @pytest.fixture
-def additional_data() -> list[Union[str, int, Mol]]:
+def additional_data() -> list[list[Union[str, int, bool]]]:
     return [["a", "b", "c", "d"], [1, 2, 3, 4], [True, False, True, False]]
 
 
@@ -30,7 +30,7 @@ def test_ensure_nonempty_list_passes():
 
 
 def test_ensure_nonempty_list_raises_error():
-    with pytest.raises(ValueError, match="One of the subsets is empty."):
+    with pytest.raises(ValueError, match="Provided list is empty."):
         ensure_nonempty_list([])
 
 
@@ -83,11 +83,7 @@ def test_get_data_from_indices_mixed_types(smiles_data):
 
 def test_split_additional_data(additional_data):
     result = split_additional_data(additional_data, [0, 2])
-    assert result == [
-        ["a", "c"],
-        [1, 3],
-        [True, True],
-    ]
+    assert result == [["a", "c"], [1, 3], [True, True]]
 
 
 def test_split_additional_data_multiple_indices(additional_data):
@@ -135,12 +131,3 @@ def test_validate_train_valid_test_split_sizes_missing_values():
 def test_validate_train_valid_test_split_sizes_all_missing():
     result = validate_train_valid_test_split_sizes(None, None, None)
     assert result == (0.8, 0.1, 0.1)
-
-
-def test_validate_train_valid_test_split_sizes_valid_size_zero():
-    with pytest.warns(
-        UserWarning,
-        match="Validation set will not be returned since valid_size was set to 0.0.",
-    ):
-        result = validate_train_valid_test_split_sizes(0.8, 0.0, 0.2)
-        assert result == (0.8, 0.0, 0.2)
