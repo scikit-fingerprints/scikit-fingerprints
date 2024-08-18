@@ -178,11 +178,12 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         X = ensure_mols(X)
 
         gen = GetRDKitFPGenerator(
+            fpSize=self.fp_size,
             minPath=self.min_path,
             maxPath=self.max_path,
             useBondOrder=self.use_bond_order,
-            fpSize=self.fp_size,
             numBitsPerFeature=self.num_bits_per_feature,
+            branchedPaths=not self.linear_paths_only,
             countSimulation=self.count_simulation,
         )
 
