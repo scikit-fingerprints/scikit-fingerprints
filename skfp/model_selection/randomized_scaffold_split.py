@@ -131,8 +131,8 @@ def randomized_scaffold_train_test_split(
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
     rng = (
         random_state
-        if isinstance(random_state, random.Random)
-        else random.Random(random_state)
+        if isinstance(random_state, RandomState)
+        else RandomState(random_state)
     )
 
     scaffold_sets = list(scaffolds.values())
@@ -298,8 +298,8 @@ def randomized_scaffold_train_valid_test_split(
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
     rng = (
         random_state
-        if isinstance(random_state, random.Random)
-        else random.Random(random_state)
+        if isinstance(random_state, RandomState)
+        else RandomState(random_state)
     )
 
     scaffold_sets = list(scaffolds.values())
