@@ -23,10 +23,7 @@ def additional_data() -> list[list[Union[str, int, bool]]]:
 
 
 def test_ensure_nonempty_list_passes():
-    try:
-        ensure_nonempty_list([1, 2, 3])
-    except ValueError as e:
-        pytest.fail(f"Unexpected error: {e}")
+    ensure_nonempty_list([1, 2, 3])
 
 
 def test_ensure_nonempty_list_raises_error():

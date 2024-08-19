@@ -1,9 +1,11 @@
+import random
 import warnings
 from collections import defaultdict
 from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
 
+from numpy.random.mtrand import RandomState
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
@@ -32,35 +34,29 @@ from skfp.utils.validators import ensure_mols
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
+        "random_state": [int, RandomState],
         "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
     },
     prefer_skip_nested_validation=True,
 )
-def scaffold_train_test_split(
+def randomized_scaffold_train_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
+    random_state: Union[int, RandomState],
     include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int]],
-]:
+):
     """
     Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
 
-    This function ensures that similar molecules (sharing the same scaffold) are in the same split.
-    This method, suggested in the MoleculeNet [2]_ paper, helps to test the model's ability to
-    generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
-    to the time split, assuming that new molecules (test set) will be structurally different in terms of
-    scaffolds from the training set.
+    This function randomizes molecules within a split split. This method, suggested in the MoleculeNet [2]_ paper,
+    helps to test the model's ability to generalize to entirely new scaffolds. MoleculeNet introduced
+    the scaffold split as an approximation to the time split.
 
     The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
     and the skeleton scaffold (which does not). [3]_
@@ -72,8 +68,8 @@ def scaffold_train_test_split(
     molecules with no rings will not get a scaffold, resulting in them being grouped together
     regardless of their structure.
 
-    The split is fully deterministic, with the smallest scaffold sets assigned to the test
-    subset and the rest to the training subset.
+    This variant is non-deterministic; the scaffolds are randomly shuffled before being assigned to subsets,
+    with the scaffold sets assigned firstly to the test subset and the rest to the training subset.
 
     The split fractions (train_size, test_size) must sum to 1.
 
@@ -82,16 +78,21 @@ def scaffold_train_test_split(
     data : sequence
         Sequence representing either SMILES strings or RDKit `Mol` objects.
 
-    additional_data: list[sequence]
+    additional_data: sequence
         Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
 
     train_size : float, default=None
-        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size.
-        If test_size is also None, it will be set to 0.8.
+        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size - valid_size.
+        If valid_size is not provided, train_size is set to 1 - test_size. If train_size, test_size and
+        valid_size aren't set, train_size is set to 0.8.
 
     test_size : float, default=None
-        The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
-        If train_size is also None, it will be set to 0.2.
+        The fraction of data to be used for the validation subset. If None, it is set to 1 - train_size - valid_size.
+        If valid_size is not provided, test_size is set to 1 - train_size. If train_size, test_size and
+        valid_size aren't set, test_size is set to 0.1.
+
+    random_state: int or numpy.Random
+        Seed for random number generator or random state that would be used for shuffling the scaffolds.
 
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
@@ -125,11 +126,17 @@ def scaffold_train_test_split(
     .. [3] ` Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844` _
 
-
     """
     train_size, test_size = validate_train_test_sizes(train_size, test_size)
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
-    scaffold_sets = sorted(scaffolds.values(), key=len)
+    rng = (
+        random_state
+        if isinstance(random_state, random.Random)
+        else random.Random(random_state)
+    )
+
+    scaffold_sets = list(scaffolds.values())
+    rng.shuffle(scaffold_sets)
 
     train_idxs: list[int] = []
     test_idxs: list[int] = []
@@ -185,39 +192,30 @@ def scaffold_train_test_split(
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
+        "random_state": [int, RandomState],
         "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
     },
     prefer_skip_nested_validation=True,
 )
-def scaffold_train_valid_test_split(
+def randomized_scaffold_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
     valid_size: Optional[float] = None,
     test_size: Optional[float] = None,
+    random_state: Union[int, RandomState],
     include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
-        Sequence[Sequence[Any]],
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int], Sequence[int]],
-]:
+):
     """
     Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
 
-    This function ensures that similar molecules (sharing the same scaffold) are in the same split.
-    This method, suggested in the MoleculeNet [2]_ paper, helps to test the model's ability to
-    generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
-    to the time split, assuming that new molecules (test set) will be structurally different in terms of
-    scaffolds from the training set.
+    This function randomizes molecules within a split split. This method, suggested in the MoleculeNet [2]_ paper,
+    helps to test the model's ability to generalize to entirely new scaffolds. MoleculeNet introduced
+    the scaffold split as an approximation to the time split.
 
     The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
     and the skeleton scaffold (which does not). [3]_
@@ -229,8 +227,9 @@ def scaffold_train_valid_test_split(
     molecules with no rings will not get a scaffold, resulting in them being grouped together
     regardless of their structure.
 
-    The split is fully deterministic, with the smallest scaffold sets assigned to the test
-    subset and the rest to the training subset.
+    This variant is non-deterministic; the scaffolds are randomly shuffled before being assigned to subsets,
+    with the scaffold sets assigned firstly to the test subset, then to the validation subset,
+    and the rest to the training subset.
 
     The split fractions (train_size, test_size) must sum to 1.
 
@@ -255,6 +254,9 @@ def scaffold_train_valid_test_split(
         The fraction of data to be used for the validation subset. If None, it is set to 1 - train_size - valid_size.
         If valid_size is not provided, test_size is set to 1 - train_size. If train_size, test_size and
         valid_size aren't set, test_size is set to 0.1.
+
+    random_state: int or numpy.Random
+        Seed for random number generator or random state that would be used for shuffling the scaffolds.
 
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
@@ -294,7 +296,14 @@ def scaffold_train_valid_test_split(
     )
 
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
-    scaffold_sets = sorted(scaffolds.values(), key=len)
+    rng = (
+        random_state
+        if isinstance(random_state, random.Random)
+        else random.Random(random_state)
+    )
+
+    scaffold_sets = list(scaffolds.values())
+    rng.shuffle(scaffold_sets)
 
     train_idxs: list[int] = []
     valid_idxs: list[int] = []
@@ -341,9 +350,7 @@ def scaffold_train_valid_test_split(
 
 
 def _create_scaffolds(
-    data: Sequence[Union[str, Mol]],
-    include_chirality: bool = False,
-    use_csk: bool = False,
+    data: Sequence[Union[str, Mol]], include_chirality: bool = False, use_csk=False
 ) -> dict[str, list]:
     """
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.

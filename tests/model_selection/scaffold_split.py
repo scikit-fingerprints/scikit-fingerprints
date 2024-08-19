@@ -2,6 +2,7 @@ from typing import Union
 
 import pytest
 from rdkit import Chem
+from rdkit.Chem import Mol
 
 from skfp.model_selection.scaffold_split import (
     _create_scaffolds,
@@ -26,13 +27,6 @@ def all_molecules() -> list[str]:
     ]
 
     return all_smiles
-
-
-@pytest.fixture
-def no_ring_molecules() -> list[str]:
-    no_ring_smiles: list[str] = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
-
-    return [Chem.MolFromSmiles(smiles) for smiles in no_ring_smiles]
 
 
 @pytest.fixture
@@ -138,30 +132,31 @@ def test_scaffold_creation_total_count(all_molecules):
     assert len(scaffolds) <= len(all_molecules)
 
 
-def test_no_ring_molecules(no_ring_molecules):
-    scaffolds = _create_scaffolds(no_ring_molecules)
+def test_no_ring_molecules():
+    smiles_list: list[str] = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
+    scaffolds = _create_scaffolds(smiles_list)
     assert len(scaffolds) == 1
 
 
 def test_scaffold_count_for_benzodiazepines():
-    benzodiazepines_smiles: list[str] = [
+    smiles_list: list[str] = [
         "C1CN=C(C2=CC=CC=C2)N=C1",
         "C1CN=C(C2=CC=CC=C2F)N=C1",
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",
     ]
 
-    scaffolds = _create_scaffolds(benzodiazepines_smiles)
+    scaffolds = _create_scaffolds(smiles_list)
     assert len(scaffolds) == 1
 
 
 def test_scaffold_count_for_monosaccharides():
-    smiles = [
+    smiles_list = [
         "O=c1[nH]c(=O)c2[nH]cnc2[nH]1",
         "Cn1c(=O)c2c(ncn2C)n(C)c1=O",
         "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
         "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
     ]
-    scaffolds = _create_scaffolds(smiles)
+    scaffolds = _create_scaffolds(smiles_list)
     assert len(scaffolds) == 1
 
 
@@ -179,10 +174,8 @@ def test_scaffold_train_test_split_returns_molecules(all_molecules):
     mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
     train_set, test_set = scaffold_train_test_split(mols, return_indices=False)
 
-    assert all(
-        isinstance(train, Chem.MolFromSmiles("").__class__) for train in train_set
-    )
-    assert all(isinstance(test, Chem.MolFromSmiles("").__class__) for test in test_set)
+    assert all(isinstance(train, Mol) for train in train_set)
+    assert all(isinstance(test, Mol) for test in test_set)
 
 
 def test_scaffold_train_test_split_return_indices(all_molecules):
@@ -199,9 +192,9 @@ def test_scaffold_train_valid_test_split_returns_molecules(all_molecules):
         mols, return_indices=False
     )
 
-    assert all(isinstance(trn, Chem.MolFromSmiles("").__class__) for trn in train_set)
-    assert all(isinstance(val, Chem.MolFromSmiles("").__class__) for val in valid_set)
-    assert all(isinstance(tst, Chem.MolFromSmiles("").__class__) for tst in test_set)
+    assert all(isinstance(train, Mol) for train in train_set)
+    assert all(isinstance(valid, Mol) for valid in valid_set)
+    assert all(isinstance(test, Mol) for test in test_set)
 
 
 def test_scaffold_train_valid_test_split_return_indices(all_molecules):

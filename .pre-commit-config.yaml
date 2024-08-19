@@ -8,6 +8,8 @@ repos:
         args:
           - -s
           - B101
+          - --skip
+          - B311
 
   - repo: https://github.com/psf/black
     rev: 24.4.2
