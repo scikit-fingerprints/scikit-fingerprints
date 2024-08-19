@@ -88,6 +88,10 @@ files in the `docs/_build/html` directory.
 
 To view the documentation, open the `docs/_build/html/index.html` file in your browser.
 
+### Releasing
+To release scikit-fingerprints open a GitHub release with tag named 'vA.B.C'
+where each letter stands for version number. Fill the release notes and submit the release. Then, the version will be automatically sourced from tag by GH action and released to PyPI.
+
 ### Code of Conduct
 
 By participating in this project, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md). We take violations seriously and may take
