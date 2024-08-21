@@ -6,7 +6,7 @@ repos:
         # turn off assert errors for tests
         exclude: ^tests/
         args:
-          - -s
+          - --skip
           - B101
           - --skip
           - B311
