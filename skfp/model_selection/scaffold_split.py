@@ -63,10 +63,9 @@ def scaffold_train_test_split(
     scaffolds from the training set.
 
     The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not). [3]_
-    This functionality only works correctly for molecules where all atoms have a degree of 4 or less. Molecules
-    with atoms having a degree greater than 4 raise an error because core structure scaffolds (CSKs) with carbons can't
-    handle these cases properly.
+    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
+    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
+    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
 
     This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
     resulting in them being grouped together regardless of their structure.
@@ -217,10 +216,9 @@ def scaffold_train_valid_test_split(
     scaffolds from the training set.
 
     The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not). [3]_
-    This functionality only works correctly for molecules where all atoms have a degree of 4 or less. Molecules
-    with atoms having a degree greater than 4 raise an error because core structure scaffolds (CSKs) with carbons can't
-    handle these cases properly.
+    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
+    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
+    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
 
     This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
     resulting in them being grouped together regardless of their structure.

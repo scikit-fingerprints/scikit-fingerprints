@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
 
-import numpy as np
+from numpy.random import Generator, RandomState, default_rng
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
@@ -36,7 +36,7 @@ from skfp.utils.validators import ensure_mols
         "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
-        "random_state": [int, np.random.RandomState],
+        "random_state": ["random_state"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -48,8 +48,9 @@ def randomized_scaffold_train_test_split(
     include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
-    random_state: Optional[Union[int, np.random.RandomState]] = None,
+    random_state: Optional[Union[int, RandomState, Generator]] = None,
 ):
+    # flake8: noqa: E501
     """
     Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
 
@@ -58,10 +59,9 @@ def randomized_scaffold_train_test_split(
     the scaffold split as an approximation to the time split.
 
     The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not). [3]_
-    This functionality only works correctly for molecules where all atoms have a degree of 4 or less. Molecules
-    with atoms having a degree greater than 4 raise an error because core structure scaffolds (CSKs) with carbons can't
-    handle these cases properly.
+    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
+    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
+    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
 
     This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
     resulting in them being grouped together regardless of their structure.
@@ -126,15 +126,16 @@ def randomized_scaffold_train_test_split(
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://arxiv.org/abs/2207.06010` _
+        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html` _
 
     """
+    # flake8: noqa: E501
     train_size, test_size = validate_train_test_sizes(train_size, test_size)
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
     rng = (
         random_state
-        if isinstance(random_state, np.random.RandomState)
-        else np.random.default_rng(random_state)
+        if isinstance(random_state, RandomState)
+        else default_rng(random_state)
     )
 
     scaffold_sets = list(scaffolds.values())
@@ -197,7 +198,7 @@ def randomized_scaffold_train_test_split(
         "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
-        "random_state": [int, np.random.RandomState],
+        "random_state": ["random_state"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -210,7 +211,7 @@ def randomized_scaffold_train_valid_test_split(
     include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
-    random_state: Optional[Union[int, np.random.RandomState]] = None,
+    random_state: Optional[Union[int, RandomState, Generator]] = None,
 ):
     """
     Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
@@ -220,10 +221,9 @@ def randomized_scaffold_train_valid_test_split(
     the scaffold split as an approximation to the time split.
 
     The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not). [3]_
-    This functionality only works correctly for molecules where all atoms have a degree of 4 or less. Molecules
-    with atoms having a degree greater than 4 raise an error because core structure scaffolds (CSKs) with carbons can't
-    handle these cases properly.
+    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
+    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
+    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
 
     This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
     resulting in them being grouped together regardless of their structure.
@@ -294,7 +294,7 @@ def randomized_scaffold_train_valid_test_split(
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://arxiv.org/abs/2207.06010` _
+        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html` _
 
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
@@ -304,8 +304,8 @@ def randomized_scaffold_train_valid_test_split(
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
     rng = (
         random_state
-        if isinstance(random_state, np.random.RandomState)
-        else np.random.default_rng(random_state)
+        if isinstance(random_state, RandomState)
+        else default_rng(random_state)
     )
 
     scaffold_sets = list(scaffolds.values())
