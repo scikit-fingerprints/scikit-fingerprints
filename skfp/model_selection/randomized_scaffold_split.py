@@ -4,7 +4,8 @@ from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
 
-from numpy.random import Generator, RandomState, default_rng
+import numpy as np
+from numpy.random import Generator, RandomState
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
@@ -135,7 +136,7 @@ def randomized_scaffold_train_test_split(
     rng = (
         random_state
         if isinstance(random_state, RandomState)
-        else default_rng(random_state)
+        else np.random.default_rng(random_state)
     )
 
     scaffold_sets = list(scaffolds.values())
@@ -305,7 +306,7 @@ def randomized_scaffold_train_valid_test_split(
     rng = (
         random_state
         if isinstance(random_state, RandomState)
-        else default_rng(random_state)
+        else np.random.default_rng(random_state)
     )
 
     scaffold_sets = list(scaffolds.values())
