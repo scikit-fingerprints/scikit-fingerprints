@@ -149,7 +149,7 @@ def test_scaffold_count_for_benzodiazepines():
     assert len(scaffolds) == 1
 
 
-def test_scaffold_count_for_monosaccharides():
+def test_scaffold_count_for_xanthines():
     smiles_list = [
         "O=c1[nH]c(=O)c2[nH]cnc2[nH]1",
         "Cn1c(=O)c2c(ncn2C)n(C)c1=O",
