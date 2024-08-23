@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from typing import Optional, Union
 
 import numpy as np
-from rdkit.Chem import Mol
+from rdkit.Chem import Mol, MolFromSmarts
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
@@ -79,23 +79,30 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
             random_state=random_state,
         )
-        self.patterns = patterns
+        self.patterns = self._compile_smarts_patterns(patterns)
 
-    def _validate_params(self) -> None:
-        from rdkit.Chem import MolFromSmarts
-
-        super()._validate_params()
-        if not all(isinstance(pattern, str) for pattern in self.patterns):
+    def _compile_smarts_patterns(self, patterns: Sequence[str]) -> list[Mol]:
+        # we have to perform validation manually, since we want to compile SMARTS
+        # patterns in constructor, and this happens before scikit-learn calls
+        # parameter validation
+        if not all(isinstance(pattern, str) for pattern in patterns):
             raise InvalidParameterError(
                 "The 'patterns' parameter must be a sequence of SMARTS patterns."
             )
-        if not self.patterns:
+        if not patterns:
             raise InvalidParameterError(
                 "The 'patterns' parameter must be a non-empty list of SMARTS patterns."
             )
-        for pattern in self.patterns:
-            if not MolFromSmarts(pattern):
+
+        compiled_patterns = []
+        for pattern in patterns:
+            pattern_mol = MolFromSmarts(pattern)
+            if not pattern_mol:
                 raise InvalidParameterError(f"Got invalid SMARTS pattern: '{pattern}'")
+            else:
+                compiled_patterns.append(pattern_mol)
+
+        return compiled_patterns
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
@@ -123,13 +130,11 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem import MolFromSmarts
-
         X = ensure_mols(X)
 
-        patterns = [MolFromSmarts(smarts) for smarts in self.patterns]
         X = [
-            [len(mol.GetSubstructMatches(pattern)) for pattern in patterns] for mol in X
+            [len(mol.GetSubstructMatches(pattern)) for pattern in self.patterns]
+            for mol in X
         ]
         X = np.array(X, dtype=np.uint32)
 
