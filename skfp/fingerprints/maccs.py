@@ -89,7 +89,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-        n_features_out = 159 if count else 167
+        n_features_out = 159 if count else 166
         super().__init__(
             n_features_out=n_features_out,
             count=count,
@@ -110,6 +110,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             X = [self._get_maccs_patterns_counts(mol) for mol in X]
         else:
             X = [GetMACCSKeysFingerprint(mol) for mol in X]
+            X = np.array(X)[:, 1:]  # remove constant zeros column
 
         dtype = np.uint32 if self.count else np.uint8
         return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)
