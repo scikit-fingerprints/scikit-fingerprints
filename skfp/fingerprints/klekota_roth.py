@@ -12,8 +12,9 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
     """
     Klekota-Roth Fingerprint
 
-    A substructure fingerprint based on [1]_. Tests for presence of 4860 predefined
-    substructures which are predisposed for bioactivity.
+    A substructure fingerprint based on [1]_, with implementation based on CDK [2]_.
+    Tests for presence of 4860 predefined substructures which are predisposed for
+    bioactivity.
 
     Parameters
     ----------
@@ -50,6 +51,9 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         “Chemical substructures that enrich for biological activity.”
         Bioinformatics (Oxford, England) vol. 24,21 (2008): 2518-25.
         <https://pubmed.ncbi.nlm.nih.gov/18784118/>`_
+
+    .. [2] `Chemistry Development Kit (CDK) KlekotaRothFingerprinter
+        <https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/KlekotaRothFingerprinter.html>`_
 
     Examples
     --------

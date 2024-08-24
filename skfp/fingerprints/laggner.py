@@ -6,7 +6,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseSubstructureFingerprint
-from skfp.utils import ensure_smiles
+from skfp.utils import ensure_mols
 
 
 class LaggnerFingerprint(BaseSubstructureFingerprint):
@@ -432,20 +432,20 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        # temporarily use dense array, setting bits on CSR array is slow
-        sparse = self.sparse
-        try:
-            self.sparse = False
-            fps = super()._calculate_fingerprint(X)
-        finally:
-            self.sparse = sparse
+        from rdkit.Chem import GetMolFrags
 
-        smiles_list = ensure_smiles(X)
+        X = ensure_mols(X)
+        fps = super()._calculate_fingerprint(X)
 
-        for idx, smiles in enumerate(smiles_list):
+        # temporarily convert to dictionary-of-keys (DOK) format to set bits
+        # for set  cation and salt features (setting bits on CSR array is slow)
+        if self.sparse:
+            fps = fps.todok()
+
+        for idx, mol in enumerate(X):
             # salt = at least two components, has anion and cation
             # this can only be 0 or 1
-            multi_component = "." in smiles
+            multi_component = len(GetMolFrags(mol)) > 1
             anion = fps[idx, 297]
             cation = fps[idx, 298]
             salt = multi_component & anion & cation
