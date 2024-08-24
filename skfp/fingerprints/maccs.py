@@ -17,10 +17,11 @@ class MACCSFingerprint(BaseFingerprintTransformer):
     publicly available MDL definitions, and refined by Gregory Landrum for RDKit [1]_.
     Note that full public definitions are not available, and packages differ [2]_.
 
-    Only 165 out of 167 bits are used. 0th bit is always zero, to keep 1-based
-    indexing. 1st bit is also always zero, since it means "ISOTOPE", not supported
-    by RDKit. Consider removing them before to further processing, e.g. using
-    ``VarianceThreshold``.
+    Results differ slightly from RDKit, because it adds an artificial 0th feature with
+    all zeros, to simulate 1-based indexing [3]_. We use exactly 166 features, removing
+    said constant feature. First feature is also always zero, since it means "ISOTOPE",
+    not supported by RDKit. Consider removing them before to further processing, e.g.
+    using ``VarianceThreshold``.
 
     Count variant is an original one. It counts substructures instead of only checking
     for their existence. It also has fewer features, because RDKit MACCS has separate
@@ -50,8 +51,8 @@ class MACCSFingerprint(BaseFingerprintTransformer):
 
     Attributes
     ----------
-    n_features_out : int = 167 or 159.
-        Number of output features, size of fingerprints. Equal to 167 for the bit
+    n_features_out : int = 166 or 159.
+        Number of output features, size of fingerprints. Equal to 166 for the bit
         variant, and 159 for count.
 
     requires_conformers : bool = False
@@ -65,6 +66,9 @@ class MACCSFingerprint(BaseFingerprintTransformer):
     .. [2] `Andrew Dalke
         "MACCS key 44"
         <http://www.dalkescientific.com/writings/diary/archive/2014/10/17/maccs_key_44.html>`_
+
+    .. [3] RDKit MACCS 167 features discussion
+        https://github.com/rdkit/rdkit/issues/1726
 
     Examples
     --------
