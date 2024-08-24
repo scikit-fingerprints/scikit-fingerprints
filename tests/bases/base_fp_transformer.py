@@ -1,5 +1,12 @@
 import numpy as np
 import pytest
+from rdkit.DataStructs import (
+    IntSparseIntVect,
+    LongSparseIntVect,
+    SparseBitVect,
+    UIntSparseIntVect,
+    ULongSparseIntVect,
+)
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
@@ -30,7 +37,23 @@ def test_base_invalid_params(smiles_list):
         maccs_fp.transform(smiles_list)
 
 
-def test_base_hash_fingerprint_bits():
+def test_base_hash_fingerprint_bits_right_types():
+    # those types just should not raise any errors
+    for fp_type in [
+        IntSparseIntVect,
+        LongSparseIntVect,
+        SparseBitVect,
+        UIntSparseIntVect,
+        ULongSparseIntVect,
+    ]:
+        fp = fp_type(10)
+        fp[0] = 1
+        BaseFingerprintTransformer._hash_fingerprint_bits(
+            [fp], fp_size=5, count=False, sparse=False
+        )
+
+
+def test_base_hash_fingerprint_bits_wrong_type():
     X = [1, 2, 3, 4]
     with pytest.raises(ValueError) as exc_info:
         BaseFingerprintTransformer._hash_fingerprint_bits(

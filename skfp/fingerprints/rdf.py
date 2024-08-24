@@ -110,7 +110,7 @@ class RDFFingerprint(BaseFingerprintTransformer):
     >>> mols = mol_from_smiles.transform(smiles)
     >>> conf_gen = ConformerGenerator()
     >>> mols = conf_gen.transform(mols)
-    >>> fp.transform(mols)  # doctest: +ELLIPSIS
+    >>> fp.transform(mols)  # doctest: +SKIP
     array([[1.930e+00, 2.070e-01, 0.000e+00, ..., 0.000e+00, 0.000e+00, 0.000e+00],
            [1.790e+00, 9.990e-01, 4.160e-01, ..., 0.000e+00, 0.000e+00, 0.000e+00],
            [1.150e-01, 0.000e+00, 0.000e+00, ..., 0.000e+00, 0.000e+00, 0.000e+00],

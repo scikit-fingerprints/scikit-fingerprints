@@ -165,9 +165,9 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         super()._validate_params()
         if self.max_path < self.min_path:
             raise InvalidParameterError(
-                f"The max_distance parameter of {self.__class__.__name__} must be "
-                f"greater or equal to min_distance, got: "
-                f"min_distance={self.min_path}, max_distance={self.max_path}"
+                f"The max_path parameter of {self.__class__.__name__} must be "
+                f"greater or equal to min_path, got: "
+                f"min_path={self.min_path}, max_path={self.max_path}"
             )
 
     def _calculate_fingerprint(
@@ -178,11 +178,12 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         X = ensure_mols(X)
 
         gen = GetRDKitFPGenerator(
+            fpSize=self.fp_size,
             minPath=self.min_path,
             maxPath=self.max_path,
             useBondOrder=self.use_bond_order,
-            fpSize=self.fp_size,
             numBitsPerFeature=self.num_bits_per_feature,
+            branchedPaths=not self.linear_paths_only,
             countSimulation=self.count_simulation,
         )
 
