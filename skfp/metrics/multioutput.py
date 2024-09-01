@@ -17,6 +17,8 @@ from sklearn.metrics import (
 )
 from sklearn.utils._param_validation import validate_params
 
+from skfp.metrics.spearman import spearman_correlation
+
 
 @validate_params(
     {
@@ -712,6 +714,62 @@ def multioutput_root_mean_squared_error(
     """
     return _safe_multioutput_metric(
         root_mean_squared_error, y_true, y_pred, *args, **kwargs
+    )
+
+
+@validate_params(
+    {
+        "y_true": ["array-like"],
+        "y_pred": ["array-like"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def multioutput_spearman_correlation(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    *args,
+    **kwargs,
+) -> float:
+    """
+    Spearman correlation for multioutput problems.
+
+    Returns the average value over all tasks. Missing values in target labels are
+    ignored. Also supports single-task evaluation.
+
+    Any additional arguments are passed to the underlying `spearman_correlation` function,
+    see :func:`spearman_correlation` for more information.
+
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Ground truth (correct) target values.
+
+    y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
+        Estimated target values.
+
+    *args, **kwargs
+        Any additional parameters for the underlying scikit-learn metric function.
+
+    Returns
+    -------
+    score : float
+        Average Spearman correlation value over all tasks.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import multioutput_spearman_correlation
+    >>> y_true = np.array([[1, 1], [2, 2], [3, 3], [4, 4]])
+    >>> y_pred = np.array([[1, 4], [2, 3], [3, 2], [4, 1]])
+    >>> multioutput_spearman_correlation(y_true, y_pred)
+    0.0
+    >>> y_true = np.array([[1, 1], [np.nan, 2], [2, np.nan], [3, 3]])
+    >>> y_pred = np.array([[1, 1], [0, 3], [3, 0], [4, 2]])
+    >>> spearman_correlation(y_true, y_pred)
+    0.75
+    """
+    return _safe_multioutput_metric(
+        spearman_correlation, y_true, y_pred, *args, **kwargs
     )
 
 
