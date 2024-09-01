@@ -19,6 +19,7 @@ def spearman_correlation(
     *,
     alternative: str = "two-sided",
     return_p_value: bool = False,
+    equal_values_result: float = 1.0,
 ) -> float:
     """
     Spearman correlation.
@@ -26,6 +27,10 @@ def spearman_correlation(
     Calculates Spearman's rank correlation coefficient (rho). It is a nonparametric
     measure of rank correlation. High value means that values of two variables change
     with monotonic relationship.
+
+    For constant inputs, i.e. exactly the same `y_true` and `y_pred`, 1.0 is returned.
+    This differs from SciPy behavior, which returns NaN in that situation. This can be
+    controlled with `equal_values_result` parameter.
 
     Mainly intended for use as quality metric, where higher correlation between model
     prediction and ground truth is better. Can also be used for general correlation
@@ -45,6 +50,10 @@ def spearman_correlation(
 
     return_p_value : bool, default=False
         Whether to return p-value instead of correlation value.
+
+    equal_values_result : float, default=1.0
+        What value to return if `y_true` and `y_pred` are equal. This overrides the
+        `return_p_value` parameter if necessary.
 
     Returns
     -------
@@ -68,6 +77,9 @@ def spearman_correlation(
     y_type, y_true, y_pred, multioutput = _check_reg_targets(
         y_true, y_pred, multioutput=None
     )
+
+    if np.all(np.isclose(y_true, y_pred)):
+        return equal_values_result
 
     result = spearmanr(y_true, y_pred, alternative=alternative)
     return result.pvalue if return_p_value else result.statistic
