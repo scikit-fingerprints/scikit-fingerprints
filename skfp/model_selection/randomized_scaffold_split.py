@@ -340,12 +340,11 @@ def randomized_scaffold_train_valid_test_split(
         test_subset = get_data_from_indices(data, test_idxs)
 
     ensure_nonempty_list(train_subset)
+    ensure_nonempty_list(valid_subset)
     ensure_nonempty_list(test_subset)
 
-    if len(valid_subset) == 0:
-        warnings.warn(
-            "Warning: Valid subset is empty. Consider using scaffold_train_test_split instead."
-        )
+    if len(train_subset) == 0:
+        raise ValueError("train_subset is empty")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
