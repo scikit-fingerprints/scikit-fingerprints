@@ -206,3 +206,23 @@ def test_scaffold_train_valid_test_split_return_indices(all_molecules):
     assert all(isinstance(idx, int) for idx in train_idxs)
     assert all(isinstance(idx, int) for idx in valid_idxs)
     assert all(isinstance(idx, int) for idx in test_idxs)
+
+
+def test_empty_train_subset_raises_an_error_train_test():
+    smiles_list = ["CCC"]
+
+    with pytest.raises(
+        ValueError,
+        match="Train subset is empty.",
+    ):
+        _ = scaffold_train_test_split(smiles_list, use_csk=True)
+
+
+def test_empty_train_subset_raises_an_error_train_valid_test():
+    smiles_list = ["CCC", "Cn1c(=O)c2[nH]cnc2n(C)c1=O"]
+
+    with pytest.raises(
+        ValueError,
+        match="Train subset is empty.",
+    ):
+        _ = scaffold_train_valid_test_split(smiles_list, use_csk=True)

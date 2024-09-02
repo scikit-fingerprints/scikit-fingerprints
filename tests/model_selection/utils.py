@@ -4,7 +4,7 @@ import pytest
 from rdkit.Chem import Mol
 
 from skfp.model_selection.utils import (
-    ensure_nonempty_list,
+    ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
     validate_train_test_sizes,
@@ -22,13 +22,13 @@ def additional_data() -> list[list[Union[str, int, bool]]]:
     return [["a", "b", "c", "d"], [1, 2, 3, 4], [True, False, True, False]]
 
 
-def test_ensure_nonempty_list_passes():
-    ensure_nonempty_list([1, 2, 3])
+def test_ensure_nonempty_subset_passes():
+    ensure_nonempty_subset([1, 2, 3], "Test")
 
 
-def test_ensure_nonempty_list_raises_error():
-    with pytest.raises(ValueError, match="Provided list is empty."):
-        ensure_nonempty_list([])
+def test_ensure_nonempty_subset_raises_error():
+    with pytest.raises(ValueError, match="Train subset is empty."):
+        ensure_nonempty_subset([], "Train")
 
 
 def test_validate_train_test_sizes_both_provided():

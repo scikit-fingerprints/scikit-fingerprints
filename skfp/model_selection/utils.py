@@ -8,12 +8,12 @@ from rdkit.Chem import Mol
 from sklearn.utils import _safe_indexing
 
 
-def ensure_nonempty_list(data: list) -> None:
+def ensure_nonempty_subset(data: list, subset: str) -> None:
     """
     Check if the provided list is empty.
     """
     if len(data) == 0:
-        raise ValueError("Provided list is empty.")
+        raise ValueError(f"{subset} subset is empty.")
 
 
 def validate_train_test_sizes(
@@ -32,7 +32,7 @@ def validate_train_test_sizes(
     elif test_size is None:
         test_size = 1 - train_size
 
-    if not np.isclose(test_size + train_size, 1.0):
+    if not np.isclose(float(test_size) + float(train_size), 1.0):
         raise ValueError("train_size and test_size must sum to 1.0")
 
     return train_size, test_size
@@ -85,7 +85,7 @@ def validate_train_valid_test_split_sizes(
             "Consider using train_test_split instead."
         )
 
-    if not np.isclose(train_size + valid_size + test_size, 1.0):
+    if not np.isclose(float(train_size) + float(valid_size) + float(test_size), 1.0):
         raise ValueError("train_size, test_size, and valid_size must sum to 1.0")
 
     return train_size, valid_size, test_size

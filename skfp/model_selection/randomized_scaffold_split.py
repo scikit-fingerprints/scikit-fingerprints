@@ -11,7 +11,7 @@ from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
 from skfp.model_selection.utils import (
-    ensure_nonempty_list,
+    ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
     validate_train_test_sizes,
@@ -144,7 +144,7 @@ def randomized_scaffold_train_test_split(
 
     train_idxs: list[int] = []
     test_idxs: list[int] = []
-    desired_test_size = int(test_size * len(data))
+    desired_test_size = max(1, int(test_size * len(data))) if test_size > 0 else 0
 
     for scaffold_set in scaffold_sets:
         if len(test_idxs) < desired_test_size:
@@ -152,8 +152,8 @@ def randomized_scaffold_train_test_split(
         else:
             train_idxs.extend(scaffold_set)
 
-    ensure_nonempty_list(train_idxs)
-    ensure_nonempty_list(test_idxs)
+    ensure_nonempty_subset(train_idxs, "Train")
+    ensure_nonempty_subset(test_idxs, "Test")
 
     train_subset: list[Any] = []
     test_subset: list[Any] = []
@@ -165,8 +165,8 @@ def randomized_scaffold_train_test_split(
         train_subset = get_data_from_indices(data, train_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
 
-    ensure_nonempty_list(train_subset)
-    ensure_nonempty_list(test_subset)
+    ensure_nonempty_subset(train_subset, "Train")
+    ensure_nonempty_subset(test_subset, "Test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
@@ -315,8 +315,8 @@ def randomized_scaffold_train_valid_test_split(
     train_idxs: list[int] = []
     valid_idxs: list[int] = []
     test_idxs: list[int] = []
-    desired_test_size = int(test_size * len(data))
-    desired_valid_size = int(valid_size * len(data))
+    desired_test_size = max(1, int(test_size * len(data))) if test_size > 0 else 0
+    desired_valid_size = max(1, int(valid_size * len(data))) if test_size > 0 else 0
 
     for scaffold_set in scaffold_sets:
         if len(test_idxs) < desired_test_size:
@@ -339,12 +339,9 @@ def randomized_scaffold_train_valid_test_split(
         valid_subset = get_data_from_indices(data, valid_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
 
-    ensure_nonempty_list(train_subset)
-    ensure_nonempty_list(valid_subset)
-    ensure_nonempty_list(test_subset)
-
-    if len(train_subset) == 0:
-        raise ValueError("train_subset is empty")
+    ensure_nonempty_subset(train_subset, "Train")
+    ensure_nonempty_subset(valid_subset, "Validation")
+    ensure_nonempty_subset(test_subset, "Test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
