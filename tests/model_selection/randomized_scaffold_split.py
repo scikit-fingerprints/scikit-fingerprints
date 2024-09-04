@@ -1,8 +1,6 @@
-import random
 from typing import Union
 
 import pytest
-from numpy.random.mtrand import RandomState
 from rdkit import Chem
 from rdkit.Chem import Mol
 
@@ -26,6 +24,13 @@ def all_molecules() -> list[str]:
         "CCO",
         "CCN",
         "CC.OCC",
+        "O=c1[nH]c(=O)c2[nH]cnc2[nH]1",
+        "Cn1c(=O)c2c(ncn2C)n(C)c1=O",
+        "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
+        "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
+        "C1CN=C(C2=CC=CC=C2)N=C1",
+        "C1CN=C(C2=CC=CC=C2F)N=C1",
+        "C1CN=C(C2=CC=CC=C2Cl)N=C1",
     ]
 
     return all_smiles
@@ -38,6 +43,24 @@ def additional_data() -> list[list[Union[str, int, bool]]]:
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         [True, False, True, False, True, False, True, False, True, False],
     ]
+
+
+@pytest.fixture
+def smiles_for_ten_different_scaffold() -> list[str]:
+    ten_different_scaffolds = [
+        "C1CCCC(C2CC2)CC1",
+        "c1n[nH]cc1C1CCCCCC1",
+        "c1n[nH]cc1CC1CCCCCC1",
+        "C1CCCC(CC2CCOCC2)CC1",
+        "c1ccc2nc(OC3CCC3)ccc2c1",
+        "O=C(CCc1cscn1)NC1CCNCC1",
+        "c1ccc2nc(OC3CCOC3)ccc2c1",
+        "c1ccc2nc(NC3CCOCC3)ccc2c1",
+        "c1ccc2nc(N3CCCOCC3)ccc2c1",
+        "c1ccc2nc(N3CCn4ccnc4C3)ccc2c1",
+    ]
+
+    return ten_different_scaffolds
 
 
 def test_randomized_scaffold_creation_total_count(all_molecules):
@@ -80,7 +103,7 @@ def test_csk_should_fail_for_degree_greater_than_four():
         Chem.rdchem.AtomValenceException,
         match="Explicit valence for atom # 1 C, 6, is greater than permitted",
     ):
-        _ = randomized_scaffold_train_test_split(smiles, random_state=42, use_csk=True)
+        randomized_scaffold_train_test_split(smiles, random_state=42, use_csk=True)
 
 
 def test_randomized_scaffold_train_test_split_returns_molecules(all_molecules):
@@ -150,3 +173,60 @@ def test_seed_consistency_train_valid__test_split(all_molecules):
     assert train_set_1 == train_set_2
     assert valid_set_1 == valid_set_2
     assert test_set_1 == test_set_2
+
+
+def test_train_test_split_properly_splits_csk_with_ints(
+    smiles_for_ten_different_scaffold,
+):
+
+    train_set, test_set = randomized_scaffold_train_test_split(
+        data=smiles_for_ten_different_scaffold, train_size=7, test_size=3, use_csk=True
+    )
+    assert len(train_set) == 7
+    assert len(test_set) == 3
+
+
+def test_train_test_split_properly_splits_csk_with_floats(
+    smiles_for_ten_different_scaffold,
+):
+
+    train_set, test_set = randomized_scaffold_train_test_split(
+        data=smiles_for_ten_different_scaffold,
+        train_size=0.7,
+        test_size=0.3,
+        use_csk=True,
+    )
+    assert len(train_set) == 7
+    assert len(test_set) == 3
+
+
+def test_train_valid_test_split_properly_splits_csk_with_ints(
+    smiles_for_ten_different_scaffold,
+):
+
+    train_set, valid_set, test_set = randomized_scaffold_train_valid_test_split(
+        data=smiles_for_ten_different_scaffold,
+        train_size=7,
+        valid_size=2,
+        test_size=1,
+        use_csk=True,
+    )
+    assert len(train_set) == 7
+    assert len(valid_set) == 2
+    assert len(test_set) == 1
+
+
+def test_train_valid_test_split_properly_splits_csk_with_floats(
+    smiles_for_ten_different_scaffold,
+):
+
+    train_set, valid_size, test_set = randomized_scaffold_train_valid_test_split(
+        data=smiles_for_ten_different_scaffold,
+        train_size=0.7,
+        valid_size=0.2,
+        test_size=0.1,
+        use_csk=True,
+    )
+    assert len(train_set) == 7
+    assert len(valid_size) == 2
+    assert len(test_set) == 1

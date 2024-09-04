@@ -1,14 +1,13 @@
 from typing import Union
 
 import pytest
-from rdkit.Chem import Mol
 
 from skfp.model_selection.utils import (
     ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
-    validate_train_test_sizes,
-    validate_train_valid_test_split_sizes,
+    validate_and_scale_train_test_sizes,
+    validate_and_scale_train_valid_test_split_sizes,
 )
 
 
@@ -31,25 +30,25 @@ def test_ensure_nonempty_subset_raises_error():
         ensure_nonempty_subset([], "Train")
 
 
-def test_validate_train_test_sizes_both_provided():
-    assert validate_train_test_sizes(0.7, 0.3) == (0.7, 0.3)
+def test_validate_and_scale_train_test_sizes_both_provided():
+    assert validate_and_scale_train_test_sizes(0.7, 0.3, 10) == (7, 3)
 
 
-def test_validate_train_test_sizes_train_missing():
-    assert validate_train_test_sizes(None, 0.3) == (0.7, 0.3)
+def test_validate_and_scale_train_test_sizes_train_missing():
+    assert validate_and_scale_train_test_sizes(None, 0.3, 10) == (7, 3)
 
 
-def test_validate_train_test_sizes_test_missing():
-    assert validate_train_test_sizes(0.6, None) == (0.6, 0.4)
+def test_validate_and_scale_train_test_sizes_test_missing():
+    assert validate_and_scale_train_test_sizes(0.6, None, 10) == (6, 4)
 
 
-def test_validate_train_test_sizes_both_missing():
-    assert validate_train_test_sizes(None, None) == (0.8, 0.2)
+def test_validate_and_scale_train_test_sizes_both_missing():
+    assert validate_and_scale_train_test_sizes(None, None, 10) == (8, 2)
 
 
-def test_validate_train_test_sizes_not_sum_to_one():
+def test_validate_and_scale_train_test_sizes_not_sum_to_one():
     with pytest.raises(ValueError, match="train_size and test_size must sum to 1.0"):
-        validate_train_test_sizes(0.6, 0.5)
+        validate_and_scale_train_test_sizes(0.6, 0.5, 10)
 
 
 def test_get_data_from_indices_valid(smiles_data):
@@ -105,26 +104,27 @@ def test_split_additional_data_multiple_empty_indice_list(additional_data):
     assert result == [[], [], [], [], [], []]
 
 
-def test_validate_train_valid_test_split_sizes_all_provided():
-    result = validate_train_valid_test_split_sizes(0.7, 0.2, 0.1)
-    assert result == (0.7, 0.2, 0.1)
+def test_validate_and_scale_train_valid_test_split_sizes_all_provided():
+    result = validate_and_scale_train_valid_test_split_sizes(0.7, 0.2, 0.1, 10)
+    assert result == (7, 2, 1)
 
 
-def test_validate_train_valid_test_split_sizes_not_sum_to_one():
-    with pytest.raises(
-        ValueError, match="train_size, test_size, and valid_size must sum to 1.0"
-    ):
-        validate_train_valid_test_split_sizes(0.7, 0.2, 0.2)
-
-
-def test_validate_train_valid_test_split_sizes_missing_values():
+def test_validate_and_scale_train_valid_test_split_sizes_not_sum_to_one():
     with pytest.raises(
         ValueError,
-        match="All of train_size, valid_size, and test_size must be provided.",
+        match="The sum of train_size, valid_size, and test_size must be 1.0.",
     ):
-        validate_train_valid_test_split_sizes(0.7, None, 0.2)
+        validate_and_scale_train_valid_test_split_sizes(0.7, 0.2, 0.2, 10)
 
 
-def test_validate_train_valid_test_split_sizes_all_missing():
-    result = validate_train_valid_test_split_sizes(None, None, None)
-    assert result == (0.8, 0.1, 0.1)
+def test_validate_and_scale_train_valid_test_split_sizes_missing_values():
+    with pytest.raises(
+        ValueError,
+        match="All of the sizes must be provided.",
+    ):
+        validate_and_scale_train_valid_test_split_sizes(0.7, None, 0.2, 10)
+
+
+def test_validate_and_scale_train_valid_test_split_sizes_all_missing():
+    result = validate_and_scale_train_valid_test_split_sizes(None, None, None, 10)
+    assert result == (8, 1, 1)
