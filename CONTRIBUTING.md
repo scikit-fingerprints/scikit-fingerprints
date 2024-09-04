@@ -20,22 +20,21 @@ We encourage you to submit pull requests (PRs) to improve our project. To do so,
 
 1. Setup your development environment by following the [instructions](#development-setup-linux)
 
-6. Create a new branch for your feature or bug fix:
-
+2. Create a new branch for your feature or bug fix:
     ```bash
     git checkout -b my-feature
 
-7. Make your changes and commit them with clear and concise commit messages.
+3. Make your changes and commit them with clear and concise commit messages.
 
-8. Push your changes to your forked repository:
-
+4. Push your changes to your forked repository:
     ```bash
     git push origin my-feature
-9. Open a pull request on our GitHub repository and provide a detailed description of your changes.
 
-10. Ensure that your PR follows our coding style and conventions.
+5. Open a pull request on our GitHub repository and provide a detailed description of your changes.
 
-11. Participate in the review process by addressing any feedback or comments on your PR.
+6. Ensure that your PR follows our coding style and conventions.
+
+7. Participate in the review process by addressing any feedback or comments on your PR.
 
 ### Development Setup (Linux)
 
@@ -62,6 +61,9 @@ To set up the development environment, follow these steps:
    ```bash
    poetry shell
    ```
+
+If you are using PyCharm, then mark `tests` directory as tests sources root. This will make running
+them easier from UI.
 
 ---
 **NOTE**
