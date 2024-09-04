@@ -42,7 +42,8 @@ def fetch_splits(
     data_home_dir = get_data_home_dir(data_dir, dataset_name)
     dataset_dir = hf_hub_download(data_home_dir, dataset_name, verbose)
     filepath = Path(dataset_dir) / filename
-    print(filepath)
+    if verbose:
+        print(filepath)
     with open(filepath) as file:
         return json.load(file)
 
