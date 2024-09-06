@@ -58,7 +58,7 @@ pip install scikit-fingerprints
 
 ## Basic Usage
 
-Most fingerprints are based on molecular graph (2D-based), and you can use SMILES
+Most fingerprints are based on molecular graphs (2D-based), and you can use SMILES
 input directly:
 ```python
 from skfp.fingerprints import AtomPairFingerprint
@@ -72,7 +72,8 @@ print(X)
 ```
 
 For fingerprints using conformers (3D-based), you need to create molecules first
-and compute conformers, like this:
+and compute conformers. Those fingerprints have `requires_conformers` attribute set
+to `True`.
 ```python
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 from skfp.fingerprints import WHIMFingerprint
@@ -82,6 +83,7 @@ smiles_list = ["O=S(=O)(O)CCS(=O)(=O)O", "O=C(O)c1ccccc1O"]
 mol_from_smiles = MolFromSmilesTransformer()
 conf_gen = ConformerGenerator()
 fp = WHIMFingerprint()
+print(fp.requires_conformers)  # True
 
 mols_list = mol_from_smiles.transform(smiles_list)
 mols_list = conf_gen.transform(mols_list)
