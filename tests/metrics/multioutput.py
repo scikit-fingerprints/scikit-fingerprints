@@ -31,6 +31,8 @@ from skfp.metrics import (
     multioutput_precision_score,
     multioutput_recall_score,
     multioutput_root_mean_squared_error,
+    multioutput_spearman_correlation,
+    spearman_correlation,
 )
 
 
@@ -53,6 +55,11 @@ def metrics_list() -> list[tuple[str, Callable, Callable]]:
         ("Precision", precision_score, multioutput_precision_score),
         ("Recall", recall_score, multioutput_recall_score),
         ("RMSE", root_mean_squared_error, multioutput_root_mean_squared_error),
+        (
+            "Spearman correlation",
+            spearman_correlation,
+            multioutput_spearman_correlation,
+        ),
     ]
 
 
