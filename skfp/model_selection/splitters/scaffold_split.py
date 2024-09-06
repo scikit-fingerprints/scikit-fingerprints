@@ -8,7 +8,7 @@ from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
-from skfp.model_selection.utils import (
+from skfp.model_selection.splitters.utils import (
     ensure_nonempty_list,
     get_data_from_indices,
     split_additional_data,
