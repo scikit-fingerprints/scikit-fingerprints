@@ -78,7 +78,7 @@ def scaffold_train_test_split(
     Parameters
     ----------
     data : sequence
-        Sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
 
     additional_data: list[sequence]
         Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
@@ -229,7 +229,7 @@ def scaffold_train_valid_test_split(
     Parameters
     ----------
     data : sequence
-        Sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
 
     additional_data: sequence
         Additional sequences to be split alongside the main data, e.g. labels.
