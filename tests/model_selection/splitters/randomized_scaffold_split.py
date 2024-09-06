@@ -1,12 +1,10 @@
-import random
 from typing import Union
 
 import pytest
-from numpy.random.mtrand import RandomState
 from rdkit import Chem
 from rdkit.Chem import Mol
 
-from skfp.model_selection.randomized_scaffold_split import (
+from skfp.model_selection.splitters.randomized_scaffold_split import (
     _create_scaffolds,
     randomized_scaffold_train_test_split,
     randomized_scaffold_train_valid_test_split,

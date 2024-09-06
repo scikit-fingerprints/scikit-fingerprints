@@ -27,7 +27,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
 
     Here, we instead perform a nested loop:
 
-    1. Rnadomly select a combination of fingerprint hyperparameter values
+    1. Randomly select a combination of fingerprint hyperparameter values
     2. Compute fingerprint
     3. Optimize estimator hyperparameters
 
@@ -63,6 +63,10 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         Inner cross-validation object for tuning estimator, e.g. `RandomziedSearchCV`.
         Should be an instantiated object, not a class.
 
+    cache_best_fp_array : bool, default=False
+        Whether to cache the array of values from the best fingerprint in `best_fp_array_`
+        parameter. Note that this can result in high memory usage.
+
     verbose : int, default=0
         Controls the verbosity: the higher, the more messages.
 
@@ -83,6 +87,10 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
 
     best_fp_params_ : dict
         Fingerprint hyperparameter values that gave the best results on the hold out data.
+
+    best_fp_array_ : np.ndarray
+        Fingerprint values for `best_fp_`. If `cache_best_fp_array` is False, this will not
+        be used and will be None instead.
 
     best_score_ : float
         Mean cross-validated score of the best fingerprint and estimator.
@@ -119,6 +127,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         "fingerprint": [BaseFingerprintTransformer],
         "fp_param_distributions": [dict, list],
         "estimator_cv": [BaseSearchCV],
+        "cache_best_fp_array": ["boolean"],
         "n_iter": [Interval(Integral, 1, None, closed="left")],
         "verbose": ["verbose"],
         "random_state": ["random_state"],
@@ -129,6 +138,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         fingerprint: BaseFingerprintTransformer,
         fp_param_distributions: Union[dict, list[dict]],
         estimator_cv: BaseSearchCV,
+        cache_best_fp_array: bool = False,
         n_iter: int = 10,
         verbose: int = 0,
         random_state: Optional[int] = 0,
@@ -136,6 +146,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         self.fingerprint = fingerprint
         self.fp_param_distributions = fp_param_distributions
         self.estimator_cv = estimator_cv
+        self.cache_best_fp_array = cache_best_fp_array
         self.n_iter = n_iter
         self.verbose = verbose
         self.random_state = random_state
@@ -150,6 +161,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         self.cv_results_: list[dict] = []
         self.best_fp_: BaseFingerprintTransformer = None  # type: ignore
         self.best_fp_params_: dict = None  # type: ignore
+        self.best_fp_array_: np.ndarray = None  # type: ignore
         self.best_score_ = -1  # in scikit-learn, higher score is always better
         self.best_estimator_cv_: BaseSearchCV = None  # type: ignore
 
@@ -185,6 +197,8 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
                 self.best_fp_params_ = fp_params
                 self.best_score_ = curr_score
                 self.best_estimator_cv_ = curr_cv
+                if self.cache_best_fp_array:
+                    self.best_fp_array_ = X_fp
 
             end_time = time()
             if self.verbose > 1:
