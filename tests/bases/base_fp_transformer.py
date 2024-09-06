@@ -32,7 +32,7 @@ def test_base_transform_copy(smiles_list):
 
 
 def test_base_invalid_params(smiles_list):
-    maccs_fp = MACCSFingerprint(sparse=None)
+    maccs_fp = MACCSFingerprint(sparse=None)  # type: ignore
     with pytest.raises(InvalidParameterError):
         maccs_fp.transform(smiles_list)
 
