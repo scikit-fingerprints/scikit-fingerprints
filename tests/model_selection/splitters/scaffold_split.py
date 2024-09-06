@@ -133,13 +133,13 @@ def test_scaffold_creation_total_count(all_molecules):
 
 
 def test_no_ring_molecules():
-    smiles_list: list[str] = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
+    smiles_list = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
     scaffolds = _create_scaffolds(smiles_list)
     assert len(scaffolds) == 1
 
 
 def test_scaffold_count_for_benzodiazepines():
-    smiles_list: list[str] = [
+    smiles_list = [
         "C1CN=C(C2=CC=CC=C2)N=C1",
         "C1CN=C(C2=CC=CC=C2F)N=C1",
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",
