@@ -4,11 +4,13 @@ from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
 
+import numpy as np
+from numpy.random import Generator, RandomState
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
-from skfp.model_selection.utils import (
+from skfp.model_selection.splitters.utils import (
     ensure_nonempty_list,
     get_data_from_indices,
     split_additional_data,
@@ -35,10 +37,11 @@ from skfp.utils.validators import ensure_mols
         "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
+        "random_state": ["random_state"],
     },
     prefer_skip_nested_validation=True,
 )
-def scaffold_train_test_split(
+def randomized_scaffold_train_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
@@ -46,66 +49,71 @@ def scaffold_train_test_split(
     include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int]],
-]:
+    random_state: Optional[Union[int, RandomState, Generator]] = None,
+):
+    # flake8: noqa: E501
     """
-    Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
+    Split using randomized groups of Bemis-Murcko scaffolds.
 
-    This function ensures that similar molecules (sharing the same scaffold) are in the same split.
-    This method, suggested in the MoleculeNet [2]_ paper, helps to test the model's ability to
-    generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
-    to the time split, assuming that new molecules (test set) will be structurally different in terms of
-    scaffolds from the training set.
+    This split uses randomly partitioned groups of Bemis-Murcko molecular scaffolds [1]_
+    for splitting. This is a nondeterministic variant of scaffold split, introduced in
+    the MoleculeNet [2]_ paper. It aims to verify the model generalization to new scaffolds,
+    as an approximation to the time split, while also allowing multiple train-test splits.
 
-    The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
-    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
-    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
+    By default, core structure scaffolds are used (following RDKit), which include atom
+    types. Original Bemis-Murcko approach uses the cyclic skeleton (CSK) of a molecule,
+    replacing all atoms by carbons. It is also known as CSK [3]_, and can be used with
+    `use_csk` parameter.
 
-    This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
-    resulting in them being grouped together regardless of their structure.
+    This approach is known to have certain limitations. In particular, molecules with
+    no rings will not get a scaffold, resulting in them being grouped together regardless
+    of their structure.
 
-    The split is fully deterministic, with the smallest scaffold sets assigned to the test
-    subset and the rest to the training subset.
+    This variant is nondeterministic, and the scaffolds are randomly shuffled before
+    being assigned to subsets (test set is created fist). This approach is also known
+    as "balanced scaffold split", and typically leads to more optimistic evaluation than
+    regular, deterministic scaffold split [4]_.
 
     The split fractions (train_size, test_size) must sum to 1.
 
     Parameters
     ----------
     data : sequence
-        Sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
 
-    additional_data: list[sequence]
-        Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
+    additional_data: sequence
+        Additional sequences to be split alongside the main data, e.g. labels.
 
     train_size : float, default=None
-        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size.
-        If test_size is also None, it will be set to 0.8.
+        The fraction of data to be used for the train subset. If None, it is set
+        to 1 - test_size. If test_size is also None, it will be set to 0.8.
 
     test_size : float, default=None
-        The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
-        If train_size is also None, it will be set to 0.2.
+        The fraction of data to be used for the test subset. If None, it is set
+        to 1 - train_size. If train_size is also None, it will be set to 0.2.
 
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
 
     use_csk: bool, default=False
-        Whether to use molecule's skeleton or the core structure scaffold (including atom types).
+        Whether to use the molecule cyclic skeleton (CSK), instead of the core
+        structure scaffold.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
+    random_state: int or NumPy Random Generator instance, default=0
+        Seed for random number generator or random state that would be used for
+        shuffling the scaffolds.
+
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
-    depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+    Tuple with train-test subsets of provided arrays. First two are lists of SMILES
+    strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    is True, lists of indices are returned instead of actual data.
+
     References
     ----------
     .. [1] `Bemis, G. W., & Murcko, M. A.
@@ -118,14 +126,25 @@ def scaffold_train_test_split(
         Chemical Science, 9(2), 513-530.
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
-    .. [3] ` Bemis-Murcko scaffolds and their variants
+    .. [3] `Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844` _
 
-
+    .. [4] `R. Sun, H. Dai, A. Wei Yu
+        "Does GNN Pretraining Help Molecular Representation?"
+        Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
+        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html` _
     """
+    # flake8: noqa: E501
     train_size, test_size = validate_train_test_sizes(train_size, test_size)
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
-    scaffold_sets = sorted(scaffolds.values(), key=len)
+    rng = (
+        random_state
+        if isinstance(random_state, RandomState)
+        else np.random.default_rng(random_state)
+    )
+
+    scaffold_sets = list(scaffolds.values())
+    rng.shuffle(scaffold_sets)
 
     train_idxs: list[int] = []
     test_idxs: list[int] = []
@@ -184,10 +203,11 @@ def scaffold_train_test_split(
         "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
+        "random_state": ["random_state"],
     },
     prefer_skip_nested_validation=True,
 )
-def scaffold_train_valid_test_split(
+def randomized_scaffold_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
@@ -196,75 +216,78 @@ def scaffold_train_valid_test_split(
     include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
-        Sequence[Sequence[Any]],
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int], Sequence[int]],
-]:
+    random_state: Optional[Union[int, RandomState, Generator]] = None,
+):
     """
-    Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
+    Split using randomized groups of Bemis-Murcko scaffolds.
 
-    This function ensures that similar molecules (sharing the same scaffold) are in the same split.
-    This method, suggested in the MoleculeNet [2]_ paper, helps to test the model's ability to
-    generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
-    to the time split, assuming that new molecules (test set) will be structurally different in terms of
-    scaffolds from the training set.
+    This split uses randomly partitioned groups of Bemis-Murcko molecular scaffolds [1]_
+    for splitting. This is a nondeterministic variant of scaffold split, introduced in
+    the MoleculeNet [2]_ paper. It aims to verify the model generalization to new scaffolds,
+    as an approximation to the time split, while also allowing multiple train-test splits.
 
-    The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
-    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
-    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
+    By default, core structure scaffolds are used (following RDKit), which include atom
+    types. Original Bemis-Murcko approach uses the cyclic skeleton (CSK) of a molecule,
+    replacing all atoms by carbons. It is also known as CSK [3]_, and can be used with
+    `use_csk` parameter.
 
-    This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
-    resulting in them being grouped together regardless of their structure.
+    This approach is known to have certain limitations. In particular, molecules with
+    no rings will not get a scaffold, resulting in them being grouped together regardless
+    of their structure.
 
-    The split is fully deterministic, with the smallest scaffold sets assigned to the test
-    subset and the rest to the training subset.
+    This variant is nondeterministic, and the scaffolds are randomly shuffled before
+    being assigned to subsets (in order: test, valid, train). This approach is also known
+    as "balanced scaffold split", and typically leads to more optimistic evaluation than
+    regular, deterministic scaffold split [4]_.
 
-    The split fractions (train_size, test_size) must sum to 1.
+    The split fractions (train_size, valid_size, test_size) must sum to 1.
 
     Parameters
     ----------
     data : sequence
-        Sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
 
     additional_data: sequence
-        Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
+        Additional sequences to be split alongside the main data, e.g. labels.
 
     train_size : float, default=None
-        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size - valid_size.
-        If valid_size is not provided, train_size is set to 1 - test_size. If train_size, test_size and
-        valid_size aren't set, train_size is set to 0.8.
+        The fraction of data to be used for the train subset. If None, it is set
+        to 1 - test_size - valid_size. If valid_size is not provided, train_size
+        is set to 1 - test_size. If train_size, test_size and valid_size aren't
+        set, train_size is set to 0.8.
 
     valid_size : float, default=None
-        The fraction of data to be used for the test subset. If None, it is set to 1 - train_size - valid_size.
-        If train_size, test_size and valid_size aren't set, train_size is set to 0.1.
+        The fraction of data to be used for the test subset. If None, it is set
+        to 1 - train_size - valid_size. If train_size, test_size and valid_size
+        aren't set, train_size is set to 0.1.
 
     test_size : float, default=None
-        The fraction of data to be used for the validation subset. If None, it is set to 1 - train_size - valid_size.
-        If valid_size is not provided, test_size is set to 1 - train_size. If train_size, test_size and
-        valid_size aren't set, test_size is set to 0.1.
+        The fraction of data to be used for the validation subset. If None, it is
+        set to 1 - train_size - valid_size. If valid_size is not provided, test_size
+        is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
+        test_size is set to 0.1.
 
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
 
     use_csk: bool, default=False
-        Whether to use molecule's skeleton or the core structure scaffold (including atom types).
+        Whether to use the molecule cyclic skeleton (CSK), instead of the core
+        structure scaffold.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
+    random_state: int or NumPy Random Generator instance, default=0
+        Seed for random number generator or random state that would be used for
+        shuffling the scaffolds.
+
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
-    depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+    Tuple with train-valid-test subsets of provided arrays. First three are lists of
+    SMILES strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    is True, lists of indices are returned instead of actual data.
 
     References
     ----------
@@ -281,13 +304,24 @@ def scaffold_train_valid_test_split(
     .. [3] ` Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844` _
 
+    .. [4] `R. Sun, H. Dai, A. Wei Yu
+        "Does GNN Pretraining Help Molecular Representation?"
+        Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
+        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html` _
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size
     )
 
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
-    scaffold_sets = sorted(scaffolds.values(), key=len)
+    rng = (
+        random_state
+        if isinstance(random_state, RandomState)
+        else np.random.default_rng(random_state)
+    )
+
+    scaffold_sets = list(scaffolds.values())
+    rng.shuffle(scaffold_sets)
 
     train_idxs: list[int] = []
     valid_idxs: list[int] = []
@@ -334,9 +368,7 @@ def scaffold_train_valid_test_split(
 
 
 def _create_scaffolds(
-    data: Sequence[Union[str, Mol]],
-    include_chirality: bool = False,
-    use_csk: bool = False,
+    data: Sequence[Union[str, Mol]], include_chirality: bool = False, use_csk=False
 ) -> dict[str, list]:
     """
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
