@@ -54,15 +54,14 @@ class LipinskiFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import LipinskiFilter, MolToSmilesTransformer
+    >>> from skfp.preprocessing import LipinskiFilter
     >>> smiles = ["[C-]#N", "CC=O", "O=C(O)c1ccccc1c2ccc(cc2)Cn3c4cc(cc(c4nc3CCC)C)c5nc6ccccc6n5C"]
     >>> filt = LipinskiFilter()
     >>> filt
     LipinskiFilter()
 
     >>> filtered_mols = filt.transform(smiles)
-    >>> mol_to_smiles = MolToSmilesTransformer()
-    >>> mol_to_smiles.transform(filtered_mols)
+    >>> filtered_mols
     ['[C-]#N', 'CC=O']
     """
 
