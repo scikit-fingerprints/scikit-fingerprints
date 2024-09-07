@@ -18,8 +18,8 @@ computation of molecular fingerprints.
 - [Description](#description)
 - [Supported platforms](#supported-platforms)
 - [Installation](#installation)
-- [Basic Usage](#basic-usage)
-- [General Project Vision](#general-project-vision)
+- [Quickstart](#quickstart)
+- [Project overview](#project-overview)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -34,19 +34,20 @@ creating an efficient and accessible Python library for molecular fingerprint co
 
 You can find the documentation [HERE](https://scikit-fingerprints.github.io/scikit-fingerprints/)
 
-- The library offers various functions that accept molecule descriptors (e.g., SMILES) and fingerprint parameters,
-  returning the specified fingerprints.
-- It's open-source and available for installation via pip.
-- The library has been designed for ease of use, minimizing the need for extensive training.
-- Compatibility with the standard Python ML stack, based on scikit-learn interfaces, has been a top priority.
+Main features:
+- scikit-learn compatible
+- feature-rich, with >30 fingerprints
+- parallelization
+- sparse matrix support
+- commercial-friendly MIT license
 
 ## Supported platforms
 
-|                      | `python3.9`   | `python3.10` | `python3.11` | `python3.12` |
-|----------------------|---------------|--------------|--------------|--------------|
-| **Ubuntu - latest**  | ✅             | ✅            | ✅            | ✅            |
-| **Windows - latest** | ✅             | ✅            | ✅            | ✅            |
-| **macOS - latest**   | only macOS 13 | ✅            | ✅            | ✅            |
+|                      | `python3.9`            | `python3.10` | `python3.11` | `python3.12` |
+|----------------------|------------------------|--------------|--------------|--------------|
+| **Ubuntu - latest**  | ✅                      | ✅            | ✅            | ✅            |
+| **Windows - latest** | ✅                      | ✅            | ✅            | ✅            |
+| **macOS - latest**   | only macOS 13 or newer | ✅            | ✅            | ✅            |
 
 ## Installation
 
@@ -56,34 +57,110 @@ You can install the library using pip:
 pip install scikit-fingerprints
 ```
 
-## Basic Usage
+If you need bleeding-edge features and don't mind potentially unstable or undocumented functionalities,
+you can also install directly from GitHub:
+```bash
+pip install git+https://github.com/scikit-fingerprints/scikit-fingerprints.git
+```
+
+## Quickstart
+
+Most fingerprints are based on molecular graphs (2D-based), and you can use SMILES
+input directly:
 ```python
 from skfp.fingerprints import AtomPairFingerprint
 
-smiles_list = ['O=S(=O)(O)CCS(=O)(=O)O', 'O=C(O)c1ccccc1O']
+smiles_list = ["O=S(=O)(O)CCS(=O)(=O)O", "O=C(O)c1ccccc1O"]
 
 atom_pair_fingerprint = AtomPairFingerprint()
-X_skfp = atom_pair_fingerprint.transform(smiles_list)
 
-print(X_skfp)
+X = atom_pair_fingerprint.transform(smiles_list)
+print(X)
 ```
 
-## General Project Vision
+For fingerprints using conformers (3D-based), you need to create molecules first
+and compute conformers. Those fingerprints have `requires_conformers` attribute set
+to `True`.
+```python
+from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
+from skfp.fingerprints import WHIMFingerprint
 
-The primary goal of this project was to develop a Python library that simplifies the computation of widely-used
-molecular fingerprints, such as Morgan's fingerprint, MACCS fingerprint, and others. This library has the following key
-features:
+smiles_list = ["O=S(=O)(O)CCS(=O)(=O)O", "O=C(O)c1ccccc1O"]
 
-- **User-Friendly Interface:** The library was designed to provide an intuitive interface, making it easy to integrate
-  into machine learning workflows.
+mol_from_smiles = MolFromSmilesTransformer()
+conf_gen = ConformerGenerator()
+fp = WHIMFingerprint()
+print(fp.requires_conformers)  # True
 
-- **Performance Optimization:** We implemented molecular fingerprint computation algorithms using concurrent programming
-  techniques to maximize performance. Large datasets of molecules are processed in parallel for improved efficiency.
+mols_list = mol_from_smiles.transform(smiles_list)
+mols_list = conf_gen.transform(mols_list)
 
-- **Compatibility:** The library's interface was inspired by popular data science libraries like Scikit-Learn, ensuring
-  compatibility and familiarity for users familiar with these tools.
+X = fp.transform(mols_list)
+print(X)
+```
 
-- **Extensibility:** Users should be able to customize and extend the library to suit their specific needs.
+You can also use scikit-learn functionalities like pipelines, feature unions
+etc. to build complex workflows. Popular datasets, e.g. from MoleculeNet benchmark,
+can be loaded directly.
+```python
+from skfp.datasets.moleculenet import load_clintox
+from skfp.metrics import multioutput_auroc_score
+from skfp.model_selection.scaffold_split import scaffold_train_test_split
+from skfp.fingerprints import ECFPFingerprint, MACCSFingerprint
+from skfp.preprocessing import MolFromSmilesTransformer
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline, make_union
+
+
+smiles, y = load_clintox()
+smiles_train, smiles_test, y_train, y_test = scaffold_train_test_split(
+    smiles, y, test_size=0.2
+)
+
+pipeline = make_pipeline(
+    MolFromSmilesTransformer(),
+    make_union(ECFPFingerprint(count=True), MACCSFingerprint()),
+    RandomForestClassifier(random_state=0),
+)
+pipeline.fit(smiles_train, y_train)
+
+y_pred_proba = pipeline.predict_proba(smiles_test)
+auroc = multioutput_auroc_score(y_test, y_pred_proba)
+print(f"AUROC: {auroc:.2%}")
+```
+
+## Project overview
+
+`scikit-fingerprint` brings molecular fingerprints and related functionalities into
+the scikit-learn ecosystem. With familiar class-based design and `.transform()` method,
+fingerprints can be computed from SMILES strings or RDKit `Mol` objects. Resulting NumPy
+arrays or SciPy sparse arrays can be directly used in ML pipelines.
+
+Main features:
+
+1. **Scikit-learn compatible:** `scikit-fingerprints` uses familiar scikit-learn
+   interface  and conforms to its API requirements. You can include molecular
+   fingerprints in pipelines, concatenate them with feature unions, and process with
+   ML algorithms.
+
+2. **Performance optimization:** both speed and memory usage are optimized, by
+   utilizing parallelism (with Joblib) and sparse CSR matrices (with SciPy). Heavy
+   computation is typically relegated to C++ code of RDKit.
+
+3. **Feature-rich:** in addition to computing fingerprints, you can load popular
+   benchmark  datasets (e.g. from MoleculeNet), perform splitting (e.g. scaffold
+   split), generate conformers, and optimize hyperparameters with optimized cross-validation.
+
+4. **Well-documented:** each public function and class has extensive documentation,
+   including relevant implementation details, caveats, and literature references.
+
+5. **Extensibility:** any functionality can be easily modified or extended by
+   inheriting from existing classes.
+
+6. **High code quality:** pre-commit hooks scan each commit for code quality (e.g. `black`,
+   `flake8`), typing (`mypy`), and security (e.g. `bandit`, `safety`). CI/CD process with
+   GitHub Actions also includes over 250 unit and integration tests.
 
 ## Contributing
 

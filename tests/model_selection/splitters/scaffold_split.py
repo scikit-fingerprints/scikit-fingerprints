@@ -1,10 +1,8 @@
-from typing import Union
-
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
 
-from skfp.model_selection.scaffold_split import (
+from skfp.model_selection.splitters.scaffold_split import (
     _create_scaffolds,
     scaffold_train_test_split,
     scaffold_train_valid_test_split,
@@ -27,15 +25,6 @@ def all_molecules() -> list[str]:
     ]
 
     return all_smiles
-
-
-@pytest.fixture
-def additional_data() -> list[list[Union[str, int, bool]]]:
-    return [
-        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [True, False, True, False, True, False, True, False, True, False],
-    ]
 
 
 def test_scaffold_train_test_split_default(all_molecules):
@@ -61,37 +50,36 @@ def test_train_test_split_total_molecule_count(all_molecules):
     assert len(test_split) == 2
 
 
-def test_scaffold_train_test_split_with_additional_data(all_molecules, additional_data):
-    train_set, test_set, additional = scaffold_train_test_split(
-        all_molecules, *additional_data, train_size=0.7, test_size=0.3
+def test_scaffold_train_test_split_with_additional_data(all_molecules):
+    additional_data = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+    X_train, X_test, add_train, add_test = scaffold_train_test_split(
+        all_molecules, additional_data, train_size=0.7, test_size=0.3
     )
 
-    train_additional = additional[0]
-    test_additional = additional[1]
-
-    assert len(train_set) == 7
-    assert len(test_set) == 3
-    assert len(train_additional) == 7
-    assert len(test_additional) == 3
+    assert len(X_train) == 7
+    assert len(X_test) == 3
+    assert len(add_train) == 7
+    assert len(add_test) == 3
 
 
-def test_scaffold_train_valid_test_split_with_additional_data(
-    all_molecules, additional_data
-):
-    train_set, valid_set, test_set, additional = scaffold_train_valid_test_split(
-        all_molecules, *additional_data, train_size=0.7, valid_size=0.2, test_size=0.1
+def test_scaffold_train_valid_test_split_with_additional_data(all_molecules):
+    additional_data = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+    X_train, X_valid, X_test, add_train, add_valid, add_test = (
+        scaffold_train_valid_test_split(
+            all_molecules,
+            additional_data,
+            train_size=0.7,
+            valid_size=0.2,
+            test_size=0.1,
+        )
     )
 
-    train_additional = additional[0]
-    valid_additional = additional[1]
-    test_additional = additional[2]
-
-    assert len(train_set) == 7
-    assert len(valid_set) == 2
-    assert len(test_set) == 1
-    assert len(train_additional) == 7
-    assert len(valid_additional) == 2
-    assert len(test_additional) == 1
+    assert len(X_train) == 7
+    assert len(X_valid) == 2
+    assert len(X_test) == 1
+    assert len(add_train) == 7
+    assert len(add_valid) == 2
+    assert len(add_test) == 1
 
 
 def test_train_valid_test_split_total_molecule_count(all_molecules):
@@ -133,13 +121,13 @@ def test_scaffold_creation_total_count(all_molecules):
 
 
 def test_no_ring_molecules():
-    smiles_list: list[str] = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
+    smiles_list = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
     scaffolds = _create_scaffolds(smiles_list)
     assert len(scaffolds) == 1
 
 
 def test_scaffold_count_for_benzodiazepines():
-    smiles_list: list[str] = [
+    smiles_list = [
         "C1CN=C(C2=CC=CC=C2)N=C1",
         "C1CN=C(C2=CC=CC=C2F)N=C1",
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",

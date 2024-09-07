@@ -1,5 +1,6 @@
 """Performance metrics useful in chemoinformatics."""
 
+from .auroc import auroc_score
 from .multioutput import (
     multioutput_accuracy_score,
     multioutput_auprc_score,
@@ -13,4 +14,6 @@ from .multioutput import (
     multioutput_precision_score,
     multioutput_recall_score,
     multioutput_root_mean_squared_error,
+    multioutput_spearman_correlation,
 )
+from .spearman import spearman_correlation

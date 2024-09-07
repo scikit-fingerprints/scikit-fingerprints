@@ -134,7 +134,6 @@ class ConformerGenerator(BasePreprocessor):
     _parameter_constraints: dict = {
         "num_conformers": [Interval(Integral, 1, None, closed="left")],
         "max_gen_attempts": [Interval(Integral, 1, None, closed="left")],
-        "error_on_conf_gen_fail": ["boolean"],
         "optimize_force_field": [StrOptions({"UFF", "MMFF94", "MMFF94s"}), None],
         "multiple_confs_select": [StrOptions({"min_energy", "first"})],
         "errors": [StrOptions({"raise", "ignore", "filter"})],

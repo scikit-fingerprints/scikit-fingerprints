@@ -8,7 +8,7 @@ from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
-from skfp.model_selection.utils import (
+from skfp.model_selection.splitters.utils import (
     ensure_nonempty_list,
     get_data_from_indices,
     split_additional_data,
@@ -54,21 +54,21 @@ def scaffold_train_test_split(
     tuple[Sequence[int], Sequence[int]],
 ]:
     """
-    Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
+    Split using groups of Bemis-Murcko scaffolds.
 
-    This function ensures that similar molecules (sharing the same scaffold) are in the same split.
-    This method, suggested in the MoleculeNet [2]_ paper, helps to test the model's ability to
-    generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
-    to the time split, assuming that new molecules (test set) will be structurally different in terms of
-    scaffolds from the training set.
+    This split uses deterministically partitioned groups of Bemis-Murcko molecular
+    scaffolds [1]_ for splitting, as introduced in the MoleculeNet [2]_ paper. It aims
+    to verify the model generalization to new and rare scaffolds, as an approximation
+    to the time split.
 
-    The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
-    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
-    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
+    By default, core structure scaffolds are used (following RDKit), which include atom
+    types. Original Bemis-Murcko approach uses the cyclic skeleton of a molecule, replacing
+    all atoms by carbons. It is also known as CSK (Cyclic SKeleton) [3]_, and can be
+    used with `use_csk` parameter.
 
-    This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
-    resulting in them being grouped together regardless of their structure.
+    This approach is known to have certain limitations. In particular, molecules with
+    no rings will not get a scaffold, resulting in them being grouped together regardless
+    of their structure.
 
     The split is fully deterministic, with the smallest scaffold sets assigned to the test
     subset and the rest to the training subset.
@@ -78,7 +78,7 @@ def scaffold_train_test_split(
     Parameters
     ----------
     data : sequence
-        Sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
 
     additional_data: list[sequence]
         Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
@@ -120,8 +120,6 @@ def scaffold_train_test_split(
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844` _
-
-
     """
     train_size, test_size = validate_train_test_sizes(train_size, test_size)
     scaffolds = _create_scaffolds(data, include_chirality, use_csk)
@@ -157,7 +155,7 @@ def scaffold_train_test_split(
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, test_idxs
         )
-        return train_subset, test_subset, additional_data_split
+        return train_subset, test_subset, *additional_data_split
     else:
         return train_subset, test_subset
 
@@ -207,54 +205,58 @@ def scaffold_train_valid_test_split(
     tuple[Sequence[int], Sequence[int], Sequence[int]],
 ]:
     """
-    Split a list of SMILES or RDKit `Mol` objects into train and test subsets using Bemis-Murcko [1]_ scaffolds.
+    Split using groups of Bemis-Murcko scaffolds.
 
-    This function ensures that similar molecules (sharing the same scaffold) are in the same split.
-    This method, suggested in the MoleculeNet [2]_ paper, helps to test the model's ability to
-    generalize to entirely new scaffolds. MoleculeNet introduced the scaffold split as an approximation
-    to the time split, assuming that new molecules (test set) will be structurally different in terms of
-    scaffolds from the training set.
+    This split uses deterministically partitioned groups of Bemis-Murcko molecular
+    scaffolds [1]_ for splitting, as introduced in the MoleculeNet [2]_ paper. It aims
+    to verify the model generalization to new and rare scaffolds, as an approximation
+    to the time split.
 
-    The `use_csk` parameter allows to choose between using the core structure scaffold (which includes atom types)
-    and the skeleton scaffold (which does not) [3]_. This functionality only works correctly for molecules where
-    all atoms have a degree of 4 or less. Molecules with atoms having a degree greater than 4 raise an error because
-    core structure scaffolds (CSKs) with carbons can't handle these cases properly.
+    By default, core structure scaffolds are used (following RDKit), which include atom
+    types. Original Bemis-Murcko approach uses the cyclic skeleton of a molecule, replacing
+    all atoms by carbons. It is also known as CSK (Cyclic SKeleton) [3]_, and can be
+    used with `use_csk` parameter.
 
-    This approach is known to have certain limitations. In particular, molecules with no rings will not get a scaffold,
-    resulting in them being grouped together regardless of their structure.
+    This approach is known to have certain limitations. In particular, molecules with
+    no rings will not get a scaffold, resulting in them being grouped together regardless
+    of their structure.
 
     The split is fully deterministic, with the smallest scaffold sets assigned to the test
-    subset and the rest to the training subset.
+    subset, larger to the validation subset, and the rest to the training subset.
 
-    The split fractions (train_size, test_size) must sum to 1.
+    The split fractions (train_size, valid_size, test_size) must sum to 1.
 
     Parameters
     ----------
     data : sequence
-        Sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
 
     additional_data: sequence
-        Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
+        Additional sequences to be split alongside the main data, e.g. labels.
 
     train_size : float, default=None
-        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size - valid_size.
-        If valid_size is not provided, train_size is set to 1 - test_size. If train_size, test_size and
-        valid_size aren't set, train_size is set to 0.8.
+        The fraction of data to be used for the train subset. If None, it is set
+        to 1 - test_size - valid_size. If valid_size is not provided, train_size
+        is set to 1 - test_size. If train_size, test_size and valid_size aren't
+        set, train_size is set to 0.8.
 
     valid_size : float, default=None
-        The fraction of data to be used for the test subset. If None, it is set to 1 - train_size - valid_size.
-        If train_size, test_size and valid_size aren't set, train_size is set to 0.1.
+        The fraction of data to be used for the test subset. If None, it is set
+        to 1 - train_size - valid_size. If train_size, test_size and valid_size
+        aren't set, train_size is set to 0.1.
 
     test_size : float, default=None
-        The fraction of data to be used for the validation subset. If None, it is set to 1 - train_size - valid_size.
-        If valid_size is not provided, test_size is set to 1 - train_size. If train_size, test_size and
-        valid_size aren't set, test_size is set to 0.1.
+        The fraction of data to be used for the validation subset. If None, it is
+        set to 1 - train_size - valid_size. If valid_size is not provided, test_size
+        is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
+        test_size is set to 0.1.
 
     include_chirality: bool, default=False
         Whether to take chirality of molecules into consideration.
 
     use_csk: bool, default=False
-        Whether to use molecule's skeleton or the core structure scaffold (including atom types).
+        Whether to use the molecule cyclic skeleton (CSK), instead of the core
+        structure scaffold.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
@@ -263,8 +265,9 @@ def scaffold_train_valid_test_split(
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
-    depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+    Tuple with train-valid-test subsets of provided arrays. First three are lists of
+    SMILES strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    is True, lists of indices are returned instead of actual data.
 
     References
     ----------
@@ -280,7 +283,6 @@ def scaffold_train_valid_test_split(
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844` _
-
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size
@@ -328,7 +330,7 @@ def scaffold_train_valid_test_split(
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, valid_idxs, test_idxs
         )
-        return train_subset, valid_subset, test_subset, additional_data_split
+        return train_subset, valid_subset, test_subset, *additional_data_split
     else:
         return train_subset, valid_subset, test_subset
 

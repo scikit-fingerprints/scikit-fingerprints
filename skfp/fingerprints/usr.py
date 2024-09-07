@@ -111,6 +111,7 @@ class USRFingerprint(BaseFingerprintTransformer):
     ):
         super().__init__(
             n_features_out=12,
+            requires_conformers=True,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,

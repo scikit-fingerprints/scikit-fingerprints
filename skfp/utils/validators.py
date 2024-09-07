@@ -9,8 +9,13 @@ def ensure_mols(X: Sequence[Any]) -> list[Mol]:
     if not all(isinstance(x, (Mol, PropertyMol, str)) for x in X):
         raise ValueError("Passed values must be either rdkit.Chem.rdChem.Mol or SMILES")
 
-    X = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
-    return X
+    mols = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
+
+    if any(x is None for x in mols):
+        idx = mols.index(None)
+        raise ValueError(f"Could not parse {X[idx]} as molecule")
+
+    return mols
 
 
 def ensure_smiles(X: Sequence[Any]) -> list[str]:
