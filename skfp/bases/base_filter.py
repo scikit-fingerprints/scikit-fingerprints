@@ -1,19 +1,48 @@
 from abc import abstractmethod
 from collections.abc import Sequence
+from copy import deepcopy
+from numbers import Integral
 from typing import Optional, Union
 
 import numpy as np
+from joblib import effective_n_jobs
 from rdkit.Chem import Mol
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.bases import BasePreprocessor
+from skfp.utils import ensure_mols, run_in_parallel
 
 
 class BaseFilter(BasePreprocessor):
+    # parameters common for all filters
+    _parameter_constraints: dict = {
+        "allow_one_violation": ["boolean"],
+        "return_indicators": ["boolean"],
+        "n_jobs": [Integral, None],
+        "batch_size": [Integral, None],
+        "verbose": ["verbose"],
+    }
+
+    def __init__(
+        self,
+        allow_one_violation: bool = True,
+        return_indicators: bool = False,
+        n_jobs: Optional[int] = None,
+        batch_size: Optional[int] = None,
+        verbose: int = 0,
+    ):
+        self.allow_one_violation = allow_one_violation
+        self.return_indicators = return_indicators
+        self.n_jobs = n_jobs
+        self.batch_size = batch_size
+        self.verbose = verbose
+
     def __sklearn_is_fitted__(self) -> bool:
         return True  # molecule preprocessing transformers don't need fitting
 
-    def fit(self, X: Sequence[Mol], y: Optional[np.ndarray] = None, **fit_params):
+    def fit(
+        self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
+    ):
         """Unused, kept for Scikit-learn compatibility.
 
         Parameters
@@ -35,7 +64,7 @@ class BaseFilter(BasePreprocessor):
         return self
 
     def fit_transform(
-        self, X: Sequence[Mol], y: Optional[np.ndarray] = None, **fit_params
+        self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
     ):
         """
         The same as `transform` method, kept for Scikit-learn compatibility.
@@ -59,7 +88,7 @@ class BaseFilter(BasePreprocessor):
         return self.transform(X)
 
     def transform(
-        self, X: Sequence[Mol], copy: bool = False
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[list[Mol], np.ndarray]:
         """
         Apply a filter to input molecules. Output depends on `return_indicators`
@@ -79,15 +108,14 @@ class BaseFilter(BasePreprocessor):
             List with filtered RDKit Mol objects, or indicator vector which molecules
             fulfill the filter rules.
         """
-        filter_indicators = self._filter(X, copy)
+        filter_ind = self._get_filter_indicators(X, copy)
         if self.return_indicators:
-            return filter_indicators
+            return filter_ind
         else:
-            return [mol for idx, mol in enumerate(X) if filter_indicators[idx]]
+            return [mol for idx, mol in enumerate(X) if filter_ind[idx]]
 
-    @abstractmethod
     def transform_x_y(
-        self, X: Sequence[Mol], y: np.ndarray, copy: bool = False
+        self, X: Sequence[Union[str, Mol]], y: np.ndarray, copy: bool = False
     ) -> tuple[Union[list[Mol], np.ndarray], np.ndarray]:
         """
         Apply a filter to input molecules.
@@ -112,13 +140,39 @@ class BaseFilter(BasePreprocessor):
         y : np.ndarray of shape (n_samples_conf_gen,)
             Array with labels for molecules.
         """
-        filter_indicators = self._filter(X, copy)
-        mols = [mol for idx, mol in enumerate(X) if filter_indicators[idx]]
-        y = y[filter_indicators]
+        filter_ind = self._get_filter_indicators(X, copy)
+        mols = [mol for idx, mol in enumerate(X) if filter_ind[idx]]
+        y = y[filter_ind]
         return mols, y
 
+    def _get_filter_indicators(
+        self, mols: Sequence[Union[str, Mol]], copy: bool = True
+    ) -> np.ndarray:
+        self._validate_params()
+        mols = deepcopy(mols) if copy else mols
+        mols = ensure_mols(mols)
+
+        n_jobs = effective_n_jobs(self.n_jobs)
+        if n_jobs == 1:
+            filter_indicators = self._filter_mols_batch(mols)
+        else:
+            filter_indicators = run_in_parallel(
+                self._filter_mols_batch,
+                data=mols,
+                n_jobs=n_jobs,
+                batch_size=self.batch_size,
+                flatten_results=True,
+                verbose=self.verbose,
+            )
+
+        return filter_indicators
+
+    def _filter_mols_batch(self, mols: list[Mol]) -> np.ndarray:
+        filter_indicators = [self._apply_mol_filter(mol) for mol in mols]
+        return np.array(filter_indicators, dtype=bool)
+
     @abstractmethod
-    def _filter(self, mols: Sequence[Mol], copy: bool = True) -> np.ndarray:
+    def _apply_mol_filter(self, mol: Mol) -> bool:
         pass
 
     def _validate_params(self) -> None:
