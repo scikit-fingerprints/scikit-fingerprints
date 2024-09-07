@@ -62,7 +62,7 @@ class PAINSFilter(BaseFilter):
     Examples
     --------
     >>> from skfp.preprocessing import PAINSFilter
-    >>> smiles = ["[C-]#N", "CC=O", "O=C(O)c1ccccc1c2ccc(cc2)Cn3c4cc(cc(c4nc3CCC)C)c5nc6ccccc6n5C"]
+    >>> smiles = ["[C-]#N", "CC=O", "C1=CC(=O)C(=O)C=C1"]
     >>> filt = PAINSFilter()
     >>> filt
     PAINSFilter()
@@ -80,7 +80,7 @@ class PAINSFilter(BaseFilter):
     def __init__(
         self,
         variant: str = "A",
-        allow_one_violation: bool = True,
+        allow_one_violation: bool = False,
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
@@ -104,7 +104,7 @@ class PAINSFilter(BaseFilter):
         elif variant == "C":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_C
         else:
-            raise ValueError(f'PAINS must be "A", "B" or "C", got {variant}')
+            raise ValueError(f'PAINS variant must be "A", "B" or "C", got {variant}')
 
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
