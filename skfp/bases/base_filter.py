@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
@@ -7,13 +7,15 @@ from typing import Optional, Union
 import numpy as np
 from joblib import effective_n_jobs
 from rdkit.Chem import Mol
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.bases import BasePreprocessor
 from skfp.utils import ensure_mols, run_in_parallel
 
 
-class BaseFilter(BasePreprocessor):
+class BaseFilter(ABC, BaseEstimator, TransformerMixin):
+    """Base class for molecular filters."""
+
     # parameters common for all filters
     _parameter_constraints: dict = {
         "allow_one_violation": ["boolean"],
@@ -38,7 +40,7 @@ class BaseFilter(BasePreprocessor):
         self.verbose = verbose
 
     def __sklearn_is_fitted__(self) -> bool:
-        return True  # molecule preprocessing transformers don't need fitting
+        return True
 
     def fit(
         self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
