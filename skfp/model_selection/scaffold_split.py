@@ -13,8 +13,8 @@ from skfp.model_selection.utils import (
     ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
-    validate_and_scale_train_test_sizes,
-    validate_and_scale_train_valid_test_split_sizes,
+    validate_train_test_split_sizes,
+    validate_train_valid_test_split_sizes,
 )
 from skfp.utils.validators import ensure_mols
 
@@ -119,7 +119,7 @@ def scaffold_train_test_split(
 
 
     """
-    train_size, test_size = validate_and_scale_train_test_sizes(
+    train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
     scaffolds = _create_scaffolds(data, use_csk)
@@ -154,7 +154,7 @@ def scaffold_train_test_split(
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, test_idxs
         )
-        return train_subset, test_subset, additional_data_split
+        return train_subset, test_subset, *additional_data_split
     else:
         return train_subset, test_subset
 
@@ -274,7 +274,7 @@ def scaffold_train_valid_test_split(
         https://github.com/rdkit/rdkit/discussions/6844` _
 
     """
-    train_size, valid_size, test_size = validate_and_scale_train_valid_test_split_sizes(
+    train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
 
@@ -314,7 +314,7 @@ def scaffold_train_valid_test_split(
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, valid_idxs, test_idxs
         )
-        return train_subset, valid_subset, test_subset, additional_data_split
+        return train_subset, valid_subset, test_subset, *additional_data_split
     else:
         return train_subset, valid_subset, test_subset
 
@@ -334,16 +334,15 @@ def _create_scaffolds(
 
     for idx, mol in enumerate(molecules):
         mol = deepcopy(mol)
-        Chem.RemoveStereochemistry(mol)  # important for canonization of CSK!
-        scaff = MurckoScaffold.GetScaffoldForMol(mol)
-        scaff = MurckoScaffold.MakeScaffoldGeneric(scaff)
-        scaff = MurckoScaffold.GetScaffoldForMol(scaff)
+        Chem.RemoveStereochemistry(mol)
 
         if use_csk:
-            scaff = MurckoScaffold.MakeScaffoldGeneric(mol=mol)
+            scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+            scaffold = MurckoScaffold.MakeScaffoldGeneric(scaffold)
+            scaffold = MurckoScaffold.GetScaffoldForMol(scaffold)
         else:
-            scaff = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
+            scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
 
-        scaffolds[scaff].append(idx)
+        scaffolds[scaffold].append(idx)
 
     return scaffolds

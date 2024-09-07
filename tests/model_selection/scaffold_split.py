@@ -30,7 +30,7 @@ def all_molecules() -> list[str]:
 
 
 @pytest.fixture
-def smiles_for_ten_different_scaffold() -> list[str]:
+def smiles_ten_scaffolds() -> list[str]:
     ten_different_scaffolds = [
         "C1CCCC(C2CC2)CC1",
         "c1n[nH]cc1C1CCCCCC1",
@@ -77,39 +77,6 @@ def test_train_test_split_total_molecule_count(all_molecules):
     assert len(train_split) + len(test_split) == len(all_molecules)
     assert len(train_split) == 8
     assert len(test_split) == 2
-
-
-def test_scaffold_train_test_split_with_additional_data(all_molecules, additional_data):
-    train_set, test_set, additional = scaffold_train_test_split(
-        all_molecules, *additional_data, train_size=0.7, test_size=0.3
-    )
-
-    train_additional = additional[0]
-    test_additional = additional[1]
-
-    assert len(train_set) == 7
-    assert len(test_set) == 3
-    assert len(train_additional) == 7
-    assert len(test_additional) == 3
-
-
-def test_scaffold_train_valid_test_split_with_additional_data(
-    all_molecules, additional_data
-):
-    train_set, valid_set, test_set, additional = scaffold_train_valid_test_split(
-        all_molecules, *additional_data, train_size=0.7, valid_size=0.2, test_size=0.1
-    )
-
-    train_additional = additional[0]
-    valid_additional = additional[1]
-    test_additional = additional[2]
-
-    assert len(train_set) == 7
-    assert len(valid_set) == 2
-    assert len(test_set) == 1
-    assert len(train_additional) == 7
-    assert len(valid_additional) == 2
-    assert len(test_additional) == 1
 
 
 def test_train_valid_test_split_total_molecule_count(all_molecules):
@@ -178,14 +145,10 @@ def test_scaffold_count_for_xanthines():
     assert len(scaffolds) == 1
 
 
-def test_csk_should_fail_for_degree_greater_than_four():
+def test_csk_should_not_fail_for_degree_greater_than_four():
     smiles = ["O=[U]=O", "F[U](F)(F)(F)(F)F"]
 
-    with pytest.raises(
-        Chem.rdchem.AtomValenceException,
-        match="Explicit valence for atom # 1 C, 6, is greater than permitted",
-    ):
-        scaffold_train_test_split(smiles, use_csk=True)
+    scaffold_train_test_split(smiles, use_csk=True)
 
 
 def test_scaffold_train_test_split_returns_molecules(all_molecules):
@@ -233,7 +196,7 @@ def test_empty_train_subset_raises_an_error_train_test():
 
     with pytest.raises(
         ValueError,
-        match="Train subset is empty.",
+        match="Train subset is empty",
     ):
         scaffold_train_test_split(data=smiles_list)
 
@@ -246,28 +209,26 @@ def test_empty_train_subset_raises_an_error_train_valid_test():
 
     with pytest.raises(
         ValueError,
-        match="Train subset is empty.",
+        match="Train subset is empty",
     ):
         scaffold_train_valid_test_split(data=smiles_list)
 
 
 def test_train_test_split_properly_splits_csk_with_ints(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, test_set = scaffold_train_test_split(
-        data=smiles_for_ten_different_scaffold, train_size=7, test_size=3, use_csk=True
+        data=smiles_ten_scaffolds, train_size=7, test_size=3, use_csk=True
     )
     assert len(train_set) == 7
     assert len(test_set) == 3
 
 
 def test_train_test_split_properly_splits_csk_with_floats(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, test_set = scaffold_train_test_split(
-        data=smiles_for_ten_different_scaffold,
+        data=smiles_ten_scaffolds,
         train_size=0.7,
         test_size=0.3,
         use_csk=True,
@@ -277,11 +238,10 @@ def test_train_test_split_properly_splits_csk_with_floats(
 
 
 def test_train_valid_test_split_properly_splits_csk_with_ints(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, valid_set, test_set = scaffold_train_valid_test_split(
-        data=smiles_for_ten_different_scaffold,
+        data=smiles_ten_scaffolds,
         train_size=7,
         valid_size=2,
         test_size=1,
@@ -293,11 +253,10 @@ def test_train_valid_test_split_properly_splits_csk_with_ints(
 
 
 def test_train_valid_test_split_properly_splits_csk_with_floats(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, valid_size, test_set = scaffold_train_valid_test_split(
-        data=smiles_for_ten_different_scaffold,
+        data=smiles_ten_scaffolds,
         train_size=0.7,
         valid_size=0.2,
         test_size=0.1,

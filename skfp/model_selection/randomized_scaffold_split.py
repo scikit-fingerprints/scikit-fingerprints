@@ -15,8 +15,8 @@ from skfp.model_selection.utils import (
     ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
-    validate_and_scale_train_test_sizes,
-    validate_and_scale_train_valid_test_split_sizes,
+    validate_train_test_split_sizes,
+    validate_train_valid_test_split_sizes,
 )
 from skfp.utils.validators import ensure_mols
 
@@ -127,7 +127,7 @@ def randomized_scaffold_train_test_split(
 
     """
     # flake8: noqa: E501
-    train_size, test_size = validate_and_scale_train_test_sizes(
+    train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
     scaffolds = _create_scaffolds(data, use_csk)
@@ -169,7 +169,7 @@ def randomized_scaffold_train_test_split(
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, test_idxs
         )
-        return train_subset, test_subset, additional_data_split
+        return train_subset, test_subset, *additional_data_split
     else:
         return train_subset, test_subset
 
@@ -290,7 +290,7 @@ def randomized_scaffold_train_valid_test_split(
         https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html` _
 
     """
-    train_size, valid_size, test_size = validate_and_scale_train_valid_test_split_sizes(
+    train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
 
@@ -343,7 +343,8 @@ def randomized_scaffold_train_valid_test_split(
 
 
 def _create_scaffolds(
-    data: Sequence[Union[str, Mol]], use_csk=False
+    data: Sequence[Union[str, Mol]],
+    use_csk: bool = False,
 ) -> dict[str, list]:
     """
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
@@ -356,16 +357,15 @@ def _create_scaffolds(
 
     for idx, mol in enumerate(molecules):
         mol = deepcopy(mol)
-        Chem.RemoveStereochemistry(mol)  # important for canonization of CSK!
-        scaff = MurckoScaffold.GetScaffoldForMol(mol)
-        scaff = MurckoScaffold.MakeScaffoldGeneric(scaff)
-        scaff = MurckoScaffold.GetScaffoldForMol(scaff)
+        Chem.RemoveStereochemistry(mol)
 
         if use_csk:
-            scaff = MurckoScaffold.MakeScaffoldGeneric(mol=mol)
+            scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+            scaffold = MurckoScaffold.MakeScaffoldGeneric(scaffold)
+            scaffold = MurckoScaffold.GetScaffoldForMol(scaffold)
         else:
-            scaff = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
+            scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
 
-        scaffolds[scaff].append(idx)
+        scaffolds[scaffold].append(idx)
 
     return scaffolds

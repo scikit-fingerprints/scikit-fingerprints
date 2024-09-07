@@ -39,14 +39,50 @@ def all_molecules() -> list[str]:
 @pytest.fixture
 def additional_data() -> list[list[Union[str, int, bool]]]:
     return [
-        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [True, False, True, False, True, False, True, False, True, False],
+        [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+        ],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+        [
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+            False,
+            True,
+        ],
     ]
 
 
 @pytest.fixture
-def smiles_for_ten_different_scaffold() -> list[str]:
+def smiles_ten_scaffolds() -> list[str]:
     ten_different_scaffolds = [
         "C1CCCC(C2CC2)CC1",
         "c1n[nH]cc1C1CCCCCC1",
@@ -96,30 +132,16 @@ def test_randomized_scaffold_count_for_xanthines():
     assert len(randomized_scaffolds) == 1
 
 
-def test_csk_should_fail_for_degree_greater_than_four():
+def test_csk_should_not_fail_for_degree_greater_than_four():
     smiles = ["O=[U]=O", "F[U](F)(F)(F)(F)F"]
 
-    with pytest.raises(
-        Chem.rdchem.AtomValenceException,
-        match="Explicit valence for atom # 1 C, 6, is greater than permitted",
-    ):
-        randomized_scaffold_train_test_split(smiles, random_state=42, use_csk=True)
+    randomized_scaffold_train_test_split(smiles, random_state=0, use_csk=True)
 
 
 def test_randomized_scaffold_train_test_split_returns_molecules(all_molecules):
     mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
     train_set, test_set = randomized_scaffold_train_test_split(
-        mols, random_state=42, return_indices=False
-    )
-
-    assert all(isinstance(train, Mol) for train in train_set)
-    assert all(isinstance(test, Mol) for test in test_set)
-
-
-def test_randomized_scaffold_train_test_split_return_indices(all_molecules):
-    mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
-    train_set, test_set = randomized_scaffold_train_test_split(
-        mols, random_state=42, return_indices=False
+        mols, random_state=0, return_indices=False
     )
 
     assert all(isinstance(train, Mol) for train in train_set)
@@ -129,7 +151,7 @@ def test_randomized_scaffold_train_test_split_return_indices(all_molecules):
 def test_randomized_scaffold_train_valid_test_split_returns_molecules(all_molecules):
     mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
     train_set, valid_set, test_set = randomized_scaffold_train_valid_test_split(
-        mols, random_state=42, return_indices=False
+        mols, random_state=0, return_indices=False
     )
 
     assert all(isinstance(train, Mol) for train in train_set)
@@ -140,7 +162,7 @@ def test_randomized_scaffold_train_valid_test_split_returns_molecules(all_molecu
 def test_randomized_scaffold_train_valid_test_split_return_indices(all_molecules):
     mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
     train_idxs, valid_idxs, test_idxs = randomized_scaffold_train_valid_test_split(
-        mols, random_state=42, return_indices=True
+        mols, random_state=0, return_indices=True
     )
 
     assert all(isinstance(idx, int) for idx in train_idxs)
@@ -150,11 +172,11 @@ def test_randomized_scaffold_train_valid_test_split_return_indices(all_molecules
 
 def test_seed_consistency_train_test_split(all_molecules):
     train_set_1, test_set_1 = randomized_scaffold_train_test_split(
-        all_molecules, random_state=42
+        all_molecules, random_state=0
     )
 
     train_set_2, test_set_2 = randomized_scaffold_train_test_split(
-        all_molecules, random_state=42
+        all_molecules, random_state=0
     )
 
     assert train_set_1 == train_set_2
@@ -163,11 +185,11 @@ def test_seed_consistency_train_test_split(all_molecules):
 
 def test_seed_consistency_train_valid__test_split(all_molecules):
     train_set_1, valid_set_1, test_set_1 = randomized_scaffold_train_valid_test_split(
-        all_molecules, random_state=42
+        all_molecules, random_state=0
     )
 
     train_set_2, valid_set_2, test_set_2 = randomized_scaffold_train_valid_test_split(
-        all_molecules, random_state=42
+        all_molecules, random_state=0
     )
 
     assert train_set_1 == train_set_2
@@ -176,22 +198,20 @@ def test_seed_consistency_train_valid__test_split(all_molecules):
 
 
 def test_train_test_split_properly_splits_csk_with_ints(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, test_set = randomized_scaffold_train_test_split(
-        data=smiles_for_ten_different_scaffold, train_size=7, test_size=3, use_csk=True
+        data=smiles_ten_scaffolds, train_size=7, test_size=3, use_csk=True
     )
     assert len(train_set) == 7
     assert len(test_set) == 3
 
 
 def test_train_test_split_properly_splits_csk_with_floats(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, test_set = randomized_scaffold_train_test_split(
-        data=smiles_for_ten_different_scaffold,
+        data=smiles_ten_scaffolds,
         train_size=0.7,
         test_size=0.3,
         use_csk=True,
@@ -201,11 +221,10 @@ def test_train_test_split_properly_splits_csk_with_floats(
 
 
 def test_train_valid_test_split_properly_splits_csk_with_ints(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, valid_set, test_set = randomized_scaffold_train_valid_test_split(
-        data=smiles_for_ten_different_scaffold,
+        data=smiles_ten_scaffolds,
         train_size=7,
         valid_size=2,
         test_size=1,
@@ -217,11 +236,10 @@ def test_train_valid_test_split_properly_splits_csk_with_ints(
 
 
 def test_train_valid_test_split_properly_splits_csk_with_floats(
-    smiles_for_ten_different_scaffold,
+    smiles_ten_scaffolds,
 ):
-
     train_set, valid_size, test_set = randomized_scaffold_train_valid_test_split(
-        data=smiles_for_ten_different_scaffold,
+        data=smiles_ten_scaffolds,
         train_size=0.7,
         valid_size=0.2,
         test_size=0.1,
@@ -230,3 +248,23 @@ def test_train_valid_test_split_properly_splits_csk_with_floats(
     assert len(train_set) == 7
     assert len(valid_size) == 2
     assert len(test_set) == 1
+
+
+def test_randomized_scaffold_train_test_split_return_indices(all_molecules):
+    train_size = 0.6
+    test_size = 0.4
+    result = randomized_scaffold_train_test_split(
+        all_molecules, train_size=train_size, test_size=test_size, return_indices=True
+    )
+
+    train_idxs, test_idxs = result
+
+    assert isinstance(train_idxs, list), "Train indices should be a list"
+    assert isinstance(test_idxs, list), "Test indices should be a list"
+
+    assert all(
+        isinstance(idx, int) for idx in train_idxs
+    ), "All train indices should be integers"
+    assert all(
+        isinstance(idx, int) for idx in test_idxs
+    ), "All test indices should be integers"
