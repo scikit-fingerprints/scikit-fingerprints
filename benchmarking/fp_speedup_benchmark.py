@@ -16,23 +16,29 @@ N_CORES = cpu_count(only_physical_cores=True)
 DATASET_NAME = "ogbg-molhiv"
 
 
-def measure_speedups(X: list[Mol], transformer_cls: type) -> list[float]:
-    print(f"Fingerprint: {transformer_cls.__name__}")
+def measure_speedups(X: list[Mol], fp_name: str, transformer_cls: type) -> list[float]:
+    print(f"Fingerprint: {fp_name}")
 
-    times = []
+    os.makedirs("benchmark_speedups", exist_ok=True)
+    if os.path.exists(f"benchmark_speedups/{fp_name}.npy"):
+        print("Loading from cached file")
+        return np.load(f"benchmark_speedups/{fp_name}.npy", allow_pickle=True)
+
+    all_times = []
     for n_jobs in list(range(1, N_CORES + 1)):
         print(f"    n_jobs: {n_jobs}")
-        times = []
+        curr_times = []
         for i in range(N_REPEATS):
             start = time()
             transformer_cls(n_jobs=n_jobs).transform(X)
             end = time()
-            times.append(end - start)
-        times.append(np.mean(times))
+            curr_times.append(end - start)
+        all_times.append(np.mean(curr_times))
 
-    serial_time = times[0]
-    speedups = [serial_time / t for t in times]
+    serial_time = all_times[0]
+    speedups = [serial_time / t for t in all_times]
 
+    np.save(f"benchmark_speedups/{fp_name}.npy", speedups, allow_pickle=True)
     return speedups
 
 
@@ -83,6 +89,7 @@ if __name__ == "__main__":
         "RDKit": fps.RDKitFingerprint,
     }
     fp_speedups = {
-        fp_name: measure_speedups(X, fp_cls) for fp_name, fp_cls in fp_classes.items()
+        fp_name: measure_speedups(X, fp_name, fp_cls)
+        for fp_name, fp_cls in fp_classes.items()
     }
     make_plot(fp_speedups)
