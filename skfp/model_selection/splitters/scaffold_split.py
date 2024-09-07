@@ -155,7 +155,7 @@ def scaffold_train_test_split(
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, test_idxs
         )
-        return train_subset, test_subset, additional_data_split
+        return train_subset, test_subset, *additional_data_split
     else:
         return train_subset, test_subset
 
@@ -330,7 +330,7 @@ def scaffold_train_valid_test_split(
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, valid_idxs, test_idxs
         )
-        return train_subset, valid_subset, test_subset, additional_data_split
+        return train_subset, valid_subset, test_subset, *additional_data_split
     else:
         return train_subset, valid_subset, test_subset
 

@@ -788,8 +788,20 @@ def _safe_multioutput_metric(
 
     if y_pred.ndim == 1:
         y_pred = y_pred.reshape(-1, 1)
-    elif y_pred.ndim > 2:
-        raise ValueError(f"Predictions must have 1 or 2 dimensions, got {y_pred.ndim}")
+    if y_pred.ndim == 2:
+        if y_true.shape != y_pred.shape:
+            raise ValueError(
+                "For 2D predictions, they must have the same shape as targets, "
+                f"got: y_true {y_true.shape}, y_pred {y_pred.shape}"
+            )
+    if y_pred.ndim == 3 and y_pred.shape[2] == 2:
+        # .predict_proba() in scikit-learn returns list of arrays [cls_0_proba, cls_1_proba]
+        # extract positive class probabilities
+        y_pred = y_pred[:, :, 1].T
+    elif y_pred.ndim > 3:
+        raise ValueError(
+            f"Predictions must have 1, 2 or 3 dimensions, got {y_pred.ndim}"
+        )
     elif y_pred.ndim == 0:
         raise ValueError(f"Expected matrix for predictions, got a scalar {y_pred}")
 
