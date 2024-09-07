@@ -112,4 +112,5 @@ class PAINSFilter(BaseFilter):
         return filters
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        return True
+        errors = len(self._filters.GetMatches(mol))
+        return not errors or (self.allow_one_violation and errors == 1)
