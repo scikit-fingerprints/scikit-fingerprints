@@ -16,7 +16,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         X : any
             Unused, kept for Scikit-learn compatibility.
 
-        Y : any
+        y : any
             Unused, kept for Scikit-learn compatibility.
 
         **fit_params : dict
