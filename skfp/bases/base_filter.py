@@ -89,7 +89,7 @@ class BaseFilter(BasePreprocessor):
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[list[Mol], np.ndarray]:
+    ) -> Union[list[Union[str, Mol]], np.ndarray]:
         """
         Apply a filter to input molecules. Output depends on `return_indicators`
         attribute.
@@ -116,7 +116,7 @@ class BaseFilter(BasePreprocessor):
 
     def transform_x_y(
         self, X: Sequence[Union[str, Mol]], y: np.ndarray, copy: bool = False
-    ) -> tuple[Union[list[Mol], np.ndarray], np.ndarray]:
+    ) -> tuple[list[Union[str, Mol]], np.ndarray]:
         """
         Apply a filter to input molecules.
 

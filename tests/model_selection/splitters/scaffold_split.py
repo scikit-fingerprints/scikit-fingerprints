@@ -11,7 +11,7 @@ from skfp.model_selection.splitters.scaffold_split import (
 
 @pytest.fixture
 def all_molecules() -> list[str]:
-    all_smiles: list[str] = [
+    return [
         "CCC",
         "CCCl",
         "CCBr",
@@ -23,8 +23,6 @@ def all_molecules() -> list[str]:
         "CCN",
         "CC.OCC",
     ]
-
-    return all_smiles
 
 
 def test_scaffold_train_test_split_default(all_molecules):
