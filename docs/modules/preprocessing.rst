@@ -25,4 +25,6 @@ Molecular filters:
 
     BrenkFilter
     LipinskiFilter
+    NIHFilter
     PAINSFilter
+    ZINCFilter
