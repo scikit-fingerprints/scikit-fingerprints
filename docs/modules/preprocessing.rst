@@ -24,3 +24,4 @@ Molecular filters:
     :toctree: generated/
 
     LipinskiFilter
+    PAINSFilter
