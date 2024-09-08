@@ -5,16 +5,26 @@ from skfp.preprocessing import PAINSFilter
 
 
 def test_basic_pains(mols_list):
-    pains = PAINSFilter(n_jobs=-1)
+    pains = PAINSFilter()
     mols_filtered = pains.transform(mols_list)
     assert all(isinstance(x, Mol) for x in mols_filtered)
     assert len(mols_filtered) <= len(mols_list)
 
 
+def test_pains_parallel(smiles_list):
+    pains = PAINSFilter()
+    smiles_filtered_sequential = pains.transform(smiles_list)
+
+    pains = PAINSFilter(n_jobs=-1)
+    smiles_filtered_parallel = pains.transform(smiles_list)
+
+    assert smiles_filtered_sequential == smiles_filtered_parallel
+
+
 def test_pains_variants(mols_list):
-    pains_a = PAINSFilter(variant="A", n_jobs=-1)
-    pains_b = PAINSFilter(variant="B", n_jobs=-1)
-    pains_c = PAINSFilter(variant="C", n_jobs=-1)
+    pains_a = PAINSFilter(variant="A")
+    pains_b = PAINSFilter(variant="B")
+    pains_c = PAINSFilter(variant="C")
 
     mols_filtered_a = pains_a.transform(mols_list)
     mols_filtered_b = pains_b.transform(mols_list)
@@ -25,8 +35,8 @@ def test_pains_variants(mols_list):
 
 
 def test_pains_allowing_one_violation(mols_list):
-    pains = PAINSFilter(variant="C", n_jobs=-1)
-    pains_loose = PAINSFilter(variant="C", allow_one_violation=True, n_jobs=-1)
+    pains = PAINSFilter(variant="C")
+    pains_loose = PAINSFilter(variant="C", allow_one_violation=True)
 
     mols_filtered = pains.transform(mols_list)
     mols_filtered_loose = pains_loose.transform(mols_list)
