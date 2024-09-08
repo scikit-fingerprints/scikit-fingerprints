@@ -145,7 +145,7 @@ def test_scaffold_count_for_xanthines():
     assert len(scaffolds) == 1
 
 
-def test_csk_should_not_fail_for_degree_greater_than_four():
+def test_csk_high_degree_atoms():
     smiles = ["O=[U]=O", "F[U](F)(F)(F)(F)F"]
 
     scaffold_train_test_split(smiles, use_csk=True)

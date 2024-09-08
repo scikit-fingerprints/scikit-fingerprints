@@ -1,3 +1,4 @@
+import string
 from typing import Union
 
 import pytest
@@ -37,48 +38,12 @@ def all_molecules() -> list[str]:
 
 
 @pytest.fixture
-def additional_data() -> list[list[Union[str, int, bool]]]:
-    return [
-        [
-            "a",
-            "b",
-            "c",
-            "d",
-            "e",
-            "f",
-            "g",
-            "h",
-            "i",
-            "j",
-            "k",
-            "l",
-            "m",
-            "n",
-            "o",
-            "p",
-            "q",
-        ],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-        [
-            True,
-            False,
-            True,
-            False,
-            True,
-            False,
-            True,
-            False,
-            True,
-            False,
-            True,
-            False,
-            True,
-            False,
-            True,
-            False,
-            True,
-        ],
-    ]
+def additional_data() -> tuple[list[int], list[str], list[bool]]:
+    num = 10
+    ints = list(range(1, num))
+    letters = list(string.ascii_lowercase)[:num]
+    bools = [i % 2 == 0 for i in range(num)]
+    return ints, letters, bools
 
 
 @pytest.fixture
@@ -132,7 +97,7 @@ def test_randomized_scaffold_count_for_xanthines():
     assert len(randomized_scaffolds) == 1
 
 
-def test_csk_should_not_fail_for_degree_greater_than_four():
+def test_csk_high_degree_atoms():
     smiles = ["O=[U]=O", "F[U](F)(F)(F)(F)F"]
 
     randomized_scaffold_train_test_split(smiles, random_state=0, use_csk=True)
@@ -259,12 +224,8 @@ def test_randomized_scaffold_train_test_split_return_indices(all_molecules):
 
     train_idxs, test_idxs = result
 
-    assert isinstance(train_idxs, list), "Train indices should be a list"
-    assert isinstance(test_idxs, list), "Test indices should be a list"
+    assert isinstance(train_idxs, list)
+    assert isinstance(test_idxs, list)
 
-    assert all(
-        isinstance(idx, int) for idx in train_idxs
-    ), "All train indices should be integers"
-    assert all(
-        isinstance(idx, int) for idx in test_idxs
-    ), "All test indices should be integers"
+    assert all(isinstance(idx, int) for idx in train_idxs)
+    assert all(isinstance(idx, int) for idx in test_idxs)
