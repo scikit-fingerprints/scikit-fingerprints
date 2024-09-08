@@ -1,4 +1,4 @@
-"""import numpy as np
+import numpy as np
 from descriptastorus.descriptors import RDKit2D, RDKit2DNormalized
 from scipy.sparse import csr_array
 
@@ -72,4 +72,4 @@ def test_rdkit_2d_desc_normalized_sparse_fingerprint(smallest_mols_list):
     assert np.allclose(X_skfp.data, X_descriptastorus.data, atol=1e-3, equal_nan=True)  # type: ignore
     assert X_skfp.shape == (len(smallest_mols_list), 200)
     assert np.issubdtype(X_skfp.dtype, np.floating)
-"""
+
