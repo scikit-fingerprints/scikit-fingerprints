@@ -94,6 +94,16 @@ def test_bro5_parallel(smiles_list):
     assert mols_filtered_sequential == mols_filtered_parallel
 
 
+def test_mols_loose_bro5(mols_list):
+    filt = BeyondRO5Filter()
+    mols_filtered_bro5 = filt.transform(mols_list)
+
+    filt = BeyondRO5Filter(allow_one_violation=True)
+    mols_filtered_loose_bro5 = filt.transform(mols_list)
+
+    assert len(mols_filtered_bro5) <= len(mols_filtered_loose_bro5)
+
+
 def test_bro5_return_indicators(
     smiles_passing_ro5, smiles_failing_ro5, smiles_beyond_ro5
 ):
