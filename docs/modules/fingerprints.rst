@@ -41,4 +41,5 @@ Fingerprints
     TopologicalTorsionFingerprint
     USRFingerprint
     USRCATFingerprint
+    VSAFingerprint
     WHIMFingerprint
