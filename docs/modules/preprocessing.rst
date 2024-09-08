@@ -31,6 +31,7 @@ Molecular filters:
     LINTFilter
     LipinskiFilter
     MLSMRFilter
+    MolecularWeightFilter
     NIHFilter
     PAINSFilter
     SureChEMBLFilter

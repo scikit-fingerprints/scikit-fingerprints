@@ -6,6 +6,7 @@ from .inpharmatica import InpharmaticaFilter
 from .lint import LINTFilter
 from .lipinski import LipinskiFilter
 from .mlsmr import MLSMRFilter
+from .mol_weight import MolecularWeightFilter
 from .nih import NIHFilter
 from .pains import PAINSFilter
 from .surechembl import SureChEMBLFilter
