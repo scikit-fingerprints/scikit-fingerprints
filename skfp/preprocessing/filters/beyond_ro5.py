@@ -13,7 +13,7 @@ from rdkit.Chem.rdMolDescriptors import (
 from skfp.bases.base_filter import BaseFilter
 
 
-class BeyondRO5Filter(BaseFilter):
+class BeyondRo5Filter(BaseFilter):
     """
     Beyond Rule of Five (bRo5).
 
@@ -63,11 +63,11 @@ class BeyondRO5Filter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import BeyondRO5Filter, LipinskiFilter
+    >>> from skfp.preprocessing import BeyondRo5Filter, LipinskiFilter
     >>> smiles = ["[C-]#N", "CC=O", "O=C(O)C[C@H](O)C[C@H](O)CCn2c(c(c(c2c1ccc(F)cc1)c3ccccc3)C(=O)Nc4ccccc4)C(C)C"]
-    >>> filt_bro5 = BeyondRO5Filter()
+    >>> filt_bro5 = BeyondRo5Filter()
     >>> filt_bro5
-    BeyondRuleOfFiveFilter()
+    BeyondRo5Filter()
 
     >>> filt_bro5.transform(smiles)
     ['[C-]#N', 'CC=O', 'O=C(O)C[C@H](O)C[C@H](O)CCn2c(c(c(c2c1ccc(F)cc1)c3ccccc3)C(=O)Nc4ccccc4)C(C)C']

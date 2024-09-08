@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import BeyondRO5Filter, LipinskiFilter
+from skfp.preprocessing import BeyondRo5Filter, LipinskiFilter
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def smiles_beyond_ro5() -> list[str]:
 
 
 def test_mols_passing_bro5(smiles_passing_ro5, smiles_failing_ro5, smiles_beyond_ro5):
-    filt = BeyondRO5Filter()
+    filt = BeyondRo5Filter()
 
     smiles_filtered = filt.transform(smiles_passing_ro5)
     assert all(isinstance(x, str) for x in smiles_filtered)
@@ -67,7 +67,7 @@ def test_mols_ro5_vs_bro5(smiles_passing_ro5, smiles_failing_ro5, smiles_beyond_
     assert len(filt_ro5.transform(smiles_beyond_ro5)) == 0
     assert len(filt_ro5.transform(all_smiles)) == 3
 
-    filt_bro5 = BeyondRO5Filter()
+    filt_bro5 = BeyondRo5Filter()
     assert len(filt_bro5.transform(smiles_passing_ro5)) == 3
     assert len(filt_bro5.transform(smiles_failing_ro5)) == 3
     assert len(filt_bro5.transform(smiles_beyond_ro5)) == 3
@@ -75,7 +75,7 @@ def test_mols_ro5_vs_bro5(smiles_passing_ro5, smiles_failing_ro5, smiles_beyond_
 
 
 def test_bro5_smiles_and_mol_input(smiles_list, mols_list):
-    filt = BeyondRO5Filter()
+    filt = BeyondRo5Filter()
     smiles_filtered = filt.transform(smiles_list)
     mols_filtered = filt.transform(mols_list)
 
@@ -85,20 +85,20 @@ def test_bro5_smiles_and_mol_input(smiles_list, mols_list):
 
 
 def test_bro5_parallel(smiles_list):
-    filt = BeyondRO5Filter()
+    filt = BeyondRo5Filter()
     mols_filtered_sequential = filt.transform(smiles_list)
 
-    filt = BeyondRO5Filter(n_jobs=-1, batch_size=1)
+    filt = BeyondRo5Filter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = filt.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
 
 
 def test_mols_loose_bro5(mols_list):
-    filt = BeyondRO5Filter()
+    filt = BeyondRo5Filter()
     mols_filtered_bro5 = filt.transform(mols_list)
 
-    filt = BeyondRO5Filter(allow_one_violation=True)
+    filt = BeyondRo5Filter(allow_one_violation=True)
     mols_filtered_loose_bro5 = filt.transform(mols_list)
 
     assert len(mols_filtered_bro5) <= len(mols_filtered_loose_bro5)
@@ -109,6 +109,6 @@ def test_bro5_return_indicators(
 ):
     all_smiles = smiles_passing_ro5 + smiles_failing_ro5 + smiles_beyond_ro5
 
-    filt = BeyondRO5Filter(return_indicators=True)
+    filt = BeyondRo5Filter(return_indicators=True)
     filter_indicators = filt.transform(all_smiles)
     assert np.all(filter_indicators)
