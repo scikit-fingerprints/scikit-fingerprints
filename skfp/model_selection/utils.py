@@ -19,7 +19,7 @@ def validate_train_test_split_sizes(
     train_size: Optional[Union[float, int]],
     test_size: Optional[Union[float, int]],
     data_length: int,
-) -> tuple[float, float]:
+) -> tuple[int, int]:
     """
     Fill in missing sizes for train and test sets based on the provided sizes.
     If test_size and train_size are floats, this method returns concrete
@@ -67,12 +67,11 @@ def validate_train_test_split_sizes(
         raise ValueError("test_size is 0.0")
 
     if isinstance(train_size, float):
-        return (
-            train_size * data_length,
-            test_size * data_length,
-        )
+        train_size = int(train_size * data_length)
+        test_size = data_length - train_size
+        return int(train_size), int(test_size)
     else:
-        return train_size, test_size
+        return int(train_size), int(test_size)
 
 
 def get_data_from_indices(
@@ -104,7 +103,7 @@ def validate_train_valid_test_split_sizes(
     valid_size: Optional[Union[float, int]],
     test_size: Optional[Union[float, int]],
     data_length: int,
-) -> tuple[float, float, float]:
+) -> tuple[int, int, int]:
     """
     Ensure the sum of train_size, valid_size, and test_size equals 1.0 and provide default values if necessary.
     If test_size, valid_size and train_size are floats, this method returns concrete
@@ -138,11 +137,11 @@ def validate_train_valid_test_split_sizes(
                 f"{sum(sizes)}"
             )
 
-        return (
-            train_size * data_length,
-            valid_size * data_length,
-            test_size * data_length,
-        )
+        train_size_int = int(train_size * data_length)
+        valid_size_int = max(int(valid_size * data_length), 1)
+        test_size_int = max(int(data_length - train_size_int - valid_size_int), 1)
+
+        return (int(train_size_int), int(valid_size_int), int(test_size_int))
 
     if isinstance(train_size, int):
         total = sum(sizes)
@@ -152,4 +151,12 @@ def validate_train_valid_test_split_sizes(
                 f"got {total} instead"
             )
 
-        return train_size, valid_size, test_size
+        return int(train_size), int(valid_size), int(test_size)
+
+
+if __name__ == "__main__":
+    data = ["C1CCCC(C2CC2)CC1", "c1n[nH]cc1C1CCCCCC1"]
+    result = validate_train_valid_test_split_sizes(
+        None, None, None, data_length=len(data)
+    )
+    print(result)
