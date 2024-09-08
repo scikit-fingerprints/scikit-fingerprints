@@ -18,23 +18,25 @@ possible, such as a clear description, steps to reproduce the issue, and any rel
 
 We encourage you to submit pull requests (PRs) to improve our project. To do so, follow these steps:
 
-1. Setup your development environment by following the [instructions](#development-setup-linux)
+1. Set up your development environment by following the [instructions](#development-setup-linux). In particular,
+   make sure that pre-commit hooks are working.
 
 2. Create a new branch for your feature or bug fix:
     ```bash
     git checkout -b my-feature
 
-3. Make your changes and commit them with clear and concise commit messages.
+3. Make your changes. Make sure to follow the existing coding style and conventions.
+   Commit changes with clear and concise commit messages.
 
 4. Push your changes to your forked repository:
     ```bash
     git push origin my-feature
 
-5. Open a pull request on our GitHub repository and provide a detailed description of your changes.
+5. Open a pull request on our GitHub repository, make sure to fill the PR template.
+   PR name should be well-formatted, concise, and clearly define what you did, e.g.
+   "Implemented X", "Fixed Y", "Added Z and Q".
 
-6. Ensure that your PR follows our coding style and conventions.
-
-7. Participate in the review process by addressing any feedback or comments on your PR.
+6. Participate in the review process by addressing any feedback or comments on your PR.
 
 ### Development Setup (Linux)
 
@@ -56,14 +58,14 @@ To set up the development environment, follow these steps:
    make setup
    ```
    This command will set up a virtual environment and install all the necessary dependencies.
-4. That's it! You're ready to start developing. For more convenience, you can run the following command to activate the
-   virtual environment:
+4. That's it! You're ready to start developing. For more convenience, you can run 
+   the following command to activate the virtual environment:
    ```bash
    poetry shell
    ```
 
-If you are using PyCharm, then mark `tests` directory as tests sources root. This will make running
-them easier from UI.
+If you are using PyCharm, then mark `tests` directory as tests sources root. Also make sure that
+PyTest is configured as the default test runner. This will make running them easier from UI.
 
 ---
 **NOTE**

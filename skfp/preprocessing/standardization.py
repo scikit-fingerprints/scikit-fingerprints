@@ -124,7 +124,3 @@ class MolStandardizer(BasePreprocessor):
             CleanupInPlace(mols, numThreads=n_jobs)
 
         return mols
-
-
-class HydrogenRemover(BasePreprocessor):
-    pass

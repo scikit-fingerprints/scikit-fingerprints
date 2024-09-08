@@ -12,11 +12,11 @@ from sklearn.metrics import (
     mean_squared_error,
     precision_score,
     recall_score,
-    roc_auc_score,
     root_mean_squared_error,
 )
 from sklearn.utils._param_validation import validate_params
 
+from skfp.metrics.auroc import auroc_score
 from skfp.metrics.spearman import spearman_correlation
 
 
@@ -94,11 +94,12 @@ def multioutput_auroc_score(
     multioutput problems.
 
     Returns the average value over all tasks. Missing values in target labels are
-    ignored. Columns with constant true value are also ignored, so that this function
-    can be safely used e.g. in cross-validation. Also supports single-task evaluation.
+    ignored. Columns with constant true value are ignored by default, but can also
+    use default value - see `auroc_score` function. As such, it can be safely used
+    e.g. in cross-validation. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `roc_auc_score` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying `auroc_score` and `roc_auc_score`
+    functions, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html
 
@@ -132,14 +133,7 @@ def multioutput_auroc_score(
     >>> multioutput_auroc_score(y_true, y_score)
     0.5
     """
-    return _safe_multioutput_metric(
-        roc_auc_score,
-        y_true,
-        y_score,
-        True,
-        *args,
-        **kwargs,
-    )
+    return _safe_multioutput_metric(auroc_score, y_true, y_score, *args, **kwargs)
 
 
 @validate_params(
@@ -777,7 +771,6 @@ def _safe_multioutput_metric(
     metric: Callable,
     y_true: np.ndarray,
     y_pred: np.ndarray,
-    omit_constant_cols: bool = False,
     *args,
     **kwargs,
 ) -> float:
@@ -795,8 +788,20 @@ def _safe_multioutput_metric(
 
     if y_pred.ndim == 1:
         y_pred = y_pred.reshape(-1, 1)
-    elif y_pred.ndim > 2:
-        raise ValueError(f"Predictions must have 1 or 2 dimensions, got {y_pred.ndim}")
+    if y_pred.ndim == 2:
+        if y_true.shape != y_pred.shape:
+            raise ValueError(
+                "For 2D predictions, they must have the same shape as targets, "
+                f"got: y_true {y_true.shape}, y_pred {y_pred.shape}"
+            )
+    if y_pred.ndim == 3 and y_pred.shape[2] == 2:
+        # .predict_proba() in scikit-learn returns list of arrays [cls_0_proba, cls_1_proba]
+        # extract positive class probabilities
+        y_pred = y_pred[:, :, 1].T
+    elif y_pred.ndim > 3:
+        raise ValueError(
+            f"Predictions must have 1, 2 or 3 dimensions, got {y_pred.ndim}"
+        )
     elif y_pred.ndim == 0:
         raise ValueError(f"Expected matrix for predictions, got a scalar {y_pred}")
 
@@ -807,10 +812,6 @@ def _safe_multioutput_metric(
 
         # in case of all-NaN column, skip it
         if np.all(np.isnan(y_true_i)):
-            continue
-
-        # omit constant columns for metrics not supporting those, e.g. AUROC
-        if len(np.unique(y_true_i)) == 1 and omit_constant_cols:
             continue
 
         # remove NaN values

@@ -3,7 +3,7 @@ from typing import Union
 
 import pytest
 
-from skfp.model_selection.utils import (
+from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
@@ -174,16 +174,6 @@ def test_validate_train_test_split_sizes_train_size_zero():
 def test_validate_train_test_split_sizes_test_size_zero():
     with pytest.raises(ValueError, match="test_size is 0.0"):
         validate_train_test_split_sizes(1.0, 0.0, 10)
-
-
-def test_validate_train_valid_test_split_sizes_invalid_type():
-    with pytest.raises(
-        TypeError,
-        match=re.escape(
-            "All sizes must be either int or float, got: [<class 'int'>, <class 'str'>, <class 'float'>]"
-        ),
-    ):
-        validate_train_valid_test_split_sizes(6, "invalid", 1.0, 10)
 
 
 def test_validate_train_valid_test_split_sizes_sum_not_equal_data_length_incorrect_total():

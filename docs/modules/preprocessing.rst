@@ -16,3 +16,12 @@ Preprocessing
     MolFromSmilesTransformer
     MolStandardizer
     MolToSmilesTransformer
+
+Molecular filters:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    LipinskiFilter
+    PAINSFilter

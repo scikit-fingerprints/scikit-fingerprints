@@ -1,11 +1,10 @@
 import string
-from typing import Union
 
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
 
-from skfp.model_selection.randomized_scaffold_split import (
+from skfp.model_selection.splitters.randomized_scaffold_split import (
     _create_scaffolds,
     randomized_scaffold_train_test_split,
     randomized_scaffold_train_valid_test_split,
@@ -70,13 +69,13 @@ def test_randomized_scaffold_creation_total_count(all_molecules):
 
 
 def test_no_ring_molecules():
-    smiles_list: list[str] = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
+    smiles_list = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
     randomized_scaffolds = _create_scaffolds(smiles_list)
     assert len(randomized_scaffolds) == 1
 
 
 def test_randomized_scaffold_count_for_benzodiazepines():
-    smiles_list: list[str] = [
+    smiles_list = [
         "C1CN=C(C2=CC=CC=C2)N=C1",
         "C1CN=C(C2=CC=CC=C2F)N=C1",
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",

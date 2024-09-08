@@ -17,11 +17,11 @@ def test_base_is_always_fitted(smiles_list):
 
 
 def test_base_invalid_params(smiles_list):
-    mol_from_smiles = MolFromSmilesTransformer(sanitize=-1)
+    mol_from_smiles = MolFromSmilesTransformer(sanitize=-1)  # type: ignore
     with pytest.raises(InvalidParameterError):
         mol_from_smiles.transform(smiles_list)
 
 
 def test_base_abstract_transform(smiles_list):
     with pytest.raises(NotImplementedError):
-        BasePreprocessor.transform(None, X=[""])
+        BasePreprocessor.transform(None, X=[""])  # type: ignore

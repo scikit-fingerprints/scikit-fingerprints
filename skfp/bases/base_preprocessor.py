@@ -5,6 +5,8 @@ from sklearn.utils._param_validation import InvalidParameterError
 
 
 class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
+    """Base class for molecule preprocessing classes."""
+
     def __sklearn_is_fitted__(self) -> bool:
         return True  # molecule preprocessing transformers don't need fitting
 
@@ -16,7 +18,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         X : any
             Unused, kept for Scikit-learn compatibility.
 
-        Y : any
+        y : any
             Unused, kept for Scikit-learn compatibility.
 
         **fit_params : dict

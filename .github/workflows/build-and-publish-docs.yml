@@ -1,12 +1,8 @@
 name: Deploy content to Pages
 
 on:
-  push:
-    branches: [ "master" ]
-    paths:
-      - 'docs/**'
-      - 'skfp/**'
-      - '.github/workflows/build-and-publish-docs.yml'
+  release:
+    types: [ published ]
 
   # allow running manually from the Actions tab
   workflow_dispatch:
