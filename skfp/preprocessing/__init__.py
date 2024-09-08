@@ -6,10 +6,12 @@ from .filters import (
     BrenkFilter,
     GlaxoFilter,
     InpharmaticaFilter,
+    LINTFilter,
     LipinskiFilter,
     MLSMRFilter,
     NIHFilter,
     PAINSFilter,
+    SureChEMBLFilter,
     ZINCFilter,
 )
 from .mol_to_from_smiles import MolFromSmilesTransformer, MolToSmilesTransformer

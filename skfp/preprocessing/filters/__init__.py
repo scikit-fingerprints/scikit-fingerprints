@@ -2,8 +2,10 @@ from .bms import BMSFilter
 from .brenk import BrenkFilter
 from .glaxo import GlaxoFilter
 from .inpharmatica import InpharmaticaFilter
+from .lint import LINTFilter
 from .lipinski import LipinskiFilter
 from .mlsmr import MLSMRFilter
 from .nih import NIHFilter
 from .pains import PAINSFilter
+from .surechembl import SureChEMBLFilter
 from .zinc import ZINCFilter
