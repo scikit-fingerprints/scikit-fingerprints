@@ -13,6 +13,7 @@ Base classes
     :nosignatures:
     :toctree: generated/
 
+    BaseFilter
     BaseFingerprintTransformer
     BasePreprocessor
     BaseSubstructureFingerprint

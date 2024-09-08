@@ -1,3 +1,4 @@
+from .base_filter import BaseFilter
 from .base_fp_transformer import BaseFingerprintTransformer
 from .base_preprocessor import BasePreprocessor
 from .base_substructure_fp import BaseSubstructureFingerprint
