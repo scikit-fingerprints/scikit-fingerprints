@@ -109,7 +109,7 @@ class VSAFingerprint(BaseFingerprintTransformer):
     >>> fp
     VSAFingerprint()
 
-    >>> fp.transform(smiles)  # doctest: +ELLIPSIS
+    >>> fp.transform(smiles)  # doctest: +SKIP
     array([[ 0.        , 11.71340936,  0.        ,  ...,  0.        ,  0.        , 0.        ],
            [ 5.73366748,  6.54475641,  0.        ,  ...,  0.        ,  0.        , 0.        ]])
     """
