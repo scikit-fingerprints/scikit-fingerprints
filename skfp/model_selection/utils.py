@@ -69,7 +69,7 @@ def validate_train_test_split_sizes(
     if isinstance(train_size, float):
         train_size = int(train_size * data_length)
         test_size = data_length - train_size
-        return int(train_size), int(test_size)
+        return train_size, test_size
     else:
         return int(train_size), int(test_size)
 
@@ -138,10 +138,10 @@ def validate_train_valid_test_split_sizes(
             )
 
         train_size_int = int(train_size * data_length)
-        valid_size_int = max(int(valid_size * data_length), 1)
+        valid_size_int = int(max(valid_size * data_length, 1))
         test_size_int = max(int(data_length - train_size_int - valid_size_int), 1)
 
-        return (int(train_size_int), int(valid_size_int), int(test_size_int))
+        return train_size_int, valid_size_int, test_size_int
 
     if isinstance(train_size, int):
         total = sum(sizes)
@@ -152,11 +152,3 @@ def validate_train_valid_test_split_sizes(
             )
 
         return int(train_size), int(valid_size), int(test_size)
-
-
-if __name__ == "__main__":
-    data = ["C1CCCC(C2CC2)CC1", "c1n[nH]cc1C1CCCCCC1"]
-    result = validate_train_valid_test_split_sizes(
-        None, None, None, data_length=len(data)
-    )
-    print(result)
