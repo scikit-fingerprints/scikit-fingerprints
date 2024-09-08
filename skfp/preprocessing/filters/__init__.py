@@ -1,3 +1,4 @@
+from .basic_zinc import BasicZINCFilter
 from .bms import BMSFilter
 from .brenk import BrenkFilter
 from .glaxo import GlaxoFilter
@@ -8,4 +9,3 @@ from .mlsmr import MLSMRFilter
 from .nih import NIHFilter
 from .pains import PAINSFilter
 from .surechembl import SureChEMBLFilter
-from .zinc import ZINCFilter

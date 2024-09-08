@@ -2,6 +2,7 @@
 
 from .conformer_generator import ConformerGenerator
 from .filters import (
+    BasicZINCFilter,
     BMSFilter,
     BrenkFilter,
     GlaxoFilter,
@@ -12,7 +13,6 @@ from .filters import (
     NIHFilter,
     PAINSFilter,
     SureChEMBLFilter,
-    ZINCFilter,
 )
 from .mol_to_from_smiles import MolFromSmilesTransformer, MolToSmilesTransformer
 from .standardization import MolStandardizer

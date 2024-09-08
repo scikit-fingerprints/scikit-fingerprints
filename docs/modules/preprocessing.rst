@@ -23,6 +23,7 @@ Molecular filters:
     :nosignatures:
     :toctree: generated/
 
+    BasicZINCFilter
     BMSFilter
     BrenkFilter
     GlaxoFilter
@@ -33,4 +34,3 @@ Molecular filters:
     NIHFilter
     PAINSFilter
     SureChEMBLFilter
-    ZINCFilter
