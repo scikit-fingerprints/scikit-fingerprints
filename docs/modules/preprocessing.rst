@@ -23,5 +23,6 @@ Molecular filters:
     :nosignatures:
     :toctree: generated/
 
+    BrenkFilter
     LipinskiFilter
     PAINSFilter

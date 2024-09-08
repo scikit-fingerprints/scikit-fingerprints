@@ -5,41 +5,41 @@ from skfp.preprocessing import PAINSFilter
 
 
 def test_basic_pains(mols_list):
-    pains = PAINSFilter()
-    mols_filtered = pains.transform(mols_list)
+    filt = PAINSFilter()
+    mols_filtered = filt.transform(mols_list)
     assert all(isinstance(x, Mol) for x in mols_filtered)
     assert len(mols_filtered) <= len(mols_list)
 
 
 def test_pains_parallel(smiles_list):
-    pains = PAINSFilter()
-    smiles_filtered_sequential = pains.transform(smiles_list)
+    filt = PAINSFilter()
+    smiles_filtered_sequential = filt.transform(smiles_list)
 
-    pains = PAINSFilter(n_jobs=-1)
-    smiles_filtered_parallel = pains.transform(smiles_list)
+    filt = PAINSFilter(n_jobs=-1)
+    smiles_filtered_parallel = filt.transform(smiles_list)
 
     assert smiles_filtered_sequential == smiles_filtered_parallel
 
 
 def test_pains_variants(mols_list):
-    pains_a = PAINSFilter(variant="A")
-    pains_b = PAINSFilter(variant="B")
-    pains_c = PAINSFilter(variant="C")
+    filt_a = PAINSFilter(variant="A")
+    filt_b = PAINSFilter(variant="B")
+    filt_c = PAINSFilter(variant="C")
 
-    mols_filtered_a = pains_a.transform(mols_list)
-    mols_filtered_b = pains_b.transform(mols_list)
-    mols_filtered_c = pains_c.transform(mols_list)
+    mols_filtered_a = filt_a.transform(mols_list)
+    mols_filtered_b = filt_b.transform(mols_list)
+    mols_filtered_c = filt_c.transform(mols_list)
 
     assert len(mols_filtered_a) <= len(mols_filtered_b)
     assert len(mols_filtered_b) <= len(mols_filtered_c)
 
 
 def test_pains_allowing_one_violation(mols_list):
-    pains = PAINSFilter(variant="C")
-    pains_loose = PAINSFilter(variant="C", allow_one_violation=True)
+    filt = PAINSFilter(variant="C")
+    filt_loose = PAINSFilter(variant="C", allow_one_violation=True)
 
-    mols_filtered = pains.transform(mols_list)
-    mols_filtered_loose = pains_loose.transform(mols_list)
+    mols_filtered = filt.transform(mols_list)
+    mols_filtered_loose = filt_loose.transform(mols_list)
 
     assert len(mols_filtered) <= len(mols_filtered_loose)
     assert len(mols_filtered_loose) <= len(mols_list)
