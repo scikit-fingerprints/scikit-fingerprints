@@ -24,6 +24,7 @@ Molecular filters:
     :toctree: generated/
 
     BasicZINCFilter
+    BeyondRO5Filter
     BMSFilter
     BrenkFilter
     GlaxoFilter

@@ -3,6 +3,7 @@
 from .conformer_generator import ConformerGenerator
 from .filters import (
     BasicZINCFilter,
+    BeyondRO5Filter,
     BMSFilter,
     BrenkFilter,
     GlaxoFilter,
