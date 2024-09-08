@@ -50,7 +50,7 @@ class BasicZINCFilter(BaseFilter):
     >>> smiles = ["O", "O=P(N(C)C)(N(C)C)N(C)C"]
     >>> filt = BasicZINCFilter()
     >>> filt
-    ZINCFilter()
+    BasicZINCFilter()
 
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
