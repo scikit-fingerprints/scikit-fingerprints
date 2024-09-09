@@ -6,16 +6,20 @@ from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 from skfp.bases.base_filter import BaseFilter
 
 
-class BrenkFilter(BaseFilter):
+class BMSFilter(BaseFilter):
     """
-    Brenk filter.
+    BMS filter.
 
-    Designed to filter out molecules containing substructures with undesirable
-    pharmacokinetics or toxicity, e.g. sulfates, phosphates, nitro groups. Resulting
-    set should be reasonable lead-like molecules for optimization campaigns and HTS.
+    Designed at BMS (Bristol-Myers Squibb) for filtering HTS decks in primary screening.
+    Aims to remove molecules containing certin functional groups to filter out random
+    noise, “promiscuous” compounds, and frequent hitters.
+
+    Selected functional groups for filtering are divided in the paper into "exclusion
+    lists" and "compound annotation". Which ones are "exclusion" filters is not clear
+    from the paper, so this is a best-effort approximation from RDKit.
 
     Rule definitions are available in the supplementary material of the original
-    publication [1]_ and in RDKit code [2]_.
+    publication [1]_ and in RDKit code [2]_. Note that
 
     Parameters
     ----------
@@ -38,25 +42,25 @@ class BrenkFilter(BaseFilter):
 
     References
     ----------
-    .. [1] `Ruth Brenk et al.
-        "Lessons Learnt from Assembling Screening Libraries for Drug Discovery for Neglected Diseases"
-        ChemMedChem 3:435–444 (2008)
-        <https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmdc.200700139>`_
+    .. [1] `Bradley C. Pearce et al.
+        "An Empirical Process for the Design of High-Throughput Screening Deck Filters"
+        J. Chem. Inf. Model. 2006, 46, 3, 1060–1068
+        <https://pubs.acs.org/doi/10.1021/ci050504m>`_
 
-    .. [2] `RDKit Brenk filter definitions
-        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/brenk.in>`_
+    .. [2] `RDKit BMS filter definitions
+        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/chembl_bms.in>`_
 
     Examples
     --------
-    >>> from skfp.preprocessing import BrenkFilter
-    >>> smiles = ["C", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "c1cc([NH2])ccc1"]
-    >>> filt = BrenkFilter()
+    >>> from skfp.preprocessing import BMSFilter
+    >>> smiles = ["C", "O", "c1(C=O)cc(OC)c(O)cc1"]
+    >>> filt = BMSFilter()
     >>> filt
-    BrenkFilter()
+    BMSFilter()
 
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['C', 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C']
+    ['C', 'O']
     """
 
     def __init__(
@@ -77,7 +81,7 @@ class BrenkFilter(BaseFilter):
         self._filters = self._load_filters()
 
     def _load_filters(self) -> FilterCatalog:
-        filter_rules = FilterCatalogParams.FilterCatalogs.BRENK
+        filter_rules = FilterCatalogParams.FilterCatalogs.CHEMBL_BMS
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)

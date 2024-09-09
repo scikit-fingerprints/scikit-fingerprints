@@ -6,16 +6,16 @@ from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 from skfp.bases.base_filter import BaseFilter
 
 
-class BrenkFilter(BaseFilter):
+class BasicZINCFilter(BaseFilter):
     """
-    Brenk filter.
+    Basic ZINC filter.
 
-    Designed to filter out molecules containing substructures with undesirable
-    pharmacokinetics or toxicity, e.g. sulfates, phosphates, nitro groups. Resulting
-    set should be reasonable lead-like molecules for optimization campaigns and HTS.
+    Designed to keep only drug-like molecules, removing molecules with unwanted
+    functional groups. Used by docking.org for ZINC database [1]_ as basic set of
+    filters, applied to all vendor catalogs.
 
-    Rule definitions are available in the supplementary material of the original
-    publication [1]_ and in RDKit code [2]_.
+    Rule definitions are available on the docking.org website [1]_ and in RDKit
+    code [2]_.
 
     Parameters
     ----------
@@ -38,25 +38,23 @@ class BrenkFilter(BaseFilter):
 
     References
     ----------
-    .. [1] `Ruth Brenk et al.
-        "Lessons Learnt from Assembling Screening Libraries for Drug Discovery for Neglected Diseases"
-        ChemMedChem 3:435–444 (2008)
-        <https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmdc.200700139>`_
+    .. [1] `docking.org filtering rules
+        <https://blaster.docking.org/filtering/>`_
 
-    .. [2] `RDKit Brenk filter definitions
-        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/brenk.in>`_
+    .. [2] `RDKit ZINC filter definitions
+        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/zinc.in>`_
 
     Examples
     --------
-    >>> from skfp.preprocessing import BrenkFilter
-    >>> smiles = ["C", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "c1cc([NH2])ccc1"]
-    >>> filt = BrenkFilter()
+    >>> from skfp.preprocessing import BasicZINCFilter
+    >>> smiles = ["O", "O=P(N(C)C)(N(C)C)N(C)C"]
+    >>> filt = BasicZINCFilter()
     >>> filt
-    BrenkFilter()
+    BasicZINCFilter()
 
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['C', 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C']
+    ['O']
     """
 
     def __init__(
@@ -77,7 +75,7 @@ class BrenkFilter(BaseFilter):
         self._filters = self._load_filters()
 
     def _load_filters(self) -> FilterCatalog:
-        filter_rules = FilterCatalogParams.FilterCatalogs.BRENK
+        filter_rules = FilterCatalogParams.FilterCatalogs.ZINC
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)

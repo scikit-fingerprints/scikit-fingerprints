@@ -6,16 +6,15 @@ from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 from skfp.bases.base_filter import BaseFilter
 
 
-class BrenkFilter(BaseFilter):
+class MLSMRFilter(BaseFilter):
     """
-    Brenk filter.
+    MLSMR filter.
 
-    Designed to filter out molecules containing substructures with undesirable
-    pharmacokinetics or toxicity, e.g. sulfates, phosphates, nitro groups. Resulting
-    set should be reasonable lead-like molecules for optimization campaigns and HTS.
+    NIH Molecular Libraries Small Molecule Repository (MLSMR) "Excluded Functionality
+    Filters". MLSMR was a library of diverse small molecules (now discontinued).
 
-    Rule definitions are available in the supplementary material of the original
-    publication [1]_ and in RDKit code [2]_.
+    Filter origin and rules rationale are currently unknown, and there seems to be no
+    literature reference. Rule definitions are available in the RDKit code [1]_.
 
     Parameters
     ----------
@@ -38,25 +37,20 @@ class BrenkFilter(BaseFilter):
 
     References
     ----------
-    .. [1] `Ruth Brenk et al.
-        "Lessons Learnt from Assembling Screening Libraries for Drug Discovery for Neglected Diseases"
-        ChemMedChem 3:435–444 (2008)
-        <https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmdc.200700139>`_
-
-    .. [2] `RDKit Brenk filter definitions
-        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/brenk.in>`_
+    .. [1] `RDKit MLSMR filter definitions
+        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/chembl_mlsmr.in>`_
 
     Examples
     --------
-    >>> from skfp.preprocessing import BrenkFilter
-    >>> smiles = ["C", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "c1cc([NH2])ccc1"]
-    >>> filt = BrenkFilter()
+    >>> from skfp.preprocessing import MLSMRFilter
+    >>> smiles = ["C", "O", "OP(=O)(O)O"]
+    >>> filt = MLSMRFilter()
     >>> filt
-    BrenkFilter()
+    MLSMRFilter()
 
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['C', 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C']
+    ['C', 'O']
     """
 
     def __init__(
@@ -77,7 +71,7 @@ class BrenkFilter(BaseFilter):
         self._filters = self._load_filters()
 
     def _load_filters(self) -> FilterCatalog:
-        filter_rules = FilterCatalogParams.FilterCatalogs.BRENK
+        filter_rules = FilterCatalogParams.FilterCatalogs.CHEMBL_MLSMR
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)

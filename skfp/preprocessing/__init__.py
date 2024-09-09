@@ -1,6 +1,18 @@
 """Classes for preprocessing molecules."""
 
 from .conformer_generator import ConformerGenerator
-from .filters import BrenkFilter, LipinskiFilter, PAINSFilter
+from .filters import (
+    BasicZINCFilter,
+    BMSFilter,
+    BrenkFilter,
+    GlaxoFilter,
+    InpharmaticaFilter,
+    LINTFilter,
+    LipinskiFilter,
+    MLSMRFilter,
+    NIHFilter,
+    PAINSFilter,
+    SureChEMBLFilter,
+)
 from .mol_to_from_smiles import MolFromSmilesTransformer, MolToSmilesTransformer
 from .standardization import MolStandardizer

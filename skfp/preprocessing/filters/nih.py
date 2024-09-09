@@ -6,16 +6,15 @@ from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 from skfp.bases.base_filter import BaseFilter
 
 
-class BrenkFilter(BaseFilter):
+class NIHFilter(BaseFilter):
     """
-    Brenk filter.
+    NIH filter.
 
-    Designed to filter out molecules containing substructures with undesirable
-    pharmacokinetics or toxicity, e.g. sulfates, phosphates, nitro groups. Resulting
-    set should be reasonable lead-like molecules for optimization campaigns and HTS.
+    Designed to filter out molecules containing with undesirable functional groups,
+    including reactive functionalities and medicinal chemistry exclusions.
 
     Rule definitions are available in the supplementary material of the original
-    publication [1]_ and in RDKit code [2]_.
+    publications [1]_ [2]_ and in RDKit code [3]_.
 
     Parameters
     ----------
@@ -38,25 +37,31 @@ class BrenkFilter(BaseFilter):
 
     References
     ----------
-    .. [1] `Ruth Brenk et al.
-        "Lessons Learnt from Assembling Screening Libraries for Drug Discovery for Neglected Diseases"
-        ChemMedChem 3:435–444 (2008)
-        <https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmdc.200700139>`_
+    .. [1] `Ajit Jadhav et al.
+        "Quantitative Analyses of Aggregation, Autofluorescence, and Reactivity
+        Artifacts in a Screen for Inhibitors of a Thiol Protease"
+        J. Med. Chem. 2010, 53, 1, 37–51
+        <https://pubs.acs.org/doi/10.1021/jm901070c>`_
 
-    .. [2] `RDKit Brenk filter definitions
-        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/brenk.in>`_
+    .. [2] `Richard G. Doveston et al.
+        "A unified lead-oriented synthesis of over fifty molecular scaffolds"
+        Org. Biomol. Chem., 2015,13, 859-865
+        <https://pubs.rsc.org/en/content/articlelanding/2015/ob/c4ob02287d>`_
+
+    .. [3] `RDKit NIH filter definitions
+        <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/nih.in>`_
 
     Examples
     --------
-    >>> from skfp.preprocessing import BrenkFilter
-    >>> smiles = ["C", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "c1cc([NH2])ccc1"]
-    >>> filt = BrenkFilter()
+    >>> from skfp.preprocessing import NIHFilter
+    >>> smiles = ["C", "C=P"]
+    >>> filt = NIHFilter()
     >>> filt
-    BrenkFilter()
+    NIHFilter()
 
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['C', 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C']
+    ['C']
     """
 
     def __init__(
@@ -77,7 +82,7 @@ class BrenkFilter(BaseFilter):
         self._filters = self._load_filters()
 
     def _load_filters(self) -> FilterCatalog:
-        filter_rules = FilterCatalogParams.FilterCatalogs.BRENK
+        filter_rules = FilterCatalogParams.FilterCatalogs.NIH
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)
