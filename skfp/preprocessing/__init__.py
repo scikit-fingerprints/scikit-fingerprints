@@ -10,6 +10,7 @@ from .filters import (
     LINTFilter,
     LipinskiFilter,
     MLSMRFilter,
+    MolecularWeightFilter,
     NIHFilter,
     PAINSFilter,
     SureChEMBLFilter,
