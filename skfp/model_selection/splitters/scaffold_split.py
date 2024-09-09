@@ -1,18 +1,19 @@
-import warnings
 from collections import defaultdict
 from collections.abc import Sequence
+from copy import deepcopy
 from numbers import Integral
 from typing import Any, Optional, Union
 
+from rdkit import Chem
 from rdkit.Chem import Mol
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
 from skfp.model_selection.splitters.utils import (
-    ensure_nonempty_list,
+    ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
-    validate_train_test_sizes,
+    validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
 from skfp.utils.validators import ensure_mols
@@ -32,7 +33,6 @@ from skfp.utils.validators import ensure_mols
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
-        "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
     },
@@ -43,7 +43,6 @@ def scaffold_train_test_split(
     *additional_data: Sequence,
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
-    include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
 ) -> Union[
@@ -91,9 +90,6 @@ def scaffold_train_test_split(
         The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
         If train_size is also None, it will be set to 0.2.
 
-    include_chirality: bool, default=False
-        Whether to take chirality of molecules into consideration.
-
     use_csk: bool, default=False
         Whether to use molecule's skeleton or the core structure scaffold (including atom types).
 
@@ -121,22 +117,23 @@ def scaffold_train_test_split(
     .. [3] ` Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844` _
     """
-    train_size, test_size = validate_train_test_sizes(train_size, test_size)
-    scaffolds = _create_scaffolds(data, include_chirality, use_csk)
+    train_size, test_size = validate_train_test_split_sizes(
+        train_size, test_size, len(data)
+    )
+    scaffolds = _create_scaffolds(data, use_csk)
     scaffold_sets = sorted(scaffolds.values(), key=len)
 
     train_idxs: list[int] = []
     test_idxs: list[int] = []
-    desired_test_size = int(test_size * len(data))
 
     for scaffold_set in scaffold_sets:
-        if len(test_idxs) < desired_test_size:
+        if len(test_idxs) < test_size:
             test_idxs.extend(scaffold_set)
         else:
             train_idxs.extend(scaffold_set)
 
-    ensure_nonempty_list(train_idxs)
-    ensure_nonempty_list(test_idxs)
+    ensure_nonempty_subset(train_idxs, "train")
+    ensure_nonempty_subset(test_idxs, "test")
 
     train_subset: list[Any] = []
     test_subset: list[Any] = []
@@ -148,8 +145,8 @@ def scaffold_train_test_split(
         train_subset = get_data_from_indices(data, train_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
 
-    ensure_nonempty_list(train_subset)
-    ensure_nonempty_list(test_subset)
+    ensure_nonempty_subset(train_subset, "train")
+    ensure_nonempty_subset(test_subset, "test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
@@ -179,7 +176,6 @@ def scaffold_train_test_split(
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
-        "include_chirality": ["boolean"],
         "use_csk": ["boolean"],
         "return_indices": ["boolean"],
     },
@@ -191,7 +187,6 @@ def scaffold_train_valid_test_split(
     train_size: Optional[float] = None,
     valid_size: Optional[float] = None,
     test_size: Optional[float] = None,
-    include_chirality: bool = False,
     use_csk: bool = False,
     return_indices: bool = False,
 ) -> Union[
@@ -251,9 +246,6 @@ def scaffold_train_valid_test_split(
         is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
         test_size is set to 0.1.
 
-    include_chirality: bool, default=False
-        Whether to take chirality of molecules into consideration.
-
     use_csk: bool, default=False
         Whether to use the molecule cyclic skeleton (CSK), instead of the core
         structure scaffold.
@@ -285,22 +277,20 @@ def scaffold_train_valid_test_split(
         https://github.com/rdkit/rdkit/discussions/6844` _
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
-        train_size, valid_size, test_size
+        train_size, valid_size, test_size, len(data)
     )
 
-    scaffolds = _create_scaffolds(data, include_chirality, use_csk)
+    scaffolds = _create_scaffolds(data, use_csk)
     scaffold_sets = sorted(scaffolds.values(), key=len)
 
     train_idxs: list[int] = []
     valid_idxs: list[int] = []
     test_idxs: list[int] = []
-    desired_test_size = int(test_size * len(data))
-    desired_valid_size = int(valid_size * len(data))
 
     for scaffold_set in scaffold_sets:
-        if len(test_idxs) < desired_test_size:
+        if len(test_idxs) < test_size:
             test_idxs.extend(scaffold_set)
-        elif len(valid_idxs) < desired_valid_size:
+        elif len(valid_idxs) < valid_size:
             valid_idxs.extend(scaffold_set)
         else:
             train_idxs.extend(scaffold_set)
@@ -318,13 +308,9 @@ def scaffold_train_valid_test_split(
         valid_subset = get_data_from_indices(data, valid_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
 
-    ensure_nonempty_list(train_subset)
-    ensure_nonempty_list(test_subset)
-
-    if len(valid_subset) == 0:
-        warnings.warn(
-            "Warning: Valid subset is empty. Consider using scaffold_train_test_split instead."
-        )
+    ensure_nonempty_subset(train_subset, "train")
+    ensure_nonempty_subset(valid_subset, "validation")
+    ensure_nonempty_subset(test_subset, "test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
@@ -337,7 +323,6 @@ def scaffold_train_valid_test_split(
 
 def _create_scaffolds(
     data: Sequence[Union[str, Mol]],
-    include_chirality: bool = False,
     use_csk: bool = False,
 ) -> dict[str, list]:
     """
@@ -350,12 +335,15 @@ def _create_scaffolds(
     molecules = ensure_mols(data)
 
     for idx, mol in enumerate(molecules):
+        mol = deepcopy(mol)
+        Chem.RemoveStereochemistry(mol)
+
         if use_csk:
-            scaffold = MurckoScaffold.MakeScaffoldGeneric(mol=mol)
+            scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+            scaffold = MurckoScaffold.MakeScaffoldGeneric(scaffold)
+            scaffold = MurckoScaffold.GetScaffoldForMol(scaffold)
         else:
-            scaffold = MurckoScaffold.MurckoScaffoldSmiles(
-                mol=mol, includeChirality=include_chirality
-            )
+            scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
 
         scaffolds[scaffold].append(idx)
 

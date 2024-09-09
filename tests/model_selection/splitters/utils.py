@@ -1,12 +1,13 @@
+import re
 from typing import Union
 
 import pytest
 
 from skfp.model_selection.splitters.utils import (
-    ensure_nonempty_list,
+    ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
-    validate_train_test_sizes,
+    validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
 
@@ -21,34 +22,34 @@ def additional_data() -> list[list[Union[str, int, bool]]]:
     return [["a", "b", "c", "d"], [1, 2, 3, 4], [True, False, True, False]]
 
 
-def test_ensure_nonempty_list_passes():
-    ensure_nonempty_list([1, 2, 3])
+def test_ensure_nonempty_subset_passes():
+    ensure_nonempty_subset([1, 2, 3], "Test")
 
 
-def test_ensure_nonempty_list_raises_error():
-    with pytest.raises(ValueError, match="Provided list is empty."):
-        ensure_nonempty_list([])
+def test_ensure_nonempty_subset_raises_error():
+    with pytest.raises(ValueError, match="Train subset is empty"):
+        ensure_nonempty_subset([], "Train")
 
 
-def test_validate_train_test_sizes_both_provided():
-    assert validate_train_test_sizes(0.7, 0.3) == (0.7, 0.3)
+def test_validate_train_test_split_sizes_both_provided():
+    assert validate_train_test_split_sizes(0.7, 0.3, 10) == (7, 3)
 
 
-def test_validate_train_test_sizes_train_missing():
-    assert validate_train_test_sizes(None, 0.3) == (0.7, 0.3)
+def test_validate_train_test_split_sizes_train_missing():
+    assert validate_train_test_split_sizes(None, 0.3, 10) == (7, 3)
 
 
-def test_validate_train_test_sizes_test_missing():
-    assert validate_train_test_sizes(0.6, None) == (0.6, 0.4)
+def test_validate_train_test_split_sizes_test_missing():
+    assert validate_train_test_split_sizes(0.6, None, 10) == (6, 4)
 
 
-def test_validate_train_test_sizes_both_missing():
-    assert validate_train_test_sizes(None, None) == (0.8, 0.2)
+def test_validate_train_test_split_sizes_both_missing():
+    assert validate_train_test_split_sizes(None, None, 10) == (8, 2)
 
 
-def test_validate_train_test_sizes_not_sum_to_one():
+def test_validate_train_test_split_sizes_not_sum_to_one():
     with pytest.raises(ValueError, match="train_size and test_size must sum to 1.0"):
-        validate_train_test_sizes(0.6, 0.5)
+        validate_train_test_split_sizes(0.6, 0.5, 10)
 
 
 def test_get_data_from_indices_valid(smiles_data):
@@ -105,25 +106,79 @@ def test_split_additional_data_multiple_empty_indice_list(additional_data):
 
 
 def test_validate_train_valid_test_split_sizes_all_provided():
-    result = validate_train_valid_test_split_sizes(0.7, 0.2, 0.1)
-    assert result == (0.7, 0.2, 0.1)
+    result = validate_train_valid_test_split_sizes(0.7, 0.2, 0.1, 10)
+    assert result == (7, 2, 1)
 
 
 def test_validate_train_valid_test_split_sizes_not_sum_to_one():
     with pytest.raises(
-        ValueError, match="train_size, test_size, and valid_size must sum to 1.0"
+        ValueError,
+        match="The sum of train_size, valid_size, and test_size must be 1.0.",
     ):
-        validate_train_valid_test_split_sizes(0.7, 0.2, 0.2)
+        validate_train_valid_test_split_sizes(0.7, 0.2, 0.2, 10)
 
 
 def test_validate_train_valid_test_split_sizes_missing_values():
     with pytest.raises(
         ValueError,
-        match="All of train_size, valid_size, and test_size must be provided.",
+        match="All of the sizes must be provided",
     ):
-        validate_train_valid_test_split_sizes(0.7, None, 0.2)
+        validate_train_valid_test_split_sizes(0.7, None, 0.2, 10)
 
 
 def test_validate_train_valid_test_split_sizes_all_missing():
-    result = validate_train_valid_test_split_sizes(None, None, None)
-    assert result == (0.8, 0.1, 0.1)
+    result = validate_train_valid_test_split_sizes(None, None, None, 10)
+    assert result == (8, 1, 1)
+
+
+def test_validate_train_test_split_sizes_different_type():
+    with pytest.raises(
+        TypeError,
+        match="train_size and test_size must be of the same type, got <class 'int'> "
+        "for train_size and <class 'float'> for test_size",
+    ):
+        validate_train_test_split_sizes(7, 0.3, 10)
+
+
+def test_validate_train_valid_test_split_sizes_different_type():
+    with pytest.raises(
+        TypeError,
+        match=re.escape(
+            "All sizes must be of the same type, got: [<class 'int'>, <class 'float'>, <class 'int'>]"
+        ),
+    ):
+        validate_train_valid_test_split_sizes(6, 0.3, 1, 10)
+
+
+def test_validate_train_test_split_sizes_train_size_too_large():
+    with pytest.raises(
+        ValueError,
+        match="train_size as an integer must be smaller than data_length, got 11 for data_length 10",
+    ):
+        validate_train_test_split_sizes(11, 1, 10)
+
+
+def test_validate_train_test_split_sizes_test_size_too_large():
+    with pytest.raises(
+        ValueError,
+        match="test_size as an integer must be smaller than data_length, got 11 for data_length 10",
+    ):
+        validate_train_test_split_sizes(1, 11, 10)
+
+
+def test_validate_train_test_split_sizes_train_size_zero():
+    with pytest.raises(ValueError, match="train_size is 0.0"):
+        validate_train_test_split_sizes(0.0, 1.0, 10)
+
+
+def test_validate_train_test_split_sizes_test_size_zero():
+    with pytest.raises(ValueError, match="test_size is 0.0"):
+        validate_train_test_split_sizes(1.0, 0.0, 10)
+
+
+def test_validate_train_valid_test_split_sizes_sum_not_equal_data_length_incorrect_total():
+    with pytest.raises(
+        ValueError,
+        match="The sum of train_size, valid_size, and test_size must equal data_length, got 12 instead",
+    ):
+        validate_train_valid_test_split_sizes(5, 3, 4, 13)
