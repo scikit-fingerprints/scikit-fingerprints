@@ -123,12 +123,12 @@ def randomized_scaffold_train_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     .. [3] `Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844` _
+        https://github.com/rdkit/rdkit/discussions/6844`_
 
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html` _
+        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
     """
     # flake8: noqa: E501
     train_size, test_size = validate_train_test_split_sizes(
@@ -294,12 +294,12 @@ def randomized_scaffold_train_valid_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844` _
+        https://github.com/rdkit/rdkit/discussions/6844`_
 
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html` _
+        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
