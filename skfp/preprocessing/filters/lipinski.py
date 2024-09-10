@@ -17,12 +17,12 @@ class LipinskiFilter(BaseFilter):
 
     Molecule can violate at most one of the rules (conditions):
     - molecular weight <= 500 daltons
-    - hydrogen bond acceptors (HBA) <= 10
-    - hydrogen bond donors (HBD) <= 5
-    - octanol-water partition coefficient (logP) <= 5
+    - HBA <= 10
+    - HBD <= 5
+    - logP <= 5
 
-    HBA and HBD use a simplified definition, taking into consideration only oxygen
-    and nitrogen bonds with hydrogen (OH, NH).
+    Hydrogen bond acceptors (HBA) and donors (HBD) use a simplified definition,
+    taking into consideration only oxygen and nitrogen bonds with hydrogen (OH, NH).
 
     Parameters
     ----------
