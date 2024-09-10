@@ -115,7 +115,7 @@ def scaffold_train_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844` _
+        https://github.com/rdkit/rdkit/discussions/6844`_
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
@@ -274,7 +274,7 @@ def scaffold_train_valid_test_split(
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844` _
+        https://github.com/rdkit/rdkit/discussions/6844`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
