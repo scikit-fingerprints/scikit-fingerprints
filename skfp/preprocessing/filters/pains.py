@@ -50,13 +50,13 @@ class PAINSFilter(BaseFilter):
         J. Med. Chem. 2010, 53, 7, 2719–2740
         <https://doi.org/10.1021/jm901137j>`_
 
-    .. [2] `RDKit PAINS A definitions
+    .. [2] `RDKit PAINS A filter definitions
         <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/pains_a.in>`_
 
-    .. [3] `RDKit PAINS B definitions
+    .. [3] `RDKit PAINS B filter definitions
         <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/pains_b.in>`_
 
-    .. [4] `RDKit PAINS C definitions
+    .. [4] `RDKit PAINS C filter definitions
         <https://github.com/rdkit/rdkit/blob/e4f4644a89d6446ddebda0bf396fa4335324c41c/Code/GraphMol/FilterCatalog/pains_c.in>`_
 
     Examples

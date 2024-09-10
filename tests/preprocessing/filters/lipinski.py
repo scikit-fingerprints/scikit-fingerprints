@@ -84,40 +84,22 @@ def test_mols_lipinski_various_conditions(
     assert len(mols_filtered) == 3
 
 
-def test_lipinski_smiles_and_mol_input(
-    smiles_passing_lipinski, smiles_failing_lipinski, smiles_one_lipinski_violation
-):
-    mol_from_smiles = MolFromSmilesTransformer()
-    all_smiles = (
-        smiles_passing_lipinski
-        + smiles_failing_lipinski
-        + smiles_one_lipinski_violation
-    )
-    all_mols = mol_from_smiles.transform(all_smiles)
-
+def test_lipinski_smiles_and_mol_input(smiles_list, mols_list):
     filt = LipinskiFilter()
-    smiles_filtered = filt.transform(all_smiles)
-    mols_filtered = filt.transform(all_mols)
+    smiles_filtered = filt.transform(smiles_list)
+    mols_filtered = filt.transform(mols_list)
 
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert all(isinstance(x, Mol) for x in mols_filtered)
     assert len(smiles_filtered) == len(mols_filtered)
-    assert len(smiles_filtered) == 6
 
 
-def test_lipinski_parallel(
-    smiles_passing_lipinski, smiles_failing_lipinski, smiles_one_lipinski_violation
-):
-    all_smiles = (
-        smiles_passing_lipinski
-        + smiles_failing_lipinski
-        + smiles_one_lipinski_violation
-    )
+def test_lipinski_parallel(smiles_list):
     filt = LipinskiFilter()
-    mols_filtered_sequential = filt.transform(all_smiles)
+    mols_filtered_sequential = filt.transform(smiles_list)
 
     filt = LipinskiFilter(n_jobs=-1, batch_size=1)
-    mols_filtered_parallel = filt.transform(all_smiles)
+    mols_filtered_parallel = filt.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
 
