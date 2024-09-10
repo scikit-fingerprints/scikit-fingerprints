@@ -1,4 +1,5 @@
 from .basic_zinc import BasicZINCFilter
+from .beyond_ro5 import BeyondRo5Filter
 from .bms import BMSFilter
 from .brenk import BrenkFilter
 from .glaxo import GlaxoFilter
