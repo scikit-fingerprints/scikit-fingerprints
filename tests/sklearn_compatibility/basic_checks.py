@@ -1,7 +1,6 @@
 import inspect
 import pickle
 from functools import partial
-from typing import Type
 
 import numpy as np
 from sklearn import clone

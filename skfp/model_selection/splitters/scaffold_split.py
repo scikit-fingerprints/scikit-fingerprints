@@ -135,9 +135,6 @@ def scaffold_train_test_split(
     ensure_nonempty_subset(train_idxs, "train")
     ensure_nonempty_subset(test_idxs, "test")
 
-    train_subset: list[Any] = []
-    test_subset: list[Any] = []
-
     if return_indices:
         train_subset = train_idxs
         test_subset = test_idxs
@@ -294,10 +291,6 @@ def scaffold_train_valid_test_split(
             valid_idxs.extend(scaffold_set)
         else:
             train_idxs.extend(scaffold_set)
-
-    train_subset: list[Any] = []
-    valid_subset: list[Any] = []
-    test_subset: list[Any] = []
 
     if return_indices:
         train_subset = train_idxs

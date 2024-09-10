@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import scipy.sparse
@@ -93,7 +93,7 @@ class BaseFingerprintTransformer(
             self.requires_conformers = self.use_3D
         return self
 
-    def fit(self, X, y=None, **fit_params):
+    def fit(self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params):
         """
         Unused, kept for Scikit-learn compatibility.
 
@@ -102,7 +102,7 @@ class BaseFingerprintTransformer(
         X : any
             Unused, kept for Scikit-learn compatibility.
 
-        Y : any
+        y : any
             Unused, kept for Scikit-learn compatibility.
 
         **fit_params : dict
@@ -115,7 +115,9 @@ class BaseFingerprintTransformer(
         self._validate_params()
         return self
 
-    def fit_transform(self, X, y=None, **fit_params):
+    def fit_transform(
+        self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params
+    ):
         """
         The same as `transform` method, kept for Scikit-learn compatibility.
 
