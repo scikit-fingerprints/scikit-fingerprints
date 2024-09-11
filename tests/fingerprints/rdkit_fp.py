@@ -8,7 +8,7 @@ from skfp.fingerprints import RDKitFingerprint
 
 
 def test_rdkit_bit_fingerprint(smiles_list, mols_list):
-    rdkit_fp = RDKitFingerprint(sparse=False, count=False, n_jobs=-1)
+    rdkit_fp = RDKitFingerprint(n_jobs=-1)
     X_skfp = rdkit_fp.transform(smiles_list)
 
     fp_gen = GetRDKitFPGenerator(countSimulation=False)
@@ -21,7 +21,7 @@ def test_rdkit_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_rdkit_count_fingerprint(smiles_list, mols_list):
-    rdkit_fp = RDKitFingerprint(sparse=False, count=True, n_jobs=-1)
+    rdkit_fp = RDKitFingerprint(count=True, n_jobs=-1)
     X_skfp = rdkit_fp.transform(smiles_list)
 
     fp_gen = GetRDKitFPGenerator(countSimulation=True)
@@ -34,7 +34,7 @@ def test_rdkit_count_fingerprint(smiles_list, mols_list):
 
 
 def test_rdkit_sparse_bit_fingerprint(smiles_list, mols_list):
-    rdkit_fp = RDKitFingerprint(sparse=True, count=False, n_jobs=-1)
+    rdkit_fp = RDKitFingerprint(sparse=True, n_jobs=-1)
     X_skfp = rdkit_fp.transform(smiles_list)
 
     fp_gen = GetRDKitFPGenerator(countSimulation=False)

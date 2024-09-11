@@ -6,7 +6,7 @@ from skfp.fingerprints import WHIMFingerprint
 
 
 def test_whim_fingerprint(mols_conformers_list):
-    whim_fp = WHIMFingerprint(sparse=False, n_jobs=-1)
+    whim_fp = WHIMFingerprint(n_jobs=-1)
     X_skfp = whim_fp.transform(mols_conformers_list)
 
     X_rdkit = np.array(

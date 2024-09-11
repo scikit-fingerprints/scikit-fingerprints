@@ -6,7 +6,7 @@ from skfp.fingerprints import MordredFingerprint
 
 
 def test_mordred_fingerprint(smiles_list, mols_list):
-    mordred_transformer = MordredFingerprint(sparse=False, n_jobs=-1)
+    mordred_transformer = MordredFingerprint(n_jobs=-1)
     X_skfp = mordred_transformer.transform(smiles_list)
 
     calc = Calculator(descriptors, ignore_3D=True)
@@ -32,7 +32,7 @@ def test_mordred_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
 
 
 def test_mordred_3D_fingerprint(smallest_smiles_list, smallest_mols_list):
-    mordred_transformer = MordredFingerprint(use_3D=True, sparse=False, n_jobs=-1)
+    mordred_transformer = MordredFingerprint(use_3D=True, n_jobs=-1)
     X_skfp = mordred_transformer.transform(smallest_smiles_list)
 
     calc = Calculator(descriptors, ignore_3D=False)

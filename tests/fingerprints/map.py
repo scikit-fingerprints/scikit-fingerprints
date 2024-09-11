@@ -7,7 +7,6 @@ from skfp.fingerprints import MAPFingerprint
 def test_map_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         variant="bit",
-        sparse=False,
         verbose=0,
         n_jobs=-1,
     )
@@ -29,7 +28,6 @@ def test_map_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
 def test_map_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         variant="count",
-        sparse=False,
         verbose=0,
         n_jobs=-1,
     )
@@ -48,7 +46,6 @@ def test_map_count_fingerprint(smallest_smiles_list, smallest_mols_list):
 def test_map_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         variant="raw_hashes",
-        sparse=False,
         verbose=0,
         n_jobs=-1,
     )

@@ -5,9 +5,7 @@ from skfp.fingerprints import PhysiochemicalPropertiesFingerprint
 
 
 def test_physiochemical_properties_bp_bit_fingerprint(smiles_list):
-    pp_fp = PhysiochemicalPropertiesFingerprint(
-        variant="BP", sparse=False, count=False, n_jobs=-1
-    )
+    pp_fp = PhysiochemicalPropertiesFingerprint(variant="BP", n_jobs=-1)
     X_skfp = pp_fp.transform(smiles_list)
 
     assert isinstance(X_skfp, np.ndarray)
@@ -17,9 +15,7 @@ def test_physiochemical_properties_bp_bit_fingerprint(smiles_list):
 
 
 def test_physiochemical_properties_bp_count_fingerprint(smiles_list):
-    pp_fp = PhysiochemicalPropertiesFingerprint(
-        variant="BP", sparse=False, count=True, n_jobs=-1
-    )
+    pp_fp = PhysiochemicalPropertiesFingerprint(variant="BP", count=True, n_jobs=-1)
     X_skfp = pp_fp.transform(smiles_list)
 
     assert isinstance(X_skfp, np.ndarray)
@@ -29,9 +25,7 @@ def test_physiochemical_properties_bp_count_fingerprint(smiles_list):
 
 
 def test_physiochemical_properties_bt_bit_fingerprint(smiles_list):
-    pp_fp = PhysiochemicalPropertiesFingerprint(
-        variant="BT", sparse=False, count=False, n_jobs=-1
-    )
+    pp_fp = PhysiochemicalPropertiesFingerprint(variant="BT", n_jobs=-1)
     X_skfp = pp_fp.transform(smiles_list)
 
     assert isinstance(X_skfp, np.ndarray)
@@ -41,9 +35,7 @@ def test_physiochemical_properties_bt_bit_fingerprint(smiles_list):
 
 
 def test_physiochemical_properties_bt_count_fingerprint(smiles_list):
-    pp_fp = PhysiochemicalPropertiesFingerprint(
-        variant="BT", sparse=False, count=True, n_jobs=-1
-    )
+    pp_fp = PhysiochemicalPropertiesFingerprint(variant="BT", count=True, n_jobs=-1)
     X_skfp = pp_fp.transform(smiles_list)
 
     assert isinstance(X_skfp, np.ndarray)
@@ -53,9 +45,7 @@ def test_physiochemical_properties_bt_count_fingerprint(smiles_list):
 
 
 def test_physiochemical_properties_bp_sparse_bit_fingerprint(smiles_list):
-    pp_fp = PhysiochemicalPropertiesFingerprint(
-        variant="BP", sparse=True, count=False, n_jobs=-1
-    )
+    pp_fp = PhysiochemicalPropertiesFingerprint(variant="BP", sparse=True, n_jobs=-1)
     X_skfp = pp_fp.transform(smiles_list)
 
     assert isinstance(X_skfp, csr_array)
@@ -77,9 +67,7 @@ def test_physiochemical_properties_bp_sparse_count_fingerprint(smiles_list):
 
 
 def test_physiochemical_properties_bt_sparse_bit_fingerprint(smiles_list):
-    pp_fp = PhysiochemicalPropertiesFingerprint(
-        variant="BT", sparse=True, count=False, n_jobs=-1
-    )
+    pp_fp = PhysiochemicalPropertiesFingerprint(variant="BT", sparse=True, n_jobs=-1)
     X_skfp = pp_fp.transform(smiles_list)
 
     assert isinstance(X_skfp, csr_array)

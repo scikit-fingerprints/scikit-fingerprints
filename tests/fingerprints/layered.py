@@ -8,7 +8,7 @@ from skfp.fingerprints import LayeredFingerprint
 
 
 def test_layered_fingerprint(smiles_list, mols_list):
-    layered_fp = LayeredFingerprint(sparse=False, n_jobs=-1)
+    layered_fp = LayeredFingerprint(n_jobs=-1)
     X_skfp = layered_fp.transform(smiles_list)
     X_rdkit = np.array([RDKitLayeredFingerprint(mol) for mol in mols_list])
 
