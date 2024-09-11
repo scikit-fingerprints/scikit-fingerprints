@@ -76,7 +76,8 @@ class BrenkFilter(BaseFilter):
         )
         self._filters = self._load_filters()
 
-    def _load_filters(self) -> FilterCatalog:
+    @staticmethod
+    def _load_filters() -> FilterCatalog:
         filter_rules = FilterCatalogParams.FilterCatalogs.BRENK
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
