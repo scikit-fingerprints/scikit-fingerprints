@@ -216,7 +216,7 @@ def test_pharmacophore_3_3_points(smallest_smiles_list, smallest_mols_list):
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
     X_rdkit = _get_rdkit_pharmacophore_fp(
-        smallest_mols_list, min_points=2, max_points=2
+        smallest_mols_list, min_points=3, max_points=3
     )
     X_rdkit = np.array(X_rdkit)
 

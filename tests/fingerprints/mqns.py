@@ -5,7 +5,7 @@ from skfp.fingerprints import MQNsFingerprint
 
 
 def test_mqns_bit_fingerprint(smiles_list):
-    fp = MQNsFingerprint(n_jobs=-1)
+    fp = MQNsFingerprint(count=False, n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
@@ -25,7 +25,7 @@ def test_mqns_count_fingerprint(smiles_list):
 
 
 def test_mqns_bit_sparse_fingerprint(smiles_list):
-    fp = MQNsFingerprint(sparse=True, n_jobs=-1)
+    fp = MQNsFingerprint(count=False, sparse=True, n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)
@@ -35,7 +35,7 @@ def test_mqns_bit_sparse_fingerprint(smiles_list):
 
 
 def test_mqns_count_sparse_fingerprint(smiles_list):
-    fp = MQNsFingerprint(sparse=True, count=True, n_jobs=-1)
+    fp = MQNsFingerprint(count=True, sparse=True, n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)
