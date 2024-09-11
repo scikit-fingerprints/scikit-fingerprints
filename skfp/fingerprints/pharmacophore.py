@@ -35,7 +35,7 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     - acidic group
 
     Those structures can be returned as raw bits, results in 39972-element vector. By
-    default, they are folded into a shorter length vector. Both 2-point and 3-point
+    default, this vector is returned, but it can also be folded. Both 2-point and 3-point
     pharmacophores (pharmacophoric pairs and triangles) are used.
 
     Parameters
