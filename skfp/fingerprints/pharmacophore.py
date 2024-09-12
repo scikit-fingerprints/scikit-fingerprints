@@ -38,6 +38,10 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     vector. Alternatively, folding can be applied. Note that due to RDKit limitations,
     only 2-point and 3-point variants are available.
 
+    Note that this is by far the slowest fingerprint, particularly for larger molecules.
+    This is due to the 3-point pharmacophore calculation. Consider filtering out large
+    (heavy) molecules or setting `max_points=2` if it takes too long.
+
     Parameters
     ----------
     variant: {"raw_bits", "folded"} = "raw_bits"
