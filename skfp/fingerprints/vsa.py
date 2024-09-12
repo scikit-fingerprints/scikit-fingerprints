@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
