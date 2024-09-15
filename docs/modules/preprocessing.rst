@@ -16,3 +16,23 @@ Preprocessing
     MolFromSmilesTransformer
     MolStandardizer
     MolToSmilesTransformer
+
+Molecular filters:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    BasicZINCFilter
+    BeyondRO5Filter
+    BMSFilter
+    BrenkFilter
+    GlaxoFilter
+    InpharmaticaFilter
+    LINTFilter
+    LipinskiFilter
+    MLSMRFilter
+    MolecularWeightFilter
+    NIHFilter
+    PAINSFilter
+    SureChEMBLFilter

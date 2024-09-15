@@ -1,7 +1,6 @@
 import inspect
 import pickle
 from functools import partial
-from typing import Type
 
 import numpy as np
 from sklearn import clone
@@ -18,6 +17,7 @@ from sklearn.utils.estimator_checks import (
 
 import skfp.fingerprints
 import skfp.preprocessing
+from skfp.bases import BaseFilter
 from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 
 """
@@ -170,4 +170,7 @@ def check_transformers_unfitted_stateless(
     transformer = clone(transformer)
     X_trans = transformer.transform(X)
 
-    assert len(X) == len(X_trans)
+    if issubclass(transformer.__class__, BaseFilter):
+        assert len(X_trans) <= len(X)
+    else:
+        assert len(X) == len(X_trans)

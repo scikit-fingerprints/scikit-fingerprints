@@ -1,46 +1,79 @@
-import warnings
 from collections.abc import Sequence
 from itertools import chain
 from typing import Any, Optional, Union
 
 import numpy as np
-from rdkit.Chem import Mol
 from sklearn.utils import _safe_indexing
 
 
-def ensure_nonempty_list(data: list) -> None:
+def ensure_nonempty_subset(data: list, subset: str) -> None:
     """
     Check if the provided list is empty.
     """
     if len(data) == 0:
-        raise ValueError("Provided list is empty.")
+        raise ValueError(f"{subset.capitalize()} subset is empty")
 
 
-def validate_train_test_sizes(
-    train_size: Optional[float], test_size: Optional[float]
-) -> tuple[float, float]:
+def validate_train_test_split_sizes(
+    train_size: Optional[Union[float, int]],
+    test_size: Optional[Union[float, int]],
+    data_length: int,
+) -> tuple[int, int]:
     """
     Fill in missing sizes for train and test sets based on the provided sizes.
+    If test_size and train_size are floats, this method returns concrete
+    number of rows, i.e. int(size * data_length)
+
+    If test_size and train_size are ints, this method returns the provided sizes.
     """
     if train_size is None and test_size is None:
-        return 0.8, 0.2
-    if train_size is None:
-        if test_size is not None:
-            train_size = 1 - test_size
-        else:
-            raise ValueError("test_size must be provided when train_size is None")
-    elif test_size is None:
-        test_size = 1 - train_size
+        train_size, test_size = 0.8, 0.2
 
-    if not np.isclose(test_size + train_size, 1.0):
+    if (
+        train_size is not None
+        and test_size is not None
+        and type(train_size) is not type(test_size)
+    ):
+        raise TypeError(
+            f"train_size and test_size must be of the same type, got {type(train_size)} for "
+            f"train_size and {type(test_size)} for test_size"
+        )
+
+    if train_size is None:
+        train_size = 1 - test_size if test_size is not None else 0
+
+    if isinstance(train_size, int) and train_size >= data_length:
+        raise ValueError(
+            f"train_size as an integer must be smaller than data_length, got {train_size} for "
+            f"data_length {data_length}"
+        )
+
+    if test_size is None:
+        test_size = 1 - train_size if train_size is not None else 0
+
+    if isinstance(test_size, int) and test_size >= data_length:
+        raise ValueError(
+            f"test_size as an integer must be smaller than data_length, got {test_size} for "
+            f"data_length {data_length}"
+        )
+
+    if isinstance(train_size, float) and not np.isclose(train_size + test_size, 1.0):
         raise ValueError("train_size and test_size must sum to 1.0")
 
-    return train_size, test_size
+    if train_size == 0.0:
+        raise ValueError("train_size is 0.0")
+    if test_size == 0.0:
+        raise ValueError("test_size is 0.0")
+
+    if isinstance(train_size, float):
+        train_size = int(train_size * data_length)
+        test_size = data_length - train_size
+        return train_size, test_size
+    else:
+        return int(train_size), int(test_size)
 
 
-def get_data_from_indices(
-    data: Sequence[Union[str, Mol]], indices: Sequence[int]
-) -> list[Union[str, Mol]]:
+def get_data_from_indices(data: Sequence, indices: Sequence[int]) -> list:
     """
     Helper function to retrieve data elements from specified indices.
     """
@@ -53,7 +86,6 @@ def split_additional_data(
     """
     Split additional data based on indices lists.
     """
-    # This method causes some issues
     return list(
         chain.from_iterable(
             (_safe_indexing(a, indices),)
@@ -64,28 +96,56 @@ def split_additional_data(
 
 
 def validate_train_valid_test_split_sizes(
-    train_size: Optional[float],
-    valid_size: Optional[float],
-    test_size: Optional[float],
-) -> tuple[float, float, float]:
+    train_size: Optional[Union[float, int]],
+    valid_size: Optional[Union[float, int]],
+    test_size: Optional[Union[float, int]],
+    data_length: int,
+) -> tuple[int, int, int]:
     """
     Ensure the sum of train_size, valid_size, and test_size equals 1.0 and provide default values if necessary.
+    If test_size, valid_size and train_size are floats, this method returns concrete
+    number of rows, i.e. int(size * data_length)
+    If test_size, valid_size and train_size are ints, this method returns the provided sizes.
     """
     if train_size is None and valid_size is None and test_size is None:
-        return 0.8, 0.1, 0.1
+        train_size, valid_size, test_size = 0.8, 0.1, 0.1
 
     if train_size is None or valid_size is None or test_size is None:
-        raise ValueError(
-            "All of train_size, valid_size, and test_size must be provided."
-        )
+        raise ValueError("All of the sizes must be provided")
 
-    if valid_size == 0.0:
-        warnings.warn(
-            "Validation set will not be returned since valid_size was set to 0.0."
-            "Consider using train_test_split instead."
-        )
+    sizes: tuple[Union[float, int], Union[float, int], Union[float, int]] = (
+        train_size,
+        valid_size,
+        test_size,
+    )
 
-    if not np.isclose(train_size + valid_size + test_size, 1.0):
-        raise ValueError("train_size, test_size, and valid_size must sum to 1.0")
+    if not all(isinstance(size, (int, float)) for size in sizes):
+        types = [type(size) for size in sizes]
+        raise TypeError(f"All sizes must be either int or float, got: {types}")
 
-    return train_size, valid_size, test_size
+    if not all(isinstance(size, type(train_size)) for size in sizes):
+        types = [type(size) for size in sizes]
+        raise TypeError(f"All sizes must be of the same type, got: {types}")
+
+    if isinstance(train_size, float):
+        if not np.isclose(sum(sizes), 1.0):
+            raise ValueError(
+                f"The sum of train_size, valid_size, and test_size must be 1.0, got: "
+                f"{sum(sizes)}"
+            )
+
+        train_size_int = int(train_size * data_length)
+        valid_size_int = int(max(valid_size * data_length, 1))
+        test_size_int = max(int(data_length - train_size_int - valid_size_int), 1)
+
+        return train_size_int, valid_size_int, test_size_int
+
+    if isinstance(train_size, int):
+        total = sum(sizes)
+        if total != data_length:
+            raise ValueError(
+                f"The sum of train_size, valid_size, and test_size must equal data_length, "
+                f"got {total} instead"
+            )
+
+        return int(train_size), int(valid_size), int(test_size)
