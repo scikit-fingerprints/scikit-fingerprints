@@ -6,7 +6,7 @@ from skfp.fingerprints import PatternFingerprint
 
 
 def test_pattern_fingerprint(smiles_list, mols_list):
-    pattern_fp = PatternFingerprint(sparse=False, n_jobs=-1)
+    pattern_fp = PatternFingerprint(n_jobs=-1)
     X_skfp = pattern_fp.transform(smiles_list)
     X_rdkit = np.array([RDKitPatternFingerprint(mol) for mol in mols_list])
 

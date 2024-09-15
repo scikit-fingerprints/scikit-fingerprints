@@ -8,7 +8,7 @@ from skfp.fingerprints import SECFPFingerprint
 
 
 def test_secfp_fingerprint(smiles_list, mols_list):
-    secfp_fp = SECFPFingerprint(sparse=False, n_jobs=-1)
+    secfp_fp = SECFPFingerprint(n_jobs=-1)
     X_skfp = secfp_fp.transform(smiles_list)
 
     encoder = MHFPEncoder(2048, 0)
