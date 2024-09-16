@@ -35,4 +35,7 @@ Molecular filters:
     MolecularWeightFilter
     NIHFilter
     PAINSFilter
+    RuleOfTwo
+    RuleOfThree
+    RuleOfFour
     SureChEMBLFilter

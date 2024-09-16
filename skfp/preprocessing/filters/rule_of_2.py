@@ -8,24 +8,23 @@ from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumHBD
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOf2(BaseFilter):
+class RuleOfTwo(BaseFilter):
     """
-    Rule of 2 defined  in [1].
+    Rule of two (Ro2).
 
-    Proposed rule for finding reagent to building block design.
+    Designed for finding reagents for building block design [1]_.
 
-    The proposed reagents according to this formula should meet the following criteria:
-    - molecular weight <= 200 daltons
-    - HBA <= 4
-    - HBD <= 2
-    - logP <= 2
+    Molecule must fulfill conditions:
+        - molecular weight <= 200 daltons
+        - HBA <= 4
+        - HBD <= 2
+        - logP <= 2
 
     Parameters
     ----------
-    allow_one_violation : bool, default=True
+    allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
-        filter less restrictive, and is the part of the original definition of this
-        filter.
+        filter less restrictive.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -42,20 +41,20 @@ class RuleOf2(BaseFilter):
 
     References
     -----------
-    .. [1] 'Goldberg, F. W., Kettle, J. G., Kogej, T., Perry, M. W. D., & Tomkinson, N. P. (2015).
+    .. [1] `Goldberg, F. W., Kettle, J. G., Kogej, T., Perry, M. W. D., & Tomkinson, N. P. (2015).
         Designing novel building blocks is an overlooked strategy to improve compound quality.
-        Drug Discovery Today, 20(1), 11–17. doi:10.1016/j.drudis.2014.09.023'_
+        Drug Discovery Today, 20(1), 11–17. <https://doi.org/10.1016/j.drudis.2014.09.023>`_
 
-     Examples
+    Examples
     ----------
-    >>> from skfp.preprocessing import RuleOf2
-    >>> smiles = ["C=CCc1c(C)[nH]c(N)nc1=O", "C=CCNC(=O)c1ccncc1", "C=CCC1C=C(C)CC(CC=C)N1"]
-    >>> filt = RuleOf2()
+    >>> from skfp.preprocessing import RuleOfTwo
+    >>> smiles = ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1', 'C=CCC1C=C(C)CC(CC=C)N1']
+    >>> filt = RuleOfTwo()
     >>> filt
-    RuleOf2()
+    RuleOfTwo()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ["C=CCc1c(C)[nH]c(N)nc1=O", "C=CCNC(=O)c1ccncc1"]
+    ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1']
     """
 
     def __init__(
@@ -76,16 +75,15 @@ class RuleOf2(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        passed_rules = sum(
-            [
-                MolWt(mol) <= 200,
-                CalcNumHBA(mol) <= 4,
-                CalcNumHBD(mol) <= 2,
-                MolLogP(mol) <= 2,
-            ]
-        )
+        rules = [
+            MolWt(mol) <= 200,
+            CalcNumHBA(mol) <= 4,
+            CalcNumHBD(mol) <= 2,
+            MolLogP(mol) <= 2,
+        ]
+        passed_rules = sum(rules)
 
         if self.allow_one_violation:
-            return passed_rules >= 3
+            return passed_rules >= len(rules) - 1
         else:
-            return passed_rules == 4
+            return passed_rules == len(rules)

@@ -10,7 +10,7 @@ from .mlsmr import MLSMRFilter
 from .mol_weight import MolecularWeightFilter
 from .nih import NIHFilter
 from .pains import PAINSFilter
-from .rule_of_2 import RuleOf2
-from .rule_of_3 import RuleOf3
-from .rule_of_4 import RuleOf4
+from .rule_of_2 import RuleOfTwo
+from .rule_of_3 import RuleOfThree
+from .rule_of_4 import RuleOfFour
 from .surechembl import SureChEMBLFilter
