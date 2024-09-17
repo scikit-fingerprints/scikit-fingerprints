@@ -5,7 +5,7 @@ from skfp.fingerprints import LaggnerFingerprint
 
 
 def test_laggner_bit_fingerprint(smiles_list):
-    fp = LaggnerFingerprint(sparse=False, count=False, n_jobs=-1)
+    fp = LaggnerFingerprint(n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
@@ -15,7 +15,7 @@ def test_laggner_bit_fingerprint(smiles_list):
 
 
 def test_laggner_count_fingerprint(smiles_list):
-    fp = LaggnerFingerprint(sparse=False, count=True, n_jobs=-1)
+    fp = LaggnerFingerprint(count=True, n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
@@ -25,7 +25,7 @@ def test_laggner_count_fingerprint(smiles_list):
 
 
 def test_laggner_bit_sparse_fingerprint(smiles_list):
-    fp = LaggnerFingerprint(sparse=True, count=False, n_jobs=-1)
+    fp = LaggnerFingerprint(sparse=True, n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)

@@ -6,7 +6,7 @@ from skfp.fingerprints import EStateFingerprint
 
 
 def test_estate_bit_fingerprint(smiles_list, mols_list):
-    estate_fp = EStateFingerprint(variant="bit", sparse=False, n_jobs=-1)
+    estate_fp = EStateFingerprint(variant="bit", n_jobs=-1)
     X_skfp = estate_fp.transform(smiles_list)
 
     X_rdkit = np.array([FingerprintMol(mol) for mol in mols_list])
@@ -19,7 +19,7 @@ def test_estate_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_estate_count_fingerprint(smiles_list, mols_list):
-    estate_fp = EStateFingerprint(variant="count", sparse=False, n_jobs=-1)
+    estate_fp = EStateFingerprint(variant="count", n_jobs=-1)
     X_skfp = estate_fp.transform(smiles_list)
 
     X_rdkit = np.array([FingerprintMol(mol) for mol in mols_list])
@@ -32,7 +32,7 @@ def test_estate_count_fingerprint(smiles_list, mols_list):
 
 
 def test_estate_sum_fingerprint(smiles_list, mols_list):
-    estate_fp = EStateFingerprint(variant="sum", sparse=False, n_jobs=-1)
+    estate_fp = EStateFingerprint(variant="sum", n_jobs=-1)
     X_skfp = estate_fp.transform(smiles_list)
 
     X_rdkit = np.array([FingerprintMol(mol) for mol in mols_list])

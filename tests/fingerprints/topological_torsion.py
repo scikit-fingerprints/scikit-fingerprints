@@ -6,7 +6,7 @@ from skfp.fingerprints import TopologicalTorsionFingerprint
 
 
 def test_topological_torsion_bit_fingerprint(smiles_list, mols_list):
-    tt_fp = TopologicalTorsionFingerprint(sparse=False, count=False, n_jobs=-1)
+    tt_fp = TopologicalTorsionFingerprint(n_jobs=-1)
     X_skfp = tt_fp.transform(smiles_list)
 
     fp_gen = GetTopologicalTorsionGenerator()
@@ -19,7 +19,7 @@ def test_topological_torsion_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_topological_torsion_count_fingerprint(smiles_list, mols_list):
-    tt_fp = TopologicalTorsionFingerprint(sparse=False, count=True, n_jobs=-1)
+    tt_fp = TopologicalTorsionFingerprint(count=True, n_jobs=-1)
     X_skfp = tt_fp.transform(smiles_list)
 
     fp_gen = GetTopologicalTorsionGenerator()
@@ -32,7 +32,7 @@ def test_topological_torsion_count_fingerprint(smiles_list, mols_list):
 
 
 def test_topological_torsion_sparse_bit_fingerprint(smiles_list, mols_list):
-    tt_fp = TopologicalTorsionFingerprint(sparse=True, count=False, n_jobs=-1)
+    tt_fp = TopologicalTorsionFingerprint(sparse=True, n_jobs=-1)
     X_skfp = tt_fp.transform(smiles_list)
 
     fp_gen = GetTopologicalTorsionGenerator()
