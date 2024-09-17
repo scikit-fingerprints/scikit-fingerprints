@@ -5,7 +5,7 @@ from skfp.fingerprints import KlekotaRothFingerprint
 
 
 def test_klekota_roth_bit_fingerprint(smiles_list):
-    fp = KlekotaRothFingerprint(sparse=False, count=False, n_jobs=-1)
+    fp = KlekotaRothFingerprint(n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
@@ -15,7 +15,7 @@ def test_klekota_roth_bit_fingerprint(smiles_list):
 
 
 def test_klekota_roth_count_fingerprint(smiles_list):
-    fp = KlekotaRothFingerprint(sparse=False, count=True, n_jobs=-1)
+    fp = KlekotaRothFingerprint(count=True, n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
@@ -25,7 +25,7 @@ def test_klekota_roth_count_fingerprint(smiles_list):
 
 
 def test_klekota_roth_bit_sparse_fingerprint(smiles_list):
-    fp = KlekotaRothFingerprint(sparse=True, count=False, n_jobs=-1)
+    fp = KlekotaRothFingerprint(sparse=True, n_jobs=-1)
     X = fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)

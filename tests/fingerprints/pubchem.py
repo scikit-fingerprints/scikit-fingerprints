@@ -4,7 +4,7 @@ from skfp.fingerprints import PubChemFingerprint
 
 
 def test_pubchem_bit_fingerprint(smiles_list, mols_list):
-    pubchem_fp = PubChemFingerprint(count=False, sparse=False, n_jobs=-1)
+    pubchem_fp = PubChemFingerprint(n_jobs=-1)
     X_skfp = pubchem_fp.transform(smiles_list)
 
     assert X_skfp.shape == (len(mols_list), 881)
@@ -13,7 +13,7 @@ def test_pubchem_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_pubchem_count_fingerprint(smiles_list, mols_list):
-    pubchem_fp = PubChemFingerprint(count=True, sparse=False, n_jobs=-1)
+    pubchem_fp = PubChemFingerprint(count=True, n_jobs=-1)
     X_skfp = pubchem_fp.transform(smiles_list)
 
     assert X_skfp.shape == (len(mols_list), 757)
@@ -22,7 +22,7 @@ def test_pubchem_count_fingerprint(smiles_list, mols_list):
 
 
 def test_pubchem_sparse_bit_fingerprint(smiles_list, mols_list):
-    pubchem_fp = PubChemFingerprint(count=False, sparse=True, n_jobs=-1)
+    pubchem_fp = PubChemFingerprint(sparse=True, n_jobs=-1)
     X_skfp = pubchem_fp.transform(smiles_list)
 
     assert X_skfp.shape == (len(mols_list), 881)

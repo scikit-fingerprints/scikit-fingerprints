@@ -6,7 +6,7 @@ from skfp.fingerprints import MORSEFingerprint
 
 
 def test_morse_fingerprint(mols_conformers_list):
-    morse_fp = MORSEFingerprint(sparse=False, n_jobs=-1)
+    morse_fp = MORSEFingerprint(n_jobs=-1)
     X_skfp = morse_fp.transform(mols_conformers_list)
 
     X_rdkit = np.array(

@@ -6,7 +6,7 @@ from skfp.fingerprints import RDFFingerprint
 
 
 def test_rdf_fingerprint(mols_conformers_list):
-    rdf_fp = RDFFingerprint(sparse=False, n_jobs=-1)
+    rdf_fp = RDFFingerprint(n_jobs=-1)
     X_skfp = rdf_fp.transform(mols_conformers_list)
 
     X_rdkit = np.array(
