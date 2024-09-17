@@ -51,6 +51,43 @@ def maxmin_train_test_split(
     tuple[Sequence, ...],
     tuple[Sequence[int], Sequence[int]],
 ]:
+    """
+    Split using maxmin algorithm or picking a subset of item from a pool.
+    Implements specific
+
+    Parameters
+    ----------
+    data : sequence
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
+
+    additional_data: list[sequence]
+        Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
+
+    train_size : float, default=None
+        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size.
+        If test_size is also None, it will be set to 0.8.
+
+    test_size : float, default=None
+        The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
+        If train_size is also None, it will be set to 0.2.
+
+    return_indices : bool, default=False
+        Whether the method should return the input object subsets, i.e. SMILES strings
+        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+
+    Returns
+    ----------
+    subsets : tuple[list, list, ...]
+    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
+    depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+    References
+    ----------
+    https://github.com/deepchem/deepchem
+    https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html
+    https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker/
+    https://rdkit.blogspot.com/2017/11/revisting-maxminpicker.html
+
+    """
     data_size = len(data)
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, data_size
@@ -127,6 +164,7 @@ def maxmin_train_valid_test_split(
     tuple[Sequence, ...],
     tuple[Sequence[int], Sequence[int]],
 ]:
+
     data_size = len(data)
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
