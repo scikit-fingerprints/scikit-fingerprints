@@ -8,11 +8,11 @@ from rdkit.Chem import AllChem, Mol
 from rdkit.SimDivFilters.rdSimDivPickers import MaxMinPicker
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
-from skfp.model_selection.utils import (
-    ensure_nonempty_list,
+from skfp.model_selection.splitters.utils import (
+    ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
-    validate_train_test_sizes,
+    validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
 from skfp.utils.validators import ensure_mols
@@ -52,7 +52,9 @@ def maxmin_train_test_split(
     tuple[Sequence[int], Sequence[int]],
 ]:
     data_size = len(data)
-    train_size, test_size = validate_train_test_sizes(train_size, test_size)
+    train_size, test_size = validate_train_test_split_sizes(
+        train_size, test_size, len(data)
+    )
     molecules = ensure_mols(data)
     fingerprints = [
         AllChem.GetMorganFingerprintAsBitVect(mol, 2, 1024) for mol in molecules
@@ -78,8 +80,8 @@ def maxmin_train_test_split(
         train_subset = get_data_from_indices(data, train_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
 
-    ensure_nonempty_list(train_subset)
-    ensure_nonempty_list(test_subset)
+    ensure_nonempty_subset(train_subset, "train")
+    ensure_nonempty_subset(test_subset, "test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
@@ -126,7 +128,7 @@ def maxmin_train_valid_test_split(
 ]:
     data_size = len(data)
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
-        train_size, valid_size, test_size
+        train_size, valid_size, test_size, len(data)
     )
     molecules = ensure_mols(data)
     fingerprints = [
@@ -166,8 +168,8 @@ def maxmin_train_valid_test_split(
         test_subset = get_data_from_indices(data, test_idxs)
         valid_subset = get_data_from_indices(data, valid_idxs)
 
-    ensure_nonempty_list(train_subset)
-    ensure_nonempty_list(test_subset)
+    ensure_nonempty_subset(train_subset, "train")
+    ensure_nonempty_subset(test_subset, "test")
 
     if len(valid_subset) == 0:
         warnings.warn(
