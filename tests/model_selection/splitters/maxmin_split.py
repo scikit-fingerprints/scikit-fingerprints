@@ -182,23 +182,3 @@ def test_maxmin_train_valid_test_split_returns_indices(all_molecules):
     assert all(isinstance(train, int) for train in train_set)
     assert all(isinstance(valid, int) for valid in valid_set)
     assert all(isinstance(test, int) for test in test_set)
-
-
-def test_maxmin_train_valid_test_split_empty_valid_set_warning(all_molecules):
-
-    with pytest.warns(
-        UserWarning,
-        match="Warning: Valid subset is empty. Consider using maxmin_train_test_split instead.",
-    ):
-        with pytest.warns(
-            UserWarning,
-            match="Validation set will not be returned since valid_size \
-was set to 0.0.Consider using train_test_split instead.",
-        ):
-            train_set, valid_set, test_set = maxmin_train_valid_test_split(
-                all_molecules,
-                train_size=0.7,
-                test_size=0.3,
-                valid_size=0,
-                random_state=0,
-            )

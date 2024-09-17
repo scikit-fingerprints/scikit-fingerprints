@@ -53,8 +53,9 @@ def maxmin_train_test_split(
 ]:
     data_size = len(data)
     train_size, test_size = validate_train_test_split_sizes(
-        train_size, test_size, len(data)
+        train_size, test_size, data_size
     )
+
     molecules = ensure_mols(data)
     fingerprints = [
         AllChem.GetMorganFingerprintAsBitVect(mol, 2, 1024) for mol in molecules
@@ -65,7 +66,7 @@ def maxmin_train_test_split(
         distFunc=lambda i, j: 1
         - DataStructs.DiceSimilarity(fingerprints[i], fingerprints[j]),
         poolSize=data_size,
-        pickSize=int(test_size * data_size),
+        pickSize=test_size,
         seed=random_state,
     )
 
@@ -140,7 +141,7 @@ def maxmin_train_valid_test_split(
         distFunc=lambda i, j: 1
         - DataStructs.DiceSimilarity(fingerprints[i], fingerprints[j]),
         poolSize=data_size,
-        pickSize=int(test_size * data_size),
+        pickSize=test_size,
         seed=random_state,
     )
 
@@ -148,7 +149,7 @@ def maxmin_train_valid_test_split(
         distFunc=lambda i, j: 1
         - DataStructs.DiceSimilarity(fingerprints[i], fingerprints[j]),
         poolSize=data_size,
-        pickSize=int((test_size + valid_size) * data_size),
+        pickSize=test_size + valid_size,
         firstPicks=test_idxs,
         seed=random_state,
     )
