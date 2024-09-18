@@ -22,9 +22,10 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
     (atom 1 type)-(atom 2 type)-(atom 3 type)-(atom 4 type)
 
     Atom type takes into consideration:
-    - the number of atom's pi bond electrons
-    - the atomic type
-    - the number of non-hydrogen branches attached to the atom
+
+    - atomic number
+    - number of pi electrons
+    - degree (number of bonds)
 
     This example of 4 atom path is the canonical version of topological torsion.
     The number of atoms can be adjusted (using `torsion_atom_count` parameter).
@@ -35,11 +36,15 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
         Size of output vectors, i.e. number of bits for each fingerprint. Must be
         positive.
 
-    include_chirality : bool, default=False
-        Whether to include chirality information when computing atom types.
-
     torsion_atom_count : int, default=4
         The number of atoms to be included in the torsion.
+
+    use_pharmacophoric_invariants: bool, default=False
+        Whether to use pharmacophoric invariants (atom types) instead of default ones.
+        They are the same as in the FCFP fingerprint.
+
+    include_chirality : bool, default=False
+        Whether to include chirality information when computing atom types.
 
     count_simulation : bool, default=True
         Whether to use count simulation for approximating feature counts [2]_.
@@ -106,16 +111,18 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
     _parameter_constraints: dict = {
         **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
-        "include_chirality": ["boolean"],
         "torsion_atom_count": [Interval(Integral, 2, None, closed="left")],
+        "use_pharmacophoric_invariants": ["boolean"],
+        "include_chirality": ["boolean"],
         "count_simulation": ["boolean"],
     }
 
     def __init__(
         self,
         fp_size: int = 2048,
-        include_chirality: bool = False,
         torsion_atom_count: int = 4,
+        use_pharmacophoric_invariants: bool = False,
+        include_chirality: bool = False,
         count_simulation: bool = True,
         count: bool = False,
         sparse: bool = False,
@@ -132,8 +139,9 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
         self.fp_size = fp_size
-        self.include_chirality = include_chirality
         self.torsion_atom_count = torsion_atom_count
+        self.use_pharmacophoric_invariants = use_pharmacophoric_invariants
+        self.include_chirality = include_chirality
         self.count_simulation = count_simulation
 
     def transform(
@@ -160,15 +168,24 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem.rdFingerprintGenerator import GetTopologicalTorsionGenerator
+        from rdkit.Chem.rdFingerprintGenerator import (
+            GetMorganFeatureAtomInvGen,
+            GetTopologicalTorsionGenerator,
+        )
 
         X = ensure_mols(X)
 
+        if self.use_pharmacophoric_invariants:
+            inv_gen = GetMorganFeatureAtomInvGen()
+        else:
+            inv_gen = None
+
         gen = GetTopologicalTorsionGenerator(
-            includeChirality=self.include_chirality,
-            torsionAtomCount=self.torsion_atom_count,
-            countSimulation=self.count_simulation,
             fpSize=self.fp_size,
+            torsionAtomCount=self.torsion_atom_count,
+            atomInvariantsGenerator=inv_gen,
+            includeChirality=self.include_chirality,
+            countSimulation=self.count_simulation,
         )
 
         if self.count:

@@ -26,7 +26,6 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     - atomic number
     - number of pi electrons
     - degree (number of bonds)
-    - optionally: chirality (based on `include_chirality` parameter)
 
     Distance is normally the topological distance, i.e. length of the shortest path
     in the molecular graph (number of bonds between atoms). Only pairs with distance
@@ -56,15 +55,19 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         Maximal distance between atoms. Must be positive and greater or equal to
         `min_distance`.
 
+    use_pharmacophoric_invariants: bool, default=False
+        Whether to use pharmacophoric invariants (atom types) instead of default ones.
+        They are the same as in the FCFP fingerprint.
+
     include_chirality : bool, default=False
         Whether to include chirality information when computing atom types.
-
-    count_simulation : bool, default=True
-        Whether to use count simulation for approximating feature counts [3]_.
 
     use_3D : bool, default=False
         Whether to use 3D Euclidean distance matrix. If False, uses topological
         distances on molecular graph.
+
+    count_simulation : bool, default=True
+        Whether to use count simulation for approximating feature counts [3]_.
 
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
@@ -147,8 +150,9 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         "min_distance": [Interval(Integral, 1, None, closed="left")],
         "max_distance": [Interval(Integral, 1, None, closed="left")],
         "include_chirality": ["boolean"],
-        "count_simulation": ["boolean"],
+        "use_pharmacophoric_invariants": ["boolean"],
         "use_3D": ["boolean"],
+        "count_simulation": ["boolean"],
         "scale_by_hac": ["boolean", Interval(Integral, 0, None, closed="left")],
     }
 
@@ -157,9 +161,10 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         fp_size: int = 2048,
         min_distance: int = 1,
         max_distance: int = 30,
+        use_pharmacophoric_invariants: bool = False,
         include_chirality: bool = False,
-        count_simulation: bool = True,
         use_3D: bool = False,
+        count_simulation: bool = True,
         scale_by_hac: Union[bool, int] = False,
         count: bool = False,
         sparse: bool = False,
@@ -179,10 +184,11 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         self.fp_size = fp_size
         self.min_distance = min_distance
         self.max_distance = max_distance
+        self.use_pharmacophoric_invariants = use_pharmacophoric_invariants
         self.include_chirality = include_chirality
+        self.use_3D = use_3D
         self.count_simulation = count_simulation
         self.scale_by_hac = scale_by_hac
-        self.use_3D = use_3D
 
     def _validate_params(self) -> None:
         super()._validate_params()
@@ -219,7 +225,10 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem.rdFingerprintGenerator import GetAtomPairGenerator
+        from rdkit.Chem.rdFingerprintGenerator import (
+            GetAtomPairGenerator,
+            GetMorganFeatureAtomInvGen,
+        )
 
         if self.use_3D:
             X = require_mols_with_conf_ids(X)
@@ -228,13 +237,19 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
             X = ensure_mols(X)
             conf_ids = [-1 for _ in X]
 
+        if self.use_pharmacophoric_invariants:
+            inv_gen = GetMorganFeatureAtomInvGen()
+        else:
+            inv_gen = None
+
         gen = GetAtomPairGenerator(
             fpSize=self.fp_size,
             minDistance=self.min_distance,
             maxDistance=self.max_distance,
+            atomInvariantsGenerator=inv_gen,
             includeChirality=self.include_chirality,
-            use2D=not self.use_3D,
             countSimulation=self.count_simulation,
+            use2D=not self.use_3D,
         )
         if self.count:
             fps = [

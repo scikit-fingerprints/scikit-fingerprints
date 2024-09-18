@@ -47,6 +47,10 @@ class RDKitFingerprint(BaseFingerprintTransformer):
     max_path : int, default=7
         Maximal length of paths used, in bonds.
 
+    use_pharmacophoric_invariants: bool, default=False
+        Whether to use pharmacophoric invariants (atom types) instead of default ones.
+        They are the same as in the FCFP fingerprint.
+
     use_bond_order : bool, default=True
         Whether to take bond order (type) into consideration when hashing subgraphs.
         False means that only graph topology (subgraph shape) is used.
@@ -135,6 +139,7 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         fp_size: int = 2048,
         min_path: int = 1,
         max_path: int = 7,
+        use_pharmacophoric_invariants: bool = False,
         use_bond_order: bool = True,
         num_bits_per_feature: int = 2,
         linear_paths_only: bool = False,
@@ -156,6 +161,7 @@ class RDKitFingerprint(BaseFingerprintTransformer):
         self.fp_size = fp_size
         self.min_path = min_path
         self.max_path = max_path
+        self.use_pharmacophoric_invariants = use_pharmacophoric_invariants
         self.use_bond_order = use_bond_order
         self.num_bits_per_feature = num_bits_per_feature
         self.linear_paths_only = linear_paths_only
@@ -173,14 +179,23 @@ class RDKitFingerprint(BaseFingerprintTransformer):
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
-        from rdkit.Chem.rdFingerprintGenerator import GetRDKitFPGenerator
+        from rdkit.Chem.rdFingerprintGenerator import (
+            GetMorganFeatureAtomInvGen,
+            GetRDKitFPGenerator,
+        )
 
         X = ensure_mols(X)
+
+        if self.use_pharmacophoric_invariants:
+            inv_gen = GetMorganFeatureAtomInvGen()
+        else:
+            inv_gen = None
 
         gen = GetRDKitFPGenerator(
             fpSize=self.fp_size,
             minPath=self.min_path,
             maxPath=self.max_path,
+            atomInvariantsGenerator=inv_gen,
             useBondOrder=self.use_bond_order,
             numBitsPerFeature=self.num_bits_per_feature,
             branchedPaths=not self.linear_paths_only,

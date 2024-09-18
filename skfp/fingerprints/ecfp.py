@@ -33,7 +33,6 @@ class ECFPFingerprint(BaseFingerprintTransformer):
     - formal charge
     - number of bound hydrogens
     - whether it is a part of a ring
-    - optionally: chirality (based on `include_chirality` parameter)
 
     Alternatively, pharmacophoric invariants can be used, representing functional
     class of atoms, resulting in FCFP (Functional Circular FingerPrint) fingerprints.
@@ -48,8 +47,9 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         Number of iterations performed, i.e. maximum radius of resulting subgraphs.
         Another common notation uses diameter, therefore ECFP4 has radius 2.
 
-    use_fcfp : bool, default=False
-        Whether to use pharmacophoric invariants, resulting in FCFP fingerprint.
+    use_pharmacophoric_invariants : bool, default=False
+        Whether to use pharmacophoric invariants (atom types) instead of default ones.
+        This results in FCFP (Functional Connectivity FingerPrint) fingerprint.
 
     include_chirality : bool, default=False
         Whether to include chirality information when computing atom types.
@@ -129,7 +129,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "radius": [Interval(Integral, 0, None, closed="left")],
-        "use_fcfp": ["boolean"],
+        "use_pharmacophoric_invariants": ["boolean"],
         "include_chirality": ["boolean"],
         "use_bond_types": ["boolean"],
         "include_ring_membership": ["boolean"],
@@ -140,7 +140,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         self,
         fp_size: int = 2048,
         radius: int = 2,
-        use_fcfp: bool = False,
+        use_pharmacophoric_invariants: bool = False,
         include_chirality: bool = False,
         use_bond_types: bool = True,
         include_ring_membership: bool = True,
@@ -161,7 +161,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         )
         self.fp_size = fp_size
         self.radius = radius
-        self.use_fcfp = use_fcfp
+        self.use_pharmacophoric_invariants = use_pharmacophoric_invariants
         self.include_chirality = include_chirality
         self.use_bond_types = use_bond_types
         self.include_ring_membership = include_ring_membership
@@ -177,14 +177,18 @@ class ECFPFingerprint(BaseFingerprintTransformer):
 
         X = ensure_mols(X)
 
-        invgen = GetMorganFeatureAtomInvGen() if self.use_fcfp else None
+        if self.use_pharmacophoric_invariants:
+            inv_gen = GetMorganFeatureAtomInvGen()
+        else:
+            inv_gen = None
+
         gen = GetMorganGenerator(
             fpSize=self.fp_size,
             radius=self.radius,
+            atomInvariantsGenerator=inv_gen,
             includeChirality=self.include_chirality,
             useBondTypes=self.use_bond_types,
             includeRingMembership=self.include_ring_membership,
-            atomInvariantsGenerator=invgen,
             countSimulation=self.count_simulation,
         )
 
