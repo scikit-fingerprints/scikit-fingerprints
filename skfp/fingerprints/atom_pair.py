@@ -57,7 +57,8 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
 
     use_pharmacophoric_invariants: bool, default=False
         Whether to use pharmacophoric invariants (atom types) instead of default ones.
-        They are the same as in the FCFP fingerprint.
+        They are the same as in the FCFP fingerprint: Donor, Acceptor, Aromatic,
+        Halogen, Basic, Acidic.
 
     include_chirality : bool, default=False
         Whether to include chirality information when computing atom types.

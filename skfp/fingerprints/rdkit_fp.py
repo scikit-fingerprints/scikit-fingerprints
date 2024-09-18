@@ -49,7 +49,8 @@ class RDKitFingerprint(BaseFingerprintTransformer):
 
     use_pharmacophoric_invariants: bool, default=False
         Whether to use pharmacophoric invariants (atom types) instead of default ones.
-        They are the same as in the FCFP fingerprint.
+        They are the same as in the FCFP fingerprint: Donor, Acceptor, Aromatic,
+        Halogen, Basic, Acidic.
 
     use_bond_order : bool, default=True
         Whether to take bond order (type) into consideration when hashing subgraphs.

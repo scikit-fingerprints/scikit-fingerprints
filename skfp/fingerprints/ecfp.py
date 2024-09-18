@@ -49,7 +49,8 @@ class ECFPFingerprint(BaseFingerprintTransformer):
 
     use_pharmacophoric_invariants : bool, default=False
         Whether to use pharmacophoric invariants (atom types) instead of default ones.
-        This results in FCFP (Functional Connectivity FingerPrint) fingerprint.
+        They are: Donor, Acceptor, Aromatic, Halogen, Basic, Acidic. This results in
+        FCFP (Functional Connectivity FingerPrint) fingerprint.
 
     include_chirality : bool, default=False
         Whether to include chirality information when computing atom types.
