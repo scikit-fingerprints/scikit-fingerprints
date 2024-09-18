@@ -3,25 +3,27 @@ from typing import Optional
 from rdkit.Chem import Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
-from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumHBD
+from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumRings
 
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfTwo(BaseFilter):
+class RuleOfFour(BaseFilter):
     """
-    Rule of two (Ro2).
+    Rule of four (Ro4).
 
-    Designed for finding reagents for building block design [1]_.
+    Rule designed to look for molecules used as PPI (protein-protein inhibitor).
+    Described in [1]_.
 
     Molecule must fulfill conditions:
-        - molecular weight <= 200 daltons
-        - HBA <= 4
-        - HBD <= 2
-        - logP <= 2
+
+    - molecular weight >= 400 daltons
+    - HBA >= 4
+    - logP >=4
+    - number of rings >= 4
 
     Parameters
-    ----------
+    ------------
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
@@ -41,20 +43,22 @@ class RuleOfTwo(BaseFilter):
 
     References
     -----------
-    .. [1] `Goldberg, F. W., Kettle, J. G., Kogej, T., Perry, M. W. D., & Tomkinson, N. P. (2015).
-        Designing novel building blocks is an overlooked strategy to improve compound quality.
-        Drug Discovery Today, 20(1), 11–17. <https://doi.org/10.1016/j.drudis.2014.09.023>`_
+    .. [1] `Morelli, X., Bourgeas, R., & Roche, P.
+        "Chemical and structural lessons from recent successes in protein–protein interaction inhibition (2P2I)."
+        Current Opinion in Chemical Biology, 15(4), 475–481.
+        <https://doi.org/10.1016/j.cbpa.2011.05.024>`_
 
     Examples
-    ----------
-    >>> from skfp.preprocessing import RuleOfTwo
-    >>> smiles = ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1', 'C=CCC1C=C(C)CC(CC=C)N1']
-    >>> filt = RuleOfTwo()
+    ---------
+    >>> from skfp.preprocessing import RuleOfFour
+    >>> smiles = ['c1ccc2oc(-c3ccc(Nc4nc(N5CCCCC5)nc(N5CCOCC5)n4)cc3)nc2c1', \
+    'c1nc(N2CCOCC2)c2sc3nc(N4CCOCC4)c4c(c3c2n1)CCCC4']
+    >>> filt = RuleOfFour()
     >>> filt
-    RuleOfTwo()
+    RuleOfFour()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1']
+    ['c1ccc2oc(-c3ccc(Nc4nc(N5CCCCC5)nc(N5CCOCC5)n4)cc3)nc2c1']
     """
 
     def __init__(
@@ -65,7 +69,6 @@ class RuleOfTwo(BaseFilter):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-
         super().__init__(
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
@@ -76,11 +79,12 @@ class RuleOfTwo(BaseFilter):
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
-            MolWt(mol) <= 200,
-            CalcNumHBA(mol) <= 4,
-            CalcNumHBD(mol) <= 2,
-            MolLogP(mol) <= 2,
+            MolWt(mol) >= 400,
+            MolLogP(mol) >= 4,
+            CalcNumHBA(mol) >= 4,
+            CalcNumRings(mol) >= 4,
         ]
+
         passed_rules = sum(rules)
 
         if self.allow_one_violation:

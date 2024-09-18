@@ -3,26 +3,40 @@ from typing import Optional
 from rdkit.Chem import Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
-from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumRings
+from rdkit.Chem.rdMolDescriptors import (
+    CalcNumHBA,
+    CalcNumHBD,
+    CalcNumRotatableBonds,
+    CalcTPSA,
+)
 
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfFour(BaseFilter):
+class RuleOfThree(BaseFilter):
     """
-    Rule of four (Ro4).
+    Rule of three (Ro3).
 
-    Rule designed to look for molecules used as PPI (protein-protein inhibitor).
-    Described in [1]_.
+    Rule optimised to search for fragment-based lead-like compounds with desired properties.
+    It was described in [1]_.
 
     Molecule must fulfill conditions:
-        - molecular weight >= 400 daltons
-        - HBA >= 4
-        - logP >=4
-        - number of rings >= 4
+
+    - molecular weight <= 300 daltons
+    - HBA <= 3
+    - HBD <= 3
+    - logP <= 3
+    Additionally, an extended version of this rule has been proposed, which adds two conditions:
+
+    - TPSA <= 60
+    - number of rotatable bonds <= 3
 
     Parameters
-    ------------
+    ----------
+    extended : bool, default=False
+         results in the application of an extended version of this rule
+         i.e. apply TPSA and rotatable bonds filtering
+
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
@@ -42,25 +56,30 @@ class RuleOfFour(BaseFilter):
 
     References
     -----------
-    .. [1] `Morelli, X., Bourgeas, R., & Roche, P. (2011).
-        Chemical and structural lessons from recent successes in protein–protein interaction inhibition (2P2I).
-        Current Opinion in Chemical Biology, 15(4), 475–481. <https://doi.org/10.1016/j.cbpa.2011.05.024>`_
+    .. [1] `Congreve, M., Carr, R., Murray, C., & Jhoti, H.
+        "A 'Rule of Three' for fragment-based lead discovery?"
+        Drug Discovery Today, 8(19), 876–877.
+        <https://doi.org/10.1016/S1359-6446(03)02831-9>`_
 
     Examples
-    ---------
-    >>> from skfp.preprocessing import RuleOfFour
-    >>> smiles = ['c1ccc2oc(-c3ccc(Nc4nc(N5CCCCC5)nc(N5CCOCC5)n4)cc3)nc2c1', \
-    'c1nc(N2CCOCC2)c2sc3nc(N4CCOCC4)c4c(c3c2n1)CCCC4']
-    >>> filt = RuleOfFour()
+    ----------
+    >>> from skfp.preprocessing import RuleOfThree
+    >>> smiles = ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
+    >>> filt = RuleOfThree()
     >>> filt
-    RuleOfFour()
+    RuleOfThree()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['c1ccc2oc(-c3ccc(Nc4nc(N5CCCCC5)nc(N5CCOCC5)n4)cc3)nc2c1']
+    ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
+    >>> filt = RuleOfThree(extended=True)
+    >>> filtered_mols = filt.transform(smiles)
+    >>> filtered_mols
+    ['C=CCNc1ncnc2ccccc12']
     """
 
     def __init__(
         self,
+        extended: bool = False,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
@@ -74,15 +93,17 @@ class RuleOfFour(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
+        self.extended = extended
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
-            MolWt(mol) >= 400,
-            MolLogP(mol) >= 4,
-            CalcNumHBA(mol) >= 4,
-            CalcNumRings(mol) >= 4,
+            MolWt(mol) <= 300,
+            CalcNumHBA(mol) <= 3,
+            CalcNumHBD(mol) <= 3,
+            MolLogP(mol) <= 3,
         ]
-
+        if self.extended:
+            rules += [CalcNumRotatableBonds(mol) <= 3, CalcTPSA(mol) <= 60]
         passed_rules = sum(rules)
 
         if self.allow_one_violation:

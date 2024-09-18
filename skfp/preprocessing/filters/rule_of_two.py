@@ -3,38 +3,26 @@ from typing import Optional
 from rdkit.Chem import Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
-from rdkit.Chem.rdMolDescriptors import (
-    CalcNumHBA,
-    CalcNumHBD,
-    CalcNumRotatableBonds,
-    CalcTPSA,
-)
+from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumHBD
 
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfThree(BaseFilter):
+class RuleOfTwo(BaseFilter):
     """
-    Rule of three (Ro3).
+    Rule of two (Ro2).
 
-    Rule optimised to search for fragment-based lead-like compounds with desired properties.
-    It was described in [1]_.
+    Designed for finding reagents for building block design [1]_.
 
     Molecule must fulfill conditions:
-        - molecular weight <= 300 daltons
-        - HBA <= 3
-        - HBD <= 3
-        - logP <= 3
-    Additionally, an extended version of this rule has been proposed, which adds two conditions:
-        - TPSA <= 60
-        - number of rotatable bonds <= 3
+
+    - molecular weight <= 200 daltons
+    - HBA <= 4
+    - HBD <= 2
+    - logP <= 2
 
     Parameters
     ----------
-    extended : bool, default=False
-         results in the application of an extended version of this rule
-         i.e. apply TPSA and rotatable bonds filtering
-
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
@@ -54,29 +42,25 @@ class RuleOfThree(BaseFilter):
 
     References
     -----------
-    .. [1] `Congreve, M., Carr, R., Murray, C., & Jhoti, H. (2003).
-        A ‘Rule of Three’ for fragment-based lead discovery? Drug Discovery Today, 8(19), 876–877.
-        <https://doi.org/10.1016/S1359-6446(03)02831-9>`_
+    .. [1] `Goldberg, F. W., Kettle, J. G., Kogej, T., Perry, M. W. D., & Tomkinson, N. P.
+        "Designing novel building blocks is an overlooked strategy to improve compound quality."
+        Drug Discovery Today, 20(1), 11–17.
+        <https://doi.org/10.1016/j.drudis.2014.09.023>`_
 
     Examples
     ----------
-    >>> from skfp.preprocessing import RuleOfThree
-    >>> smiles = ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
-    >>> filt = RuleOfThree()
+    >>> from skfp.preprocessing import RuleOfTwo
+    >>> smiles = ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1', 'C=CCC1C=C(C)CC(CC=C)N1']
+    >>> filt = RuleOfTwo()
     >>> filt
-    RuleOfThree()
+    RuleOfTwo()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
-    >>> filt = RuleOfThree(extended=True)
-    >>> filtered_mols = filt.transform(smiles)
-    >>> filtered_mols
-    ['C=CCNc1ncnc2ccccc12']
+    ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1']
     """
 
     def __init__(
         self,
-        extended: bool = False,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
@@ -90,17 +74,14 @@ class RuleOfThree(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self.extended = extended
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
-            MolWt(mol) <= 300,
-            CalcNumHBA(mol) <= 3,
-            CalcNumHBD(mol) <= 3,
-            MolLogP(mol) <= 3,
+            MolWt(mol) <= 200,
+            CalcNumHBA(mol) <= 4,
+            CalcNumHBD(mol) <= 2,
+            MolLogP(mol) <= 2,
         ]
-        if self.extended:
-            rules += [CalcNumRotatableBonds(mol) <= 3, CalcTPSA(mol) <= 60]
         passed_rules = sum(rules)
 
         if self.allow_one_violation:
