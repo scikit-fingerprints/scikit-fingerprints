@@ -82,15 +82,15 @@ class LipinskiFilter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        passed_rules = sum(
-            [
-                MolWt(mol) <= 500,  # molecular weight
-                CalcNumLipinskiHBA(mol) <= 10,  # HBA
-                CalcNumLipinskiHBD(mol) <= 5,  # HBD
-                MolLogP(mol) <= 5,  # logP
-            ]
-        )
+        rules = [
+            MolWt(mol) <= 500,  # molecular weight
+            CalcNumLipinskiHBA(mol) <= 10,  # HBA
+            CalcNumLipinskiHBD(mol) <= 5,  # HBD
+            MolLogP(mol) <= 5,  # logP
+        ]
+        passed_rules = sum(rules)
+
         if self.allow_one_violation:
-            return passed_rules >= 3
+            return passed_rules >= len(rules) - 1
         else:
-            return passed_rules == 4
+            return passed_rules == len(rules)

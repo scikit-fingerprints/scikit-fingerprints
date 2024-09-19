@@ -94,17 +94,17 @@ class BeyondRo5Filter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        passed_rules = sum(
-            [
-                MolWt(mol) <= 1000,  # molecular weight
-                -2 <= MolLogP(mol) <= 10,  # logP
-                CalcNumHBA(mol) <= 15,  # HBA
-                CalcNumHBD(mol) <= 6,  # HBD
-                CalcTPSA(mol) <= 250,  # TPSA
-                CalcNumRotatableBonds(mol) <= 20,
-            ]
-        )
+        rules = [
+            MolWt(mol) <= 1000,  # molecular weight
+            -2 <= MolLogP(mol) <= 10,  # logP
+            CalcNumHBA(mol) <= 15,  # HBA
+            CalcNumHBD(mol) <= 6,  # HBD
+            CalcTPSA(mol) <= 250,  # TPSA
+            CalcNumRotatableBonds(mol) <= 20,
+        ]
+        passed_rules = sum(rules)
+
         if self.allow_one_violation:
-            return passed_rules >= 5
+            return passed_rules >= len(rules) - 1
         else:
-            return passed_rules == 6
+            return passed_rules == len(rules)
