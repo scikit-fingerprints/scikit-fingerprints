@@ -7,7 +7,7 @@ from skfp.fingerprints import E3FPFingerprint
 
 
 def test_e3fp_bit_fingerprint(mols_conformers_list):
-    e3fp_fp = E3FPFingerprint(sparse=False, count=False, n_jobs=-1)
+    e3fp_fp = E3FPFingerprint(n_jobs=-1)
     X_skfp = e3fp_fp.transform(mols_conformers_list)
 
     X_e3fp = np.stack(
@@ -21,7 +21,7 @@ def test_e3fp_bit_fingerprint(mols_conformers_list):
 
 
 def test_e3fp_count_fingerprint(mols_conformers_list):
-    e3fp_fp = E3FPFingerprint(sparse=False, count=True, n_jobs=-1)
+    e3fp_fp = E3FPFingerprint(count=True, n_jobs=-1)
     X_skfp = e3fp_fp.transform(mols_conformers_list)
 
     X_e3fp = np.stack(
@@ -35,7 +35,7 @@ def test_e3fp_count_fingerprint(mols_conformers_list):
 
 
 def test_e3fp_sparse_bit_fingerprint(mols_conformers_list):
-    e3fp_fp = E3FPFingerprint(sparse=True, count=False, n_jobs=-1)
+    e3fp_fp = E3FPFingerprint(sparse=True, n_jobs=-1)
     X_skfp = e3fp_fp.transform(mols_conformers_list)
 
     X_e3fp = scipy.sparse.vstack(

@@ -3,7 +3,6 @@ from itertools import chain
 from typing import Any, Optional, Union
 
 import numpy as np
-from rdkit.Chem import Mol
 from sklearn.utils import _safe_indexing
 
 
@@ -74,9 +73,7 @@ def validate_train_test_split_sizes(
         return int(train_size), int(test_size)
 
 
-def get_data_from_indices(
-    data: Sequence[Union[str, Mol]], indices: Sequence[int]
-) -> list[Union[str, Mol]]:
+def get_data_from_indices(data: Sequence, indices: Sequence[int]) -> list:
     """
     Helper function to retrieve data elements from specified indices.
     """

@@ -8,7 +8,7 @@ from skfp.fingerprints import MHFPFingerprint
 
 
 def test_mhfp_bit_fingerprint(smiles_list, mols_list):
-    mhfp_fp = MHFPFingerprint(variant="bit", sparse=False, n_jobs=-1)
+    mhfp_fp = MHFPFingerprint(variant="bit", n_jobs=-1)
     X_skfp = mhfp_fp.transform(smiles_list)
 
     encoder = MHFPEncoder(2048, 0)
@@ -28,7 +28,7 @@ def test_mhfp_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_mhfp_count_fingerprint(smiles_list, mols_list):
-    mhfp_fp = MHFPFingerprint(variant="count", sparse=False, n_jobs=-1)
+    mhfp_fp = MHFPFingerprint(variant="count", n_jobs=-1)
     X_skfp = mhfp_fp.transform(smiles_list)
 
     encoder = MHFPEncoder(2048, 0)
@@ -47,7 +47,7 @@ def test_mhfp_count_fingerprint(smiles_list, mols_list):
 
 
 def test_mhfp_raw_hashes_fingerprint(smiles_list, mols_list):
-    mhfp_fp = MHFPFingerprint(variant="raw_hashes", sparse=False, n_jobs=-1)
+    mhfp_fp = MHFPFingerprint(variant="raw_hashes", n_jobs=-1)
     X_skfp = mhfp_fp.transform(smiles_list)
 
     encoder = MHFPEncoder(2048, 0)

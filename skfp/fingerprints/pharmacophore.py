@@ -5,7 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
-from sklearn.utils._param_validation import Interval, StrOptions
+from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols, require_mols_with_conf_ids
@@ -34,23 +34,38 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     - basic group
     - acidic group
 
-    Those structures can be returned as raw bits, results in 39972-element vector. By
-    default, they are folded into a shorter length vector. Both 2-point and 3-point
-    pharmacophores (pharmacophoric pairs and triangles) are used.
+    By default, 2-point and 3-point pharmacophores are used, resulting in 39972-element
+    vector. Alternatively, folding can be applied. Note that due to RDKit limitations,
+    only 2-point and 3-point variants are available.
+
+    Note that this is by far the slowest fingerprint, particularly for larger molecules.
+    This is due to the 3-point pharmacophore calculation. Consider filtering out large
+    (heavy) molecules or setting `max_points=2` if it takes too long.
 
     Parameters
     ----------
-    variant: {"raw_bits", "bit", "count"} = "raw_bits"
-        Whether to fold the raw bits output of the fingerprint into the size defined
-        by fp_size. If set to ``"count"`` the occurences will be summed.
+    variant: {"raw_bits", "folded"} = "raw_bits"
+        Whether to return raw bit values, or to fold them. Length of raw bits variant
+        depends on used N-points, see `n_features_out` attribute.
+
+    min_points: int, default=2
+        Lower bound of N-point pharmacophore. Must be 2 or 3, and less or equal to
+        `max_points`.
+
+    max_points: int, default=3
+        Upper bound of N-point pharmacophore. Must be 2 or 3, and greater or equal to
+        `min_points`.
 
     fp_size : int, default=2048
-        Size of output vectors, i.e. number of bits for each fingerprint. Must be
-        positive.
+        Size of output vectors, i.e. number of bits for each fingerprint. Only used
+        for `"folded"` variant. Must be positive.
 
     use_3D : bool, default=False
         Whether to use 3D Euclidean distance matrix, instead of topological distance.
         Binning is used to discretize values into values 0-8.
+
+    count : bool, default=False
+        Whether to return binary (bit) features, or their counts.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -70,8 +85,10 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
 
     Attributes
     ----------
-    n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+    n_features_out : int, default=39972
+        Number of output features, size of fingerprints. Depends on `variant`: for
+        `"folded"` it is equal to `fp_size`, and for `"raw_bits"` on `min_points`
+        and `max_points`: 252 for (2,2), 39720 for (3,3), and 39972 for (2,3).
 
     requires_conformers : bool
         Whether the fingerprint is 3D-based and requires molecules with conformers as
@@ -83,7 +100,7 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     .. [1] `A Gobbi, D Poppinger
         "Genetic optimization of combinatorial libraries"
         Biotechnology and Bioengineering: Volume 61, Issue 1, Winter 1998, Pages 47-54
-        <https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0290(199824)61:1%3C47::AID-BIT9%3E3.0.CO;2-Z>`_
+        <https://doi.org/10.1002/(SICI)1097-0290(199824)61:1%3C47::AID-BIT9%3E3.0.CO;2-Z>`_
 
     Examples
     --------
@@ -103,7 +120,9 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
 
     _parameter_constraints: dict = {
         **BaseFingerprintTransformer._parameter_constraints,
-        "variant": [StrOptions({"raw_bits", "bit", "count"})],
+        "variant": [StrOptions({"raw_bits", "folded"})],
+        "min_points": [Interval(Integral, 2, 3, closed="both")],
+        "max_points": [Interval(Integral, 2, 3, closed="both")],
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "use_3D": ["boolean"],
     }
@@ -111,34 +130,81 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     def __init__(
         self,
         variant: str = "raw_bits",
+        min_points: int = 2,
+        max_points: int = 3,
         fp_size: int = 2048,
         use_3D: bool = False,
+        count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-        n_features_out = 39972 if variant == "raw_bits" else fp_size
+        n_features_out = self._get_n_features_out(
+            variant, min_points, max_points, fp_size
+        )
         super().__init__(
             n_features_out=n_features_out,
             requires_conformers=use_3D,
+            count=count,
             sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
         self.variant = variant
+        self.min_points = min_points
+        self.max_points = max_points
         self.fp_size = fp_size
         self.use_3D = use_3D
+
+    def _validate_params(self) -> None:
+        super()._validate_params()
+        if self.max_points < self.min_points:
+            raise InvalidParameterError(
+                f"The max_points parameter of {self.__class__.__name__} must be "
+                f"greater or equal to min_points, got: "
+                f"min_points={self.min_points}, max_points={self.max_points}"
+            )
+
+    def _get_n_features_out(
+        self, variant: str, min_points: int, max_points: int, fp_size: int
+    ) -> int:
+        if variant == "folded":
+            return fp_size
+
+        # "raw_bits"
+        if min_points == max_points == 2:
+            return 252
+        elif min_points == max_points == 3:
+            return 39720
+        elif min_points == 2 and max_points == 3:
+            return 39972
+        else:
+            raise ValueError(
+                "min_points and max_points must be 2 or 3, "
+                "and min_points <= max_points, got:"
+                f"min_points={min_points}, max_points={max_points}"
+            )
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem import Get3DDistanceMatrix
+        from rdkit.Chem.ChemicalFeatures import BuildFeatureFactoryFromString
         from rdkit.Chem.Pharm2D import Gobbi_Pharm2D
         from rdkit.Chem.Pharm2D.Generate import Gen2DFingerprint
+        from rdkit.Chem.Pharm2D.SigFactory import SigFactory
 
-        factory = Gobbi_Pharm2D.factory
+        atom_features = BuildFeatureFactoryFromString(Gobbi_Pharm2D.fdef)
+        factory = SigFactory(
+            atom_features,
+            minPointCount=self.min_points,
+            maxPointCount=self.max_points,
+            useCounts=self.count,
+        )
+        factory.SetBins(Gobbi_Pharm2D.defaultBins)
+        factory.Init()
 
         if not self.use_3D:
             X = ensure_mols(X)
@@ -154,17 +220,18 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
                 for mol in X
             ]
 
-        if self.variant in {"bit", "count"}:
+        if self.variant == "folded":
             # X at this point is a list of RDKit fingerprints, but MyPy doesn't get it
             return self._hash_fingerprint_bits(
                 X,  # type: ignore
                 fp_size=self.fp_size,
-                count=(self.variant == "count"),
+                count=self.count,
                 sparse=self.sparse,
             )
+
+        dtype = np.uint32 if self.count else np.uint8
+
+        if self.sparse:
+            return csr_array(X, dtype=dtype)
         else:
-            return (
-                csr_array(X, dtype=np.uint8)
-                if self.sparse
-                else np.array(X, dtype=np.uint8)
-            )
+            return np.array(X, dtype=dtype)

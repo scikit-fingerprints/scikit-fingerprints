@@ -15,7 +15,7 @@ any other fingerprint. Creating molecules from SMILES separately here works.
 
 
 def test_erg_fuzzy_fingerprint(smiles_list):
-    erg_fp = ERGFingerprint(sparse=False, n_jobs=-1)
+    erg_fp = ERGFingerprint(n_jobs=-1)
     X_skfp = erg_fp.transform(smiles_list)
 
     mols_list = [MolFromSmiles(smi) for smi in smiles_list]
@@ -28,7 +28,7 @@ def test_erg_fuzzy_fingerprint(smiles_list):
 
 
 def test_erg_bit_fingerprint(smiles_list):
-    erg_fp = ERGFingerprint(variant="bit", sparse=False, n_jobs=-1)
+    erg_fp = ERGFingerprint(variant="bit", n_jobs=-1)
     X_skfp = erg_fp.transform(smiles_list)
 
     mols_list = [MolFromSmiles(smi) for smi in smiles_list]
@@ -44,7 +44,7 @@ def test_erg_bit_fingerprint(smiles_list):
 
 
 def test_erg_count_fingerprint(smiles_list):
-    erg_fp = ERGFingerprint(variant="count", sparse=False, n_jobs=-1)
+    erg_fp = ERGFingerprint(variant="count", n_jobs=-1)
     X_skfp = erg_fp.transform(smiles_list)
 
     mols_list = [MolFromSmiles(smi) for smi in smiles_list]

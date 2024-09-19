@@ -5,7 +5,6 @@ from typing import Optional, Union
 
 import numpy as np
 import scipy.sparse
-from e3fp.conformer.generator import ConformerGenerator
 from e3fp.pipeline import fprints_from_mol
 from rdkit import RDLogger
 from rdkit.Chem import Mol, MolToSmiles

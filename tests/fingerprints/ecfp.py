@@ -6,7 +6,7 @@ from skfp.fingerprints import ECFPFingerprint
 
 
 def test_ecfp_bit_fingerprint(smiles_list, mols_list):
-    ecfp_fp = ECFPFingerprint(sparse=False, count=False, n_jobs=-1)
+    ecfp_fp = ECFPFingerprint(n_jobs=-1)
     X_skfp = ecfp_fp.transform(smiles_list)
 
     fp_gen = GetMorganGenerator(radius=2)
@@ -19,7 +19,7 @@ def test_ecfp_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_ecfp_count_fingerprint(smiles_list, mols_list):
-    ecfp_fp = ECFPFingerprint(sparse=False, count=True, n_jobs=-1)
+    ecfp_fp = ECFPFingerprint(count=True, n_jobs=-1)
     X_skfp = ecfp_fp.transform(smiles_list)
 
     fp_gen = GetMorganGenerator(radius=2)
@@ -32,7 +32,7 @@ def test_ecfp_count_fingerprint(smiles_list, mols_list):
 
 
 def test_ecfp_sparse_bit_fingerprint(smiles_list, mols_list):
-    ecfp_fp = ECFPFingerprint(sparse=True, count=False, n_jobs=-1)
+    ecfp_fp = ECFPFingerprint(sparse=True, n_jobs=-1)
     X_skfp = ecfp_fp.transform(smiles_list)
 
     fp_gen = GetMorganGenerator(radius=2)

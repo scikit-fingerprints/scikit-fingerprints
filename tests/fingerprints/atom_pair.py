@@ -8,7 +8,7 @@ from skfp.fingerprints import AtomPairFingerprint
 
 
 def test_atom_pair_bit_fingerprint(smiles_list, mols_list):
-    atom_pair_fp = AtomPairFingerprint(sparse=False, count=False, n_jobs=-1)
+    atom_pair_fp = AtomPairFingerprint(n_jobs=-1)
     X_skfp = atom_pair_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator()
@@ -21,9 +21,7 @@ def test_atom_pair_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_atom_pair_bit_3D_fingerprint(mols_conformers_list):
-    atom_pair_fp = AtomPairFingerprint(
-        use_3D=True, sparse=False, count=False, n_jobs=-1
-    )
+    atom_pair_fp = AtomPairFingerprint(use_3D=True, n_jobs=-1)
     X_skfp = atom_pair_fp.transform(mols_conformers_list)
 
     fp_gen = GetAtomPairGenerator(use2D=False)
@@ -41,7 +39,7 @@ def test_atom_pair_bit_3D_fingerprint(mols_conformers_list):
 
 
 def test_atom_pair_count_fingerprint(smiles_list, mols_list):
-    atom_pair_fp = AtomPairFingerprint(sparse=False, count=True, n_jobs=-1)
+    atom_pair_fp = AtomPairFingerprint(count=True, n_jobs=-1)
     X_skfp = atom_pair_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator()
@@ -54,7 +52,7 @@ def test_atom_pair_count_fingerprint(smiles_list, mols_list):
 
 
 def test_atom_pair_count_3D_fingerprint(mols_conformers_list):
-    atom_pair_fp = AtomPairFingerprint(use_3D=True, sparse=False, count=True, n_jobs=-1)
+    atom_pair_fp = AtomPairFingerprint(use_3D=True, count=True, n_jobs=-1)
     X_skfp = atom_pair_fp.transform(mols_conformers_list)
 
     fp_gen = GetAtomPairGenerator(use2D=False)
@@ -72,7 +70,7 @@ def test_atom_pair_count_3D_fingerprint(mols_conformers_list):
 
 
 def test_atom_pair_sparse_bit_fingerprint(smiles_list, mols_list):
-    atom_pair_fp = AtomPairFingerprint(sparse=True, count=False, n_jobs=-1)
+    atom_pair_fp = AtomPairFingerprint(sparse=True, n_jobs=-1)
     X_skfp = atom_pair_fp.transform(smiles_list)
 
     fp_gen = GetAtomPairGenerator()
@@ -85,7 +83,7 @@ def test_atom_pair_sparse_bit_fingerprint(smiles_list, mols_list):
 
 
 def test_atom_pair_sparse_3D_bit_fingerprint(mols_conformers_list):
-    atom_pair_fp = AtomPairFingerprint(use_3D=True, sparse=True, count=False, n_jobs=-1)
+    atom_pair_fp = AtomPairFingerprint(use_3D=True, sparse=True, n_jobs=-1)
     X_skfp = atom_pair_fp.transform(mols_conformers_list)
 
     fp_gen = GetAtomPairGenerator(use2D=False)
