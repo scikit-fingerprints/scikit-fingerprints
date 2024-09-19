@@ -179,9 +179,7 @@ class USRFingerprint(BaseFingerprintTransformer):
 
         if self.errors == "ignore":
             # errors are marked as NaN rows
-            idxs_to_keep = [
-                idx for idx, x in enumerate(X) if not np.any(np.isnan(x.data))
-            ]
+            idxs_to_keep = [idx for idx, x in enumerate(X) if not np.any(np.isnan(x))]
             X = X[idxs_to_keep]
             y = y[idxs_to_keep]
 

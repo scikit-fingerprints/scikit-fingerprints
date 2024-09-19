@@ -4,8 +4,10 @@ from numbers import Real
 from typing import Optional, Union
 
 import numpy as np
+from numpy.linalg import norm
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
+from scipy.stats import moment
 from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
@@ -91,7 +93,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     >>> conf_gen = ConformerGenerator()
     >>> mols = conf_gen.transform(mols)
     >>> fp.transform(mols)  # doctest: +SKIP
-    array([[ 1.33723405,  0.39526642, ...        ,  0.        ,  0.        ]])
+    array([[ 4.84903774,  5.10822298, ...        ,  5.14008906,  2.75483277 ]])
     """
 
     _parameter_constraints: dict = {
@@ -101,13 +103,15 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         ],
         "charge_scaling_factor": [Interval(Real, 0.0, None, closed="neither")],
         "charge_errors": [StrOptions({"raise", "ignore", "zero"})],
+        "errors": [StrOptions({"raise", "NaN", "ignore"})],
     }
 
     def __init__(
         self,
-        partial_charge_model: str = "MMFF94",
+        partial_charge_model: str = "formal",
         charge_scaling_factor: float = 25.0,
         charge_errors: str = "raise",
+        errors: str = "raise",
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
         verbose: int = 0,
@@ -122,6 +126,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         self.partial_charge_model = partial_charge_model
         self.charge_scaling_factor = charge_scaling_factor
         self.charge_errors = charge_errors
+        self.errors = errors
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
@@ -180,16 +185,43 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
         X = super().transform(X)
 
+        if self.errors == "ignore":
+            # errors are marked as NaN rows
+            idxs_to_keep = [idx for idx, x in enumerate(X) if not np.any(np.isnan(x))]
+            X = X[idxs_to_keep]
+            y = y[idxs_to_keep]
+
         return X, y
 
     def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         mols = require_mols_with_conf_ids(X)
-        all_charges = [self._get_atomic_charges(mol) for mol in mols]
 
-        for mol, charges in zip(mols, all_charges):
-            pass
+        if self.errors == "raise":
+            fps = [self._get_fp(mol) for mol in mols]
+        else:  # self.errors in {"NaN", "ignore"}
+            fps = []
+            for mol in X:
+                try:
+                    fp = self._get_fp(mol)
+                except ValueError:
+                    fp = np.full(self.n_features_out, np.NaN)
+                fps.append(fp)
 
-        return None
+        return np.array(fps)
+
+    def _get_fp(self, mol: Mol) -> np.ndarray:
+        conf_id = mol.GetIntProp("conf_id")
+        coords = mol.GetConformer(conf_id).GetPositions()
+        charges = self._get_atomic_charges(mol) * self.charge_scaling_factor
+        descriptors = np.column_stack((coords, charges))
+        centroid_dists = self._get_centroid_distances(descriptors, charges)
+
+        fp = []
+        for d in centroid_dists:
+            # three moments: mean, stddev, cubic root of skewness
+            fp.extend([np.mean(d), np.std(d), np.cbrt(moment(d, 3))])
+
+        return np.array(fp)
 
     def _get_atomic_charges(self, mol: Mol) -> np.ndarray:
         from rdkit.Chem import MolToSmiles, rdPartialCharges
@@ -202,7 +234,10 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
             charges = [atom.GetDoubleProp("_GasteigerCharge") for atom in atoms]
         elif self.partial_charge_model == "MMFF94":
             values = MMFFGetMoleculeProperties(mol)
-            charges = [values.GetMMFFPartialCharge(i) for i in range(len(atoms))]
+            charges = [
+                values.GetMMFFPartialCharge(i) if values else None
+                for i in range(len(atoms))
+            ]
         elif self.partial_charge_model == "formal":
             charges = [atom.GetFormalCharge() for atom in atoms]
         else:  # precomputed
@@ -214,6 +249,42 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
                 f"Failed to compute at least one atom partial charge for {smiles}"
             )
         elif self.charge_errors == "zero":
-            charges = [charge if charge else 0 for charge in charges]
+            charges = np.nan_to_num(np.array(charges, dtype=float), nan=0)
+        else:  # "ignore"
+            charges = [c for c in charges if c is not None]
 
-        return np.asarray(charges)
+        return np.asarray(charges, dtype=float)
+
+    def _get_centroid_distances(
+        self, descriptors: np.ndarray, charges: np.ndarray
+    ) -> list[np.ndarray]:
+        # geometric center
+        c1 = descriptors.mean(axis=0)
+        dists_c1 = norm(descriptors - c1, axis=1)
+
+        # furthest atom from c1
+        c2 = descriptors[dists_c1.argmax()]
+        dists_c2 = norm(descriptors - c2, axis=1)
+
+        # furthest atom from c2
+        c3 = descriptors[dists_c2.argmax()]
+        dists_c3 = norm(descriptors - c3, axis=1)
+
+        # vectors between centroids
+        vec_a = c2 - c1
+        vec_b = c3 - c1
+
+        # scaled vector product of spatial coordinates (a_S and b_S)
+        # it distinguishes between a chiral molecule and its enantiomer
+        cross_ab = np.cross(vec_a[:3], vec_b[:3])
+        vec_c = (norm(vec_a) / (2 * norm(cross_ab))) * cross_ab
+
+        # geometric mean centroid moved in the direction of smallest and largest charge
+        # note that charges were already scaled before
+        c4 = np.append(c1[:3] + vec_c, np.max(charges))
+        c5 = np.append(c1[:3] + vec_c, np.min(charges))
+
+        dists_c4 = norm(descriptors - c4, axis=1)
+        dists_c5 = norm(descriptors - c5, axis=1)
+
+        return [dists_c1, dists_c2, dists_c3, dists_c4, dists_c5]
