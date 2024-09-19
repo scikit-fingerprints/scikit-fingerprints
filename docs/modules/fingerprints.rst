@@ -17,6 +17,7 @@ Fingerprints
     AvalonFingerprint
     E3FPFingerprint
     ECFPFingerprint
+    ElectroShapeFingerprint
     ERGFingerprint
     EStateFingerprint
     GETAWAYFingerprint

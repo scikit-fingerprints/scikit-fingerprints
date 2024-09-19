@@ -18,27 +18,44 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     """
     ElectroShape fingerprint.
 
-    The implementation uses RDKit. This is a descriptor-based fingerprint, extending
-    the USR fingerprint by additionally considering pharmacophoric atom types [1]_.
+    This is a descriptor-based fingerprint, extending the USR fingerprint by
+    additionally considering atomic partial charges [1]_.
 
-    Firstly, the four reference points are computed, and they are used in all five
-    feature groups. Each group is processed exactly the same, i.e. distance distributions
-    to reference points are calculated, and features from the first three moments
-    (mean, standard deviation, cubic root of skewness) are computed. This results in
-    12 features.
-
-    USRCAT expands on USR by considering 4 additional subsets of atoms, based on their
-    pharmacophoric types: hydrophobic, aromatic, hydrogen bond donor or acceptor atoms.
-    For each atoms subset, distance distribution and moments are calculated like in
-    the original USR. This results in 5 * 12 = 60 features.
+    It first computes atomic partial charges, and then uses both conformational
+    (spatial) structure, and this electric information, to compute reference
+    points (centroids). First three are like in USR, and last two
+    additionally use partial charge in distance calculation. See the original paper
+    [1]_ for details. For each centroid, the distribution of distances between atoms
+    and the centroid is aggregated using the first three moments (mean, standard
+    deviation, cubic root of skewness). This results in 15 features.
 
     This is a 3D fingerprint, and requries molecules with ``conf_id`` integer property
     set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.
     Furthermore, only molecules with 3 or more atoms are allowed, to allow computation
     of all three moments.
 
+    Typical correct values should be small, but problematic molecules may result in NaN
+    values for some descriptors. In those cases, imputation should be used.
+
     Parameters
     ----------
+    partial_charge_model : {"Gasteiger", "MMFF94", "formal", "precomputed"}, default="formal"
+        Which model to use to compute atomic partial charges. Default ``"formal"``
+        computes formal charges, and is the simplest and most error-resistantone.
+        ``"precomputed"`` assumes that the inputs are RDKit PropertyMol objects
+        with "charge" float property set.
+
+    charge_scaling_factor : float, default=25.0
+        Partial charges are multiplied by this factor to bring them to a value
+        range comparable to distances in Angstroms.
+
+    charge_errors : {"raise", "ignore", "zero"}, default="raise"
+        How to handle errors during calculation of atomic partial charges. ``"raise"``
+        immediately raises any errors. ``"NaN"`` ignores any atoms that failed the
+        computation; note that if all atoms fail, the error will be raised (use `errors`
+        parameter to control this). ``"zero"`` uses default value of 0 to fill all
+        problematic charges.
+
     errors : {"raise", "NaN", "ignore"}, default="raise"
         How to handle errors during fingerprint calculation. ``"raise"`` immediately
         raises any errors. ``"NaN"`` returns NaN values for molecules which resulted in
@@ -61,7 +78,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
     Attributes
     ----------
-    n_features_out : int = 60
+    n_features_out : int = 15
         Number of output features, size of fingerprints.
 
     requires_conformers : bool = True
@@ -70,14 +87,17 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
     See Also
     --------
-    :class:`USR` : Related fingerprint, which USRCAT expands.
+    :class:`USR` : Related fingerprint, which ElectroShape expands.
+
+    :class:`USRCAT` : Related fingerprint, which expands USR with pharmacophoric
+        atom types, instead of partial charges.
 
     References
     ----------
-    .. [1] `Adrian M. Schreyer and Tom Blundell
-        "USRCAT: real-time ultrafast shape recognition with pharmacophoric constraints"
-        Journal of Cheminformatics 4, 27 (2012)
-        <https://jcheminf.biomedcentral.com/articles/10.1186/1758-2946-4-27#citeas>`_
+    .. [1] `Armstrong, M.S., Morris, G.M., Finn, P.W. et al.
+        "ElectroShape: fast molecular similarity calculations incorporating shape, chirality and electrostatics"
+        J Comput Aided Mol Des 24, 789–801 (2010)
+        <https://doi.org/10.1007/s10822-010-9374-0>`_
 
     Examples
     --------

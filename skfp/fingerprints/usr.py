@@ -67,6 +67,9 @@ class USRFingerprint(BaseFingerprintTransformer):
     :class:`USRCAT` : Related fingerprint, which additionally uses pharmacophoric
         atom types.
 
+    :class:`ElectroShaoe` : Related fingerprint, which additionally uses atomic
+        partial charges.
+
     References
     ----------
     .. [1] `Pedro J. Ballester and W. Graham Richards

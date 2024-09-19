@@ -69,6 +69,9 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     --------
     :class:`USR` : Related fingerprint, which USRCAT expands.
 
+    :class:`USRCAT` : Related fingerprint, which expands USR with atomic partial charges,
+        instead of pharmacophotic atom types.
+
     References
     ----------
     .. [1] `Adrian M. Schreyer and Tom Blundell
