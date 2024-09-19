@@ -5,6 +5,7 @@ from .autocorr import AutocorrFingerprint
 from .avalon import AvalonFingerprint
 from .e3fp_fp import E3FPFingerprint
 from .ecfp import ECFPFingerprint
+from .electroshape import ElectroShapeFingerprint
 from .erg import ERGFingerprint
 from .estate import EStateFingerprint
 from .functional_groups import FunctionalGroupsFingerprint
