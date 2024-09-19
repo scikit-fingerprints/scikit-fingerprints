@@ -69,6 +69,9 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     --------
     :class:`USR` : Related fingerprint, which USRCAT expands.
 
+    :class:`USRCAT` : Related fingerprint, which expands USR with atomic partial charges,
+        instead of pharmacophotic atom types.
+
     References
     ----------
     .. [1] `Adrian M. Schreyer and Tom Blundell
@@ -175,9 +178,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
 
         if self.errors == "ignore":
             # errors are marked as NaN rows
-            idxs_to_keep = [
-                idx for idx, x in enumerate(X) if not np.any(np.isnan(x.data))
-            ]
+            idxs_to_keep = [idx for idx, x in enumerate(X) if not np.any(np.isnan(x))]
             X = X[idxs_to_keep]
             y = y[idxs_to_keep]
 
