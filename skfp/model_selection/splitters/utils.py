@@ -3,6 +3,8 @@ from itertools import chain
 from typing import Any, Optional, Union
 
 import numpy as np
+from rdkit import DataStructs
+from rdkit.Chem import Mol
 from sklearn.utils import _safe_indexing
 
 
@@ -149,3 +151,10 @@ def validate_train_valid_test_split_sizes(
             )
 
         return int(train_size), int(valid_size), int(test_size)
+
+
+def create_dice_distance_function_from_fingerprints(fingerprints: list[Mol]):
+    def dice_distance_function(i: int, j: int) -> int:
+        return 1 - DataStructs.DiceSimilarity(fingerprints[i], fingerprints[j])
+
+    return dice_distance_function

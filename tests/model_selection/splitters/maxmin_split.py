@@ -12,7 +12,7 @@ from skfp.model_selection.splitters.maxmin_split import (
 
 @pytest.fixture
 def all_molecules() -> list[str]:
-    all_smiles: list[str] = [
+    return [
         "OCC3OC(OCC2OC(OC(C#N)c1ccccc1)C(O)C(O)C2O)C(O)C(O)C3O",
         "Cc1occc1C(=O)Nc2ccccc2",
         "CCCCCCCCCCC",
@@ -24,8 +24,6 @@ def all_molecules() -> list[str]:
         "ClC4=C(Cl)C5(Cl)C3C1CC(C2OC12)C3C4(Cl)C5(Cl)Cl",
         "COc5cc4OCC3Oc2c1CC(Oc1ccc2C(=O)C3c4cc5OC)C(C)=C",
     ]
-
-    return all_smiles
 
 
 @pytest.fixture
