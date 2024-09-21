@@ -21,7 +21,7 @@ def tanimoto_binary_similarity(
 
     .. math::
 
-         T(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
+        sim(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
 
     Calculated similarity falls within the range of 0-1.
     Passing all-zero vectors to this function results in similarity of 1.
@@ -87,7 +87,8 @@ def tanimoto_binary_distance(
 ) -> float:
     """
     Computes the Tanimoto distance for binary data between two input arrays or sparse matrices
-    Calculated distnace falls within the range of 0-1.
+    by subtracting similarity value from 1.
+    Calculated distance falls within the range of 0-1.
     Passing all-zero vectors to this function results in distance of 0.
 
     Parameters
@@ -138,7 +139,7 @@ def tanimoto_count_similarity(
 
     .. math::
 
-        T(vec_a, vec_b) = \\frac{vec_a \\cdot vec_b}{\\|vec_a\\|^2 + \\|vec_b\\|^2 - vec_a \\cdot vec_b}
+        sim(vec_a, vec_b) = \\frac{vec_a \\cdot vec_b}{\\|vec_a\\|^2 + \\|vec_b\\|^2 - vec_a \\cdot vec_b}
 
     Calculated similarity falls within the range of 0-1.
     Passing all-zero vectors to this function result in similarity of 1.
@@ -201,7 +202,8 @@ def tanimoto_count_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Computes the Tanimoto distance for binary data between two input arrays or sparse matrices.
+    Computes the Tanimoto distance for binary data between two input arrays or sparse matrices
+    by subtracting similarity value from 1.
     Calculated distance falls within the range from 0 to 1.
     Passing all-zero vectors to this function results in distance of 0.
 
