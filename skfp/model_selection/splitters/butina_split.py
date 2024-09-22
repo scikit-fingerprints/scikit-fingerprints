@@ -35,6 +35,7 @@ from skfp.utils.validators import ensure_mols
             None,
         ],
         "threshold": [Interval(RealNotInt, 0, 1, closed="both")],
+        "approximate": ["boolean"],
         "return_indices": ["boolean"],
         "n_jobs": [Integral, None],
     },
@@ -46,6 +47,7 @@ def butina_train_test_split(
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
     threshold: float = 0.65,
+    approximate: bool = False,
     return_indices: bool = False,
     n_jobs: Optional[int] = None,
 ) -> Union[
@@ -90,8 +92,14 @@ def butina_train_test_split(
         If train_size is also None, it will be set to 0.2.
 
     threshold : float, default=0.65
-        Tanimoto distance threshold, defining the minimal distance between cluster centroids.
-        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [4]_.
+        Tanimoto distance threshold, defining the minimal distance between cluster
+        centroids. Default value is based on ECFP4 activity threshold as determined
+        by Roger Sayle [4]_.
+
+    approximate : bool, default=False
+        Whether to use approximate similarity calculation, using MinHash and LSH Forest
+        [5]_ [6]_ to approximate Tanimoto (Jaccard) distances between molecules and
+        cluster centroids.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
@@ -124,20 +132,31 @@ def butina_train_test_split(
         J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59–67
         <https://pubs.acs.org/doi/10.1021/ci00023a009>`_
 
-    .. [3] `Noel O'Boyle "Taylor-Butina Clustering"
+    .. [3] `Noel O'Boyle
+        "Taylor-Butina Clustering"
         <https://noel.redbrick.dcu.ie/R_clustering.html>`_
 
     .. [4] `Roger Sayle
         "2D similarity, diversity and clustering in RDKit"
         RDKit UGM 2019
         <https://www.nextmovesoftware.com/talks/Sayle_2DSimilarityDiversityAndClusteringInRdkit_RDKITUGM_201909.pdf>`_
+
+    .. [5] `W. Dong et al.
+        "Efficient k-nearest neighbor graph construction for generic similarity measures"
+        Proceedings of the 20th International World Wide Web Conference (WWW '11).
+        Association for Computing Machinery, New York, NY, USA, 577–586
+        <https://doi.org/10.1145/1963405.1963487>`_
+
+    .. [6] `Leland McInnes
+        "PyNNDescent for fast Approximate Nearest Neighbors"
+        <https://pynndescent.readthedocs.io/en/latest/>`_
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
     mols = ensure_mols(data)
 
-    clusters = _create_clusters(mols, threshold, n_jobs)
+    clusters = _create_clusters(mols, threshold, approximate, n_jobs)
     clusters.sort(key=len)
 
     train_idxs: list[int] = []
@@ -191,6 +210,7 @@ def butina_train_test_split(
             None,
         ],
         "threshold": [Interval(RealNotInt, 0, 1, closed="both")],
+        "approximate": ["boolean"],
         "return_indices": ["boolean"],
         "n_jobs": [Integral, None],
     },
@@ -203,6 +223,7 @@ def scaffold_train_valid_test_split(
     valid_size: Optional[float] = None,
     test_size: Optional[float] = None,
     threshold: float = 0.65,
+    approximate: bool = False,
     return_indices: bool = False,
     n_jobs: Optional[int] = None,
 ) -> Union[
@@ -259,8 +280,14 @@ def scaffold_train_valid_test_split(
         test_size is set to 0.1.
 
     threshold : float, default=0.65
-        Tanimoto distance threshold, defining the minimal distance between cluster centroids.
-        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [4]_.
+        Tanimoto distance threshold, defining the minimal distance between cluster
+        centroids. Default value is based on ECFP4 activity threshold as determined
+        by Roger Sayle [4]_.
+
+    approximate : bool, default=False
+        Whether to use approximate similarity calculation, using MinHash and LSH Forest
+        [5]_ [6]_ to approximate Tanimoto (Jaccard) distances between molecules and
+        cluster centroids.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
@@ -306,7 +333,7 @@ def scaffold_train_valid_test_split(
     )
     mols = ensure_mols(data)
 
-    clusters = _create_clusters(mols, threshold, n_jobs)
+    clusters = _create_clusters(mols, threshold, approximate, n_jobs)
     clusters.sort(key=len)
 
     train_idxs: list[int] = []
@@ -344,7 +371,7 @@ def scaffold_train_valid_test_split(
 
 
 def _create_clusters(
-    mols: list[Mol], threshold: float, n_jobs: Optional[int]
+    mols: list[Mol], threshold: float, approximate: bool, n_jobs: Optional[int]
 ) -> list[list[int]]:
     """
     Generate Taylor-Butina clusters for a list of SMILES strings or RDKit `Mol` objects.
@@ -361,9 +388,27 @@ def _create_clusters(
     fps = ECFPFingerprint().transform(mols).astype(bool)
     fps_centroids = fps[centroid_idxs]
 
-    nn = NearestNeighbors(n_neighbors=1, metric="jaccard", n_jobs=n_jobs)
-    nn.fit(fps_centroids)
-    cluster_idxs = nn.kneighbors(fps, return_distance=False)
+    if approximate:
+        try:
+            from pynndescent import NNDescent
+        except ImportError:
+            raise ImportError(
+                "PyNNDescent not detected, which is needed for approximate Butina split. "
+                "You can install it with: pip install pynndescent"
+            )
+
+        index = NNDescent(
+            fps_centroids,
+            metric="jaccard",
+            random_state=0,
+            parallel_batch_queries=True,
+            n_jobs=n_jobs,
+        )
+        cluster_idxs, _ = index.query(fps, k=1)
+    else:
+        nn = NearestNeighbors(n_neighbors=1, metric="jaccard", n_jobs=n_jobs)
+        nn.fit(fps_centroids)
+        cluster_idxs = nn.kneighbors(fps, return_distance=False)
 
     # group molecule indexes by their nearest centroid numbers, i.e. cluster indexes
     df = pd.DataFrame(cluster_idxs, columns=["cluster_idxs"])
