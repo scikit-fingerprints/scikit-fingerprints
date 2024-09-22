@@ -2,12 +2,15 @@ from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
 
-import numpy as np
-from numpy.random import Generator, RandomState
+import pandas as pd
 from rdkit.Chem import Mol
+from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
+from rdkit.SimDivFilters.rdSimDivPickers import LeaderPicker
+from scipy.spatial.distance import jaccard
+from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
-from skfp.model_selection.splitters.scaffold_split import _create_scaffold_sets
+from skfp.fingerprints import ECFPFingerprint
 from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
     get_data_from_indices,
@@ -15,6 +18,7 @@ from skfp.model_selection.splitters.utils import (
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
+from skfp.utils.validators import ensure_mols
 
 
 @validate_params(
@@ -31,43 +35,41 @@ from skfp.model_selection.splitters.utils import (
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
-        "use_csk": ["boolean"],
+        "threshold": [Interval(RealNotInt, 0, 1, closed="both")],
         "return_indices": ["boolean"],
-        "random_state": ["random_state"],
-    },
-    prefer_skip_nested_validation=True,
+        "n_jobs": [Integral, None],
+    }
 )
-def randomized_scaffold_train_test_split(
+def butina_train_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
-    use_csk: bool = False,
+    threshold: float = 0.65,
     return_indices: bool = False,
-    random_state: Optional[Union[int, RandomState, Generator]] = None,
-):
-    # flake8: noqa: E501
+    n_jobs: Optional[int] = None,
+) -> Union[
+    tuple[
+        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
+    ],
+    tuple[Sequence, ...],
+    tuple[Sequence[int], Sequence[int]],
+]:
     """
-    Split using randomized groups of Bemis-Murcko scaffolds.
+    Split using Taylor-Butina clustering.
 
-    This split uses randomly partitioned groups of Bemis-Murcko molecular scaffolds [1]_
-    for splitting. This is a nondeterministic variant of scaffold split, introduced in
-    the MoleculeNet [2]_ paper. It aims to verify the model generalization to new scaffolds,
-    as an approximation to the time split, while also allowing multiple train-test splits.
+    This split uses deterministically partitioned clusters of molecules from Taylor-Butina
+    clustering [1]_. It aims to verify the model generalization to structurally novel
+    molecules.
 
-    By default, core structure scaffolds are used (following RDKit), which include atom
-    types. Original Bemis-Murcko approach uses the cyclic skeleton (CSK) of a molecule,
-    replacing all atoms by carbons. It is also known as CSK [3]_, and can be used with
-    `use_csk` parameter.
+    First, molecules are vectorized using binary ECFP4 fingerprint (radius 2) with
+    2048 bits. They are then clustered using Leader Clustering, a variant of Taylor-Butina
+    clustering by Roger Sayle [2]_ for RDKit. Cluster centroids (central molecules) are
+    guaranteed to have at least a given Tanimoto distance between them, as defined by
+    `threshold` parameter.
 
-    This approach is known to have certain limitations. In particular, molecules with
-    no rings will not get a scaffold, resulting in them being grouped together regardless
-    of their structure.
-
-    This variant is nondeterministic, and the scaffolds are randomly shuffled before
-    being assigned to subsets (test set is created fist). This approach is also known
-    as "balanced scaffold split", and typically leads to more optimistic evaluation than
-    regular, deterministic scaffold split [4]_.
+    Clusters are divided deterministically, with the smallest clusters assigned to the
+    test subset and the rest to the training subset.
 
     The split fractions (train_size, test_size) must sum to 1.
 
@@ -76,28 +78,30 @@ def randomized_scaffold_train_test_split(
     data : sequence
         A sequence representing either SMILES strings or RDKit `Mol` objects.
 
-    additional_data: sequence
-        Additional sequences to be split alongside the main data, e.g. labels.
+    additional_data: list[sequence]
+        Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
 
     train_size : float, default=None
-        The fraction of data to be used for the train subset. If None, it is set
-        to 1 - test_size. If test_size is also None, it will be set to 0.8.
+        The fraction of data to be used for the train subset. If None, it is set to 1 - test_size.
+        If test_size is also None, it will be set to 0.8.
 
     test_size : float, default=None
-        The fraction of data to be used for the test subset. If None, it is set
-        to 1 - train_size. If train_size is also None, it will be set to 0.2.
+        The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
+        If train_size is also None, it will be set to 0.2.
 
-    use_csk: bool, default=False
-        Whether to use the molecule cyclic skeleton (CSK), instead of the core
-        structure scaffold.
+    threshold : float, default=0.65
+        Tanimoto distance threshold, defining the minimal distance between cluster centroids.
+        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [2]_ [3]_.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
-    random_state: int or NumPy Random Generator instance, default=0
-        Seed for random number generator or random state that would be used for
-        shuffling the scaffolds.
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
     ----------
@@ -118,35 +122,25 @@ def randomized_scaffold_train_test_split(
         Chemical Science, 9(2), 513-530.
         https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
 
-    .. [3] `Bemis-Murcko scaffolds and their variants
+    .. [3] ` Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844`_
-
-    .. [4] `R. Sun, H. Dai, A. Wei Yu
-        "Does GNN Pretraining Help Molecular Representation?"
-        Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
     """
-    # flake8: noqa: E501
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
+    mols = ensure_mols(data)
 
-    scaffold_sets = _create_scaffold_sets(data, use_csk)
-    rng = (
-        random_state
-        if isinstance(random_state, RandomState)
-        else np.random.default_rng(random_state)
-    )
-    rng.shuffle(scaffold_sets)
+    clusters = _create_clusters(mols, threshold, n_jobs)
+    clusters.sort(key=len)
 
     train_idxs: list[int] = []
     test_idxs: list[int] = []
 
-    for scaffold_set in scaffold_sets:
+    for cluster in clusters:
         if len(test_idxs) < test_size:
-            test_idxs.extend(scaffold_set)
+            test_idxs.extend(cluster)
         else:
-            train_idxs.extend(scaffold_set)
+            train_idxs.extend(cluster)
 
     ensure_nonempty_subset(train_idxs, "train")
     ensure_nonempty_subset(test_idxs, "test")
@@ -189,43 +183,46 @@ def randomized_scaffold_train_test_split(
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
-        "use_csk": ["boolean"],
+        "threshold": [Interval(RealNotInt, 0, 1, closed="both")],
         "return_indices": ["boolean"],
-        "random_state": ["random_state"],
+        "n_jobs": [Integral, None],
     },
     prefer_skip_nested_validation=True,
 )
-def randomized_scaffold_train_valid_test_split(
+def scaffold_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
     valid_size: Optional[float] = None,
     test_size: Optional[float] = None,
-    use_csk: bool = False,
+    threshold: float = 0.65,
     return_indices: bool = False,
-    random_state: Optional[Union[int, RandomState, Generator]] = None,
-):
+    n_jobs: Optional[int] = None,
+) -> Union[
+    tuple[
+        Sequence[Union[str, Mol]],
+        Sequence[Union[str, Mol]],
+        Sequence[Union[str, Mol]],
+        Sequence[Sequence[Any]],
+    ],
+    tuple[Sequence, ...],
+    tuple[Sequence[int], Sequence[int], Sequence[int]],
+]:
     """
-    Split using randomized groups of Bemis-Murcko scaffolds.
+    Split using Taylor-Butina clustering.
 
-    This split uses randomly partitioned groups of Bemis-Murcko molecular scaffolds [1]_
-    for splitting. This is a nondeterministic variant of scaffold split, introduced in
-    the MoleculeNet [2]_ paper. It aims to verify the model generalization to new scaffolds,
-    as an approximation to the time split, while also allowing multiple train-test splits.
+    This split uses deterministically partitioned clusters of molecules from Taylor-Butina
+    clustering [1]_. It aims to verify the model generalization to structurally novel
+    molecules.
 
-    By default, core structure scaffolds are used (following RDKit), which include atom
-    types. Original Bemis-Murcko approach uses the cyclic skeleton (CSK) of a molecule,
-    replacing all atoms by carbons. It is also known as CSK [3]_, and can be used with
-    `use_csk` parameter.
+    First, molecules are vectorized using binary ECFP4 fingerprint (radius 2) with
+    2048 bits. They are then clustered using Leader Clustering, a variant of Taylor-Butina
+    clustering by Roger Sayle [2]_ for RDKit. Cluster centroids (central molecules) are
+    guaranteed to have at least a given Tanimoto distance between them, as defined by
+    `threshold` parameter.
 
-    This approach is known to have certain limitations. In particular, molecules with
-    no rings will not get a scaffold, resulting in them being grouped together regardless
-    of their structure.
-
-    This variant is nondeterministic, and the scaffolds are randomly shuffled before
-    being assigned to subsets (in order: test, valid, train). This approach is also known
-    as "balanced scaffold split", and typically leads to more optimistic evaluation than
-    regular, deterministic scaffold split [4]_.
+    Clusters are divided deterministically, with the smallest clusters assigned to the
+    test subset, larger to the validation subset, and the rest to the training subset
 
     The split fractions (train_size, valid_size, test_size) must sum to 1.
 
@@ -254,17 +251,19 @@ def randomized_scaffold_train_valid_test_split(
         is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
         test_size is set to 0.1.
 
-    use_csk: bool, default=False
-        Whether to use the molecule cyclic skeleton (CSK), instead of the core
-        structure scaffold.
+    threshold : float, default=0.65
+        Tanimoto distance threshold, defining the minimal distance between cluster centroids.
+        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [2]_ [3]_.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
-    random_state: int or NumPy Random Generator instance, default=0
-        Seed for random number generator or random state that would be used for
-        shuffling the scaffolds.
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
     ----------
@@ -287,35 +286,26 @@ def randomized_scaffold_train_valid_test_split(
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
         https://github.com/rdkit/rdkit/discussions/6844`_
-
-    .. [4] `R. Sun, H. Dai, A. Wei Yu
-        "Does GNN Pretraining Help Molecular Representation?"
-        Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
+    mols = ensure_mols(data)
 
-    scaffold_sets = _create_scaffold_sets(data, use_csk)
-    rng = (
-        random_state
-        if isinstance(random_state, RandomState)
-        else np.random.default_rng(random_state)
-    )
-    rng.shuffle(scaffold_sets)
+    clusters = _create_clusters(mols, threshold, n_jobs)
+    clusters.sort(key=len)
 
     train_idxs: list[int] = []
     valid_idxs: list[int] = []
     test_idxs: list[int] = []
 
-    for scaffold_set in scaffold_sets:
+    for cluster in clusters:
         if len(test_idxs) < test_size:
-            test_idxs.extend(scaffold_set)
+            test_idxs.extend(cluster)
         elif len(valid_idxs) < valid_size:
-            valid_idxs.extend(scaffold_set)
+            valid_idxs.extend(cluster)
         else:
-            train_idxs.extend(scaffold_set)
+            train_idxs.extend(cluster)
 
     if return_indices:
         train_subset = train_idxs
@@ -337,3 +327,35 @@ def randomized_scaffold_train_valid_test_split(
         return train_subset, valid_subset, test_subset, *additional_data_split
     else:
         return train_subset, valid_subset, test_subset
+
+
+def _create_clusters(
+    mols: list[Mol], threshold: float, n_jobs: Optional[int]
+) -> list[list[int]]:
+    """
+    Generate Taylor-Butina clusters for a list of SMILES strings or RDKit `Mol` objects.
+    This function groups molecules by using clustering, where cluster centers must have
+    Tanimoto (Jaccard) distance greater or equal to given threshold. Binary ECFP4 (Morgan)
+    fingerprints with 2048 bits are used as features.
+    """
+    fps_rdkit = GetMorganGenerator().GetFingerprints(mols)
+    centroid_idxs = LeaderPicker().LazyBitVectorPick(
+        fps_rdkit, poolSize=len(mols), threshold=threshold
+    )
+
+    # we don't use n_jobs here, since ECFP is too fast to benefit from that
+    fps = ECFPFingerprint().transform(mols).astype(bool)
+    fps_centroids = fps[centroid_idxs]
+
+    nn = NearestNeighbors(n_neighbors=1, metric=jaccard, n_jobs=n_jobs)
+    nn.fit(fps_centroids)
+    cluster_idxs = nn.kneighbors(fps, return_distance=False)
+
+    # group molecule indexes by their nearest centroid numbers, i.e. cluster indexes
+    df = pd.DataFrame(cluster_idxs, columns=["cluster_idxs"])
+    df["mol_idxs"] = list(range(len(mols)))
+    df = df.groupby("cluster_idxs", sort=False).agg(list)
+
+    clusters = list(df["mol_idxs"])
+
+    return clusters

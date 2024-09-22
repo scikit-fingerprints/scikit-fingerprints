@@ -5,7 +5,7 @@ from rdkit import Chem
 from rdkit.Chem import Mol
 
 from skfp.model_selection.splitters.scaffold_split import (
-    _create_scaffolds,
+    _create_scaffold_sets,
     scaffold_train_test_split,
     scaffold_train_valid_test_split,
 )
@@ -111,13 +111,13 @@ def test_train_split_larger_than_valid_and_test_splits(all_molecules):
 
 
 def test_scaffold_creation_total_count(all_molecules):
-    scaffolds = _create_scaffolds(all_molecules)
+    scaffolds = _create_scaffold_sets(all_molecules)
     assert len(scaffolds) <= len(all_molecules)
 
 
 def test_no_ring_molecules():
     smiles_list = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
-    scaffolds = _create_scaffolds(smiles_list)
+    scaffolds = _create_scaffold_sets(smiles_list)
     assert len(scaffolds) == 1
 
 
@@ -128,7 +128,7 @@ def test_scaffold_count_for_benzodiazepines():
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",
     ]
 
-    scaffolds = _create_scaffolds(smiles_list)
+    scaffolds = _create_scaffold_sets(smiles_list)
     assert len(scaffolds) == 1
 
 
@@ -139,7 +139,7 @@ def test_scaffold_count_for_xanthines():
         "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
         "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
     ]
-    scaffolds = _create_scaffolds(smiles_list)
+    scaffolds = _create_scaffold_sets(smiles_list)
     assert len(scaffolds) == 1
 
 

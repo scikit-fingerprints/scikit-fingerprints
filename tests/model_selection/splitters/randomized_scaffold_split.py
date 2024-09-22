@@ -5,10 +5,10 @@ from rdkit import Chem
 from rdkit.Chem import Mol
 
 from skfp.model_selection.splitters.randomized_scaffold_split import (
-    _create_scaffolds,
     randomized_scaffold_train_test_split,
     randomized_scaffold_train_valid_test_split,
 )
+from skfp.model_selection.splitters.scaffold_split import _create_scaffold_sets
 
 
 @pytest.fixture
@@ -64,13 +64,13 @@ def smiles_ten_scaffolds() -> list[str]:
 
 
 def test_randomized_scaffold_creation_total_count(all_molecules):
-    randomized_scaffolds = _create_scaffolds(all_molecules)
+    randomized_scaffolds = _create_scaffold_sets(all_molecules)
     assert len(randomized_scaffolds) <= len(all_molecules)
 
 
 def test_no_ring_molecules():
     smiles_list = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
-    randomized_scaffolds = _create_scaffolds(smiles_list)
+    randomized_scaffolds = _create_scaffold_sets(smiles_list)
     assert len(randomized_scaffolds) == 1
 
 
@@ -81,7 +81,7 @@ def test_randomized_scaffold_count_for_benzodiazepines():
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",
     ]
 
-    randomized_scaffolds = _create_scaffolds(smiles_list)
+    randomized_scaffolds = _create_scaffold_sets(smiles_list)
     assert len(randomized_scaffolds) == 1
 
 
@@ -92,7 +92,7 @@ def test_randomized_scaffold_count_for_xanthines():
         "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
         "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
     ]
-    randomized_scaffolds = _create_scaffolds(smiles)
+    randomized_scaffolds = _create_scaffold_sets(smiles)
     assert len(randomized_scaffolds) == 1
 
 
