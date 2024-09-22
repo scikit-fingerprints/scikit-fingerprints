@@ -6,7 +6,6 @@ import pandas as pd
 from rdkit.Chem import Mol
 from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
 from rdkit.SimDivFilters.rdSimDivPickers import LeaderPicker
-from scipy.spatial.distance import jaccard
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
@@ -38,7 +37,8 @@ from skfp.utils.validators import ensure_mols
         "threshold": [Interval(RealNotInt, 0, 1, closed="both")],
         "return_indices": ["boolean"],
         "n_jobs": [Integral, None],
-    }
+    },
+    prefer_skip_nested_validation=True,
 )
 def butina_train_test_split(
     data: Sequence[Union[str, Mol]],
@@ -59,12 +59,12 @@ def butina_train_test_split(
     Split using Taylor-Butina clustering.
 
     This split uses deterministically partitioned clusters of molecules from Taylor-Butina
-    clustering [1]_. It aims to verify the model generalization to structurally novel
-    molecules.
+    clustering [1]_ [2]_ [3]_. It aims to verify the model generalization to structurally
+    novel molecules. Also known as sphere exclusion or leader-following clustering.
 
     First, molecules are vectorized using binary ECFP4 fingerprint (radius 2) with
     2048 bits. They are then clustered using Leader Clustering, a variant of Taylor-Butina
-    clustering by Roger Sayle [2]_ for RDKit. Cluster centroids (central molecules) are
+    clustering by Roger Sayle [4]_ for RDKit. Cluster centroids (central molecules) are
     guaranteed to have at least a given Tanimoto distance between them, as defined by
     `threshold` parameter.
 
@@ -91,7 +91,7 @@ def butina_train_test_split(
 
     threshold : float, default=0.65
         Tanimoto distance threshold, defining the minimal distance between cluster centroids.
-        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [2]_ [3]_.
+        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [4]_.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
@@ -112,18 +112,25 @@ def butina_train_test_split(
 
     References
     ----------
-    .. [1] `Bemis, G. W., & Murcko, M. A.
-        "The properties of known drugs. 1. Molecular frameworks."
-        Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+    .. [1] `Darko Butina
+        "Unsupervised Data Base Clustering Based on Daylight's Fingerprint and Tanimoto
+        Similarity: A Fast and Automated Way To Cluster Small and Large Data Sets"
+        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747–750
+        <https://pubs.acs.org/doi/abs/10.1021/ci9803381>`_
 
-    .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
-        "MoleculeNet: A Benchmark for Molecular Machine Learning."
-        Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+    .. [2] `Robin Taylor
+        "Simulation Analysis of Experimental Design Strategies for Screening Random
+        Compounds as Potential New Drugs and Agrochemicals"
+        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59–67
+        <https://pubs.acs.org/doi/10.1021/ci00023a009>`_
 
-    .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+    .. [3] `Noel O'Boyle "Taylor-Butina Clustering"
+        <https://noel.redbrick.dcu.ie/R_clustering.html>`_
+
+    .. [4] `Roger Sayle
+        "2D similarity, diversity and clustering in RDKit"
+        RDKit UGM 2019
+        <https://www.nextmovesoftware.com/talks/Sayle_2DSimilarityDiversityAndClusteringInRdkit_RDKITUGM_201909.pdf>`_
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
@@ -212,12 +219,12 @@ def scaffold_train_valid_test_split(
     Split using Taylor-Butina clustering.
 
     This split uses deterministically partitioned clusters of molecules from Taylor-Butina
-    clustering [1]_. It aims to verify the model generalization to structurally novel
-    molecules.
+    clustering [1]_ [2]_ [3]_. It aims to verify the model generalization to structurally
+    novel molecules.
 
     First, molecules are vectorized using binary ECFP4 fingerprint (radius 2) with
     2048 bits. They are then clustered using Leader Clustering, a variant of Taylor-Butina
-    clustering by Roger Sayle [2]_ for RDKit. Cluster centroids (central molecules) are
+    clustering by Roger Sayle for RDKit [4]_. Cluster centroids (central molecules) are
     guaranteed to have at least a given Tanimoto distance between them, as defined by
     `threshold` parameter.
 
@@ -253,7 +260,7 @@ def scaffold_train_valid_test_split(
 
     threshold : float, default=0.65
         Tanimoto distance threshold, defining the minimal distance between cluster centroids.
-        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [2]_ [3]_.
+        Default value is based on ECFP4 activity threshold as determined by Roger Sayle [4]_.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
@@ -274,18 +281,25 @@ def scaffold_train_valid_test_split(
 
     References
     ----------
-    .. [1] `Bemis, G. W., & Murcko, M. A.
-        "The properties of known drugs. 1. Molecular frameworks."
-        Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+    .. [1] `Darko Butina
+        "Unsupervised Data Base Clustering Based on Daylight's Fingerprint and Tanimoto
+        Similarity: A Fast and Automated Way To Cluster Small and Large Data Sets"
+        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747–750
+        <https://pubs.acs.org/doi/abs/10.1021/ci9803381>`_
 
-    .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
-        "MoleculeNet: A Benchmark for Molecular Machine Learning."
-        Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+    .. [2] `Robin Taylor
+        "Simulation Analysis of Experimental Design Strategies for Screening Random
+        Compounds as Potential New Drugs and Agrochemicals"
+        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59–67
+        <https://pubs.acs.org/doi/10.1021/ci00023a009>`_
 
-    .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+    .. [3] `Noel O'Boyle "Taylor-Butina Clustering"
+        <https://noel.redbrick.dcu.ie/R_clustering.html>`_
+
+    .. [4] `Roger Sayle
+        "2D similarity, diversity and clustering in RDKit"
+        RDKit UGM 2019
+        <https://www.nextmovesoftware.com/talks/Sayle_2DSimilarityDiversityAndClusteringInRdkit_RDKITUGM_201909.pdf>`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
@@ -347,7 +361,7 @@ def _create_clusters(
     fps = ECFPFingerprint().transform(mols).astype(bool)
     fps_centroids = fps[centroid_idxs]
 
-    nn = NearestNeighbors(n_neighbors=1, metric=jaccard, n_jobs=n_jobs)
+    nn = NearestNeighbors(n_neighbors=1, metric="jaccard", n_jobs=n_jobs)
     nn.fit(fps_centroids)
     cluster_idxs = nn.kneighbors(fps, return_distance=False)
 

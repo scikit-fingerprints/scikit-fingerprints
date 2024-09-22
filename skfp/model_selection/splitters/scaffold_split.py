@@ -109,15 +109,15 @@ def scaffold_train_test_split(
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
@@ -265,15 +265,15 @@ def scaffold_train_valid_test_split(
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
