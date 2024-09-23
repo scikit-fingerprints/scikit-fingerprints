@@ -49,7 +49,6 @@ rdkit = "<=2024.3.3"
 scikit-learn = "*"
 scipy = "*"
 tqdm = "*"
-matplotlib = "^3.9.2"
 
 [tool.poetry.group.dev]
 optional = true
