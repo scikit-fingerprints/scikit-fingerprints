@@ -3,6 +3,7 @@ from collections.abc import Sequence
 from numbers import Integral, Real
 from typing import Optional, Union
 
+import mmh3
 import numpy as np
 import scipy.sparse
 from e3fp.pipeline import fprints_from_mol
@@ -169,6 +170,8 @@ class E3FPFingerprint(BaseFingerprintTransformer):
         self.radius_multiplier = radius_multiplier
         self.rdkit_invariants = rdkit_invariants
 
+        self._fix_e3fp_mmh3_hashing()
+
     def _validate_params(self) -> None:
         super()._validate_params()
         if self.n_bits_before_folding < self.fp_size:
@@ -237,3 +240,10 @@ class E3FPFingerprint(BaseFingerprintTransformer):
         fp = fp.fold(self.fp_size)
         dtype = np.uint32 if self.count else np.uint8
         return fp.to_vector(sparse=self.sparse, dtype=dtype)
+
+    def _fix_e3fp_mmh3_hashing(self):
+        # e3fp library has a problem with mmh3 version 5.x, so we monkey-patch it
+        import e3fp.fingerprint.fprinter
+
+        fixed_hash = lambda array, seed=0: mmh3.hash(array.tobytes(), seed)
+        e3fp.fingerprint.fprinter.hash_int64_array = fixed_hash
