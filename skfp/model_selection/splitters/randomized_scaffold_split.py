@@ -15,6 +15,7 @@ from skfp.model_selection.splitters.utils import (
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
+from skfp.utils import ensure_mols
 
 
 @validate_params(

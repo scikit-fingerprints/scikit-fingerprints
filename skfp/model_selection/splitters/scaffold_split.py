@@ -122,6 +122,7 @@ def scaffold_train_test_split(
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
+
     scaffold_sets = _create_scaffold_sets(data, use_csk)
     scaffold_sets.sort(key=len)
 
@@ -317,8 +318,7 @@ def scaffold_train_valid_test_split(
 
 
 def _create_scaffold_sets(
-    data: Sequence[Union[str, Mol]],
-    use_csk: bool = False,
+    data: Sequence[Union[str, Mol]], use_csk: bool = False
 ) -> list[list[int]]:
     """
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.

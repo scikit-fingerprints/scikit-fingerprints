@@ -1,5 +1,3 @@
-import string
-
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
@@ -9,11 +7,12 @@ from skfp.model_selection.splitters.randomized_scaffold_split import (
     randomized_scaffold_train_valid_test_split,
 )
 from skfp.model_selection.splitters.scaffold_split import _create_scaffold_sets
+from skfp.preprocessing import MolFromSmilesTransformer
 
 
 @pytest.fixture
 def all_molecules() -> list[str]:
-    all_smiles: list[str] = [
+    return [
         "CCC",
         "CCCl",
         "CCBr",
@@ -33,21 +32,11 @@ def all_molecules() -> list[str]:
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",
     ]
 
-    return all_smiles
-
-
-@pytest.fixture
-def additional_data() -> tuple[list[int], list[str], list[bool]]:
-    num = 10
-    ints = list(range(1, num))
-    letters = list(string.ascii_lowercase)[:num]
-    bools = [i % 2 == 0 for i in range(num)]
-    return ints, letters, bools
-
 
 @pytest.fixture
 def smiles_ten_scaffolds() -> list[str]:
-    ten_different_scaffolds = [
+    # selected so that they have 10 different scaffolds
+    return [
         "C1CCCC(C2CC2)CC1",
         "c1n[nH]cc1C1CCCCCC1",
         "c1n[nH]cc1CC1CCCCCC1",
@@ -60,8 +49,6 @@ def smiles_ten_scaffolds() -> list[str]:
         "c1ccc2nc(N3CCn4ccnc4C3)ccc2c1",
     ]
 
-    return ten_different_scaffolds
-
 
 def test_randomized_scaffold_creation_total_count(all_molecules):
     randomized_scaffolds = _create_scaffold_sets(all_molecules)
@@ -69,19 +56,22 @@ def test_randomized_scaffold_creation_total_count(all_molecules):
 
 
 def test_no_ring_molecules():
-    smiles_list = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
-    randomized_scaffolds = _create_scaffold_sets(smiles_list)
+    smiles = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
+    mols = MolFromSmilesTransformer().transform(smiles)
+
+    randomized_scaffolds = _create_scaffold_sets(mols)
     assert len(randomized_scaffolds) == 1
 
 
 def test_randomized_scaffold_count_for_benzodiazepines():
-    smiles_list = [
+    smiles = [
         "C1CN=C(C2=CC=CC=C2)N=C1",
         "C1CN=C(C2=CC=CC=C2F)N=C1",
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",
     ]
+    mols = MolFromSmilesTransformer().transform(smiles)
 
-    randomized_scaffolds = _create_scaffold_sets(smiles_list)
+    randomized_scaffolds = _create_scaffold_sets(mols)
     assert len(randomized_scaffolds) == 1
 
 
@@ -92,7 +82,9 @@ def test_randomized_scaffold_count_for_xanthines():
         "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
         "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
     ]
-    randomized_scaffolds = _create_scaffold_sets(smiles)
+    mols = MolFromSmilesTransformer().transform(smiles)
+
+    randomized_scaffolds = _create_scaffold_sets(mols)
     assert len(randomized_scaffolds) == 1
 
 
@@ -102,7 +94,7 @@ def test_csk_high_degree_atoms():
     randomized_scaffold_train_test_split(smiles, random_state=0, use_csk=True)
 
 
-def test_randomized_scaffold_train_test_split_returns_molecules(all_molecules):
+def test_randomized_scaffold_train_test_split_returns_smiles(all_molecules):
     mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
     train_set, test_set = randomized_scaffold_train_test_split(
         mols, random_state=0, return_indices=False
@@ -228,3 +220,31 @@ def test_randomized_scaffold_train_test_split_return_indices(all_molecules):
 
     assert all(isinstance(idx, int) for idx in train_idxs)
     assert all(isinstance(idx, int) for idx in test_idxs)
+
+
+def test_train_test_split_with_additional_data(smiles_ten_scaffolds):
+    additional_data = list(range(len(smiles_ten_scaffolds)))
+    train_set, test_set, train_data, test_data = randomized_scaffold_train_test_split(
+        smiles_ten_scaffolds, additional_data
+    )
+    assert len(train_set) == 8
+    assert len(test_set) == 2
+
+    assert len(train_data) == 8
+    assert len(test_data) == 2
+
+
+def test_train_valid_test_split_with_additional_data(smiles_ten_scaffolds):
+    additional_data = list(range(len(smiles_ten_scaffolds)))
+    train_set, valid_set, test_set, train_data, valid_data, test_data = (
+        randomized_scaffold_train_valid_test_split(
+            smiles_ten_scaffolds, additional_data
+        )
+    )
+    assert len(train_set) == 8
+    assert len(valid_set) == 1
+    assert len(test_set) == 1
+
+    assert len(train_data) == 8
+    assert len(valid_data) == 1
+    assert len(test_data) == 1
