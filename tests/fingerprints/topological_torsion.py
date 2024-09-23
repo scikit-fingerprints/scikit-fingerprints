@@ -1,5 +1,8 @@
 import numpy as np
-from rdkit.Chem.rdFingerprintGenerator import GetTopologicalTorsionGenerator
+from rdkit.Chem.rdFingerprintGenerator import (
+    GetMorganFeatureAtomInvGen,
+    GetTopologicalTorsionGenerator,
+)
 from scipy.sparse import csr_array
 
 from skfp.fingerprints import TopologicalTorsionFingerprint
@@ -55,3 +58,20 @@ def test_topological_torsion_sparse_count_fingerprint(smiles_list, mols_list):
     assert X_skfp.shape == (len(smiles_list), tt_fp.fp_size)
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
+
+
+def test_pharmacophoric_invariants(smiles_list, mols_list):
+    pharma_tt_fp = TopologicalTorsionFingerprint(
+        use_pharmacophoric_invariants=True, n_jobs=-1
+    )
+    X_skfp = pharma_tt_fp.transform(smiles_list)
+
+    fp_gen = GetTopologicalTorsionGenerator(
+        atomInvariantsGenerator=GetMorganFeatureAtomInvGen()
+    )
+    X_rdkit = np.array([fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list])
+
+    assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), pharma_tt_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(np.isin(X_skfp, [0, 1]))

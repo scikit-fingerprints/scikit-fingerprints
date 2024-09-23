@@ -1,6 +1,9 @@
 import numpy as np
 import pytest
-from rdkit.Chem.rdFingerprintGenerator import GetRDKitFPGenerator
+from rdkit.Chem.rdFingerprintGenerator import (
+    GetMorganFeatureAtomInvGen,
+    GetRDKitFPGenerator,
+)
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
@@ -57,6 +60,19 @@ def test_rdkit_sparse_count_fingerprint(smiles_list, mols_list):
     assert X_skfp.shape == (len(smiles_list), rdkit_fp.fp_size)
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
+
+
+def test_pharmacophoric_invariants(smiles_list, mols_list):
+    pharma_rdkit_fp = RDKitFingerprint(use_pharmacophoric_invariants=True, n_jobs=-1)
+    X_skfp = pharma_rdkit_fp.transform(smiles_list)
+
+    fp_gen = GetRDKitFPGenerator(atomInvariantsGenerator=GetMorganFeatureAtomInvGen())
+    X_rdkit = np.array([fp_gen.GetFingerprintAsNumPy(mol) for mol in mols_list])
+
+    assert np.array_equal(X_skfp, X_rdkit)
+    assert X_skfp.shape == (len(smiles_list), pharma_rdkit_fp.fp_size)
+    assert X_skfp.dtype == np.uint8
+    assert np.all(np.isin(X_skfp, [0, 1]))
 
 
 def test_rdkit_wrong_path_lengths(smiles_list):
