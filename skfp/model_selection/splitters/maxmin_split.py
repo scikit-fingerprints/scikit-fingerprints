@@ -3,11 +3,10 @@ from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
 
-from rdkit.Chem import Mol
+from rdkit.Chem import AllChem, Mol
 from rdkit.SimDivFilters.rdSimDivPickers import MaxMinPicker
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
-from skfp.fingerprints.ecfp import ECFPFingerprint
 from skfp.model_selection.splitters.utils import (
     create_dice_distance_function_from_fingerprints,
     ensure_nonempty_subset,
@@ -101,7 +100,10 @@ def maxmin_train_test_split(
     molecules = ensure_mols(data)
 
     if fingerprints is None:
-        fingerprints = ECFPFingerprint().transform(molecules)
+        fingerprints = [
+            AllChem.GetMorganFingerprintAsBitVect(mol, radius=4, nBits=1024)
+            for mol in molecules
+        ]
 
     picker = MaxMinPicker()
     test_idxs = picker.LazyPick(
@@ -225,9 +227,12 @@ def maxmin_train_valid_test_split(
     )
     molecules = ensure_mols(data)
     if fingerprints is None:
-        fingerprints = ECFPFingerprint().transform(molecules)
-
+        fingerprints = [
+            AllChem.GetMorganFingerprintAsBitVect(mol, radius=4, nBits=1024)
+            for mol in molecules
+        ]
     picker = MaxMinPicker()
+
     test_idxs = picker.LazyPick(
         distFunc=create_dice_distance_function_from_fingerprints(fingerprints),
         poolSize=data_size,
