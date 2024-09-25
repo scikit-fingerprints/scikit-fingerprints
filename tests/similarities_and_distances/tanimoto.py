@@ -8,6 +8,7 @@ from scipy.sparse import csr_array
 
 from skfp.similarities.tanimoto import (
     _check_nan,
+    _tanimoto_count_numpy,
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
     tanimoto_count_distance,
@@ -27,6 +28,19 @@ def binary_csr_array():
     vec = csr_array([[1, 0, 1, 0, 1]])
 
     return vec
+
+
+@pytest.mark.parametrize(
+    "vec_a, vec_b, expected_similarity",
+    [
+        (np.array([1, 2, 3, 4]), np.array([1, 2, 3, 4]), 1.0),
+        (np.array([1, 2, 3, 4]), np.array([0, 0, 0, 0]), 0.0),
+        (np.array([0, 0, 0, 0]), np.array([0, 0, 0, 0]), 1.0),
+        (np.array([0, 1, 0, 0]), np.array([0, 0, 2, 3]), 0.0),
+    ],
+)
+def test_tanimoto_count_numpy(vec_a, vec_b, expected_similarity):
+    assert _tanimoto_count_numpy(vec_a, vec_b) == expected_similarity
 
 
 @pytest.mark.parametrize(
@@ -284,3 +298,10 @@ def test_count_different_types_raise_error(binary_numpy_array, binary_csr_array)
     assert "<class 'numpy.ndarray'> and <class 'scipy.sparse._csr.csr_array'>" in str(
         exc_info
     )
+
+
+def test_check_nan_wrong_type():
+    with pytest.raises(TypeError) as exc_info:
+        _check_nan(1)
+
+    assert "Expected numpy.ndarray or scipy.sparse.csr_array" in str(exc_info)

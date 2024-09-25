@@ -115,20 +115,20 @@ def randomized_scaffold_train_test_split(
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
     .. [3] `Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
 
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
+        <https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html>`_
     """
     # flake8: noqa: E501
     train_size, test_size = validate_train_test_split_sizes(
@@ -283,20 +283,20 @@ def randomized_scaffold_train_valid_test_split(
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
 
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
+        <https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html>`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)

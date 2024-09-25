@@ -1,8 +1,48 @@
 from typing import Union
 
 import numpy as np
+from numba import jit
 from scipy.sparse import csr_array
+from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
+
+
+@jit(nopython=True)
+def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
+    """
+    Calculates the Tanimoto similarity between two count data numpy arrays.
+    """
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
+        return 1.0
+
+    vec_a = vec_a.astype(np.float32)
+    vec_b = vec_b.astype(np.float32)
+
+    dot_ab: float = np.dot(vec_a, vec_b)
+    dot_aa: float = np.dot(vec_a, vec_a)
+    dot_bb: float = np.dot(vec_b, vec_b)
+
+    denominator: float = dot_aa + dot_bb - dot_ab
+
+    return dot_ab / denominator
+
+
+def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
+    """
+    Calculates the Tanimoto similarity between two count data scipy arrays.
+    """
+    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
+        return 1.0
+
+    dot_ab: float = vec_a.multiply(vec_b).sum()
+    dot_aa: float = vec_a.multiply(vec_a).sum()
+    dot_bb: float = vec_b.multiply(vec_b).sum()
+
+    denominator: float = dot_aa + dot_bb - dot_ab
+
+    tanimoto_sim: float = dot_ab / denominator
+
+    return tanimoto_sim
 
 
 @validate_params(
@@ -17,16 +57,9 @@ def tanimoto_binary_similarity(
 ) -> float:
     """
     Computes the Tanimoto similarity [1]_ for binary data between two input arrays
-    or sparse matrices using formula:
-
-    .. math::
-
-        sim(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
-
+    or sparse matrices using the Jaccard index.
     Calculated similarity falls within the range of 0-1.
     Passing all-zero vectors to this function results in similarity of 1.
-
-    Tanimoto similarity is calculated using the formula:
 
     Parameters
     ----------
@@ -45,8 +78,8 @@ def tanimoto_binary_similarity(
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
     "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-    Journal of Cheminformatics, 7, 20 (2015).
-    https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3`_
+    J Cheminform, 7, 20 (2015).
+    <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
     ----------
@@ -63,11 +96,26 @@ def tanimoto_binary_similarity(
     >>> sim
     1.0
     """
+    _check_nan(vec_a)
+    _check_nan(vec_b)
+
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
+        return 1.0
 
     if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        return _tanimoto_binary_scipy(vec_a, vec_b)
+        vec_a_bool = vec_a.astype(bool)
+        vec_b_bool = vec_b.astype(bool)
+
+        intersection: float = vec_a_bool.multiply(vec_b_bool).sum()
+        union: float = vec_a_bool.sum() + vec_b_bool.sum() - intersection
+
+        return intersection / union
+
     elif isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
-        return _tanimoto_binary_numpy(vec_a, vec_b)
+        vec_a_bool = vec_a.astype(bool)
+        vec_b_bool = vec_b.astype(bool)
+
+        return 1 - jaccard(vec_a_bool, vec_b_bool)
     else:
         raise TypeError(
             f"Both A and B must be of the same type: either numpy.ndarray "
@@ -161,8 +209,8 @@ def tanimoto_count_similarity(
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
     "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-    Journal of Cheminformatics, 7, 20 (2015).
-    https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3`_
+    J Cheminform, 7, 20 (2015).
+    <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
     ----------
@@ -179,6 +227,8 @@ def tanimoto_count_similarity(
     >>> sim
     0.98
     """
+    _check_nan(vec_a)
+    _check_nan(vec_b)
 
     if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
         return _tanimoto_count_scipy(vec_a, vec_b)
@@ -239,93 +289,6 @@ def tanimoto_count_distance(
     return 1 - tanimoto_count_similarity(vec_a, vec_b)
 
 
-def _tanimoto_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    """
-    Calculates the Tanimoto similarity between two binary numpy arrays.
-    """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
-
-    if vec_a.sum() == 0 == vec_b.sum():
-        return 1.0
-
-    dot_ab: float = np.dot(vec_a, vec_b)
-    dot_aa: float = np.sum(vec_a)
-    dot_bb: float = np.sum(vec_b)
-
-    denominator: float = dot_aa + dot_bb - dot_ab
-    _check_zero_denominator(denominator)
-
-    tanimoto_similarity = dot_ab / denominator
-    return tanimoto_similarity
-
-
-def _tanimoto_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    """
-    Calculates the Tanimoto similarity between two binary scipy arrays.
-    """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
-
-    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
-        return 1.0
-
-    a_and_b: float = vec_a.multiply(vec_b).sum()
-    a_sum: float = vec_a.sum()
-    b_sum: float = vec_b.sum()
-
-    denominator: float = a_sum + b_sum - a_and_b
-    _check_zero_denominator(denominator)
-
-    tanimoto_sim: float = a_and_b / denominator
-
-    return tanimoto_sim
-
-
-def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    """
-    Calculates the Tanimoto similarity between two count data numpy arrays.
-    """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
-
-    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
-        return 1.0
-
-    dot_ab: float = np.dot(vec_a, vec_b)
-    dot_aa: float = np.dot(vec_a, vec_a)
-    dot_bb: float = np.dot(vec_b, vec_b)
-
-    denominator: float = dot_aa + dot_bb - dot_ab
-    _check_zero_denominator(denominator)
-
-    tanimoto_sim: float = dot_ab / denominator
-
-    return tanimoto_sim
-
-
-def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    """
-    Calculates the Tanimoto similarity between two count data scipy arrays.
-    """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
-
-    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
-        return 1.0
-
-    dot_ab: float = vec_a.multiply(vec_b).sum()
-    dot_aa: float = vec_a.multiply(vec_a).sum()
-    dot_bb: float = vec_b.multiply(vec_b).sum()
-
-    denominator: float = dot_aa + dot_bb - dot_ab
-    _check_zero_denominator(denominator)
-
-    tanimoto_sim: float = dot_ab / denominator
-
-    return tanimoto_sim
-
-
 def _check_nan(arr: Union[np.ndarray, csr_array]) -> None:
     """
     Checks if passed numpy array or scipy sparse matrix contains NaN values.
@@ -338,13 +301,5 @@ def _check_nan(arr: Union[np.ndarray, csr_array]) -> None:
             raise ValueError("Input sparse matrix contains NaN values")
     else:
         raise TypeError(
-            "Unsupported type provided. Expected numpy.ndarray or scipy.sparse.csr_array."
+            f"Expected numpy.ndarray or scipy.sparse.csr_array, got {type(arr)}"
         )
-
-
-def _check_zero_denominator(denominator: float) -> None:
-    """
-    Checks if passed expression is 0.0 to prevent zero division while calculating Tanimoto.
-    """
-    if denominator == 0.0:
-        raise ZeroDivisionError("Denominator is zero")
