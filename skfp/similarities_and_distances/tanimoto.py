@@ -191,6 +191,8 @@ def tanimoto_count_similarity(
 
     Calculated similarity falls within the range of 0-1.
     Passing all-zero vectors to this function result in similarity of 1.
+    Note that the NumPy implementation is JIT-compiled;
+    therefore, it may execute faster than the SciPy implementation.
 
     Parameters
     ----------
