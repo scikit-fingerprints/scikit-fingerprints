@@ -1,26 +1,30 @@
 from typing import Union
 
 import numpy as np
-from numba import jit
+from numba import njit, prange
 from scipy.sparse import csr_array
 from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
 
 
-@jit(nopython=True)
+@njit(parallel=True)
 def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
     """
     Calculates the Tanimoto similarity between two count data numpy arrays.
+    This function uses Numba for JIT compilation and parallel computations to
+    efficiently compute the similarity between two vectors.
     """
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    vec_a = vec_a.astype(np.float64).ravel()
+    vec_b = vec_b.astype(np.float64).ravel()
 
-    vec_a = vec_a.astype(np.float32)
-    vec_b = vec_b.astype(np.float32)
+    dot_ab = 0.0
+    dot_aa = 0.0
+    dot_bb = 0.0
 
-    dot_ab: float = np.dot(vec_a, vec_b)
-    dot_aa: float = np.dot(vec_a, vec_a)
-    dot_bb: float = np.dot(vec_b, vec_b)
+    for i in prange(vec_a.shape[0]):
+        dot_ab += vec_a[i] * vec_b[i]
+        dot_aa += vec_a[i] * vec_a[i]
+        dot_bb += vec_b[i] * vec_b[i]
 
     denominator: float = dot_aa + dot_bb - dot_ab
 
@@ -31,9 +35,6 @@ def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
     """
     Calculates the Tanimoto similarity between two count data scipy arrays.
     """
-    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
-        return 1.0
-
     dot_ab: float = vec_a.multiply(vec_b).sum()
     dot_aa: float = vec_a.multiply(vec_a).sum()
     dot_bb: float = vec_b.multiply(vec_b).sum()
@@ -139,6 +140,9 @@ def tanimoto_binary_distance(
     Calculated distance falls within the range of 0-1.
     Passing all-zero vectors to this function results in distance of 0.
 
+    Operations on NumPy arrays are optimized with the Numba JIT compiler, making them
+    significantly faster than equivalent operations on SciPy csr_arrays.
+
     Parameters
     ----------
     vec_a : {ndarray, sparse matrix}
@@ -231,6 +235,9 @@ def tanimoto_count_similarity(
     """
     _check_nan(vec_a)
     _check_nan(vec_b)
+
+    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
+        return 1.0
 
     if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
         return _tanimoto_count_scipy(vec_a, vec_b)

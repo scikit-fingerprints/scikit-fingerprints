@@ -6,9 +6,8 @@ import sklearn.neighbors
 from scipy import sparse
 from scipy.sparse import csr_array
 
-from skfp.similarities.tanimoto import (
+from skfp.similarities_and_distances.tanimoto import (
     _check_nan,
-    _tanimoto_count_numpy,
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
     tanimoto_count_distance,
@@ -40,7 +39,7 @@ def binary_csr_array():
     ],
 )
 def test_tanimoto_count_numpy(vec_a, vec_b, expected_similarity):
-    assert _tanimoto_count_numpy(vec_a, vec_b) == expected_similarity
+    assert tanimoto_count_similarity(vec_a, vec_b) == expected_similarity
 
 
 @pytest.mark.parametrize(
@@ -246,12 +245,12 @@ def test_sklearn_nearest_neighbors_compatible_count(vec_a, vec_b):
         vec_b = sparse.csr_array(vec_b)
 
         nn = sklearn.neighbors.NearestNeighbors(
-            n_neighbors=1, metric=tanimoto_binary_distance
+            n_neighbors=1, metric=tanimoto_count_distance
         )
         nn.fit(vec_a)
         sklearn_dist, _ = nn.kneighbors(vec_b)
 
-        assert tanimoto_binary_distance(vec_a, vec_b) == sklearn_dist[0][0]
+        assert tanimoto_count_distance(vec_a, vec_b) == sklearn_dist[0][0]
     else:
         vec_a = [vec_a]
         vec_b = [vec_b]
