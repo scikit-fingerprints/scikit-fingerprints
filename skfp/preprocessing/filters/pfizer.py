@@ -11,8 +11,8 @@ class PfizerFilter(BaseFilter):
     """
     Pfizer 3/75 rule.
 
-    Based on observation that compounds exhibiting low clogP and high TPSA are roughly 2.5 times more likely to be free
-    of toxicity issues in the tested conditions [1]_ [2]_.
+    Based on observation that compounds exhibiting low low partition coefficient (clogP) and
+    high TPSA are roughly 2.5 times more likely to be free of toxicity issues in the tested conditions [1]_ [2]_.
 
     Molecule must fulfill conditions:
 
@@ -22,9 +22,7 @@ class PfizerFilter(BaseFilter):
     Parameters
     ----------
     allow_one_violation : bool, default=True
-        Whether to allow violating one of the rules for a molecule. This makes the
-        filter less restrictive, and is the part of the original definition of this
-        filter.
+        Whether to allow violating one of the rules for a molecule.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -41,7 +39,7 @@ class PfizerFilter(BaseFilter):
 
     References
     -----------
-    .. [1] `Hughes, J. D., Blagg, J., Price, D. A., Bailey, S., DeCrescenzo, G. A., Devraj, R. V., ... Zhang, Y.
+    .. [1] `Hughes, J. D. et al.
         "Physiochemical drug properties associated with in vivo toxicological outcomes."
         Bioorganic & Medicinal Chemistry Letters, 18(17), 4872–4875.
         <https://doi.org/10.1016/j.bmcl.2008.07.071>`_
@@ -72,7 +70,6 @@ class PfizerFilter(BaseFilter):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-
         super().__init__(
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
@@ -82,14 +79,13 @@ class PfizerFilter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        passed_rules = sum(
-            [
-                CalcTPSA(mol) >= 75,
-                MolLogP(mol) <= 3,
-            ]
-        )
+        rules = [
+            CalcTPSA(mol) >= 75,
+            MolLogP(mol) <= 3,
+        ]
+        passed_rules = sum(rules)
 
         if self.allow_one_violation:
-            return passed_rules >= 1
+            return passed_rules >= len(rules) - 1
         else:
-            return passed_rules == 2
+            return passed_rules == len(rules)

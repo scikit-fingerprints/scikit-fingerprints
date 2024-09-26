@@ -10,23 +10,21 @@ from skfp.bases.base_filter import BaseFilter
 
 class GhoseFilter(BaseFilter):
     """
-    Ghose rule.
+    Ghose Filter.
 
-    Used to searching for drug-like  molecules [1]_.
+    Used to searching for drug-like molecules [1]_.
 
     Molecule must fulfill conditions:
 
         - 160 <= molecular weight <= 400
         - -0.4 <= logP <= 5.6
-        - 20 <= Natoms <=70
+        - 20 <= number of atoms <= 70
         - 40 <= refractivity <= 130
 
     Parameters
     ----------
-    allow_one_violation : bool, default=True
-        Whether to allow violating one of the rules for a molecule. This makes the
-        filter less restrictive, and is the part of the original definition of this
-        filter.
+    allow_one_violation : bool, default=False
+        Whether to allow violating one of the rules for a molecule.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -43,7 +41,7 @@ class GhoseFilter(BaseFilter):
 
     References
     -----------
-    .. [1] `Ghose, A. K., Viswanadhan, V. N., & Wendoloski, J. J. (1999).
+    .. [1] `Ghose, A. K., Viswanadhan, V. N., & Wendoloski, J. J.
         "A Knowledge-Based Approach in Designing Combinatorial or Medicinal Chemistry Libraries for Drug Discovery. 1.
         A Qualitative and Quantitative Characterization of Known Drug Databases."
         Journal of Combinatorial Chemistry, 1(1), 55–68.
@@ -70,7 +68,6 @@ class GhoseFilter(BaseFilter):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-
         super().__init__(
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
@@ -80,16 +77,15 @@ class GhoseFilter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        passed_rules = sum(
-            [
-                160 <= MolWt(mol) <= 400,
-                40 <= MolMR(mol) <= 130,
-                20 <= CalcNumAtoms(mol) <= 70,
-                -0.4 <= MolLogP(mol) <= 5.6,
-            ]
-        )
+        rules = [
+            160 <= MolWt(mol) <= 400,
+            40 <= MolMR(mol) <= 130,
+            20 <= CalcNumAtoms(mol) <= 70,
+            -0.4 <= MolLogP(mol) <= 5.6,
+        ]
+        passed_rules = sum(rules)
 
         if self.allow_one_violation:
-            return passed_rules >= 3
+            return passed_rules >= len(rules) - 1
         else:
-            return passed_rules == 4
+            return passed_rules == len(rules)

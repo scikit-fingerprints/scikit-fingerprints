@@ -13,7 +13,8 @@ class HaoFilter(BaseFilter):
     """
     Hao rule for pesticides.
 
-    Describes the physico-chemical properties that a molecule used as a pesticide should have [1]_.
+    Designed to describe physicochemical properties of pesticides [1]_.
+    Can be used in general pesticide design.
 
     Molecule must fulfill conditions:
 
@@ -28,9 +29,7 @@ class HaoFilter(BaseFilter):
     Parameters
     ----------
     allow_one_violation : bool, default=True
-        Whether to allow violating one of the rules for a molecule. This makes the
-        filter less restrictive, and is the part of the original definition of this
-        filter.
+        Whether to allow violating one of the rules for a molecule.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -48,7 +47,7 @@ class HaoFilter(BaseFilter):
     References
     -----------
     .. [1] `Hao, G., Dong, Q. and Yang, G.,
-        A Comparative Study on the Constitutive Properties of Marketed Pesticides.
+        "A Comparative Study on the Constitutive Properties of Marketed Pesticides."
         Mol. Inf., 30: 614-622.
         <https://doi.org/10.1002/minf.201100020>`_
 
@@ -73,7 +72,6 @@ class HaoFilter(BaseFilter):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-
         super().__init__(
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
@@ -83,24 +81,21 @@ class HaoFilter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        passed_rules = sum(
-            [
-                MolWt(mol) <= 435,
-                MolLogP(mol) <= 6,
-                CalcNumHBD(mol) <= 2,
-                CalcNumHBA(mol) <= 6,
-                CalcNumRotatableBonds(mol) <= 9,
-                sum(
-                    [
-                        1 if bond.GetBondType() == BondType.AROMATIC else 0
-                        for bond in mol.GetBonds()
-                    ]
-                )
-                <= 17,
-            ]
+        aromatic_bond_count = sum(
+            bond.GetBondType() == BondType.AROMATIC for bond in mol.GetBonds()
         )
+        rules = [
+            MolWt(mol) <= 435,
+            MolLogP(mol) <= 6,
+            CalcNumHBD(mol) <= 2,
+            CalcNumHBA(mol) <= 6,
+            CalcNumRotatableBonds(mol) <= 9,
+            aromatic_bond_count <= 17,
+        ]
+
+        passed_rules = sum(rules)
 
         if self.allow_one_violation:
-            return passed_rules >= 5
+            return passed_rules >= len(rules) - 1
         else:
-            return passed_rules == 6
+            return passed_rules == len(rules)

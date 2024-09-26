@@ -13,6 +13,7 @@ class TiceInsecticidesFilter(BaseFilter):
     Tice rule for insecticides.
 
     Rule established based on statistical analysis of insecticides molecules [1]_.
+    Designed specifically for insecticides, not general pesticides or other agrochemicals.
 
     Molecule must fulfill conditions:
 
@@ -20,14 +21,12 @@ class TiceInsecticidesFilter(BaseFilter):
         - 0 <= logP <= 5
         - HBD <= 2
         - 1 <= HBA <= 8
-        -  number of rotatable bonds <= 11
+        - number of rotatable bonds <= 11
 
     Parameters
     ----------
     allow_one_violation : bool, default=True
-        Whether to allow violating one of the rules for a molecule. This makes the
-        filter less restrictive, and is the part of the original definition of this
-        filter.
+        Whether to allow violating one of the rules for a molecule.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -46,7 +45,7 @@ class TiceInsecticidesFilter(BaseFilter):
     -----------
     .. [1] `Tice, C.M.,
         "Selecting the right compounds for screening:
-        does Lipinski's Rule of 5 for pharmaceuticals apply to agrochemicals?."
+        does Lipinski's Rule of 5 for pharmaceuticals apply to agrochemicals?"
         Pest. Manag. Sci., 57: 3-16.
         <https://doi.org/10.1002/1526-4998(200101)57:1\<3::AID-PS269\>3.0.CO;2-6>`_
 
@@ -70,7 +69,6 @@ class TiceInsecticidesFilter(BaseFilter):
         batch_size: Optional[int] = None,
         verbose: int = 0,
     ):
-
         super().__init__(
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
@@ -80,17 +78,17 @@ class TiceInsecticidesFilter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        passed_rules = sum(
-            [
-                150 <= MolWt(mol) <= 500,
-                0 <= MolLogP(mol) <= 5,
-                CalcNumHBD(mol) <= 2,
-                1 <= CalcNumHBA(mol) <= 8,
-                CalcNumRotatableBonds(mol) <= 11,
-            ]
-        )
+        rules = [
+            150 <= MolWt(mol) <= 500,
+            0 <= MolLogP(mol) <= 5,
+            CalcNumHBD(mol) <= 2,
+            1 <= CalcNumHBA(mol) <= 8,
+            CalcNumRotatableBonds(mol) <= 11,
+        ]
+
+        passed_rules = sum(rules)
 
         if self.allow_one_violation:
-            return passed_rules >= 4
+            return passed_rules >= len(rules) - 1
         else:
-            return passed_rules == 5
+            return passed_rules == len(rules)
