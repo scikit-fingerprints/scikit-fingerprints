@@ -3,7 +3,8 @@ from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
 
-from rdkit.Chem import AllChem, Mol
+from rdkit.Chem import Mol
+from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
 from rdkit.SimDivFilters.rdSimDivPickers import MaxMinPicker
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
@@ -39,7 +40,6 @@ from skfp.utils.validators import ensure_mols
 def maxmin_train_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
-    fingerprints=None,
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
     return_indices: bool = False,
@@ -53,6 +53,7 @@ def maxmin_train_test_split(
 ]:
     """
     Split using maxmin algorithm of picking a subset of item from a pool.
+
     Starting from random item of initial set, next is picked item with maximum
     value for its minimum distance to molecules in the picked set (hence the MaxMin name),
     calculating and recording the distances as required. This molecule is the most distant
@@ -84,6 +85,7 @@ def maxmin_train_test_split(
     subsets : tuple[list, list, ...]
     Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
     depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+
     References
     ----------
     https://github.com/deepchem/deepchem
@@ -98,12 +100,7 @@ def maxmin_train_test_split(
     )
 
     molecules = ensure_mols(data)
-
-    if fingerprints is None:
-        fingerprints = [
-            AllChem.GetMorganFingerprintAsBitVect(mol, radius=4, nBits=1024)
-            for mol in molecules
-        ]
+    fingerprints = GetMorganGenerator().GetFingerprints(molecules)
 
     picker = MaxMinPicker()
     test_idxs = picker.LazyPick(
@@ -112,8 +109,8 @@ def maxmin_train_test_split(
         pickSize=test_size,
         seed=random_state,
     )
-
     train_idxs = list(set(range(data_size)) - set(test_idxs))
+
     train_subset: list[Any] = []
     test_subset: list[Any] = []
 
@@ -157,7 +154,6 @@ def maxmin_train_test_split(
 def maxmin_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
-    fingerprints=None,
     train_size: Optional[float] = None,
     valid_size: Optional[float] = None,
     test_size: Optional[float] = None,
@@ -212,6 +208,7 @@ def maxmin_train_valid_test_split(
     subsets : tuple[list, list, ...]
     Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
     depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+
     References
     ----------
     https://github.com/deepchem/deepchem
@@ -226,13 +223,9 @@ def maxmin_train_valid_test_split(
         train_size, valid_size, test_size, len(data)
     )
     molecules = ensure_mols(data)
-    if fingerprints is None:
-        fingerprints = [
-            AllChem.GetMorganFingerprintAsBitVect(mol, radius=4, nBits=1024)
-            for mol in molecules
-        ]
-    picker = MaxMinPicker()
+    fingerprints = GetMorganGenerator().GetFingerprints(molecules)
 
+    picker = MaxMinPicker()
     test_idxs = picker.LazyPick(
         distFunc=create_dice_distance_function_from_fingerprints(fingerprints),
         poolSize=data_size,
@@ -248,9 +241,9 @@ def maxmin_train_valid_test_split(
         firstPicks=test_idxs,
         seed=random_state,
     )
-
     train_idxs = list(set(range(data_size)) - set(test_idxs) - set(valid_idxs))
     valid_idxs = list(set(valid_idxs) - set(test_idxs))
+
     train_subset: list[Any] = []
     valid_subset: list[Any] = []
     test_subset: list[Any] = []

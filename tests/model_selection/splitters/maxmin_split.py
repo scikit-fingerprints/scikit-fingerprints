@@ -1,5 +1,3 @@
-from typing import Union
-
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
@@ -26,26 +24,16 @@ def all_molecules() -> list[str]:
     ]
 
 
-@pytest.fixture
-def additional_data() -> list[list[Union[str, int, bool]]]:
-    return [
-        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [True, False, True, False, True, False, True, False, True, False],
-    ]
-
-
 def test_maxmin_split_size(all_molecules):
-
     train_set, test_set = maxmin_train_test_split(
-        all_molecules, train_size=0.7, test_size=0.3, random_state=0
+        all_molecules, train_size=0.7, test_size=0.3
     )
 
     assert len(train_set) == 7
     assert len(test_set) == 3
 
     train_set, test_set = maxmin_train_test_split(
-        all_molecules, train_size=0.6, test_size=0.4, random_state=0
+        all_molecules, train_size=0.6, test_size=0.4
     )
 
     assert len(train_set) == 6
@@ -53,9 +41,8 @@ def test_maxmin_split_size(all_molecules):
 
 
 def test_maxmin_valid_split_size(all_molecules):
-
     train_set, valid_set, test_set = maxmin_train_valid_test_split(
-        all_molecules, train_size=0.7, test_size=0.2, valid_size=0.1, random_state=0
+        all_molecules, train_size=0.7, test_size=0.2, valid_size=0.1
     )
 
     assert len(train_set) == 7
@@ -63,7 +50,7 @@ def test_maxmin_valid_split_size(all_molecules):
     assert len(valid_set) == 1
 
     train_set, valid_set, test_set = maxmin_train_valid_test_split(
-        all_molecules, train_size=0.5, test_size=0.2, valid_size=0.3, random_state=0
+        all_molecules, train_size=0.5, test_size=0.2, valid_size=0.3
     )
 
     assert len(train_set) == 5
@@ -72,7 +59,6 @@ def test_maxmin_valid_split_size(all_molecules):
 
 
 def test_seed_consistency_train_valid_test_split(all_molecules):
-
     train_set_1, valid_set_1, test_set_1 = maxmin_train_valid_test_split(
         all_molecules, train_size=0.7, valid_size=0.1, test_size=0.2, random_state=0
     )
@@ -87,7 +73,6 @@ def test_seed_consistency_train_valid_test_split(all_molecules):
 
 
 def test_seed_consistency_train_test_split(all_molecules):
-
     train_set_1, test_set_1 = maxmin_train_test_split(
         all_molecules, train_size=0.7, test_size=0.3, random_state=0
     )
@@ -100,41 +85,9 @@ def test_seed_consistency_train_test_split(all_molecules):
     assert test_set_1 == test_set_2
 
 
-def test_seed_diversity_train_valid_test_split(all_molecules):
-
-    train_set_1, valid_set_1, test_set_1 = maxmin_train_valid_test_split(
-        all_molecules, train_size=0.7, valid_size=0.1, test_size=0.2, random_state=0
-    )
-
-    train_set_2, valid_set_2, test_set_2 = maxmin_train_valid_test_split(
-        all_molecules, train_size=0.7, valid_size=0.1, test_size=0.2, random_state=1
-    )
-
-    assert (
-        train_set_1 != train_set_2
-        or valid_set_1 != valid_set_2
-        or test_set_1 != test_set_2
-    )
-
-
-def test_seed_diversity_train_test_split(all_molecules):
-
-    train_set_1, test_set_1 = maxmin_train_test_split(
-        all_molecules, train_size=0.7, test_size=0.3, random_state=0
-    )
-
-    train_set_2, test_set_2 = maxmin_train_test_split(
-        all_molecules, train_size=0.7, test_size=0.3, random_state=1
-    )
-
-    assert train_set_1 != train_set_2 or test_set_1 != test_set_2
-
-
 def test_maxmin_train_test_split_return_molecules(all_molecules):
     mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
-    train_set, test_set = maxmin_train_test_split(
-        mols, train_size=0.7, test_size=0.3, random_state=1, return_indices=False
-    )
+    train_set, test_set = maxmin_train_test_split(mols, train_size=0.7, test_size=0.3)
 
     assert all(isinstance(train, Mol) for train in train_set)
     assert all(isinstance(test, Mol) for test in test_set)
@@ -147,7 +100,6 @@ def test_maxmin_train_valid_test_split_returns_molecules(all_molecules):
         train_size=0.7,
         test_size=0.2,
         valid_size=0.1,
-        random_state=1,
         return_indices=False,
     )
 
@@ -159,7 +111,7 @@ def test_maxmin_train_valid_test_split_returns_molecules(all_molecules):
 def test_maxmin_train_test_split_return_indices(all_molecules):
     mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
     train_set, test_set = maxmin_train_test_split(
-        mols, train_size=0.7, test_size=0.3, random_state=1, return_indices=True
+        mols, train_size=0.7, test_size=0.3, return_indices=True
     )
 
     assert all(isinstance(train, int) for train in train_set)
@@ -173,7 +125,6 @@ def test_maxmin_train_valid_test_split_returns_indices(all_molecules):
         train_size=0.7,
         test_size=0.2,
         valid_size=0.1,
-        random_state=1,
         return_indices=True,
     )
 
