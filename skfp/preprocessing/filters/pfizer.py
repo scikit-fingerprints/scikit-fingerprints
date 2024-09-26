@@ -11,17 +11,19 @@ class PfizerFilter(BaseFilter):
     """
     Pfizer 3/75 rule.
 
-    Based on observation that compounds exhibiting low low partition coefficient (clogP) and
-    high TPSA are roughly 2.5 times more likely to be free of toxicity issues in the tested conditions [1]_ [2]_.
+    Based on observation that compounds exhibiting low partition coefficient (clogP) and
+    high topological polar surface area (TPSA) are roughly 2.5 times more likely to be
+    free of toxicity issues in the tested conditions [1]_ [2]_.
 
     Molecule must fulfill conditions:
 
-        - TPSA >= 75
         - logP <= 3
+        - TPSA >= 75
+
 
     Parameters
     ----------
-    allow_one_violation : bool, default=True
+    allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule.
 
     n_jobs : int, default=None
@@ -80,8 +82,8 @@ class PfizerFilter(BaseFilter):
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
-            CalcTPSA(mol) >= 75,
             MolLogP(mol) <= 3,
+            CalcTPSA(mol) >= 75,
         ]
         passed_rules = sum(rules)
 

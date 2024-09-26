@@ -28,7 +28,7 @@ class HaoFilter(BaseFilter):
 
     Parameters
     ----------
-    allow_one_violation : bool, default=True
+    allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule.
 
     n_jobs : int, default=None
