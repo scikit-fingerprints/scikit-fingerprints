@@ -6,7 +6,7 @@ import sklearn.neighbors
 from scipy import sparse
 from scipy.sparse import csr_array
 
-from skfp.similarities_and_distances.tanimoto import (
+from skfp.distances.tanimoto import (
     _check_nan,
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
@@ -282,7 +282,7 @@ def test_binary_different_types_raise_error(binary_numpy_array, binary_csr_array
     with pytest.raises(TypeError) as exc_info:
         tanimoto_binary_similarity(binary_numpy_array, binary_csr_array)
 
-    assert "Both A and B must be of the same type:" in str(exc_info)
+    assert "Both vec_a and vec_b must be of the same type:" in str(exc_info)
     assert (
         "got <class 'numpy.ndarray'> and <class 'scipy.sparse._csr.csr_array'>"
         in str(exc_info)
@@ -293,7 +293,7 @@ def test_count_different_types_raise_error(binary_numpy_array, binary_csr_array)
     with pytest.raises(TypeError) as exc_info:
         tanimoto_count_similarity(binary_numpy_array, binary_csr_array)
 
-    assert "Both A and B must be of the same type:" in str(exc_info)
+    assert "Both vec_a and vec_b must be of the same type:" in str(exc_info)
     assert "<class 'numpy.ndarray'> and <class 'scipy.sparse._csr.csr_array'>" in str(
         exc_info
     )

@@ -7,45 +7,6 @@ from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
 
 
-@njit(parallel=True)
-def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    """
-    Calculates the Tanimoto similarity between two count data numpy arrays.
-    This function uses Numba for JIT compilation and parallel computations to
-    efficiently compute the similarity between two vectors.
-    """
-    vec_a = vec_a.astype(np.float64).ravel()
-    vec_b = vec_b.astype(np.float64).ravel()
-
-    dot_ab = 0.0
-    dot_aa = 0.0
-    dot_bb = 0.0
-
-    for i in prange(vec_a.shape[0]):
-        dot_ab += vec_a[i] * vec_b[i]
-        dot_aa += vec_a[i] * vec_a[i]
-        dot_bb += vec_b[i] * vec_b[i]
-
-    denominator: float = dot_aa + dot_bb - dot_ab
-
-    return dot_ab / denominator
-
-
-def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    """
-    Calculates the Tanimoto similarity between two count data scipy arrays.
-    """
-    dot_ab: float = vec_a.multiply(vec_b).sum()
-    dot_aa: float = vec_a.multiply(vec_a).sum()
-    dot_bb: float = vec_b.multiply(vec_b).sum()
-
-    denominator: float = dot_aa + dot_bb - dot_ab
-
-    tanimoto_sim: float = dot_ab / denominator
-
-    return tanimoto_sim
-
-
 @validate_params(
     {
         "vec_a": ["array-like", csr_array],
@@ -57,10 +18,12 @@ def tanimoto_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
+    Tanimoto similarity for binary vectors.
+
     Computes the Tanimoto similarity [1]_ for binary data between two input arrays
-    or sparse matrices using the Jaccard index.
-    Calculated similarity falls within the range of 0-1.
-    Passing all-zero vectors to this function results in similarity of 1.
+    or sparse matrices using the Jaccard index. The calculated similarity falls within
+    the explicit range [0, 1], with passing all-zero vectors to this function resulting
+    in a similarity of 1.
 
     Parameters
     ----------
@@ -73,14 +36,14 @@ def tanimoto_binary_similarity(
     Returns
     ----------
     similarity : float
-        Tanimoto similarity between A and vec_b.
+        Tanimoto similarity between vec_a and vec_b.
 
     References
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-    "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-    J Cheminform, 7, 20 (2015).
-    <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+       J Cheminform, 7, 20 (2015).
+       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
     ----------
@@ -119,7 +82,7 @@ def tanimoto_binary_similarity(
         return 1 - jaccard(vec_a_bool, vec_b_bool)
     else:
         raise TypeError(
-            f"Both A and B must be of the same type: either numpy.ndarray "
+            f"Both vec_a and vec_b must be of the same type: either numpy.ndarray "
             f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
         )
 
@@ -135,10 +98,11 @@ def tanimoto_binary_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
+    Tanimoto distance for binary vectors.
+
     Computes the Tanimoto distance for binary data between two input arrays or sparse matrices
-    by subtracting similarity value from 1.
-    Calculated distance falls within the range of 0-1.
-    Passing all-zero vectors to this function results in distance of 0.
+    by subtracting the similarity value from 1. The calculated distance falls within
+    the range [0, 1], with passing all-zero vectors to this function resulting in a distance of 0.
 
     Operations on NumPy arrays are optimized with the Numba JIT compiler, making them
     significantly faster than equivalent operations on SciPy csr_arrays.
@@ -154,7 +118,7 @@ def tanimoto_binary_distance(
     Returns
     ----------
     distance : float
-        Tanimoto distance between A and vec_b.
+        Tanimoto distance between vec_a and vec_b.
 
     Examples
     ----------
@@ -209,14 +173,14 @@ def tanimoto_count_similarity(
     Returns
     ----------
     similarity : float
-        Tanimoto similarity between A and vec_b.
+        Tanimoto similarity between vec_a and vec_b.
 
     References
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-    "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-    J Cheminform, 7, 20 (2015).
-    <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+       J Cheminform, 7, 20 (2015).
+       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
     ----------
@@ -245,7 +209,7 @@ def tanimoto_count_similarity(
         return _tanimoto_count_numpy(vec_a, vec_b)
     else:
         raise TypeError(
-            f"Both A and B must be of the same type: either numpy.ndarray "
+            f"Both vec_a and vec_b must be of the same type: either numpy.ndarray "
             f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
         )
 
@@ -277,7 +241,7 @@ def tanimoto_count_distance(
     Returns
     ----------
     distance : float
-        Tanimoto distance between A and vec_b.
+        Tanimoto distance between vec_a and vec_b.
 
     Examples
     ----------
@@ -296,6 +260,45 @@ def tanimoto_count_distance(
     """
 
     return 1 - tanimoto_count_similarity(vec_a, vec_b)
+
+
+@njit(parallel=True)
+def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
+    """
+    Calculates the Tanimoto similarity between two count data numpy arrays.
+    This function uses Numba for JIT compilation and parallel computations to
+    efficiently compute the similarity between two vectors.
+    """
+    vec_a = vec_a.astype(np.float64).ravel()
+    vec_b = vec_b.astype(np.float64).ravel()
+
+    dot_ab = 0.0
+    dot_aa = 0.0
+    dot_bb = 0.0
+
+    for i in prange(vec_a.shape[0]):
+        dot_ab += vec_a[i] * vec_b[i]
+        dot_aa += vec_a[i] * vec_a[i]
+        dot_bb += vec_b[i] * vec_b[i]
+
+    denominator: float = dot_aa + dot_bb - dot_ab
+
+    return dot_ab / denominator
+
+
+def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
+    """
+    Calculates the Tanimoto similarity between two count data scipy arrays.
+    """
+    dot_ab: float = vec_a.multiply(vec_b).sum()
+    dot_aa: float = vec_a.multiply(vec_a).sum()
+    dot_bb: float = vec_b.multiply(vec_b).sum()
+
+    denominator: float = dot_aa + dot_bb - dot_ab
+
+    tanimoto_sim: float = dot_ab / denominator
+
+    return tanimoto_sim
 
 
 def _check_nan(arr: Union[np.ndarray, csr_array]) -> None:

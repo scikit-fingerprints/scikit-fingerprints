@@ -1,12 +1,12 @@
 ============
-Similarities and distances
+Distances and similarities
 ============
 
-.. automodule:: skfp.similarities_and_distances
+.. automodule:: skfp.distances
 
 =========================================================
 
-.. py:currentmodule:: skfp.similarities_and_distances
+.. py:currentmodule:: skfp.distances
 
 Distances
 
