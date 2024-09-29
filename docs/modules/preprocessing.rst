@@ -24,10 +24,12 @@ Molecular filters:
     :toctree: generated/
 
     BasicZINCFilter
-    BeyondRO5Filter
+    BeyondRo5Filter
     BMSFilter
     BrenkFilter
+    GhoseFilter
     GlaxoFilter
+    HaoFilter
     InpharmaticaFilter
     LINTFilter
     LipinskiFilter
@@ -35,7 +37,10 @@ Molecular filters:
     MolecularWeightFilter
     NIHFilter
     PAINSFilter
+    PfizerFilter
     RuleOfFour
     RuleOfThree
     RuleOfTwo
     SureChEMBLFilter
+    TiceHerbicidesFilter
+    TiceInsecticidesFilter
