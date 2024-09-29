@@ -9,7 +9,6 @@ from rdkit.SimDivFilters.rdSimDivPickers import MaxMinPicker
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
 from skfp.model_selection.splitters.utils import (
-    create_dice_distance_function_from_fingerprints,
     ensure_nonempty_subset,
     get_data_from_indices,
     split_additional_data,
@@ -52,7 +51,9 @@ def maxmin_train_test_split(
     tuple[Sequence[int], Sequence[int]],
 ]:
     """
-    Split using maxmin algorithm of picking a subset of item from a pool.
+    Split using maxmin algorithm.
+
+    This split uses maxmain algorithm of picking a subsets
 
     Starting from random item of initial set, next is picked item with maximum
     value for its minimum distance to molecules in the picked set (hence the MaxMin name),
@@ -88,10 +89,12 @@ def maxmin_train_test_split(
 
     References
     ----------
-    https://github.com/deepchem/deepchem
-    https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html
-    https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker/
-    https://rdkit.blogspot.com/2017/11/revisting-maxminpicker.html
+    .. [1] ` MaxMain split imeplementation and its variants
+        https://github.com/deepchem/deepchem_`
+
+    .. [2] https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html
+    .. [3] https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker/
+    .. [4] https://rdkit.blogspot.com/2017/11/revisting-maxminpicker.html
 
     """
     data_size = len(data)
@@ -99,12 +102,12 @@ def maxmin_train_test_split(
         train_size, test_size, data_size
     )
 
-    molecules = ensure_mols(data)
-    fingerprints = GetMorganGenerator().GetFingerprints(molecules)
+    mols = ensure_mols(data)
+    fps = GetMorganGenerator().GetFingerprints(mols)
 
     picker = MaxMinPicker()
-    test_idxs = picker.LazyPick(
-        distFunc=create_dice_distance_function_from_fingerprints(fingerprints),
+    test_idxs = picker.LazyBitVectorPick(
+        fps,
         poolSize=data_size,
         pickSize=test_size,
         seed=random_state,
@@ -222,20 +225,20 @@ def maxmin_train_valid_test_split(
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
-    molecules = ensure_mols(data)
-    fingerprints = GetMorganGenerator().GetFingerprints(molecules)
+    mols = ensure_mols(data)
+    fps = GetMorganGenerator().GetFingerprints(mols)
 
     picker = MaxMinPicker()
-    test_idxs = picker.LazyPick(
-        distFunc=create_dice_distance_function_from_fingerprints(fingerprints),
+    test_idxs = picker.LazyBitVectorPick(
+        fps,
         poolSize=data_size,
         pickSize=test_size,
         seed=random_state,
     )
 
     # firstPicks - initial state of picked set
-    valid_idxs = picker.LazyPick(
-        distFunc=create_dice_distance_function_from_fingerprints(fingerprints),
+    valid_idxs = picker.LazyBitVectorPick(
+        fps,
         poolSize=data_size,
         pickSize=test_size + valid_size,
         firstPicks=test_idxs,
