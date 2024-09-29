@@ -6,7 +6,9 @@ from .filters import (
     BeyondRo5Filter,
     BMSFilter,
     BrenkFilter,
+    GhoseFilter,
     GlaxoFilter,
+    HaoFilter,
     InpharmaticaFilter,
     LINTFilter,
     LipinskiFilter,
@@ -14,10 +16,13 @@ from .filters import (
     MolecularWeightFilter,
     NIHFilter,
     PAINSFilter,
+    PfizerFilter,
     RuleOfFour,
     RuleOfThree,
     RuleOfTwo,
     SureChEMBLFilter,
+    TiceHerbicidesFilter,
+    TiceInsecticidesFilter,
 )
 from .mol_to_from_smiles import MolFromSmilesTransformer, MolToSmilesTransformer
 from .standardization import MolStandardizer

@@ -1,11 +1,9 @@
-from typing import Union
-
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
 
 from skfp.model_selection.splitters.scaffold_split import (
-    _create_scaffolds,
+    _create_scaffold_sets,
     scaffold_train_test_split,
     scaffold_train_valid_test_split,
 )
@@ -29,7 +27,7 @@ def all_molecules() -> list[str]:
 
 @pytest.fixture
 def smiles_ten_scaffolds() -> list[str]:
-    ten_different_scaffolds = [
+    return [
         "C1CCCC(C2CC2)CC1",
         "c1n[nH]cc1C1CCCCCC1",
         "c1n[nH]cc1CC1CCCCCC1",
@@ -40,17 +38,6 @@ def smiles_ten_scaffolds() -> list[str]:
         "c1ccc2nc(NC3CCOCC3)ccc2c1",
         "c1ccc2nc(N3CCCOCC3)ccc2c1",
         "c1ccc2nc(N3CCn4ccnc4C3)ccc2c1",
-    ]
-
-    return ten_different_scaffolds
-
-
-@pytest.fixture
-def additional_data() -> list[list[Union[str, int, bool]]]:
-    return [
-        ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        [True, False, True, False, True, False, True, False, True, False],
     ]
 
 
@@ -111,13 +98,13 @@ def test_train_split_larger_than_valid_and_test_splits(all_molecules):
 
 
 def test_scaffold_creation_total_count(all_molecules):
-    scaffolds = _create_scaffolds(all_molecules)
+    scaffolds = _create_scaffold_sets(all_molecules)
     assert len(scaffolds) <= len(all_molecules)
 
 
 def test_no_ring_molecules():
     smiles_list = ["CCO", "CCN", "CCC", "CCCl", "CCBr"]
-    scaffolds = _create_scaffolds(smiles_list)
+    scaffolds = _create_scaffold_sets(smiles_list)
     assert len(scaffolds) == 1
 
 
@@ -128,7 +115,7 @@ def test_scaffold_count_for_benzodiazepines():
         "C1CN=C(C2=CC=CC=C2Cl)N=C1",
     ]
 
-    scaffolds = _create_scaffolds(smiles_list)
+    scaffolds = _create_scaffold_sets(smiles_list)
     assert len(scaffolds) == 1
 
 
@@ -139,7 +126,7 @@ def test_scaffold_count_for_xanthines():
         "Cn1cnc2c1c(=O)[nH]c(=O)n2C",
         "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
     ]
-    scaffolds = _create_scaffolds(smiles_list)
+    scaffolds = _create_scaffold_sets(smiles_list)
     assert len(scaffolds) == 1
 
 
@@ -263,3 +250,31 @@ def test_train_valid_test_split_properly_splits_csk_with_floats(
     assert len(train_set) == 7
     assert len(valid_size) == 2
     assert len(test_set) == 1
+
+
+def test_train_test_split_with_additional_data(smiles_ten_scaffolds):
+    train_set, test_set, train_data, test_data = scaffold_train_test_split(
+        smiles_ten_scaffolds,
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    )
+    assert len(train_set) == 8
+    assert len(test_set) == 2
+
+    assert len(train_data) == 8
+    assert len(test_data) == 2
+
+
+def test_train_valid_test_split_with_additional_data(smiles_ten_scaffolds):
+    train_set, valid_set, test_set, train_data, valid_data, test_data = (
+        scaffold_train_valid_test_split(
+            smiles_ten_scaffolds,
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        )
+    )
+    assert len(train_set) == 8
+    assert len(valid_set) == 1
+    assert len(test_set) == 1
+
+    assert len(train_data) == 8
+    assert len(valid_data) == 1
+    assert len(test_data) == 1
