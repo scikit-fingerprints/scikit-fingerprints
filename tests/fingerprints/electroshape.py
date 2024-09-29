@@ -53,9 +53,33 @@ def test_mmff94_error():
     ElectroShapeFingerprint(charge_errors="zero").transform(mols)
 
 
-def test_electroshape_ignore_errors(mols_conformers_list, mols_conformers_3_plus_atoms):
-    usr_fp = ElectroShapeFingerprint(errors="ignore", n_jobs=-1)
-    X_skfp = usr_fp.transform(mols_conformers_list)
-    X_skfp_3_plus_atoms = usr_fp.transform(mols_conformers_3_plus_atoms)
+def test_electroshape_ignore_errors():
+    organometallics = [
+        "CCCC[Li]",
+        "[O+]#C[Ni-4](C#[O+])(C#[O+])C#[O+]",
+        "CC[Zn]CC",
+        "C[Al-](C)([CH3+]1)[CH3+][Al-]1(C)C",
+        "CCCC[SnH](CCCC)CCCC",
+    ]
+    non_metallics = [
+        # benzene
+        "c1ccccc1",
+        # ibuprofen
+        "CC(C)Cc1ccc(cc1)[C@@H](C)C(=O)O",
+        # caffeine
+        "CN1C=NC2=C1C(=O)N(C(=O)N2C)C",
+        # nicotine
+        "c1ncccc1[C@@H]2CCCN2C",
+        # Venlafaxine
+        "OC2(C(c1ccc(OC)cc1)CN(C)C)CCCCC2",
+        # Chlordiazepoxide
+        "ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1",
+    ]
+    all_smiles = organometallics + non_metallics
+    all_mols = MolFromSmilesTransformer().transform(all_smiles)
+    all_mols = ConformerGenerator().transform(all_mols)
 
-    assert np.allclose(X_skfp, X_skfp_3_plus_atoms)
+    electroshape_fp = ElectroShapeFingerprint(errors="ignore", n_jobs=-1)
+    X_skfp = electroshape_fp.transform(all_mols)
+
+    assert len(X_skfp) == len(all_mols)

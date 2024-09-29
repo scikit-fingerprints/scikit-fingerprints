@@ -3,9 +3,9 @@ from collections.abc import Sequence
 from numbers import Integral, Real
 from typing import Optional, Union
 
+import mmh3
 import numpy as np
 import scipy.sparse
-from e3fp.pipeline import fprints_from_mol
 from rdkit import RDLogger
 from rdkit.Chem import Mol, MolToSmiles
 from scipy.sparse import csr_array
@@ -17,6 +17,12 @@ from skfp.utils import require_mols_with_conf_ids
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
 """
+
+# e3fp library has a problem with mmh3 version 5.x, so we monkey-patch it
+import e3fp.fingerprint.fprinter
+
+fixed_hash = lambda array, seed=0: mmh3.hash(array.tobytes(), seed)
+e3fp.fingerprint.fprinter.hash_int64_array = fixed_hash
 
 
 class E3FPFingerprint(BaseFingerprintTransformer):
@@ -208,6 +214,8 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     def _calculate_single_mol_fingerprint(
         self, mol: Mol
     ) -> Union[np.ndarray, csr_array]:
+        from e3fp.pipeline import fprints_from_mol
+
         # e3fp requires "_Name" property to be set
         mol.SetProp("_Name", MolToSmiles(mol))
 

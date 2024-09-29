@@ -297,7 +297,11 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         # scaled vector product of spatial coordinates (a_S and b_S)
         # it distinguishes between a chiral molecule and its enantiomer
         cross_ab = np.cross(vec_a[:3], vec_b[:3])
-        vec_c = (norm(vec_a) / (2 * norm(cross_ab))) * cross_ab
+        cross_ab_norm = norm(cross_ab)
+        if np.isclose(cross_ab_norm, 0):
+            vec_c = 0
+        else:
+            vec_c = (norm(vec_a) / (2 * cross_ab_norm)) * cross_ab
 
         # geometric mean centroid moved in the direction of smallest and largest charge
         # note that charges were already scaled before

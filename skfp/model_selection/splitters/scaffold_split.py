@@ -100,28 +100,31 @@ def scaffold_train_test_split(
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
-    depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+    Tuple with train-test subsets of provided arrays. First two are lists of SMILES
+    strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    is True, lists of indices are returned instead of actual data.
+
     References
     ----------
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
-    scaffolds = _create_scaffolds(data, use_csk)
-    scaffold_sets = sorted(scaffolds.values(), key=len)
+
+    scaffold_sets = _create_scaffold_sets(data, use_csk)
+    scaffold_sets.sort(key=len)
 
     train_idxs: list[int] = []
     test_idxs: list[int] = []
@@ -263,22 +266,22 @@ def scaffold_train_valid_test_split(
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
 
-    scaffolds = _create_scaffolds(data, use_csk)
-    scaffold_sets = sorted(scaffolds.values(), key=len)
+    scaffold_sets = _create_scaffold_sets(data, use_csk)
+    scaffold_sets.sort(key=len)
 
     train_idxs: list[int] = []
     valid_idxs: list[int] = []
@@ -314,20 +317,21 @@ def scaffold_train_valid_test_split(
         return train_subset, valid_subset, test_subset
 
 
-def _create_scaffolds(
-    data: Sequence[Union[str, Mol]],
-    use_csk: bool = False,
-) -> dict[str, list]:
+def _create_scaffold_sets(
+    data: Sequence[Union[str, Mol]], use_csk: bool = False
+) -> list[list[int]]:
     """
     Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
-    This function groups molecules by their Bemis-Murcko scaffold, which can be generated
-    as either the core structure scaffold (with atom types) or the skeleton scaffold
-    (without atom types). Scaffolds can optionally include chirality information.
-    """
-    scaffolds = defaultdict(list)
-    molecules = ensure_mols(data)
+    This function groups molecules by their Bemis-Murcko scaffold into sets of molecules
+    with the same scaffold.
 
-    for idx, mol in enumerate(molecules):
+    They can be generated as either the core structure scaffold (with atom types) or the
+    skeleton scaffold (without atom types).
+    """
+    scaffold_sets = defaultdict(list)
+    mols = ensure_mols(data)
+
+    for idx, mol in enumerate(mols):
         mol = deepcopy(mol)
         Chem.RemoveStereochemistry(mol)
 
@@ -338,6 +342,7 @@ def _create_scaffolds(
         else:
             scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
 
-        scaffolds[scaffold].append(idx)
+        scaffold_sets[scaffold].append(idx)
 
-    return scaffolds
+    scaffold_sets = list(scaffold_sets.values())
+    return scaffold_sets

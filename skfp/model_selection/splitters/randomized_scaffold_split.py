@@ -1,16 +1,13 @@
-from collections import defaultdict
 from collections.abc import Sequence
-from copy import deepcopy
 from numbers import Integral
 from typing import Any, Optional, Union
 
 import numpy as np
 from numpy.random import Generator, RandomState
-from rdkit import Chem
 from rdkit.Chem import Mol
-from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
+from skfp.model_selection.splitters.scaffold_split import _create_scaffold_sets
 from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
     get_data_from_indices,
@@ -18,7 +15,7 @@ from skfp.model_selection.splitters.utils import (
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 @validate_params(
@@ -115,33 +112,32 @@ def randomized_scaffold_train_test_split(
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
     .. [3] `Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
 
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
+        <https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html>`_
     """
     # flake8: noqa: E501
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
-    scaffolds = _create_scaffolds(data, use_csk)
+
+    scaffold_sets = _create_scaffold_sets(data, use_csk)
     rng = (
         random_state
         if isinstance(random_state, RandomState)
         else np.random.default_rng(random_state)
     )
-
-    scaffold_sets = list(scaffolds.values())
     rng.shuffle(scaffold_sets)
 
     train_idxs: list[int] = []
@@ -283,33 +279,31 @@ def randomized_scaffold_train_valid_test_split(
     .. [1] `Bemis, G. W., & Murcko, M. A.
         "The properties of known drugs. 1. Molecular frameworks."
         Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks`_
+        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
 
     .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
         "MoleculeNet: A Benchmark for Molecular Machine Learning."
         Chemical Science, 9(2), 513-530.
-        https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning`_
+        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
 
-    .. [3] ` Bemis-Murcko scaffolds and their variants
-        https://github.com/rdkit/rdkit/discussions/6844`_
+    .. [3] `Bemis-Murcko scaffolds and their variants
+        <https://github.com/rdkit/rdkit/discussions/6844>`_
 
     .. [4] `R. Sun, H. Dai, A. Wei Yu
         "Does GNN Pretraining Help Molecular Representation?"
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
-        https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html`_
+        <https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html>`_
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
 
-    scaffolds = _create_scaffolds(data, use_csk)
+    scaffold_sets = _create_scaffold_sets(data, use_csk)
     rng = (
         random_state
         if isinstance(random_state, RandomState)
         else np.random.default_rng(random_state)
     )
-
-    scaffold_sets = list(scaffolds.values())
     rng.shuffle(scaffold_sets)
 
     train_idxs: list[int] = []
@@ -344,32 +338,3 @@ def randomized_scaffold_train_valid_test_split(
         return train_subset, valid_subset, test_subset, *additional_data_split
     else:
         return train_subset, valid_subset, test_subset
-
-
-def _create_scaffolds(
-    data: Sequence[Union[str, Mol]],
-    use_csk: bool = False,
-) -> dict[str, list]:
-    """
-    Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
-    This function groups molecules by their Bemis-Murcko scaffold, which can be generated
-    as either the core structure scaffold (with atom types) or the skeleton scaffold
-    (without atom types). Scaffolds can optionally include chirality information.
-    """
-    scaffolds = defaultdict(list)
-    molecules = ensure_mols(data)
-
-    for idx, mol in enumerate(molecules):
-        mol = deepcopy(mol)
-        Chem.RemoveStereochemistry(mol)
-
-        if use_csk:
-            scaffold = MurckoScaffold.GetScaffoldForMol(mol)
-            scaffold = MurckoScaffold.MakeScaffoldGeneric(scaffold)
-            scaffold = MurckoScaffold.GetScaffoldForMol(scaffold)
-        else:
-            scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
-
-        scaffolds[scaffold].append(idx)
-
-    return scaffolds
