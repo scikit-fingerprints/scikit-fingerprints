@@ -53,12 +53,15 @@ def maxmin_train_test_split(
     """
     Split using maxmin algorithm.
 
-    This split uses maxmain algorithm of picking a subsets
+    MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
+    The algorithm is described in Ashton, M. [2]_,
+    improved RDKit implementation was described by Roger Sayle at the 2017 RDKit user group meeting [3]_.[5]_
 
-    Starting from random item of initial set, next is picked item with maximum
+    Starting from random item of initial set of vectorized molecules by binary ECFP4 fingerprint (radius 2) with
+    2048 bits, next is picked item with maximum
     value for its minimum distance to molecules in the picked set (hence the MaxMin name),
     calculating and recording the distances as required. This molecule is the most distant
-    one to those already picked so is transferred to the picked set
+    one to those already picked so is transferred to the picked set [4]_.
 
 
     Parameters
@@ -89,12 +92,24 @@ def maxmin_train_test_split(
 
     References
     ----------
-    .. [1] ` MaxMain split imeplementation and its variants
+    .. [1] `MaxMain split implementation and its variants
         https://github.com/deepchem/deepchem_`
 
-    .. [2] https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html
-    .. [3] https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker/
-    .. [4] https://rdkit.blogspot.com/2017/11/revisting-maxminpicker.html
+    .. [2] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
+        Dominique Gorse, JohnHolliday, Roger Lahanac, Peter Willett
+        "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
+        https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002_`
+
+    .. [3] `Roger Sayle
+        "Improved RDKit implementation"
+        https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf_`
+
+    .. [4] `Tim Dudgeon
+        "Revisting the MaxMinPicker"
+        https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html_`
+
+    .. [5] `RDKit MaxMin Picker
+        https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker_`
 
     """
     data_size = len(data)
@@ -170,55 +185,74 @@ def maxmin_train_valid_test_split(
     tuple[Sequence[int], Sequence[int]],
 ]:
     """
-    Split using maxmin algorithm of picking a subset of item from a pool.
-    Starting from random item of initial set, next is picked item with maximum
-    value for its minimum distance to molecules in the picked set (hence the MaxMin name),
-    calculating and recording the distances as required. This molecule is the most distant
-    one to those already picked so is transferred to the picked set
+    Split using maxmin algorithm.
+
+        MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
+        The algorithm is described in Ashton, M. [2]_,
+        improved RDKit implementation was described by Roger Sayle at the 2017 RDKit user group meeting [3]_.[5]_
+
+        Starting from random item of initial set of vectorized molecules by binary ECFP4 fingerprint (radius 2) with
+        2048 bits, next is picked item with maximum
+        value for its minimum distance to molecules in the picked set (hence the MaxMin name),
+        calculating and recording the distances as required. This molecule is the most distant
+        one to those already picked so is transferred to the picked set [4]_.
 
 
-    Parameters
-    ----------
-    data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        Parameters
+        ----------
+        data : sequence
+            A sequence representing either SMILES strings or RDKit `Mol` objects.
 
-    additional_data: list[sequence]
-        Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
+        additional_data: list[sequence]
+            Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
 
-    train_size : float, default=None
-        The fraction of data to be used for the train subset. If None, it is set
-        to 1 - test_size - valid_size. If valid_size is not provided, train_size
-        is set to 1 - test_size. If train_size, test_size and valid_size aren't
-        set, train_size is set to 0.8.
+        train_size : float, default=None
+            The fraction of data to be used for the train subset. If None, it is set
+            to 1 - test_size - valid_size. If valid_size is not provided, train_size
+            is set to 1 - test_size. If train_size, test_size and valid_size aren't
+            set, train_size is set to 0.8.
 
-    valid_size : float, default=None
-        The fraction of data to be used for the test subset. If None, it is set
-        to 1 - train_size - valid_size. If train_size, test_size and valid_size
-        aren't set, train_size is set to 0.1.
+        valid_size : float, default=None
+            The fraction of data to be used for the test subset. If None, it is set
+            to 1 - train_size - valid_size. If train_size, test_size and valid_size
+            aren't set, train_size is set to 0.1.
 
-    test_size : float, default=None
-        The fraction of data to be used for the validation subset. If None, it is
-        set to 1 - train_size - valid_size. If valid_size is not provided, test_size
-        is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
-        test_size is set to 0.1.
+        test_size : float, default=None
+            The fraction of data to be used for the validation subset. If None, it is
+            set to 1 - train_size - valid_size. If valid_size is not provided, test_size
+            is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
+            test_size is set to 0.1.
 
-    return_indices : bool, default=False
-        Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        return_indices : bool, default=False
+            Whether the method should return the input object subsets, i.e. SMILES strings
+            or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
-    Returns
-    ----------
-    subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
-    depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+        Returns
+        ----------
+        subsets : tuple[list, list, ...]
+        Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
+        depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
 
-    References
-    ----------
-    https://github.com/deepchem/deepchem
-    https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html
-    https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker/
-    https://rdkit.blogspot.com/2017/11/revisting-maxminpicker.html
+        References
+        ----------
+        .. [1] `MaxMain split implementation and its variants
+            https://github.com/deepchem/deepchem_`
 
+        .. [2] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
+            Dominique Gorse, JohnHolliday, Roger Lahanac, Peter Willett
+            "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
+            https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002_`
+
+        .. [3] `Roger Sayle
+            "Improved RDKit implementation"
+            https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf_`
+
+        .. [4] `Tim Dudgeon
+            "Revisting the MaxMinPicker"
+            https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html_`
+
+        .. [5] `RDKit MaxMin Picker
+            https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker_`
     """
 
     data_size = len(data)
