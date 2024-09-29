@@ -18,12 +18,18 @@ def tanimoto_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Tanimoto similarity for binary vectors.
+    Tanimoto simlarity for vectors of binary values.
 
     Computes the Tanimoto similarity [1]_ for binary data between two input arrays
-    or sparse matrices using the Jaccard index. The calculated similarity falls within
-    the explicit range [0, 1], with passing all-zero vectors to this function resulting
-    in a similarity of 1.
+    or sparse matrices using the Jaccard index using formula:
+
+    .. math::
+
+        sim(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
+
+
+    The calculated similarity falls within the explicit range `[0, 1]`.
+    Passing all-zero vectors to this function resulting in a similarity of 1.
 
     Parameters
     ----------
@@ -82,7 +88,7 @@ def tanimoto_binary_similarity(
         return 1 - jaccard(vec_a_bool, vec_b_bool)
     else:
         raise TypeError(
-            f"Both vec_a and vec_b must be of the same type: either numpy.ndarray "
+            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
             f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
         )
 
@@ -98,14 +104,18 @@ def tanimoto_binary_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Tanimoto distance for binary vectors.
+    Tanimoto distance for vectors of binary values.
 
-    Computes the Tanimoto distance for binary data between two input arrays or sparse matrices
-    by subtracting the similarity value from 1. The calculated distance falls within
-    the range [0, 1], with passing all-zero vectors to this function resulting in a distance of 0.
+    Computes the Tanimoto distance for binary data between two input arrays
+    or sparse matrices by subtracting the similarity from 1, using to
+    the formula:
 
-    Operations on NumPy arrays are optimized with the Numba JIT compiler, making them
-    significantly faster than equivalent operations on SciPy csr_arrays.
+    .. math::
+
+        dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
+
+    The calculated distance falls within the range `[0, 1]`.
+    Passing all-zero vectors to this function resulting in a distance of 0.
 
     Parameters
     ----------
@@ -150,17 +160,20 @@ def tanimoto_count_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
+    Tanimoto simlarity for vectors of count values.
+
     Computes the Tanimoto similarity [1]_ for count data between two input arrays
-    or sparse matrices using formula:
+    or sparse matrices using the formula:
 
     .. math::
 
         sim(vec_a, vec_b) = \\frac{vec_a \\cdot vec_b}{\\|vec_a\\|^2 + \\|vec_b\\|^2 - vec_a \\cdot vec_b}
 
-    Calculated similarity falls within the range of 0-1.
+    Calculated similarity falls within the range of `[0, 1]`.
     Passing all-zero vectors to this function result in similarity of 1.
-    Note that the NumPy implementation is JIT-compiled;
-    therefore, it may execute faster than the SciPy implementation.
+
+    Note that Numpy version is optimized with Numba JIT compiler, resulting in significantly faster
+    performance compared to SciPy sparse arrays. First usage may be slightly slower due to Numba compilation.
 
     Parameters
     ----------
@@ -209,7 +222,7 @@ def tanimoto_count_similarity(
         return _tanimoto_count_numpy(vec_a, vec_b)
     else:
         raise TypeError(
-            f"Both vec_a and vec_b must be of the same type: either numpy.ndarray "
+            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
             f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
         )
 
@@ -225,9 +238,17 @@ def tanimoto_count_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Computes the Tanimoto distance for binary data between two input arrays or sparse matrices
-    by subtracting similarity value from 1.
-    Calculated distance falls within the range from 0 to 1.
+    Tanimoto distance for vectors of count values.
+
+    Computes the Tanimoto distance for binary data between two input arrays
+    or sparse matrices by subtracting similarity value from 1, using to
+    the formula:
+
+    .. math::
+
+            dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
+
+    Calculated distance falls within the range from `[0, 1]`.
     Passing all-zero vectors to this function results in distance of 0.
 
     Parameters
@@ -264,11 +285,6 @@ def tanimoto_count_distance(
 
 @njit(parallel=True)
 def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    """
-    Calculates the Tanimoto similarity between two count data numpy arrays.
-    This function uses Numba for JIT compilation and parallel computations to
-    efficiently compute the similarity between two vectors.
-    """
     vec_a = vec_a.astype(np.float64).ravel()
     vec_b = vec_b.astype(np.float64).ravel()
 
@@ -281,30 +297,18 @@ def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
         dot_aa += vec_a[i] * vec_a[i]
         dot_bb += vec_b[i] * vec_b[i]
 
-    denominator: float = dot_aa + dot_bb - dot_ab
-
-    return dot_ab / denominator
+    return dot_ab / (dot_aa + dot_bb - dot_ab)
 
 
 def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    """
-    Calculates the Tanimoto similarity between two count data scipy arrays.
-    """
     dot_ab: float = vec_a.multiply(vec_b).sum()
     dot_aa: float = vec_a.multiply(vec_a).sum()
     dot_bb: float = vec_b.multiply(vec_b).sum()
 
-    denominator: float = dot_aa + dot_bb - dot_ab
-
-    tanimoto_sim: float = dot_ab / denominator
-
-    return tanimoto_sim
+    return dot_ab / (dot_aa + dot_bb - dot_ab)
 
 
 def _check_nan(arr: Union[np.ndarray, csr_array]) -> None:
-    """
-    Checks if passed numpy array or scipy sparse matrix contains NaN values.
-    """
     if isinstance(arr, np.ndarray):
         if np.isnan(arr).any():
             raise ValueError("Input array contains NaN values")
