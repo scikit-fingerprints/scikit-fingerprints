@@ -60,6 +60,8 @@ def tanimoto_binary_similarity(
     >>> sim
     1.0
 
+    >>> from skfp.similarities import tanimoto_binary_similarity
+    >>> import numpy as np
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> sim = tanimoto_binary_similarity(vec_a, vec_b)
@@ -140,6 +142,8 @@ def tanimoto_binary_distance(
     >>> dist
     0.0
 
+    >>> from skfp.similarities import tanimoto_binary_distance
+    >>> import numpy as np
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = tanimoto_binary_distance(vec_a, vec_b)
@@ -206,6 +210,8 @@ def tanimoto_count_similarity(
         >>> sim
         0.98
 
+        >>> from skfp.similarities import tanimoto_count_similarity
+        >>> import numpy as np
         >>> vec_a = csr_array(([7, 1, 1]))
         >>> vec_b = csr_array(([7, 1, 2]))
         >>> sim = tanimoto_count_similarity(vec_a, vec_b)
@@ -276,6 +282,8 @@ def tanimoto_count_distance(
     >>> dist
     0.02
 
+    >>> from skfp.similarities import tanimoto_count_distance
+    >>> import numpy as np
     >>> vec_a = csr_array(([7, 1, 1]))
     >>> vec_b = csr_array(([7, 1, 2]))
     >>> dist = tanimoto_count_distance(vec_a, vec_b)
