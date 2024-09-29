@@ -1,4 +1,4 @@
-"""Classes for efficient distance and similarity calculations."""
+"""Classes for distance and similarity calculations."""
 
 from .tanimoto import (
     tanimoto_binary_distance,

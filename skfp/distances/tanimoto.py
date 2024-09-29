@@ -27,9 +27,8 @@ def tanimoto_binary_similarity(
 
         sim(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
 
-
     The calculated similarity falls within the explicit range `[0, 1]`.
-    Passing all-zero vectors to this function resulting in a similarity of 1.
+    Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
     ----------
@@ -115,7 +114,7 @@ def tanimoto_binary_distance(
         dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
 
     The calculated distance falls within the range `[0, 1]`.
-    Passing all-zero vectors to this function resulting in a distance of 0.
+    Passing all-zero vectors to this function results in a distance of 0.
 
     Parameters
     ----------
@@ -170,7 +169,7 @@ def tanimoto_count_similarity(
         sim(vec_a, vec_b) = \\frac{vec_a \\cdot vec_b}{\\|vec_a\\|^2 + \\|vec_b\\|^2 - vec_a \\cdot vec_b}
 
     Calculated similarity falls within the range of `[0, 1]`.
-    Passing all-zero vectors to this function result in similarity of 1.
+    Passing all-zero vectors to this function results in similarity of 1.
 
     Note that Numpy version is optimized with Numba JIT compiler, resulting in significantly faster
     performance compared to SciPy sparse arrays. First usage may be slightly slower due to Numba compilation.
