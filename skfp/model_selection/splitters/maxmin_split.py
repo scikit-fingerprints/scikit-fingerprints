@@ -51,18 +51,16 @@ def maxmin_train_test_split(
     tuple[Sequence[int], Sequence[int]],
 ]:
     """
-    Split using maxmin algorithm.
+    Split using MaxMin algorithm.
 
     MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
-    The algorithm is described in Ashton, M. [2]_,
-    improved RDKit implementation was described by Roger Sayle at the 2017 RDKit user group meeting [3]_.[5]_
+    The algorithm is described in Ashton, M. [1]_,improved RDKit implementation was described
+    by Roger Sayle [3]_ [4]_ [5]_ at the 2017 RDKit user group meeting [2]_.[4]_
 
-    Starting from random item of initial set of vectorized molecules by binary ECFP4 fingerprint (radius 2) with
-    2048 bits, next is picked item with maximum
-    value for its minimum distance to molecules in the picked set (hence the MaxMin name),
+    It starts by vectorizing molecules with ECFP4 fingerprint. First test molecule is picked randomly. Each next one
+    is selected to maximize the minimal distance to the already selected molecules (hence the MaxMin name) [4]_.,
     calculating and recording the distances as required. This molecule is the most distant
-    one to those already picked so is transferred to the picked set [4]_.
-
+    one to those already picked so is transferred to the picked set [3]_.
 
     Parameters
     ----------
@@ -92,25 +90,18 @@ def maxmin_train_test_split(
 
     References
     ----------
-    .. [1] `MaxMain split implementation and its variants
-        https://github.com/deepchem/deepchem_`
-
-    .. [2] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
+    .. [1] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
         Dominique Gorse, JohnHolliday, Roger Lahanac, Peter Willett
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
-        https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002_`
-
-    .. [3] `Roger Sayle
+        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+    .. [2] `Roger Sayle
         "Improved RDKit implementation"
-        https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf_`
-
-    .. [4] `Tim Dudgeon
+        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+    .. [3] `Tim Dudgeon
         "Revisting the MaxMinPicker"
-        https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html_`
-
-    .. [5] `RDKit MaxMin Picker
-        https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker_`
-
+        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+    .. [4] `RDKit MaxMin Picker
+        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
     """
     data_size = len(data)
     train_size, test_size = validate_train_test_split_sizes(
@@ -185,74 +176,59 @@ def maxmin_train_valid_test_split(
     tuple[Sequence[int], Sequence[int]],
 ]:
     """
-    Split using maxmin algorithm.
+    Split using MaxMin algorithm.
 
-        MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
-        The algorithm is described in Ashton, M. [2]_,
-        improved RDKit implementation was described by Roger Sayle at the 2017 RDKit user group meeting [3]_.[5]_
+    MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
+    The algorithm is described in Ashton, M. [1]_,improved RDKit implementation was described
+    by Roger Sayle [3]_ [4]_ [5]_ at the 2017 RDKit user group meeting [2]_.[4]_
 
-        Starting from random item of initial set of vectorized molecules by binary ECFP4 fingerprint (radius 2) with
-        2048 bits, next is picked item with maximum
-        value for its minimum distance to molecules in the picked set (hence the MaxMin name),
-        calculating and recording the distances as required. This molecule is the most distant
-        one to those already picked so is transferred to the picked set [4]_.
+    It starts by vectorizing molecules with ECFP4 fingerprint. First test molecule is picked randomly. Each next one
+    is selected to maximize the minimal distance to the already selected molecules (hence the MaxMin name) [4]_.,
+    calculating and recording the distances as required. This molecule is the most distant
+    one to those already picked so is transferred to the picked set [3]_.
 
-
-        Parameters
-        ----------
-        data : sequence
-            A sequence representing either SMILES strings or RDKit `Mol` objects.
-
-        additional_data: list[sequence]
-            Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
-
-        train_size : float, default=None
-            The fraction of data to be used for the train subset. If None, it is set
-            to 1 - test_size - valid_size. If valid_size is not provided, train_size
-            is set to 1 - test_size. If train_size, test_size and valid_size aren't
-            set, train_size is set to 0.8.
-
-        valid_size : float, default=None
-            The fraction of data to be used for the test subset. If None, it is set
-            to 1 - train_size - valid_size. If train_size, test_size and valid_size
-            aren't set, train_size is set to 0.1.
-
-        test_size : float, default=None
-            The fraction of data to be used for the validation subset. If None, it is
-            set to 1 - train_size - valid_size. If valid_size is not provided, test_size
-            is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
-            test_size is set to 0.1.
-
-        return_indices : bool, default=False
-            Whether the method should return the input object subsets, i.e. SMILES strings
-            or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
-
-        Returns
-        ----------
-        subsets : tuple[list, list, ...]
-        Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
-        depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
-
-        References
-        ----------
-        .. [1] `MaxMain split implementation and its variants
-            https://github.com/deepchem/deepchem_`
-
-        .. [2] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
-            Dominique Gorse, JohnHolliday, Roger Lahanac, Peter Willett
-            "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
-            https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002_`
-
-        .. [3] `Roger Sayle
-            "Improved RDKit implementation"
-            https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf_`
-
-        .. [4] `Tim Dudgeon
-            "Revisting the MaxMinPicker"
-            https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html_`
-
-        .. [5] `RDKit MaxMin Picker
-            https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker_`
+    Parameters
+    ----------
+    data : sequence
+        A sequence representing either SMILES strings or RDKit `Mol` objects.
+    additional_data: list[sequence]
+        Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
+    train_size : float, default=None
+        The fraction of data to be used for the train subset. If None, it is set
+        to 1 - test_size - valid_size. If valid_size is not provided, train_size
+        is set to 1 - test_size. If train_size, test_size and valid_size aren't
+        set, train_size is set to 0.8.
+    valid_size : float, default=None
+        The fraction of data to be used for the test subset. If None, it is set
+        to 1 - train_size - valid_size. If train_size, test_size and valid_size
+        aren't set, train_size is set to 0.1.
+    test_size : float, default=None
+        The fraction of data to be used for the validation subset. If None, it is
+        set to 1 - train_size - valid_size. If valid_size is not provided, test_size
+        is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
+        test_size is set to 0.1.
+    return_indices : bool, default=False
+        Whether the method should return the input object subsets, i.e. SMILES strings
+        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+    Returns
+    ----------
+    subsets : tuple[list, list, ...]
+    Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
+    depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+    References
+    ----------
+    .. [1] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
+        Dominique Gorse, JohnHolliday, Roger Lahanac, Peter Willett
+        "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
+        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+    .. [2] `Roger Sayle
+        "Improved RDKit implementation"
+        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+    .. [3] `Tim Dudgeon
+        "Revisting the MaxMinPicker"
+        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+    .. [4] `RDKit MaxMin Picker
+        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
     """
 
     data_size = len(data)
@@ -270,7 +246,8 @@ def maxmin_train_valid_test_split(
         seed=random_state,
     )
 
-    # firstPicks - initial state of picked set
+    # firstPicks - initial state of picked set, so picked set will be union on test and valid sets
+    # And then the previously selected train set is subtracted
     valid_idxs = picker.LazyBitVectorPick(
         fps,
         poolSize=data_size,
@@ -278,7 +255,9 @@ def maxmin_train_valid_test_split(
         firstPicks=test_idxs,
         seed=random_state,
     )
+    # Rest elements are picked to train set
     train_idxs = list(set(range(data_size)) - set(test_idxs) - set(valid_idxs))
+    # Substracting test set from joined set
     valid_idxs = list(set(valid_idxs) - set(test_idxs))
 
     train_subset: list[Any] = []
