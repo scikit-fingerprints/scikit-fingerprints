@@ -18,7 +18,7 @@ def tanimoto_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Tanimoto simlarity for vectors of binary values.
+    Tanimoto similarity for vectors of binary values.
 
     Computes the Tanimoto similarity [1]_ for binary data between two input arrays
     or sparse matrices using the Jaccard index using formula:
@@ -165,7 +165,7 @@ def tanimoto_count_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Tanimoto simlarity for vectors of count values.
+    Tanimoto similarity for vectors of count values.
 
     Computes the Tanimoto similarity [1]_ for count data between two input arrays
     or sparse matrices using the formula:
@@ -183,10 +183,10 @@ def tanimoto_count_similarity(
     Parameters
     ----------
     vec_a : {ndarray, sparse matrix}
-        First binary input array or sparse matrix.
+        First count input array or sparse matrix.
 
     vec_b : {ndarray, sparse matrix}
-        Second binary input array or sparse matrix.
+        Second count input array or sparse matrix.
 
     Returns
     ----------
@@ -262,10 +262,10 @@ def tanimoto_count_distance(
     Parameters
     ----------
     vec_a : {ndarray, sparse matrix}
-        First binary input array or sparse matrix.
+        First count input array or sparse matrix.
 
     vec_b : {ndarray, sparse matrix}
-        Second binary input array or sparse matrix.
+        Second count input array or sparse matrix.
 
     Returns
     ----------
