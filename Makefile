@@ -12,8 +12,8 @@ docs: ## Re-generate documentation
 	-rm -r docs/modules/generated
 	poetry run $(MAKE) -C docs clean html
 
-doctest: docs ## Run doctests
-	poetry run pytest --doctest-modules skfp
+doctest: docs ## Run documentation tests
+	poetry run $(MAKE) -C docs doctest
 
 test: ## Run tests
 	poetry run black . --check --diff
