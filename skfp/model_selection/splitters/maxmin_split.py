@@ -54,8 +54,8 @@ def maxmin_train_test_split(
     Split using MaxMin algorithm.
 
     MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
-    The algorithm is described in Ashton, M. [1]_,improved RDKit implementation was described
-    by Roger Sayle [3]_ [4]_ [5]_ at the 2017 RDKit user group meeting [2]_.[4]_
+    The algorithm is described in Ashton, M. [1]_,implementation was created by Roger Sayle [3]_ [4]_ [5]_
+    at the 2017 RDKit user group meeting [2]_.[4]_
 
     It starts by vectorizing molecules with ECFP4 fingerprint. First test molecule is picked randomly. Each next one
     is selected to maximize the minimal distance to the already selected molecules (hence the MaxMin name) [4]_.,
@@ -179,8 +179,8 @@ def maxmin_train_valid_test_split(
     Split using MaxMin algorithm.
 
     MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
-    The algorithm is described in Ashton, M. [1]_,improved RDKit implementation was described
-    by Roger Sayle [3]_ [4]_ [5]_ at the 2017 RDKit user group meeting [2]_.[4]_
+    The algorithm is described in Ashton, M. [1]_,implementation was created by Roger Sayle [3]_ [4]_ [5]_
+    at the 2017 RDKit user group meeting [2]_.[4]_
 
     It starts by vectorizing molecules with ECFP4 fingerprint. First test molecule is picked randomly. Each next one
     is selected to maximize the minimal distance to the already selected molecules (hence the MaxMin name) [4]_.,
@@ -239,6 +239,7 @@ def maxmin_train_valid_test_split(
     fps = GetMorganGenerator().GetFingerprints(mols)
 
     picker = MaxMinPicker()
+    # Select only test set, starting from random pool
     test_idxs = picker.LazyBitVectorPick(
         fps,
         poolSize=data_size,
