@@ -28,6 +28,7 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
 
     GETAWAY descriptors consist of 273 features (see [3]_ [4]_ [5]_ [6]_ for precise
     definitions):
+
     - 7 related to general molecule shape, defined only on H and R matrices
     - 7 sets of autocorrelation descriptors, each defined on topological distances
       (shortest paths) from 0 to 8 (inclusive)

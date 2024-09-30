@@ -1,6 +1,6 @@
-============
+===============
 Model selection
-============
+===============
 
 .. automodule:: skfp.model_selection
 

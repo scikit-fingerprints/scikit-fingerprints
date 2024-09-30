@@ -44,7 +44,7 @@ def run_in_parallel(
     batch of data, e.g. list of integers, not a single integer.
 
     If ``func`` returns lists, the result will be a list of lists. To get a flat list
-    of results, use ``flatten_results=True`.
+    of results, use ``flatten_results=True``.
 
     Note that progress bar for ``verbose`` option tracks processing of data batches,
     not individual data points.

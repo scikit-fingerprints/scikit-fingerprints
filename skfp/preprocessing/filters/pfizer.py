@@ -17,9 +17,8 @@ class PfizerFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-        - logP <= 3
-        - TPSA >= 75
-
+    - logP <= 3
+    - TPSA >= 75
 
     Parameters
     ----------

@@ -26,6 +26,7 @@ class RuleOfThree(BaseFilter):
     - HBA <= 3
     - HBD <= 3
     - logP <= 3
+
     Additionally, an extended version of this rule has been proposed, which adds two conditions:
 
     - TPSA <= 60
