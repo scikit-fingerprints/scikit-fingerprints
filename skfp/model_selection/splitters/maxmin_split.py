@@ -247,7 +247,7 @@ def maxmin_train_valid_test_split(
     )
 
     # firstPicks - initial state of picked set, so picked set will be union on test and valid sets
-    # And then the previously selected train set is subtracted
+    # And then the previously selected test set is subtracted
     valid_idxs = picker.LazyBitVectorPick(
         fps,
         poolSize=data_size,
@@ -257,7 +257,7 @@ def maxmin_train_valid_test_split(
     )
     # Rest elements are picked to train set
     train_idxs = list(set(range(data_size)) - set(test_idxs) - set(valid_idxs))
-    # Substracting test set from joined set
+    # Substracting test set from joined sets
     valid_idxs = list(set(valid_idxs) - set(test_idxs))
 
     train_subset: list[Any] = []
