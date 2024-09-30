@@ -1,4 +1,4 @@
-.PHONY: setup docs test test-coverage help
+.PHONY: setup docs doctest test test-coverage help
 .DEFAULT_GOAL := help
 
 setup: ## Install development dependencies, pre-commit hooks and poetry plugin
@@ -10,7 +10,10 @@ setup: ## Install development dependencies, pre-commit hooks and poetry plugin
 
 docs: ## Re-generate documentation
 	-rm -r docs/modules/generated
-	poetry run $(MAKE) -C docs clean html doctest
+	poetry run $(MAKE) -C docs clean html
+
+doctest: docs ## Run doctests
+	poetry run pytest --doctest-modules skfp
 
 test: ## Run tests
 	poetry run black . --check --diff
