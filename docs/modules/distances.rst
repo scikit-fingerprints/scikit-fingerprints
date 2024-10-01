@@ -1,6 +1,6 @@
-============
+==========================
 Distances and similarities
-============
+==========================
 
 .. automodule:: skfp.distances
 
