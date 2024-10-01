@@ -5,6 +5,7 @@ Base classes
 .. automodule:: skfp.bases
 
 :mod: `skfp.bases`: Base classes
+
 =========================================================
 
 .. py:currentmodule:: skfp.bases
