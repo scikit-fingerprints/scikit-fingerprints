@@ -9,6 +9,7 @@ This is the class and function reference of scikit-fingerprints.
 
     bases
     datasets
+    distances
     fingerprints
     metrics
     model_selection
