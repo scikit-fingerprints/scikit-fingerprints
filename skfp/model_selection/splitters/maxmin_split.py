@@ -90,9 +90,9 @@ def maxmin_train_test_split(
 
     References
     ----------
-    .. [1] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
-        Dominique Gorse, JohnHolliday, Roger Lahanac, Peter Willett
+    .. [1] `Mark Ashton et al.
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
+        Quant. Struct.-Act. Relat., 21: 598-604
         <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
@@ -210,16 +210,18 @@ def maxmin_train_valid_test_split(
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+
     Returns
     ----------
     subsets : tuple[list, list, ...]
     Tuple with train-test subsets of provided arrays. First two are lists of SMILES strings or RDKit `Mol` objects,
     depending on the input type. If `return_indices` is True, lists of indices are returned instead of actual data.
+
     References
     ----------
-    .. [1] `Mark Ashton, John Barnardb, Florence Casset, Michael Charlton, Geoffrey Downsb,
-        Dominique Gorse, JohnHolliday, Roger Lahanac, Peter Willett
+    .. [1] `Mark Ashton et al.
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
+        Quant. Struct.-Act. Relat., 21: 598-604
         <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
