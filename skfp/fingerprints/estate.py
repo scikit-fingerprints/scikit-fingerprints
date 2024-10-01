@@ -25,7 +25,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
 
     79 atom types are used, as defined in the original paper [1]_. For practical
     implementation, they are formulated as SMARTS patterns, selecting individual
-    atoms of particular type [3]_ [4]_. Generally, they take into consideration:
+    atoms of particular type [2]_. Generally, they take into consideration:
 
     - atom element
     - valence state (including aromaticity)
