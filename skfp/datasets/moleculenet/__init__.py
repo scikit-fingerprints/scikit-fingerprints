@@ -220,7 +220,7 @@ def load_ogb_splits(
         Depending on the `as_dict` argument, one of:
         - three lists of integer indexes
         - dictionary with "train", "valid" and "test" keys, and values as lists with
-          splits indexes
+        splits indexes
 
     References
     ----------
