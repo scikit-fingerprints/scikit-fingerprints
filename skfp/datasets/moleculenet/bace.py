@@ -25,7 +25,7 @@ def load_bace(
     Load and return the BACE dataset.
 
     The task is to predict binding results for a set of inhibitors of human
-    β-secretase 1 (BACE-1).
+    β-secretase 1 (BACE-1) [1]_ [2]_.
 
     ==================   ==============
     Tasks                             1

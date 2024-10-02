@@ -31,9 +31,9 @@ class ConformerGenerator(BasePreprocessor):
     """
     Generate molecule conformer.
 
-    The implementation uses RDKit and distance geometry (DG) approach [1], with
+    The implementation uses RDKit and distance geometry (DG) approach [1]_, with
     optimized ETKDGv3 improvements for small rings, macrocycles and experimental
-    torsional angle preferences [2]. Generated conformations are optionally optimized
+    torsional angle preferences [2]_. Generated conformations are optionally optimized
     with a force field approach.
 
     Resulting conformation is saved in ``conf_id`` integer property of a molecule, and
@@ -43,7 +43,7 @@ class ConformerGenerator(BasePreprocessor):
     the most stable conformer (with the lowest energy) is selected.
 
     Note that conformer generation can fail, either due to not enough iterations, or
-    it can be just impossible for a given molecule [3]. This by default results in an
+    it can be just impossible for a given molecule [3]_. This by default results in an
     error, but can be controlled with ``error_on_gen_fail`` parameter. For multiple
     conformers, error is thrown only when no conformations can be generated, not if
     any one fails.

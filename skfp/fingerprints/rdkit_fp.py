@@ -34,6 +34,8 @@ class RDKitFingerprint(BaseFingerprintTransformer):
     - degrees of bonded atoms
     - bond type/order (single, double, triple, aromatic)
 
+    For more details on fingerprints of this type, see Daylight documentation [2]_.
+
     Parameters
     ----------
     fp_size : int, default=2048

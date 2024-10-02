@@ -16,7 +16,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     """
     Atom Pair fingerprint.
 
-    The implementation uses RDKit. This is a hashed fingerprint, where
+    The implementation uses RDKit. This is a hashed fingerprint [1]_, where
     fragments are computed based on pairs of atoms and distance between them.
 
     Concretely, the hashed fragment is a triplet: (atom type 1, atom type 2, distance)

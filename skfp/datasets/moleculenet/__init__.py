@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.utils._param_validation import StrOptions, validate_params
 
-from skfp.datasets.utils import fetch_dataset, fetch_splits, get_smiles_and_labels
+from skfp.datasets.utils import fetch_splits
 
 from .bace import load_bace
 from .bbbp import load_bbbp

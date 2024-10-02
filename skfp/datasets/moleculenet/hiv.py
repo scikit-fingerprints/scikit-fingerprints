@@ -24,7 +24,7 @@ def load_hiv(
     """
     Load and return the HIV dataset.
 
-    The task is to predict ability of molecules to inhibit HIV replication.
+    The task is to predict ability of molecules to inhibit HIV replication [1]_ [2]_.
 
     ==================   ==============
     Tasks                             1

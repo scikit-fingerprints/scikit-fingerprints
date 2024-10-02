@@ -24,7 +24,7 @@ def load_freesolv(
     """
     Load and return the FreeSolv (Free Solvation Database) dataset.
 
-    The task is to predict hydration free energy of small molecules in water.
+    The task is to predict hydration free energy of small molecules in water [1]_ [2]_.
     Targets are in kcal/mol.
 
     ==================   ==============

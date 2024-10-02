@@ -24,7 +24,7 @@ def load_esol(
     """
     Load and return the ESOL (Estimated SOLubility) dataset.
 
-    The task is to predict aqueous solubility. Targets are log-transformed,
+    The task is to predict aqueous solubility [1]_ [2]_. Targets are log-transformed,
     and the unit is log mols per litre (log Mol/L).
 
     ==================   ==============

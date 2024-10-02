@@ -38,6 +38,8 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
     - uses only Moreau-Broto autocrrelation
     - results in 80 features: 8 atom features * 10 distances
 
+    For more details on autocorrelation descriptors, see [5]_.
+
     Parameters
     ----------
     use_3D : bool, default=False

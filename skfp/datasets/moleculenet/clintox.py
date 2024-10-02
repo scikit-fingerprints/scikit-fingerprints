@@ -25,7 +25,7 @@ def load_clintox(
     Load and return the ClinTox dataset.
 
     The task is to predict drug approval viability, by predicting clinical trial
-    toxicity and final FDA approval status. Both tasks are binary.
+    toxicity and final FDA approval status [1]_. Both tasks are binary.
 
     ==================   ========================
     Tasks                                       2

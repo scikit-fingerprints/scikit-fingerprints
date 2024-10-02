@@ -25,7 +25,7 @@ def load_bbbp(
     Load and return the BBBP (Blood-Brain Barrier Penetration) dataset.
 
     The task is to predict blood-brain barrier penetration (barrier permeability)
-    of small drug-like molecules.
+    of small drug-like molecules [1]_ [2]_.
 
     ==================   ==============
     Tasks                             1

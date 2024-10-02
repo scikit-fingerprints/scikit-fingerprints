@@ -15,7 +15,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     """
     MinHashed FingerPrint (MHFP).
 
-    The implementation uses RDKit. This is a hashed fingerprint, where
+    The implementation uses RDKit. This is a hashed fingerprint [1]_, where
     fragments are computed based on circular substructures around each atom.
 
     Subgraphs are created around each atom with increasing radius, starting

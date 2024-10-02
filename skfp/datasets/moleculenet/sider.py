@@ -25,7 +25,7 @@ def load_sider(
     Load and return the SIDER (Side Effect Resource) dataset.
 
     The task is to predict adverse drug reactions (ADRs) as drug side effects to
-    27 system organ classes in MedDRA classification. All tasks are binary.
+    27 system organ classes in MedDRA classification [1]_ [2]_. All tasks are binary.
 
     ==================   ========================
     Tasks                                      27
