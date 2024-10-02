@@ -18,7 +18,7 @@ doctest: docs ## Run documentation tests
 test: ## Run tests
 	poetry run black . --check --diff
 	poetry run isort . --check-only --profile black
-	poetry run pytest tests
+	poetry run pytest tests -n auto
 
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files

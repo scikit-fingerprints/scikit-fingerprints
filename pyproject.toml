@@ -75,6 +75,7 @@ isort = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+pytest-xdist = "*"
 xenon = "*"
 
 [tool.poetry.group.doc]
