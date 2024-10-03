@@ -14,6 +14,7 @@ class LipinskiFilter(BaseFilter):
 
     Also known as Pfizer's Rule of 5. It evaluates the drug-likeness of a molecule
     as an orally active drug. Assumes that it should be small and lipophilic.
+    Description of the rules can be found in the original publication [1]_.
 
     Molecule can violate at most one of the rules (conditions):
     - molecular weight <= 500 daltons

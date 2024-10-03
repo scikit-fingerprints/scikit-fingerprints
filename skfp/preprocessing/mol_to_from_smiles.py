@@ -70,6 +70,8 @@ class MolToSmilesTransformer(BasePreprocessor):
     """
     Creates SMILES strings from RDKit `Mol` objects.
 
+    For details see RDKit documentation [1]_.
+
     Parameters
     ----------
     isomeric_smiles : bool, default=True
