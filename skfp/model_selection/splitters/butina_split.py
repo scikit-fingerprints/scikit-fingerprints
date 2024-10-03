@@ -108,10 +108,9 @@ def butina_train_test_split(
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
     n_jobs : int, default=None
-        The number of jobs to run in parallel. :meth:`transform` is parallelized
-        over the input molecules. ``None`` means 1 unless in a
-        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        The number of jobs to run in parallel for computing the clustering. ``None``
+        means 1 unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using
+        all processors. See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
     ----------
@@ -296,10 +295,9 @@ def butina_train_valid_test_split(
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
     n_jobs : int, default=None
-        The number of jobs to run in parallel. :meth:`transform` is parallelized
-        over the input molecules. ``None`` means 1 unless in a
-        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        The number of jobs to run in parallel for computing the clustering. ``None``
+        means 1 unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using
+        all processors. See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
     ----------
@@ -388,7 +386,7 @@ def _create_clusters(
     n_jobs: Optional[int] = None,
 ) -> list[list[int]]:
     """
-    Generate Taylor-Butina clusters for a list of SMILES strings or RDKit `Mol` objects.
+    Generate Taylor-Butina clusters for a list of SMILES strings or RDKit Mol objects.
     This function groups molecules by using clustering, where cluster centers must have
     Tanimoto (Jaccard) distance greater or equal to given threshold. Binary ECFP4 (Morgan)
     fingerprints with 2048 bits are used as features.

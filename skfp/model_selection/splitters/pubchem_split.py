@@ -1,12 +1,8 @@
-from collections import defaultdict
 from collections.abc import Sequence
-from copy import deepcopy
 from numbers import Integral
 from typing import Any, Optional, Union
 
-from rdkit import Chem
 from rdkit.Chem import Mol
-from rdkit.Chem.Scaffolds import MurckoScaffold
 from sklearn.utils._param_validation import Interval, RealNotInt, validate_params
 
 from skfp.model_selection.splitters.utils import (
@@ -16,7 +12,6 @@ from skfp.model_selection.splitters.utils import (
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
-from skfp.utils.validators import ensure_mols
 
 
 @validate_params(
@@ -33,18 +28,20 @@ from skfp.utils.validators import ensure_mols
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
-        "use_csk": ["boolean"],
-        "return_indices": ["boolean"],
+        "not_found_behavior": ["train", "test", "remove"],
+        "return_type": ["same_as_input", "indices", "dataframe"],
+        "n_jobs": [Integral, None],
     },
     prefer_skip_nested_validation=True,
 )
-def scaffold_train_test_split(
+def pubchem_train_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
     test_size: Optional[float] = None,
-    use_csk: bool = False,
+    not_found_behavior: str = "test",
     return_indices: bool = False,
+    n_jobs: Optional[int] = None,
 ) -> Union[
     tuple[
         Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
@@ -53,31 +50,22 @@ def scaffold_train_test_split(
     tuple[Sequence[int], Sequence[int]],
 ]:
     """
-    Split using groups of Bemis-Murcko scaffolds.
+    Split using PubChem literature data.
 
-    This split uses deterministically partitioned groups of Bemis-Murcko molecular
-    scaffolds [1]_ for splitting, as introduced in the MoleculeNet [2]_ paper. It aims
-    to verify the model generalization to new and rare scaffolds, as an approximation
-    to the time split.
+    This is a time (chronological) split, using first literature date in PubChem
+    available for each molecule. Molecules are partitioned deterministically, with
+    the newest ones assigned to the test subset and the rest to the training subset.
 
-    By default, core structure scaffolds are used (following RDKit), which include atom
-    types. Original Bemis-Murcko approach uses the cyclic skeleton of a molecule, replacing
-    all atoms by carbons. It is also known as CSK (Cyclic SKeleton) [3]_, and can be
-    used with `use_csk` parameter.
-
-    This approach is known to have certain limitations. In particular, molecules with
-    no rings will not get a scaffold, resulting in them being grouped together regardless
-    of their structure.
-
-    The split is fully deterministic, with the smallest scaffold sets assigned to the test
-    subset and the rest to the training subset.
+    In case of no data available (no literature or no PubChem entry) the behavior
+    is governed by the ``not_found_behavior`` parameter. Full DataFrame with columns
+    ``["SMILES", "split", "year"]`` can also be returned.
 
     The split fractions (train_size, test_size) must sum to 1.
 
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: list[sequence]
         Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
@@ -90,12 +78,20 @@ def scaffold_train_test_split(
         The fraction of data to be used for the test subset. If None, it is set to 1 - train_size.
         If train_size is also None, it will be set to 0.2.
 
-    use_csk: bool, default=False
-        Whether to use molecule's skeleton or the core structure scaffold (including atom types).
+    not_found_behavior : {"train", "test", "remove"}, default="test"
+        What to do with molecules not found in PubChem, or if molecule does not have
+        any literature data available. Such molecules can be put into train set,
+        test set, or removed altogether.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel for fetching data from PubChem. Note that
+        since those are requests relying on I/O, threads are used instead of processes.
+        At most 5 requests per second are made to avoid throttling, which limits
+        parallelism even if high ``n_jobs`` is set.
 
     Returns
     ----------
@@ -106,34 +102,20 @@ def scaffold_train_test_split(
 
     References
     ----------
-    .. [1] `Bemis, G. W., & Murcko, M. A.
-        "The properties of known drugs. 1. Molecular frameworks."
-        Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
-
-    .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
-        "MoleculeNet: A Benchmark for Molecular Machine Learning."
-        Chemical Science, 9(2), 513-530.
-        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
-
-    .. [3] ` Bemis-Murcko scaffolds and their variants
-        <https://github.com/rdkit/rdkit/discussions/6844>`_
+    .. [1]
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
 
-    scaffold_sets = _create_scaffold_sets(data, use_csk)
-    scaffold_sets.sort(key=len)
+    years = _get_pubchem_years(data, n_jobs)
+    ...  # probably use Pandas or lists here
 
     train_idxs: list[int] = []
     test_idxs: list[int] = []
 
-    for scaffold_set in scaffold_sets:
-        if len(test_idxs) < test_size:
-            test_idxs.extend(scaffold_set)
-        else:
-            train_idxs.extend(scaffold_set)
+    # time split, include not_found_behavior parameter
+    ...
 
     ensure_nonempty_subset(train_idxs, "train")
     ensure_nonempty_subset(test_idxs, "test")
@@ -176,19 +158,21 @@ def scaffold_train_test_split(
             Interval(Integral, 1, None, closed="left"),
             None,
         ],
-        "use_csk": ["boolean"],
-        "return_indices": ["boolean"],
+        "not_found_behavior": ["train", "test", "remove"],
+        "return_type": ["same_as_input", "indices", "dataframe"],
+        "n_jobs": [Integral, None],
     },
     prefer_skip_nested_validation=True,
 )
-def scaffold_train_valid_test_split(
+def pubchem_train_valid_test_split(
     data: Sequence[Union[str, Mol]],
     *additional_data: Sequence,
     train_size: Optional[float] = None,
     valid_size: Optional[float] = None,
     test_size: Optional[float] = None,
-    use_csk: bool = False,
+    not_found_behavior: str = "test",
     return_indices: bool = False,
+    n_jobs: Optional[int] = None,
 ) -> Union[
     tuple[
         Sequence[Union[str, Mol]],
@@ -200,24 +184,15 @@ def scaffold_train_valid_test_split(
     tuple[Sequence[int], Sequence[int], Sequence[int]],
 ]:
     """
-    Split using groups of Bemis-Murcko scaffolds.
+    Split using PubChem literature data.
 
-    This split uses deterministically partitioned groups of Bemis-Murcko molecular
-    scaffolds [1]_ for splitting, as introduced in the MoleculeNet [2]_ paper. It aims
-    to verify the model generalization to new and rare scaffolds, as an approximation
-    to the time split.
+    This is a time (chronological) split, using first literature date in PubChem
+    available for each molecule. Molecules are partitioned deterministically, with
+    the newest ones assigned to the test subset and the rest to the training subset.
 
-    By default, core structure scaffolds are used (following RDKit), which include atom
-    types. Original Bemis-Murcko approach uses the cyclic skeleton of a molecule, replacing
-    all atoms by carbons. It is also known as CSK (Cyclic SKeleton) [3]_, and can be
-    used with `use_csk` parameter.
-
-    This approach is known to have certain limitations. In particular, molecules with
-    no rings will not get a scaffold, resulting in them being grouped together regardless
-    of their structure.
-
-    The split is fully deterministic, with the smallest scaffold sets assigned to the test
-    subset, larger to the validation subset, and the rest to the training subset.
+    In case of no data available (no literature or no PubChem entry) the behavior
+    is governed by the ``not_found_behavior`` parameter. Full DataFrame with columns
+    ``["SMILES", "split", "year"]`` can also be returned.
 
     The split fractions (train_size, valid_size, test_size) must sum to 1.
 
@@ -246,13 +221,24 @@ def scaffold_train_valid_test_split(
         is set to 1 - train_size. If train_size, test_size and valid_size aren't set,
         test_size is set to 0.1.
 
-    use_csk: bool, default=False
-        Whether to use the molecule cyclic skeleton (CSK), instead of the core
-        structure scaffold.
+    not_found_behavior : {"train", "test", "remove"}, default="test"
+        What to do with molecules not found in PubChem, or if molecule does not have
+        any literature data available. Such molecules can be put into train set,
+        test set, or removed altogether.
+
+    return_indices : bool, default=False
+        Whether the method should return the input object subsets, i.e. SMILES strings
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel for fetching data from PubChem. Note that
+        since those are requests relying on I/O, threads are used instead of processes.
+        At most 5 requests per second are made to avoid throttling, which limits
+        parallelism even if high ``n_jobs`` is set.
 
     Returns
     ----------
@@ -263,37 +249,21 @@ def scaffold_train_valid_test_split(
 
     References
     ----------
-    .. [1] `Bemis, G. W., & Murcko, M. A.
-        "The properties of known drugs. 1. Molecular frameworks."
-        Journal of Medicinal Chemistry, 39(15), 2887-2893.
-        <https://www.researchgate.net/publication/14493474_The_Properties_of_Known_Drugs_1_Molecular_Frameworks>`_
-
-    .. [2] `Z. Wu, B. Ramsundar, E. N. Feinberg, J. Gomes, C. Geniesse, A. S. Pappu, K. Leswing, V. Pande
-        "MoleculeNet: A Benchmark for Molecular Machine Learning."
-        Chemical Science, 9(2), 513-530.
-        <https://www.researchgate.net/publication/314182452_MoleculeNet_A_Benchmark_for_Molecular_Machine_Learning>`_
-
-    .. [3] ` Bemis-Murcko scaffolds and their variants
-        <https://github.com/rdkit/rdkit/discussions/6844>`_
+    .. [1]
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
 
-    scaffold_sets = _create_scaffold_sets(data, use_csk)
-    scaffold_sets.sort(key=len)
+    years = _get_pubchem_years(data, n_jobs)
+    ...  # probably use Pandas or lists here
 
     train_idxs: list[int] = []
     valid_idxs: list[int] = []
     test_idxs: list[int] = []
 
-    for scaffold_set in scaffold_sets:
-        if len(test_idxs) < test_size:
-            test_idxs.extend(scaffold_set)
-        elif len(valid_idxs) < valid_size:
-            valid_idxs.extend(scaffold_set)
-        else:
-            train_idxs.extend(scaffold_set)
+    # time split, include not_found_behavior parameter
+    ...
 
     if return_indices:
         train_subset = train_idxs
@@ -317,32 +287,9 @@ def scaffold_train_valid_test_split(
         return train_subset, valid_subset, test_subset
 
 
-def _create_scaffold_sets(
-    data: Sequence[Union[str, Mol]], use_csk: bool = False
-) -> list[list[int]]:
+def _get_pubchem_years(data: Sequence[Union[str, Mol]], n_jobs: Optional[int] = None) -> list[list[int]]:
     """
-    Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit Mol objects.
-    This function groups molecules by their Bemis-Murcko scaffold into sets of molecules
-    with the same scaffold.
-
-    They can be generated as either the core structure scaffold (with atom types) or the
-    skeleton scaffold (without atom types).
+    Get first literature publication year from PubChem for a list of molecules, either
+    as SMILES strings or RDKit Mol objects.
     """
-    scaffold_sets = defaultdict(list)
-    mols = ensure_mols(data)
 
-    for idx, mol in enumerate(mols):
-        mol = deepcopy(mol)
-        Chem.RemoveStereochemistry(mol)
-
-        if use_csk:
-            scaffold = MurckoScaffold.GetScaffoldForMol(mol)
-            scaffold = MurckoScaffold.MakeScaffoldGeneric(scaffold)
-            scaffold = MurckoScaffold.GetScaffoldForMol(scaffold)
-        else:
-            scaffold = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
-
-        scaffold_sets[scaffold].append(idx)
-
-    scaffold_sets = list(scaffold_sets.values())
-    return scaffold_sets
