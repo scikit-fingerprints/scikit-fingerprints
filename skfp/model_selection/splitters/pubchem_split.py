@@ -60,6 +60,9 @@ def pubchem_train_test_split(
     is governed by the ``not_found_behavior`` parameter. Full DataFrame with columns
     ``["SMILES", "split", "year"]`` can also be returned.
 
+    Note that this split can be very slow for large number of molecules, since requests
+    to PubChem frequently fail due to the "servers overloaded" error.
+
     The split fractions (train_size, test_size) must sum to 1.
 
     Parameters
@@ -194,6 +197,9 @@ def pubchem_train_valid_test_split(
     is governed by the ``not_found_behavior`` parameter. Full DataFrame with columns
     ``["SMILES", "split", "year"]`` can also be returned.
 
+    Note that this split can be very slow for large number of molecules, since requests
+    to PubChem frequently fail due to the "servers overloaded" error.
+
     The split fractions (train_size, valid_size, test_size) must sum to 1.
 
     Parameters
@@ -287,9 +293,10 @@ def pubchem_train_valid_test_split(
         return train_subset, valid_subset, test_subset
 
 
-def _get_pubchem_years(data: Sequence[Union[str, Mol]], n_jobs: Optional[int] = None) -> list[list[int]]:
+def _get_pubchem_years(
+    data: Sequence[Union[str, Mol]], n_jobs: Optional[int] = None
+) -> list[list[int]]:
     """
     Get first literature publication year from PubChem for a list of molecules, either
     as SMILES strings or RDKit Mol objects.
     """
-
