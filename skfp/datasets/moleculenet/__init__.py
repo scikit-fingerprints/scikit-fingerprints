@@ -57,7 +57,7 @@ def load_moleculenet_benchmark(
 
     Often only a subset of those datasets is used for benchmarking, e.g. only
     single-task datasets, or only classification datasets and excluding PCBA (due to its
-    large size). A subset of datasets can be selected by using `subset` argument.
+    large size). A subset of datasets can be selected by using ``subset`` argument.
 
     Dataset names are also returned (case-sensitive). Datasets, grouped by task, are:
 
