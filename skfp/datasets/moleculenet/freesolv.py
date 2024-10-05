@@ -38,7 +38,7 @@ def load_freesolv(
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
-        Path to the root data directory. If `None`, currently set scikit-learn directory
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
@@ -51,7 +51,7 @@ def load_freesolv(
     Returns
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
-        Depending on the `as_frame` argument, one of:
+        Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
 

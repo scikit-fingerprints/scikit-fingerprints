@@ -21,7 +21,7 @@ class MolStandardizer(BasePreprocessor):
     Applies the following cleanup transformations to the inputs:
     - create RDKit Mol objects, if SMILES strings are passed
     - sanitize [1]_ (performs basic validity checks)
-    - if `largest_fragment_only`, select the largest fragment for further processing
+    - if ``largest_fragment_only``, select the largest fragment for further processing
     - remove hydrogens
     - disconnect metal atoms
     - normalize (transform functional groups to normal form)

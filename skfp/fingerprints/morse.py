@@ -19,7 +19,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
     constant-size vector, based on principles similar to electron diffraction.
 
     MoRSE features are scattered electron intensity values for different values
-    of scattering `s`. It uses general molecular transform which, for all atoms i and j
+    of scattering ``s``. It uses general molecular transform which, for all atoms i and j
     with distance :math:`r_{ij}` in the molecule with N atoms, is defined as:
 
     .. math::

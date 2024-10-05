@@ -57,7 +57,7 @@ def load_moleculenet_benchmark(
 
     Often only a subset of those datasets is used for benchmarking, e.g. only
     single-task datasets, or only classification datasets and excluding PCBA (due to its
-    large size). A subset of datasets can be selected by using `subset` argument.
+    large size). A subset of datasets can be selected by using ``subset`` argument.
 
     Dataset names are also returned (case-sensitive). Datasets, grouped by task, are:
 
@@ -72,7 +72,7 @@ def load_moleculenet_benchmark(
         If not None, returns the given subset of datasets.
 
     data_dir : {None, str, path-like}, default=None
-        Path to the root data directory. If `None`, currently set scikit-learn directory
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frames : bool, default=False
@@ -85,7 +85,7 @@ def load_moleculenet_benchmark(
     Returns
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
-        Depending on the `as_frame` argument, one of:
+        Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
 
@@ -204,7 +204,7 @@ def load_ogb_splits(
         Name of the dataset to loads splits for.
 
     data_dir : {None, str, path-like}, default=None
-        Path to the root data directory. If `None`, currently set scikit-learn directory
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
         is used, by default `$HOME/scikit_learn_data`.
 
     as_dict : bool, default=False

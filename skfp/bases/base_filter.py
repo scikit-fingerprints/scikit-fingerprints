@@ -69,15 +69,15 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
     ):
         """
-        The same as `transform` method, kept for Scikit-learn compatibility.
+        The same as ``.transform()`` method, kept for Scikit-learn compatibility.
 
         Parameters
         ----------
         X : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         y : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         **fit_params : dict
             Unused, kept for Scikit-learn compatibility.
@@ -85,7 +85,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         Returns
         -------
         X_new : any
-            See `transform` method.
+            See ``.transform()`` method.
         """
         return self.transform(X)
 
@@ -93,7 +93,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[list[Union[str, Mol]], np.ndarray]:
         """
-        Apply a filter to input molecules. Output depends on `return_indicators`
+        Apply a filter to input molecules. Output depends on ``return_indicators``
         attribute.
 
         Parameters

@@ -52,9 +52,9 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     charge_errors : {"raise", "ignore", "zero"}, default="raise"
         How to handle errors during calculation of atomic partial charges. ``"raise"``
         immediately raises any errors. ``"NaN"`` ignores any atoms that failed the
-        computation; note that if all atoms fail, the error will be raised (use `errors`
-        parameter to control this). ``"zero"`` uses default value of 0 to fill all
-        problematic charges.
+        computation; note that if all atoms fail, the error will be raised (use
+        ``errors`` parameter to control this). ``"zero"`` uses default value of 0 to
+        fill all problematic charges.
 
     errors : {"raise", "NaN", "ignore"}, default="raise"
         How to handle errors during fingerprint calculation. ``"raise"`` immediately

@@ -21,7 +21,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
     Subgraphs are created around each atom with increasing radius, starting
     with just an atom itself. In each iteration, it is increased by another
     atom (one "hop" on the graph). Each subgraph during iteration is hashed,
-    and the resulting hashes are folded to the `fp_size` length.
+    and the resulting hashes are folded to the ``fp_size`` length.
 
     Each subgraph gets an identifier based on atom types in its radius, which is
     then hashed. Atom types (invariants) by default are based on Daylight invariants:
@@ -87,7 +87,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features. Equal to `fp_size`.
+        Number of output features. Equal to ``fp_size``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

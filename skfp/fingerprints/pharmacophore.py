@@ -40,21 +40,21 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
 
     Note that this is by far the slowest fingerprint, particularly for larger molecules.
     This is due to the 3-point pharmacophore calculation. Consider filtering out large
-    (heavy) molecules or setting `max_points=2` if it takes too long.
+    (heavy) molecules or setting ``max_points=2`` if it takes too long.
 
     Parameters
     ----------
     variant: {"raw_bits", "folded"} = "raw_bits"
         Whether to return raw bit values, or to fold them. Length of raw bits variant
-        depends on used N-points, see `n_features_out` attribute.
+        depends on used N-points, see ``n_features_out`` attribute.
 
     min_points: int, default=2
         Lower bound of N-point pharmacophore. Must be 2 or 3, and less or equal to
-        `max_points`.
+        ``max_points``.
 
     max_points: int, default=3
         Upper bound of N-point pharmacophore. Must be 2 or 3, and greater or equal to
-        `min_points`.
+        ``min_points``.
 
     fp_size : int, default=2048
         Size of output vectors, i.e. number of bits for each fingerprint. Only used
@@ -86,9 +86,10 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int, default=39972
-        Number of output features, size of fingerprints. Depends on `variant`: for
-        `"folded"` it is equal to `fp_size`, and for `"raw_bits"` on `min_points`
-        and `max_points`: 252 for (2,2), 39720 for (3,3), and 39972 for (2,3).
+        Number of output features, size of fingerprints. For ``"folded"`` variant,
+        it is equal to ``fp_size``. For ``"raw_bits"`` variant, it depends on
+        ``min_points`` and ``max_points``: 252 for (2,2), 39720 for (3,3), and
+        39972 for (2,3).
 
     requires_conformers : bool
         Whether the fingerprint is 3D-based and requires molecules with conformers as

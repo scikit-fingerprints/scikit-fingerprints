@@ -9,7 +9,7 @@ from skfp.utils import ensure_mols, ensure_smiles
 
 class MolFromSmilesTransformer(BasePreprocessor):
     """
-    Creates RDKit `Mol` objects from SMILES strings.
+    Creates RDKit ``Mol`` objects from SMILES strings.
 
     Parameters
     ----------
@@ -68,7 +68,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
 
 class MolToSmilesTransformer(BasePreprocessor):
     """
-    Creates SMILES strings from RDKit `Mol` objects.
+    Creates SMILES strings from RDKit ``Mol`` objects.
 
     For details see RDKit documentation [1]_.
 
@@ -82,7 +82,7 @@ class MolToSmilesTransformer(BasePreprocessor):
 
     canonical : bool, default=True
         Whether to canonicalize the molecule. This results in a reproducible
-        SMILES, given the same input molecule (if `do_random` is not used).
+        SMILES, given the same input molecule (if ``do_random`` is not used).
 
     all_bonds_explicit : bool, default=False
         Whether to explicitly indicate all bond orders.

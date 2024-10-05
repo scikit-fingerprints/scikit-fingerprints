@@ -42,7 +42,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
     Parameters
     ----------
     fp_size : int, default=2048
-        Size of output vectors. Depending on the `variant` argument, those are either
+        Size of output vectors. Depending on the ``variant`` argument, those are either
         raw hashes, bits, or counts. Must be positive.
 
     radius : int, default=2
@@ -50,8 +50,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
         Another common notation uses diameter, therefore MAP4 has radius 2.
 
     variant : {"raw_hashes", "bit", "count"}, default="bit"
-        Which variant to fingerprint to use. `"raw_hashes"` returns MinHash values.
-        `"bit"` folds values into binary vector, and `"count"` uses folding with
+        Which variant to fingerprint to use. ``"raw_hashes"`` returns MinHash values.
+        ``"bit"`` folds values into binary vector, and ``"count"`` uses folding with
         counting.
 
     sparse : bool, default=False
@@ -73,7 +73,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features. Equal to `fp_size`.
+        Number of output features. Equal to ``fp_size``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

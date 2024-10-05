@@ -35,3 +35,11 @@ Multioutput metrics:
     multioutput_precision_score
     multioutput_recall_score
     multioutput_root_mean_squared_error
+
+Utility functions:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    extract_multioutput_pos_proba
