@@ -46,7 +46,7 @@ class RuleOfVeber(BaseFilter):
     Examples
     ----------
     >>> from skfp.preprocessing import RuleOfVeber
-    >>> smiles = ["[C-]#N", "CC=O", "CC1=CC(=C(C=C1)C(=O)N(C(=O)N1CCCCC1)C)C(=O)O"]
+    >>> smiles = ["[C-]#N", "CC=O", "CC(C)[C@@H](CC1=CC(=C(C=C1)OC)OCCCOC)C[C@@H]([C@H](C[C@@H](C(C)C)C(=O)NCC(C)(C)C(=O)N)O)N"] # noqa: E501
     >>> filt = RuleOfVeber()
     >>> filt
     RuleOfVeber()
