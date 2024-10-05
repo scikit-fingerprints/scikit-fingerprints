@@ -33,8 +33,8 @@ def auroc_score(
     """
     Area Under Receiver Operating Characteristic curve (AUROC / ROC AUC).
 
-    Wrapper around scikit-learn `roc_auc_score` function, which adds
-    `constant_target_behavior` to control behavior for all-zero `y_true` labels.
+    Wrapper around scikit-learn ``roc_auc_score`` function, which adds
+    ``constant_target_behavior`` to control behavior for all-zero ``y_true`` labels.
     Scikit-learn behavior is to throw an error, since AUROC is undefined there, but
     this can easily happen for cross-validation in imbalanced problems.
 
@@ -48,13 +48,13 @@ def auroc_score(
         output** of the classifier.
 
     *args, **kwargs
-        Any additional parameters for the underlying `roc_auc_score` function.
+        Any additional parameters for the underlying ``roc_auc_score`` function.
 
     constant_target_behavior : "raise", np.NaN, None, or float, default=np.NaN
-        Value returned if `y_true` contains only constant values. "raise" is the default
-        scikit-learn behavior, which raises an error. Default `np.NaN` (or None) ignores
-        the given fold in cross-validation. Alternatively, float value (e.g. 0.5, 1.0) can
-        be returned.
+        Value returned if ``y_true`` contains only constant values. ``"raise"`` is the
+        default scikit-learn behavior, which raises an error. Default ``np.NaN``
+        (or None) ignores the given fold in cross-validation. Alternatively, float value
+        (e.g. 0.5, 1.0) can be returned.
 
     Returns
     -------

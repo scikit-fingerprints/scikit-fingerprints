@@ -35,7 +35,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
     + 2 unweighted global. See [3]_ [4]_ [5]_ [6]_ for details.
 
     Typical correct values should be small, but can result in NaN or infinity for some
-    molecules. Value clipping with `clip_val` parameter, feature selection, and/or
+    molecules. Value clipping with ``clip_val`` parameter, feature selection, and/or
     imputation should be used.
 
     Parameters
@@ -43,7 +43,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
     clip_val : float or None, default=2147483647
         Value to clip results at, both positive and negative ones.The default value is
         the maximal value of 32-bit integer, but should often be set lower, depending
-        on the application. `None` means that no clipping is applied.
+        on the application. ``None`` means that no clipping is applied.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.

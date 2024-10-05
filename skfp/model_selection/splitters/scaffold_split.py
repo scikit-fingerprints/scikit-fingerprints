@@ -77,7 +77,7 @@ def scaffold_train_test_split(
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: list[sequence]
         Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
@@ -95,13 +95,13 @@ def scaffold_train_test_split(
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     Returns
     ----------
     subsets : tuple[list, list, ...]
     Tuple with train-test subsets of provided arrays. First two are lists of SMILES
-    strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
     is True, lists of indices are returned instead of actual data.
 
     References
@@ -224,7 +224,7 @@ def scaffold_train_valid_test_split(
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: sequence
         Additional sequences to be split alongside the main data, e.g. labels.
@@ -252,13 +252,13 @@ def scaffold_train_valid_test_split(
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     Returns
     ----------
     subsets : tuple[list, list, ...]
     Tuple with train-valid-test subsets of provided arrays. First three are lists of
-    SMILES strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    SMILES strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
     is True, lists of indices are returned instead of actual data.
 
     References
@@ -321,7 +321,7 @@ def _create_scaffold_sets(
     data: Sequence[Union[str, Mol]], use_csk: bool = False
 ) -> list[list[int]]:
     """
-    Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit `Mol` objects.
+    Generate Bemis-Murcko scaffolds for a list of SMILES strings or RDKit ``Mol`` objects.
     This function groups molecules by their Bemis-Murcko scaffold into sets of molecules
     with the same scaffold.
 

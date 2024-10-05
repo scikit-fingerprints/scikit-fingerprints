@@ -16,7 +16,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
 
     The implementation uses RDKit. This is a descriptor-based fingerprint, where
     bits measure contributions of different atom types, based on their electronic
-    and topological properties. Based on `variant` argument, either counts of
+    and topological properties. Based on ``variant`` argument, either counts of
     different atom types, or sums of their properties are computed.
 
     The idea is to represent the intrinsic electronic state of the atom, in the context
@@ -58,7 +58,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features. Equal to `fp_size`.
+        Number of output features. Equal to ``fp_size``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

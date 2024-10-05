@@ -37,8 +37,8 @@ def load_hiv(
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
-        Path to the root data directory. If `None`, currently set scikit-learn directory
-        is used, by default `$HOME/scikit_learn_data`.
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
+        is used, by default ``$HOME/scikit_learn_data``.
 
     as_frame : bool, default=False
         If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
@@ -51,7 +51,7 @@ def load_hiv(
     Returns
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
-        Depending on the `as_frame` argument, one of:
+        Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
 

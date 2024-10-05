@@ -18,14 +18,14 @@ class RDKitFingerprint(BaseFingerprintTransformer):
     This fingerprint is an RDKit original [1]_. This is a hashed fingerprint,
     where fragments are created from small subgraphs on the molecular graph.
 
-    For a given molecule, all paths between `min_path` and `max_path` (inclusive)
+    For a given molecule, all paths between ``min_path`` and ``max_path`` (inclusive)
     are extracted and hashed, based on bond invariants (see below). Those are any
-    subgraphs, unless `linear_paths_only` is set to True. Note that all explicit
+    subgraphs, unless ``linear_paths_only`` is set to True. Note that all explicit
     atoms, including hydrogens if present, are used.
 
-    Each subgraph is hashed. Based on this hash value, `nBitsPerHash` pseudorandom
+    Each subgraph is hashed. Based on this hash value, ``nBitsPerHash`` pseudorandom
     numbers are generated and used to set bits in the resulting fingerprint. Finally,
-    it is folded to `fp_size` length.
+    it is folded to ``fp_size`` length.
 
     Subgraphs are identified based on bonds constituting them. Bonds invariants (types,
     features) take into consideration:
@@ -86,7 +86,7 @@ class RDKitFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+        Number of output features, size of fingerprints. Equal to ``fp_size``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

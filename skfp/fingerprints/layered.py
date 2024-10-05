@@ -18,8 +18,8 @@ class LayeredFingerprint(BaseFingerprintTransformer):
     This fingerprint is an RDKit original [1]_. This is a hashed fingerprint,
     where fragments are created from small subgraphs on the molecular graph.
 
-    For a given molecule, all paths between `min_path` and `max_path` (inclusive)
-    are extracted. Those are any subgraphs, unless `linear_paths_only` is set to True.
+    For a given molecule, all paths between ``min_path`` and ``max_path`` (inclusive)
+    are extracted. Those are any subgraphs, unless ``linear_paths_only`` is set to True.
     Note that all explicit atoms, including hydrogens if present, are used.
 
     Then each subgraph is hashed in "layers" (hence the fingerprint name), using
@@ -70,7 +70,7 @@ class LayeredFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+        Number of output features, size of fingerprints. Equal to ``fp_size``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

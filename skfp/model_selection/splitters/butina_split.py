@@ -79,7 +79,7 @@ def butina_train_test_split(
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: list[sequence]
         Additional sequences to be split alongside the main data (e.g., labels or feature vectors).
@@ -105,7 +105,7 @@ def butina_train_test_split(
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized
@@ -117,7 +117,7 @@ def butina_train_test_split(
     ----------
     subsets : tuple[list, list, ...]
     Tuple with train-test subsets of provided arrays. First two are lists of SMILES
-    strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
     is True, lists of indices are returned instead of actual data.
 
     References
@@ -258,7 +258,7 @@ def butina_train_valid_test_split(
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: sequence
         Additional sequences to be split alongside the main data, e.g. labels.
@@ -293,7 +293,7 @@ def butina_train_valid_test_split(
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized
@@ -305,7 +305,7 @@ def butina_train_valid_test_split(
     ----------
     subsets : tuple[list, list, ...]
     Tuple with train-valid-test subsets of provided arrays. First three are lists of
-    SMILES strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    SMILES strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
     is True, lists of indices are returned instead of actual data.
 
     References
@@ -388,7 +388,7 @@ def _create_clusters(
     n_jobs: Optional[int] = None,
 ) -> list[list[int]]:
     """
-    Generate Taylor-Butina clusters for a list of SMILES strings or RDKit `Mol` objects.
+    Generate Taylor-Butina clusters for a list of SMILES strings or RDKit ``Mol`` objects.
     This function groups molecules by using clustering, where cluster centers must have
     Tanimoto (Jaccard) distance greater or equal to given threshold. Binary ECFP4 (Morgan)
     fingerprints with 2048 bits are used as features.

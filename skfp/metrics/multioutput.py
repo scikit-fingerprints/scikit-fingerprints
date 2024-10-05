@@ -72,7 +72,7 @@ def multioutput_accuracy_score(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `accuracy_score` function,
+    Any additional arguments are passed to the underlying ``accuracy_score`` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html
@@ -128,10 +128,10 @@ def multioutput_auroc_score(
 
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Columns with constant true value are ignored by default, but can also
-    use default value - see `auroc_score` function. As such, it can be safely used
+    use default value - see ``auroc_score`` function. As such, it can be safely used
     e.g. in cross-validation. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `auroc_score` and `roc_auc_score`
+    Any additional arguments are passed to the underlying ``auroc_score`` and ``roc_auc_score``
     functions, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html
@@ -189,7 +189,7 @@ def multioutput_auprc_score(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `average_precision_score`
+    Any additional arguments are passed to the underlying ``average_precision_score``
     function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html
@@ -248,8 +248,8 @@ def multioutput_balanced_accuracy_score(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `balanced_accuracy_score` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying ``balanced_accuracy_score``
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html
 
@@ -306,8 +306,8 @@ def multioutput_cohen_kappa_score(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `cohen_kappa_score` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying ``cohen_kappa_score``
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html
 
@@ -364,7 +364,7 @@ def multioutput_f1_score(
     default scikit-learn behavior (it returns value 0 by default). Also supports
     single-task evaluation.
 
-    Any additional arguments are passed to the underlying `f1_score` function,
+    Any additional arguments are passed to the underlying ``f1_score`` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html
@@ -420,8 +420,8 @@ def multioutput_matthews_corr_coef(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `matthews_corrcoef` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying ``matthews_corrcoef``
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.matthews_corrcoef.html
 
@@ -476,8 +476,8 @@ def multioutput_mean_absolute_error(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `mean_absolute_error` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying ``mean_absolute_error``
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_absolute_error.html
 
@@ -534,8 +534,8 @@ def multioutput_mean_squared_error(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `mean_squared_error` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying ``mean_squared_error``
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_squared_error.html
 
@@ -591,8 +591,8 @@ def multioutput_precision_score(
     ignored. Warnings are not raised for columns with constant false prediction,
     and 0.0 is assumed. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `precision_score` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying ``precision_score``
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html
 
@@ -649,7 +649,7 @@ def multioutput_recall_score(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `recall_score` function,
+    Any additional arguments are passed to the underlying ``recall_score`` function,
     see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html
@@ -705,8 +705,8 @@ def multioutput_root_mean_squared_error(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `root_mean_squared_error` function,
-    see `scikit-learn documentation <sklearn>`_ for more information.
+    Any additional arguments are passed to the underlying ``root_mean_squared_error``
+    function, see `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.root_mean_squared_error.html
 
@@ -763,8 +763,8 @@ def multioutput_spearman_correlation(
     Returns the average value over all tasks. Missing values in target labels are
     ignored. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying `spearman_correlation` function,
-    see :func:`spearman_correlation` for more information.
+    Any additional arguments are passed to the underlying ``spearman_correlation``
+    function, see :func:`spearman_correlation` for more information.
 
     Parameters
     ----------

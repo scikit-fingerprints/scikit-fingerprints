@@ -18,7 +18,7 @@ class RDFFingerprint(BaseFingerprintTransformer):
     distances.
 
     RDF function can be interpreted as the probability distribution of finding
-    an atom in a spherical volume of given radius `r`, and is defined for all
+    an atom in a spherical volume of given radius ``r``, and is defined for all
     atoms i and j with distance :math:`r_{ij}` in the molecule with N atoms as:
 
     .. math::

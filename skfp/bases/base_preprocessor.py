@@ -33,15 +33,15 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
 
     def fit_transform(self, X, y=None, **fit_params):
         """
-        The same as `transform` method, kept for Scikit-learn compatibility.
+        The same as ``.transform()`` method, kept for Scikit-learn compatibility.
 
         Parameters
         ----------
         X : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         y : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         **fit_params : dict
             Unused, kept for Scikit-learn compatibility.
@@ -49,7 +49,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         Returns
         -------
         X_new : any
-            See `transform` method.
+            See ``.transform()`` method.
         """
         return self.transform(X)
 

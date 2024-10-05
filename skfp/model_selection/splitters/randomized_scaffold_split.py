@@ -75,7 +75,7 @@ def randomized_scaffold_train_test_split(
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: sequence
         Additional sequences to be split alongside the main data, e.g. labels.
@@ -94,7 +94,7 @@ def randomized_scaffold_train_test_split(
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     random_state: int or NumPy Random Generator instance, default=0
         Seed for random number generator or random state that would be used for
@@ -104,7 +104,7 @@ def randomized_scaffold_train_test_split(
     ----------
     subsets : tuple[list, list, ...]
     Tuple with train-test subsets of provided arrays. First two are lists of SMILES
-    strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
     is True, lists of indices are returned instead of actual data.
 
     References
@@ -233,7 +233,7 @@ def randomized_scaffold_train_valid_test_split(
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: sequence
         Additional sequences to be split alongside the main data, e.g. labels.
@@ -261,7 +261,7 @@ def randomized_scaffold_train_valid_test_split(
 
     return_indices : bool, default=False
         Whether the method should return the input object subsets, i.e. SMILES strings
-        or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
+        or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     random_state: int or NumPy Random Generator instance, default=0
         Seed for random number generator or random state that would be used for
@@ -271,7 +271,7 @@ def randomized_scaffold_train_valid_test_split(
     ----------
     subsets : tuple[list, list, ...]
     Tuple with train-valid-test subsets of provided arrays. First three are lists of
-    SMILES strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
+    SMILES strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
     is True, lists of indices are returned instead of actual data.
 
     References

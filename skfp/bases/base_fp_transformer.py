@@ -119,15 +119,15 @@ class BaseFingerprintTransformer(
         self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params
     ):
         """
-        The same as `transform` method, kept for Scikit-learn compatibility.
+        The same as ``.transform()`` method, kept for Scikit-learn compatibility.
 
         Parameters
         ----------
         X : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         y : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         **fit_params : dict
             Unused, kept for Scikit-learn compatibility.
@@ -135,7 +135,7 @@ class BaseFingerprintTransformer(
         Returns
         -------
         X_new : any
-            See `transform` method.
+            See ``.transform()`` method.
         """
         return self.transform(X)
 
