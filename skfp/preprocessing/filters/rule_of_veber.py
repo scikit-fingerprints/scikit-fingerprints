@@ -24,11 +24,10 @@ class RuleOfVeber(BaseFilter):
         filter less restrictive.
 
     n_jobs : int, default=None
-        The number of jobs to run in parallel. The :meth:`transform_x_y` and
-        :meth:`transform` methods are parallelized over the input molecules.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See Scikit-learn documentation
-        on ``n_jobs`` for more details.
+        The number of jobs to run in parallel. :meth:`transform_x_y` and
+        :meth:`transform` are parallelized over the input molecules. ``None`` means 1
+        unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
+        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -40,7 +39,7 @@ class RuleOfVeber(BaseFilter):
     References
     -----------
     .. [1] `Veber, D.F, Johnson S. R., Cheng H., Smith B. R., Ward K. W. , Kopple K. D.
-       "Molecular properties that influence the oral bioavailability of drug candidates."
+        "Molecular properties that influence the oral bioavailability of drug candidates."
         J Med Chem. 2002 Jun 6;45(12):2615-23.
         <https://pubmed.ncbi.nlm.nih.gov/12036371/>`_
 
