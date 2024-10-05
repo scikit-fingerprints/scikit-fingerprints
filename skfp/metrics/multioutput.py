@@ -47,6 +47,15 @@ def extract_multioutput_pos_proba(predictions: list[np.ndarray]) -> np.ndarray:
     -------
     y_score : NumPy array of shape (n_samples, n_tasks)
         Predicted positive class probabilities for each task.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from skfp.metrics import extract_multioutput_pos_proba
+    >>> y_pred = [np.array([[0.6, 0.1], [0.2, 0.3]]), np.array([[0.0, 0.9], [0.7, 0.8]])]
+    >>> extract_multioutput_pos_proba(y_pred)
+    array([[0.1, 0.9],
+           [0.3, 0.8]])
     """
     # (n_tasks, n_samples, 2) -> (n_tasks, n_samples) -> (n_samples, n_tasks)
     predictions = np.array(predictions)
@@ -157,12 +166,12 @@ def multioutput_auroc_score(
     --------
     >>> import numpy as np
     >>> from skfp.metrics import multioutput_auroc_score
-    >>> y_true = [[0, 0], [1, 1]]
-    >>> y_score = [[0.75, 0.0], [0.9, 0.0]]
+    >>> y_true = np.array([[0, 0], [1, 1]])
+    >>> y_score = np.array([[0.75, 0.0], [0.9, 0.0]])
     >>> multioutput_auroc_score(y_true, y_score)
     0.75
-    >>> y_true = [[0, 0], [1, np.nan], [np.nan, 1]]
-    >>> y_score = [[0.75, 0.0], [0.25, 0.0], [0.0, 0.25]]
+    >>> y_true = np.array([[0, 0], [1, np.nan], [np.nan, 1]])
+    >>> y_score = np.array([[0.75, 0.0], [0.25, 0.0], [0.0, 0.25]])
     >>> multioutput_auroc_score(y_true, y_score)
     0.5
     """
@@ -816,7 +825,8 @@ def _safe_multioutput_metric(
 
     if y_true.shape != y_pred.shape:
         raise ValueError(
-            f"Both true labels and predictions must have the same shape, got {y_true.ndim}"
+            f"Both true labels and predictions must have the same shape, got: "
+            f"true labels {y_true.ndim}, predictions {y_pred.shape}"
         )
 
     if y_true.ndim == 1:

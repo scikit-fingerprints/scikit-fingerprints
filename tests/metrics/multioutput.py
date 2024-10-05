@@ -196,7 +196,7 @@ def test_multioutput_metrics_grid_search_compatible(
     X, _ = make_classification(
         n_samples=n_samples, n_features=10, n_classes=2, random_state=0
     )
-    y = np.random.randint(low=0, high=1, size=(n_samples, n_tasks), dtype=int)
+    y = np.random.randint(low=0, high=2, size=(n_samples, n_tasks), dtype=int)
 
     if metric_name in {"MAE", "MSE", "RMSE"}:
         estimator = RandomForestRegressor()
