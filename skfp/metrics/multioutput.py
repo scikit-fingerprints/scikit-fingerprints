@@ -21,6 +21,39 @@ from skfp.metrics.spearman import spearman_correlation
 
 
 @validate_params(
+    {"predictions": ["array-like"]},
+    prefer_skip_nested_validation=True,
+)
+def extract_multioutput_pos_proba(predictions: list[np.ndarray]) -> np.ndarray:
+    """
+    Extract positive class probabilities (``y-score``) for multioutput problems.
+
+    When using ``.predict_proba()`` method for multioutput problems, scikit-learn
+    returns a list of NumPy arrays with predicted probabilities of negative and
+    positive class for each task. This is essentially a 3D tensor of shape
+    ``(n_tasks, n_samples, 2)``. However, multioutput metrics expect shape
+    ``(n_samples, n_tasks)`` with predicted positive classes' probabilities.
+
+    This function reshapes the raw prediction output to that shape, extracting just
+    positive classes' probabilities.
+
+    Parameters
+    ----------
+    predictions : list of NumPy arrays
+        Raw predictions of shape ``(n_tasks, n_samples, 2)``, with predicted negative
+        and positive class probability in the last dimension.
+
+    Returns
+    -------
+    y_score : NumPy array of shape (n_samples, n_tasks)
+        Predicted positive class probabilities for each task.
+    """
+    # (n_tasks, n_samples, 2) -> (n_tasks, n_samples) -> (n_samples, n_tasks)
+    predictions = np.array(predictions)
+    return np.transpose(predictions[:, :, 1])
+
+
+@validate_params(
     {
         "y_true": ["array-like"],
         "y_pred": ["array-like"],
@@ -779,31 +812,26 @@ def _safe_multioutput_metric(
     if not isinstance(y_pred, np.ndarray):
         y_pred = np.array(y_pred)
 
+    # make sure both arrays are 2D and have the same shape
+
+    if y_true.shape != y_pred.shape:
+        raise ValueError(
+            f"Both true labels and predictions must have the same shape, got {y_true.ndim}"
+        )
+
     if y_true.ndim == 1:
         y_true = y_true.reshape(-1, 1)
     elif y_true.ndim > 2:
-        raise ValueError(f"True labels must have 1 or 2 dimensions, got {y_true.ndim}")
-    elif y_true.ndim == 0:
-        raise ValueError(f"Expected matrix for true labels, got a scalar {y_true}")
+        raise ValueError(
+            f"True labels must have 1 or 2 dimensions, got shape {y_true.shape}"
+        )
 
     if y_pred.ndim == 1:
         y_pred = y_pred.reshape(-1, 1)
-    if y_pred.ndim == 2:
-        if y_true.shape != y_pred.shape:
-            raise ValueError(
-                "For 2D predictions, they must have the same shape as targets, "
-                f"got: y_true {y_true.shape}, y_pred {y_pred.shape}"
-            )
-    if y_pred.ndim == 3 and y_pred.shape[2] == 2:
-        # .predict_proba() in scikit-learn returns list of arrays [cls_0_proba, cls_1_proba]
-        # extract positive class probabilities
-        y_pred = y_pred[:, :, 1].T
-    elif y_pred.ndim > 3:
+    elif y_pred.ndim > 2:
         raise ValueError(
-            f"Predictions must have 1, 2 or 3 dimensions, got {y_pred.ndim}"
+            f"Predictions must have 1 or 2 dimensions, got shape {y_true.shape}"
         )
-    elif y_pred.ndim == 0:
-        raise ValueError(f"Expected matrix for predictions, got a scalar {y_pred}")
 
     values = []
     for i in range(y_true.shape[1]):

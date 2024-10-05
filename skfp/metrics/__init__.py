@@ -2,6 +2,7 @@
 
 from .auroc import auroc_score
 from .multioutput import (
+    extract_multioutput_pos_proba,
     multioutput_accuracy_score,
     multioutput_auprc_score,
     multioutput_auroc_score,
