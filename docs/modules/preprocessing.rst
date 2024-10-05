@@ -41,7 +41,7 @@ Molecular filters:
     RuleOfFour
     RuleOfThree
     RuleOfTwo
-    RulerOfVeber
+    RuleOfVeber
     SureChEMBLFilter
     TiceHerbicidesFilter
     TiceInsecticidesFilter
