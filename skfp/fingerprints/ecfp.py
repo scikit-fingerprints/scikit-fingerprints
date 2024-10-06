@@ -17,6 +17,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
 
     The implementation uses RDKit. This is a hashed fingerprint [1]_, where
     fragments are computed based on circular substructures around each atom.
+    Also known as Morgan fingerprint.
 
     Subgraphs are created around each atom with increasing radius, starting
     with just an atom itself. In each iteration, it is increased by another
