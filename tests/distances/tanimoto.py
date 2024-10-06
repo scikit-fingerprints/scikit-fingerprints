@@ -7,26 +7,11 @@ from scipy import sparse
 from scipy.sparse import csr_array
 
 from skfp.distances.tanimoto import (
-    _check_nan,
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
     tanimoto_count_distance,
     tanimoto_count_similarity,
 )
-
-
-@pytest.fixture
-def binary_numpy_array():
-    vec = np.array([1, 0, 1, 0, 1])
-
-    return vec
-
-
-@pytest.fixture
-def binary_csr_array():
-    vec = csr_array([[1, 0, 1, 0, 1]])
-
-    return vec
 
 
 @pytest.mark.parametrize(
@@ -264,20 +249,6 @@ def test_sklearn_nearest_neighbors_compatible_count(vec_a, vec_b):
         assert tanimoto_binary_distance(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
 
 
-def test_check_nan_numpy():
-    vec_a = np.array([1, 2, np.nan, 4, 5])
-
-    with pytest.raises(ValueError, match=("Input array contains NaN values")):
-        _check_nan(vec_a)
-
-
-def test_check_nan_scipy():
-    sparse_matrix = csr_array([[1, 2, np.nan, 4, 5]])
-
-    with pytest.raises(ValueError, match=("Input sparse matrix contains NaN values")):
-        _check_nan(sparse_matrix)
-
-
 def test_binary_different_types_raise_error(binary_numpy_array, binary_csr_array):
     with pytest.raises(TypeError) as exc_info:
         tanimoto_binary_similarity(binary_numpy_array, binary_csr_array)
@@ -297,10 +268,3 @@ def test_count_different_types_raise_error(binary_numpy_array, binary_csr_array)
     assert "<class 'numpy.ndarray'> and <class 'scipy.sparse._csr.csr_array'>" in str(
         exc_info
     )
-
-
-def test_check_nan_wrong_type():
-    with pytest.raises(TypeError) as exc_info:
-        _check_nan(1)
-
-    assert "Expected numpy.ndarray or scipy.sparse.csr_array" in str(exc_info)

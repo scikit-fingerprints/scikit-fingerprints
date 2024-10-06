@@ -14,6 +14,7 @@ Distances
     :nosignatures:
     :toctree: generated/
 
+    dice_binary_distance
     tanimoto_binary_distance
     tanimoto_count_distance
 
@@ -23,5 +24,6 @@ Similarities
     :nosignatures:
     :toctree: generated/
 
+    dice_binary_similarity
     tanimoto_binary_similarity
     tanimoto_count_similarity
