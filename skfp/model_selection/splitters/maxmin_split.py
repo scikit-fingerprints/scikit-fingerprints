@@ -54,10 +54,10 @@ def maxmin_train_test_split(
     Split using MaxMin algorithm.
 
     MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
-    The algorithm is described in Ashton, M. [1]_,implementation was created by Roger Sayle [3]_ [4]_ [5]_
-    at the 2017 RDKit user group meeting [2]_.[4]_
+    The original algorithm was introduced in [1]_,
+    but here we use an optimized implementation by Roger Sayle [2]_ [3]_ [4]_.
 
-    It starts by vectorizing molecules with ECFP4 fingerprint. First test molecule is picked randomly. Each next one
+    It starts by vectorizing molecules with ECFP4 fingerprint. The first test molecule is picked randomly. Each next one
     is selected to maximize the minimal distance to the already selected molecules (hence the MaxMin name) [4]_.,
     calculating and recording the distances as required. This molecule is the most distant
     one to those already picked so is transferred to the picked set [3]_.
@@ -94,12 +94,15 @@ def maxmin_train_test_split(
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
         Quant. Struct.-Act. Relat., 21: 598-604
         <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
         <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+
     .. [3] `Tim Dudgeon
         "Revisting the MaxMinPicker"
         <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+
     .. [4] `RDKit MaxMin Picker
         <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
     """
@@ -179,10 +182,10 @@ def maxmin_train_valid_test_split(
     Split using MaxMin algorithm.
 
     MaxMinPicker is an efficient algorithm for picking a optimal subset of diverse compounds from a candidate pool.
-    The algorithm is described in Ashton, M. [1]_,implementation was created by Roger Sayle [3]_ [4]_ [5]_
-    at the 2017 RDKit user group meeting [2]_.[4]_
+    The original algorithm was introduced in [1]_,
+    but here we use an optimized implementation by Roger Sayle [2]_ [3]_ [4]_.
 
-    It starts by vectorizing molecules with ECFP4 fingerprint. First test molecule is picked randomly. Each next one
+    It starts by vectorizing molecules with ECFP4 fingerprint. The first test molecule is picked randomly. Each next one
     is selected to maximize the minimal distance to the already selected molecules (hence the MaxMin name) [4]_.,
     calculating and recording the distances as required. This molecule is the most distant
     one to those already picked so is transferred to the picked set [3]_.
@@ -223,12 +226,15 @@ def maxmin_train_valid_test_split(
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
         Quant. Struct.-Act. Relat., 21: 598-604
         <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
         <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+
     .. [3] `Tim Dudgeon
         "Revisting the MaxMinPicker"
         <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+
     .. [4] `RDKit MaxMin Picker
         <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
     """
