@@ -28,7 +28,6 @@ Preprocessing classes:
     ConformerGenerator
     MolStandardizer
 
-
 Molecular filters:
 
 .. autosummary::
