@@ -1,16 +1,19 @@
+import gc
 import inspect
 import os
-from time import time
+from time import sleep, time
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from joblib import cpu_count
-from matplotlib.ticker import MultipleLocator
 from ogb.graphproppred import GraphPropPredDataset
 
-from skfp.fingerprints import *
+import skfp.fingerprints as fps
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
+
+matplotlib.rcParams.update({"font.size": 18})
 
 DATASET_NAME = "ogbg-molhiv"
 
@@ -22,7 +25,6 @@ N_SPLITS = 5
 N_REPEATS = 5
 MAX_CORES = cpu_count(only_physical_cores=True)
 N_CORES = [2**i for i in range(MAX_CORES.bit_length())]
-# N_CORES = [1,16]
 if MAX_CORES > N_CORES[-1]:
     N_CORES.append(MAX_CORES)
 PLOT_DIR = os.path.join("benchmark_times", "benchmark_times_plotted")
@@ -48,9 +50,11 @@ def get_times_skfp(X: np.ndarray, transformer_cls: type, **kwargs) -> np.ndarray
                 print(f" - - - - repeat : {i}/{N_REPEATS - 1}")
                 # select random molecules - data_fraction part of the dataset
                 start = time()
-                transformer = transformer_cls(n_jobs=n_jobs, batch_size=1, **kwargs)
+                transformer = transformer_cls(n_jobs=n_jobs, **kwargs)
                 _ = transformer.transform(X[:idx])
                 end = time()
+                gc.collect()
+                sleep(10)
                 times.append(end - start)
             result.append(np.mean(times))
 
@@ -119,9 +123,6 @@ def make_combined_plot(
     ax1 = fig.add_subplot()
     fp_names = [fp.__name__.removesuffix("Fingerprint") for fp in fingerprints]
 
-    fp_names = fp_names[::-1]
-    times = times[::-1]
-
     if type == "time":
         file_name = "times_of_sequential_computation"
         ax1.set_xlabel("Time of computation")
@@ -130,11 +131,12 @@ def make_combined_plot(
         ax1.barh(fp_names, times_to_plot, color="skyblue")
     elif type == "speedup":
         file_name = f"speedup_for_{MAX_CORES}_cores"
-        ax1.set_xlabel("Speedup")
+        plt.xticks(np.arange(0, 17))
+        ax1.axvline(x=1, linestyle="dashed")
+        ax1.set_xlabel("speedup")
         ax1.set_title("Speedup")
         times_to_plot = [time[0, -1] / time[-1, -1] for time in times]
         ax1.barh(fp_names, times_to_plot, color="skyblue")
-        ax1.xaxis.set_major_locator(MultipleLocator(1))
     elif type == "fps_per_second":
         file_name = "fingerprints_per_second_sequential"
         ax1.set_xlabel("Fingerprints per second")
@@ -170,7 +172,7 @@ if __name__ == "__main__":
     else:
         X = dataset["smiles"][:10000]
         X = MolFromSmilesTransformer().transform(X)
-        X = ConformerGenerator(n_jobs=-1, error_on_gen_fail=False).transform(X)
+        X = ConformerGenerator(n_jobs=-1, errors="filter").transform(X)
         X = np.array(X)
         np.save("mols_with_conformers.npy", X, allow_pickle=True)
 
@@ -179,37 +181,36 @@ if __name__ == "__main__":
     print(f"Number of molecules : {n_molecules}")
 
     fingerprints = [
-        AtomPairFingerprint,
-        AutocorrFingerprint,
-        AvalonFingerprint,
-        E3FPFingerprint,
-        ECFPFingerprint,
-        ERGFingerprint,
-        EStateFingerprint,
-        FunctionalGroupsFingerprint,
-        # GETAWAYFingerprint,
-        GhoseCrippenFingerprint,
-        KlekotaRothFingerprint,
-        LaggnerFingerprint,
-        LayeredFingerprint,
-        LingoFingerprint,
-        MACCSFingerprint,
-        MAPFingerprint,
-        MHFPFingerprint,
-        MordredFingerprint,
-        MORSEFingerprint,
-        MQNsFingerprint,
-        PatternFingerprint,
-        PharmacophoreFingerprint,
-        PhysiochemicalPropertiesFingerprint,
-        PubChemFingerprint,
-        RDFFingerprint,
-        RDKitFingerprint,
-        SECFPFingerprint,
-        TopologicalTorsionFingerprint,
-        USRFingerprint,
-        USRCATFingerprint,
-        WHIMFingerprint,
+        fps.AtomPairFingerprint,
+        fps.AutocorrFingerprint,
+        fps.AvalonFingerprint,
+        fps.E3FPFingerprint,
+        fps.ECFPFingerprint,
+        fps.ERGFingerprint,
+        fps.EStateFingerprint,
+        fps.FunctionalGroupsFingerprint,
+        fps.GETAWAYFingerprint,
+        fps.GhoseCrippenFingerprint,
+        fps.KlekotaRothFingerprint,
+        fps.LaggnerFingerprint,
+        fps.LayeredFingerprint,
+        fps.LingoFingerprint,
+        fps.MACCSFingerprint,
+        fps.MAPFingerprint,
+        fps.MHFPFingerprint,
+        fps.MordredFingerprint,
+        fps.MORSEFingerprint,
+        fps.PatternFingerprint,
+        fps.PharmacophoreFingerprint,
+        fps.PhysiochemicalPropertiesFingerprint,
+        fps.PubChemFingerprint,
+        fps.RDFFingerprint,
+        fps.RDKitFingerprint,
+        fps.SECFPFingerprint,
+        fps.TopologicalTorsionFingerprint,
+        fps.USRFingerprint,
+        fps.USRCATFingerprint,
+        fps.WHIMFingerprint,
     ]
 
     all_times = []
@@ -223,20 +224,15 @@ if __name__ == "__main__":
             np.save(fingerprint_save_path, times)
         else:
             times = np.load(fingerprint_save_path)[: len(N_CORES)]
-        all_times.append(times)
-
-        if fingerprint.__name__ == "PharmacophoreFingerprint":
-            continue
-
-        print(fingerprint.__name__)
         for plot_type in PLOT_TYPES:
             make_plot(
                 plot_type=plot_type,
                 n_molecules=n_molecules,
                 times=times,
-                title=fingerprint.__name__.removesuffix("Fingerprint"),
+                title=fingerprint.__name__,
                 save=True,
             )
+        all_times.append(times)
 
     for plot_type in PLOT_TYPES:
         make_combined_plot(

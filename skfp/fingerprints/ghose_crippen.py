@@ -69,11 +69,12 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
     >>> fp
     GhoseCrippenFingerprint()
 
-    >>> fp.transform(smiles)
+    >>> fp.transform(smiles)  # doctest: +ELLIPSIS
     array([[0, 0, 0, ..., 0, 0, 0],
            [0, 1, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
-           [0, 1, 0, ..., 0, 0, 0]], dtype=uint8)
+           [0, 1, 0, ..., 0, 0, 0]],
+          dtype=uint8)
     """
 
     def __init__(

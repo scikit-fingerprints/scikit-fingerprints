@@ -47,3 +47,11 @@ def test_usrcat_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
     assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
     assert np.issubdtype(X_skfp.dtype, np.floating)
     assert np.array_equal(y_skfp, y_rdkit)
+
+
+def test_usrcat_ignore_errors(mols_conformers_list, mols_conformers_3_plus_atoms):
+    usr_fp = USRCATFingerprint(errors="ignore", n_jobs=-1)
+    X_skfp = usr_fp.transform(mols_conformers_list)
+    X_skfp_3_plus_atoms = usr_fp.transform(mols_conformers_3_plus_atoms)
+
+    assert np.allclose(X_skfp, X_skfp_3_plus_atoms)

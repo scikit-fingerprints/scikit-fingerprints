@@ -8,8 +8,9 @@ This is the class and function reference of scikit-fingerprints.
     :maxdepth: 2
 
     bases
+    datasets
     fingerprints
+    metrics
+    model_selection
     preprocessing
-
-
-
+    utils

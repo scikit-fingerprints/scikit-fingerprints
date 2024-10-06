@@ -7,7 +7,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 class EStateFingerprint(BaseFingerprintTransformer):
@@ -71,7 +71,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
         J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
         <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
 
-    .. [2] `Greg Landrum and Rational Discovery LLC
+    .. [2] `Gregory Landrum and Rational Discovery LLC
         RDKit - EState Atom Types
         <https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/EState/AtomTypes.py>`_
 
@@ -83,11 +83,12 @@ class EStateFingerprint(BaseFingerprintTransformer):
     >>> fp
     EStateFingerprint()
 
-    >>> fp.transform(smiles)
-    array([[0., 0., 0., ..., 0., 0., 0.],
-           [0., 0., 0., ..., 0., 0., 0.],
-           [0., 0., 0., ..., 0., 0., 0.],
-           [0., 0., 0., ..., 0., 0., 0.]])
+    >>> fp.transform(smiles)  # doctest: +ELLIPSIS
+    array([[0.        , 0.        , ..., 0.        , 0.        ],
+           [0.        , 0.        , ..., 0.        , 0.        ],
+           [0.        , 0.        , ..., 0.        , 0.        ],
+           [0.        , 0.        , ..., 0.        , 0.        ]])
+
     """
 
     _parameter_constraints: dict = {

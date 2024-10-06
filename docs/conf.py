@@ -12,9 +12,11 @@ author = "scikit-fingerprints developers"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
     "sphinx.ext.duration",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
+    "sphinx_copybutton",
 ]
 
 autodoc_default_options = {
@@ -37,3 +39,16 @@ intersphinx_mapping = {
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = "pydata_sphinx_theme"
+
+copybutton_exclude = ".linenos, .gp, .go"
+
+html_theme_options = {
+    "header_links_before_dropdown": 2,
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/scikit-fingerprints/scikit-fingerprints",
+            "icon": "fa-brands fa-github",
+        },
+    ],
+}

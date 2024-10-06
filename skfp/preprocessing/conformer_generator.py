@@ -24,8 +24,7 @@ from rdkit.ForceField import ForceField
 from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BasePreprocessor
-from skfp.utils.parallel import run_in_parallel
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols, run_in_parallel
 
 
 class ConformerGenerator(BasePreprocessor):
@@ -128,17 +127,13 @@ class ConformerGenerator(BasePreprocessor):
 
     >>> mol_from_smiles = MolFromSmilesTransformer()
     >>> mols = mol_from_smiles.transform(smiles)
-    >>> conf_gen.transform(mols)
-    [<rdkit.Chem.rdchem.Mol,
-    <rdkit.Chem.rdchem.Mol,
-    <rdkit.Chem.rdchem.Mol,
-    <rdkit.Chem.rdchem.Mol]
+    >>> conf_gen.transform(mols) # doctest: +ELLIPSIS
+    [<rdkit.Chem.PropertyMol.PropertyMol...>, ..., <rdkit.Chem.PropertyMol.PropertyMol...>]
     """
 
     _parameter_constraints: dict = {
         "num_conformers": [Interval(Integral, 1, None, closed="left")],
         "max_gen_attempts": [Interval(Integral, 1, None, closed="left")],
-        "error_on_conf_gen_fail": ["boolean"],
         "optimize_force_field": [StrOptions({"UFF", "MMFF94", "MMFF94s"}), None],
         "multiple_confs_select": [StrOptions({"min_energy", "first"})],
         "errors": [StrOptions({"raise", "ignore", "filter"})],

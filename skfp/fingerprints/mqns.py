@@ -6,7 +6,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 class MQNsFingerprint(BaseFingerprintTransformer):
@@ -93,11 +93,12 @@ class MQNsFingerprint(BaseFingerprintTransformer):
     >>> fp
     MQNsFingerprint()
 
-    >>> fp.transform(smiles)
+    >>> fp.transform(smiles)  # doctest: +ELLIPSIS
     array([[0, 0, 0, ..., 0, 0, 0],
            [2, 0, 0, ..., 0, 0, 0],
            [1, 0, 0, ..., 0, 0, 0],
-           [2, 0, 0, ..., 0, 0, 0]], dtype=uint32)
+           [2, 0, 0, ..., 0, 0, 0]],
+          dtype=uint32)
     """
 
     def __init__(

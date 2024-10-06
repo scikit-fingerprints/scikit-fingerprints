@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 class AvalonFingerprint(BaseFingerprintTransformer):
@@ -55,8 +55,8 @@ class AvalonFingerprint(BaseFingerprintTransformer):
 
     References
     ----------
-    .. [1] Avalon toolkit
-        https://sourceforge.net/projects/avalontoolkit/
+    .. [1] `Avalon toolkit
+        <https://sourceforge.net/projects/avalontoolkit/>`_
 
     .. [2] `Gedeck, Peter, Bernhard Rohde, and Christian Bartels
         "QSAR − How Good Is It in Practice? Comparison of Descriptor Sets on an Unbiased
@@ -72,9 +72,9 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     >>> fp
     AvalonFingerprint()
     >>> X = fp.transform(smiles)
-    >>> X
+    >>> X  # doctest: +ELLIPSIS
     array([[0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0]])
+           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
     """
 
     _parameter_constraints: dict = {

@@ -1,4 +1,4 @@
-"""This module contains the fingerprint classes for generating molecular fingerprints."""
+"""Classes for computing molecular fingerprints."""
 
 from .atom_pair import AtomPairFingerprint
 from .autocorr import AutocorrFingerprint
@@ -25,7 +25,8 @@ from .pharmacophore import PharmacophoreFingerprint
 from .physiochemical_properties import PhysiochemicalPropertiesFingerprint
 from .pubchem import PubChemFingerprint
 from .rdf import RDFFingerprint
-from .rdk import RDKitFingerprint
+from .rdkit_2d_desc import RDKit2DDescriptorsFingerprint
+from .rdkit_fp import RDKitFingerprint
 from .secfp import SECFPFingerprint
 from .topological_torsion import TopologicalTorsionFingerprint
 from .usr import USRFingerprint

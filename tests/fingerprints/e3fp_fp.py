@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 import scipy.sparse
+from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.fingerprints import E3FPFingerprint
 
@@ -58,3 +60,9 @@ def test_e3fp_sparse_count_fingerprint(mols_conformers_list):
     assert X_skfp.shape == (len(mols_conformers_list), e3fp_fp.fp_size)
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
+
+
+def test_wrong_n_bits_before_folding(mols_conformers_list):
+    e3fp_fp = E3FPFingerprint(fp_size=2048, n_bits_before_folding=1024)
+    with pytest.raises(InvalidParameterError):
+        e3fp_fp.transform(mols_conformers_list)

@@ -1,13 +1,15 @@
 repos:
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.8
+    rev: 1.7.9
     hooks:
       - id: bandit
         # turn off assert errors for tests
         exclude: ^tests/
         args:
-          - -s
+          - --skip
           - B101
+          - --skip
+          - B311
 
   - repo: https://github.com/psf/black
     rev: 24.4.2
@@ -15,11 +17,9 @@ repos:
       - id: black
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
-        # TODO: refactor this directory and then enable
-        exclude: ^benchmarking
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
@@ -37,22 +37,35 @@ repos:
         language: system
         pass_filenames: false
 
-  - repo: local
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.3
     hooks:
-      - id: poetry-plugin-sort
-        name: poetry-plugin-sort
-        entry: poetry sort
-        language: system
-        pass_filenames: false
+      - id: python-safety-dependencies-check
+        files: pyproject.toml
+        args: ["--groups=dev", "--short-report", "--disable-optional-telemetry"]
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         args: [ "--py39-plus" ]
 
-  - repo: https://github.com/yunojuno/pre-commit-xenon
-    rev: v0.1
+  # we use local Xenon instead of pre-commit hook, because:
+  # - it seems to have bugs related to "ignore" and "exclude" options
+  # - we need separate configs for main library and skfp, since tests have higher
+  #   complexity, many moderately long functions mess up cyclomatic complexity
+  - repo: local
     hooks:
-      - id: xenon
-        args: [ "--max-average=B", "--max-modules=B", "--max-absolute=C" ]
+      - id: xenon_skfp
+        name: xenon_skfp
+        entry: poetry run xenon skfp --max-average=B --max-modules=B --max-absolute=C
+        language: system
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: xenon_tests
+        name: xenon_tests
+        entry: poetry run xenon tests --max-average=B --max-modules=C --max-absolute=C
+        language: system
+        pass_filenames: false

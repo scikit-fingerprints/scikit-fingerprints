@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
@@ -82,7 +82,7 @@ class TopologicalTorsionFingerprint(BaseFingerprintTransformer):
         J. Chem. Inf. Comput. Sci. 1987, 27, 82-85
         <https://pubs.acs.org/doi/10.1021/ci00054a008>`_
 
-    .. [2] `Greg Landrum
+    .. [2] `Gregory Landrum
         "Simulating count fingerprints"
         RDKit blog 2021
         <https://greglandrum.github.io/rdkit-blog/posts/2021-07-06-simulating-counts.html>`_

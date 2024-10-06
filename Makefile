@@ -5,14 +5,16 @@ setup: ## Install development dependencies, pre-commit hooks and poetry plugin
 	# check if poetry is installed
 	poetry --version || (echo "Poetry is not installed. Please install it from https://python-poetry.org/docs/#installation" && exit 1)
 	poetry install --with dev,doc --sync
-	poetry self add poetry-plugin-sort
+	poetry self add poetry-plugin-export
 	poetry run pre-commit install
 
 docs: ## Re-generate documentation
 	-rm -r docs/modules/generated
-	poetry run $(MAKE) -C docs clean html
+	poetry run $(MAKE) -C docs clean html doctest
 
 test: ## Run tests
+	poetry run black . --check --diff
+	poetry run isort . --check-only --profile black
 	poetry run pytest tests
 
 test-coverage: ## Run tests and calculate test coverage

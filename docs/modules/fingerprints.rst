@@ -4,7 +4,6 @@ Fingerprints
 
 .. automodule:: skfp.fingerprints
 
-:mod: `skfp.fingerprints`: Fingerprint generation classes
 =========================================================
 
 .. py:currentmodule:: skfp.fingerprints
@@ -29,6 +28,7 @@ Fingerprints
     MACCSFingerprint
     MAPFingerprint
     MHFPFingerprint
+    MordredFingerprint
     MORSEFingerprint
     MQNsFingerprint
     PatternFingerprint
@@ -42,4 +42,3 @@ Fingerprints
     USRFingerprint
     USRCATFingerprint
     WHIMFingerprint
-

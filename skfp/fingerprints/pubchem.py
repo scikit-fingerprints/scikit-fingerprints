@@ -7,7 +7,7 @@ from rdkit.Chem import GetSymmSSSR, Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import ensure_mols
+from skfp.utils import ensure_mols
 
 
 class PubChemFingerprint(BaseFingerprintTransformer):
@@ -58,11 +58,11 @@ class PubChemFingerprint(BaseFingerprintTransformer):
 
     References
     ----------
-    .. [1] PubChem Substructure Fingerprint
-        https://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt
+    .. [1] `PubChem Substructure Fingerprint
+        <https://ftp.ncbi.nlm.nih.gov/pubchem/specifications/pubchem_fingerprints.txt>`_
 
-    .. [2] Chemistry Development Kit (CDK) PubchemFingerprinter
-        https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/PubchemFingerprinter.html
+    .. [2] `Chemistry Development Kit (CDK) PubchemFingerprinter
+        <https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/PubchemFingerprinter.html>`_
 
     .. [3] `Andrew Dalke
         "Implementing the CACTVS/PubChem substructure keys"
@@ -413,13 +413,13 @@ class PubChemFingerprint(BaseFingerprintTransformer):
 
             stats["size"] += 1
             stats["aromatic"] &= aromatic
-            stats["saturated_or_aromatic"] &= single | aromatic
-            stats["unsaturated_and_non_aromatic"] &= ~single & ~aromatic
-            stats["carbon_only"] &= (atom_1_type == "C") & (atom_2_type == "C")
-            stats["has_nitrogen"] |= (atom_1_type == "N") | (atom_2_type == "N")
-            stats["has_heteroatom"] |= (atom_1_type == "C") | (atom_2_type == "H")
+            stats["saturated_or_aromatic"] &= single or aromatic
+            stats["unsaturated_and_non_aromatic"] &= not single and not aromatic
+            stats["carbon_only"] &= (atom_1_type == "C") and (atom_2_type == "C")
+            stats["has_nitrogen"] |= (atom_1_type == "N") or (atom_2_type == "N")
+            stats["has_heteroatom"] |= (atom_1_type == "C") or (atom_2_type == "H")
 
-        stats["hetero_aromatic"] = ~stats["carbon_only"] & stats["aromatic"]
+        stats["hetero_aromatic"] = not stats["carbon_only"] and stats["aromatic"]
 
         return stats
 

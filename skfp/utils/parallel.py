@@ -83,7 +83,7 @@ def run_in_parallel(
 
     Examples
     --------
-    >>> from skfp.parallel import run_in_parallel
+    >>> from skfp.utils import run_in_parallel
     >>> func = lambda X: [x + 1 for x in X]
     >>> data = list(range(10))
     >>> run_in_parallel(func, data, n_jobs=-1, batch_size=1)

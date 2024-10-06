@@ -13,7 +13,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils.validators import require_mols_with_conf_ids
+from skfp.utils import require_mols_with_conf_ids
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
@@ -152,7 +152,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
         verbose: int = 0,
-        random_state: int = 0,
+        random_state: Optional[int] = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
