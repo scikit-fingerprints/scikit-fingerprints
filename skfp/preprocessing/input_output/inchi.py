@@ -113,7 +113,7 @@ class MolToInchiTransformer(BasePreprocessor):
     Examples
     --------
     >>> from skfp.preprocessing import MolFromInchiTransformer, MolToInchiTransformer
-    >>> inchi_list = ["1S/H2O/h1H2", "1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3"]
+    >>> inchi_list = ["InChI=1S/H2O/h1H2", "InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3"]
     >>> mol_from_inchi = MolFromInchiTransformer()
     >>> mol_to_inchi = MolToInchiTransformer()
     >>> mol_to_inchi
@@ -121,7 +121,7 @@ class MolToInchiTransformer(BasePreprocessor):
 
     >>> mols = mol_from_inchi.transform(inchi_list)
     >>> mol_to_inchi.transform(mols)
-    ["1S/H2O/h1H2", "1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3"]
+    ['InChI=1S/H2O/h1H2', 'InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3']
     """
 
     def __init__(

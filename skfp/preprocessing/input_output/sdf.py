@@ -38,9 +38,9 @@ class MolFromSDFTransformer(BasePreprocessor):
     Examples
     --------
     >>> from skfp.preprocessing import MolFromSDFTransformer
-    >>> sdf_file_path = "mols.sdf"
-    >>> mol_from_sdf = MolFromSDFTransformer()
-    >>> mol_from_sdf
+    >>> sdf_file_path = "mols_in.sdf"
+    >>> mol_from_sdf = MolFromSDFTransformer()  # doctest: +SKIP
+    >>> mol_from_sdf  # doctest: +SKIP
     MolFromSDFTransformer()
 
     >>> mol_from_sdf.transform(sdf_file_path)  # doctest: +SKIP
@@ -96,7 +96,7 @@ class MolToSDFTransformer(BasePreprocessor):
 
     Parameters
     ----------
-    filepath : string
+    filepath : string, default="mols.sdf"
         A string with file path location to save the SDF file. Tt should be a valid
         file path with ``.sdf`` extention.
 
@@ -114,14 +114,14 @@ class MolToSDFTransformer(BasePreprocessor):
     Examples
     --------
     >>> from skfp.preprocessing import MolFromSDFTransformer, MolToSDFTransformer
-    >>> sdf_file_path = "mols.sdf"
+    >>> sdf_file_path = "mols_in.sdf"
     >>> mol_from_sdf = MolFromSDFTransformer()
     >>> mol_to_sdf = MolToSDFTransformer(filepath="mols_out.sdf")
     >>> mol_to_sdf
-    MolToSDFTransformer()
+    MolToSDFTransformer(filepath='mols_out.sdf')
 
-    >>> mols = mol_from_sdf.transform(sdf_file_path)
-    >>> mol_to_sdf.transform(mols)
+    >>> mols = mol_from_sdf.transform(sdf_file_path)  # doctest: +SKIP
+    >>> mol_to_sdf.transform(mols)  # doctest: +SKIP
     """
 
     _parameter_constraints: dict = {
@@ -132,7 +132,7 @@ class MolToSDFTransformer(BasePreprocessor):
 
     def __init__(
         self,
-        filepath: str,
+        filepath: str = "mols.sdf",
         kekulize: bool = True,
         force_V3000: bool = False,
     ):
