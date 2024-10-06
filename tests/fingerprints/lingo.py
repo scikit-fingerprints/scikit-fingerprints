@@ -111,4 +111,4 @@ def _load_lingo_data_file(count: bool, sparse: bool) -> Union[np.ndarray, csr_ar
     elif curr_dir.endswith("fingerprints"):
         return loader(os.path.join("data", filename))
     else:
-        raise FileNotFoundError("File hiv_mol.csv.zip not found")
+        raise FileNotFoundError(f"File {filename} not found")

@@ -26,8 +26,10 @@ from .filters import (
 )
 from .input_output import (
     MolFromInchiTransformer,
+    MolFromSDFTransformer,
     MolFromSmilesTransformer,
     MolToInchiTransformer,
+    MolToSDFTransformer,
     MolToSmilesTransformer,
 )
 from .standardization import MolStandardizer
