@@ -4,6 +4,7 @@ from functools import partial
 
 import numpy as np
 import pytest
+from preprocessing.input_output.sdf import _get_sdf_file_path
 from sklearn import clone
 from sklearn.utils._testing import create_memmap_backed_data, set_random_state
 from sklearn.utils.estimator_checks import (
@@ -20,6 +21,7 @@ import skfp.fingerprints
 import skfp.preprocessing
 from skfp.bases import BaseFilter
 from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
+from skfp.preprocessing import MolFromSDFTransformer
 
 """
 Note that many check functions here needed to be copied from Scikit-learn and
@@ -70,8 +72,14 @@ def test_basic_sklearn_checks_for_preprocessors(
     global X, y
     y = np.arange(n_samples) % 2
 
-    if "MolFromSmiles" in preproc_name:
+    # skip MolToSDFTransformer - it has slightly different API
+    if preproc_name == "MolToSDFTransformer":
+        return
+
+    if preproc_name in {"MolFromSmilesTransformer", "MolFromInchiTransformer"}:
         X = smallest_smiles_list[:n_samples]
+    elif preproc_name == "MolFromSDFTransformer":
+        X = _get_sdf_file_path("mol_in.sdf")
     else:
         X = smallest_mols_list[:n_samples]
 
@@ -138,7 +146,11 @@ def check_estimators_pickle(
     check_methods = ["predict", "transform", "decision_function", "predict_proba"]
 
     # nondeterministic, classes, those that cannot be compares with NumPy etc.
-    omit_results_check = ["GETAWAYFingerprint", "ConformerGenerator"]
+    omit_results_check = [
+        "GETAWAYFingerprint",
+        "ConformerGenerator",
+        "MolToSDFTransformer",
+    ]
 
     estimator = clone(estimator_orig)
 
@@ -182,5 +194,7 @@ def check_transformers_unfitted_stateless(
 
     if issubclass(transformer.__class__, BaseFilter):
         assert len(X_trans) <= len(X)
+    elif isinstance(transformer, MolFromSDFTransformer):
+        assert len(X_trans) > 0
     else:
         assert len(X) == len(X_trans)
