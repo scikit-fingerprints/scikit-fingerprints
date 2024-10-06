@@ -7,15 +7,16 @@ from skfp.bases.base_filter import BaseFilter
 
 class RuleOfVeber(BaseFilter):
     """
-    Rule of Veber
+    Rule of Veber.
 
-    Rule designed to look for molecules that are likely to exhibit
-    good oral bioavailability. Described in [1]_.
+    The rule is designed to identify molecules likely to exhibit good oral
+    bioavailability, based on the number of rotatable bonds and the topological
+    polar surface area (TPSA) [1]_.
 
     Molecule must fulfill conditions:
 
-    - number of rotatable bonds >= 10
-    - polar surface area (PSA) >= 140
+    - number of rotatable bonds <= 10
+    - TPSA <= 140
 
     Parameters
     ----------
@@ -46,18 +47,18 @@ class RuleOfVeber(BaseFilter):
     Examples
     ----------
     >>> from skfp.preprocessing import RuleOfVeber
-    >>> smiles = ["[C-]#N", "CC=O", "CC(C)[C@@H](CC1=CC(=C(C=C1)OC)OCCCOC)C[C@@H]([C@H](C[C@@H](C(C)C)C(=O)NCC(C)(C)C(=O)N)O)N"] # noqa: E501
+    >>> smiles = ["CC=O", "CC(C)[C@@H](CC1=CC(=C(C=C1)OC)OCCCOC)C[C@@H]([C@H](C[C@@H](C(C)C)C(=O)NCC(C)(C)C(=O)N)O)N"]
     >>> filt = RuleOfVeber()
     >>> filt
     RuleOfVeber()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ["[C-]#N", "CC=O"]
+    ["CC=O"]
     """
 
     def __init__(
         self,
-        allow_one_violation: bool = True,
+        allow_one_violation: bool = False,
         return_indicators: bool = False,
         n_jobs: Union[int, None] = None,
         batch_size: Union[int, None] = None,
@@ -66,17 +67,16 @@ class RuleOfVeber(BaseFilter):
         super().__init__(
             allow_one_violation, return_indicators, n_jobs, batch_size, verbose
         )
-        self.max_rotatable_bonds = 10
-        self.max_psa = 140.0
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
-        num_rotatable_bonds: int = rdMolDescriptors.CalcNumRotatableBonds(mol)
-        psa: float = rdMolDescriptors.CalcTPSA(mol)
+        rules = [
+            rdMolDescriptors.CalcNumRotatableBonds(mol) <= 10,
+            rdMolDescriptors.CalcTPSA(mol) <= 140.0,
+        ]
 
-        passes_rotatable_bonds = num_rotatable_bonds <= self.max_rotatable_bonds
-        passes_psa = psa <= self.max_psa
+        passed_rules = sum(rules)
 
         if self.allow_one_violation:
-            return passes_rotatable_bonds or passes_psa
-
-        return passes_rotatable_bonds and passes_psa
+            return passed_rules >= len(rules) - 1
+        else:
+            return passed_rules == len(rules)

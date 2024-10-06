@@ -32,15 +32,15 @@ def test_mols_passing_rule_of_veber(smiles_passing_rule_of_veber):
     assert len(smiles_filtered) == len(smiles_passing_rule_of_veber)
 
 
-def test_mols_partially_passing(smiles_passing_one_fail):
-    mol_filter = RuleOfVeber()
+def test_mols_partially_passing_rule_of_veber(smiles_passing_one_fail):
+    mol_filter = RuleOfVeber(allow_one_violation=True)
     smiles_filtered = mol_filter.transform(smiles_passing_one_fail)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_one_fail)
 
 
 def test_mols_failling_rule_of_veber(smiles_failing_rule_of_veber):
-    mol_filter = RuleOfVeber(allow_one_violation=False)
+    mol_filter = RuleOfVeber()
     smiles_filtered = mol_filter.transform(smiles_failing_rule_of_veber)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == 0
@@ -78,7 +78,7 @@ def test_rule_of_veber_return_indicators(
     assert np.array_equal(filter_indicators, expected_indicators)
 
 
-def test_rule_of_two_parallel(smiles_list):
+def test_rule_of_veber_parallel(smiles_list):
     mol_filter = RuleOfVeber()
     mols_filtered_sequential = mol_filter.transform(smiles_list)
 
