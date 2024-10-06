@@ -53,7 +53,7 @@ class RuleOfVeber(BaseFilter):
     RuleOfVeber()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ["CC=O"]
+    ['CC=O']
     """
 
     def __init__(
