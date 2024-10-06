@@ -98,6 +98,9 @@ source = "git-tag"
 [tool.pytest.ini_options]
 python_files = "*.py"
 
+[tool.black]
+line-length = 88
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

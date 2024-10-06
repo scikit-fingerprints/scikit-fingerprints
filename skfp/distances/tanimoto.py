@@ -29,7 +29,7 @@ def tanimoto_binary_similarity(
 
         sim(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
 
-    The calculated similarity falls within the explicit range `[0, 1]`.
+    The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
@@ -118,7 +118,7 @@ def tanimoto_binary_distance(
 
         dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
 
-    The calculated distance falls within the range `[0, 1]`.
+    The calculated distance falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a distance of 0.
 
     Parameters
@@ -132,7 +132,7 @@ def tanimoto_binary_distance(
     Returns
     ----------
     distance : float
-        Tanimoto distance between vec_a and vec_b.
+        Tanimoto distance between ``vec_a`` and ``vec_b``.
 
     Examples
     ----------
