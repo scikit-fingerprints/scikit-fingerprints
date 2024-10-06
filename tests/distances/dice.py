@@ -6,7 +6,25 @@ import sklearn.neighbors
 from scipy import sparse
 from scipy.sparse import csr_array
 
-from skfp.distances.dice import dice_binary_distance, dice_binary_similarity
+from skfp.distances.dice import (
+    dice_binary_distance,
+    dice_binary_similarity,
+    dice_count_distance,
+    dice_count_similarity,
+)
+
+
+@pytest.mark.parametrize(
+    "vec_a, vec_b, expected_similarity",
+    [
+        (np.array([1, 2, 3, 4]), np.array([1, 2, 3, 4]), 1.0),
+        (np.array([1, 2, 3, 4]), np.array([0, 0, 0, 0]), 0.0),
+        (np.array([0, 0, 0, 0]), np.array([0, 0, 0, 0]), 1.0),
+        (np.array([0, 1, 0, 0]), np.array([0, 0, 2, 3]), 0.0),
+    ],
+)
+def test_dice_count_numpy(vec_a, vec_b, expected_similarity):
+    assert dice_count_similarity(vec_a, vec_b) == expected_similarity
 
 
 @pytest.mark.parametrize(
@@ -14,6 +32,8 @@ from skfp.distances.dice import dice_binary_distance, dice_binary_similarity
     [
         (np.zeros, dice_binary_similarity),
         (np.ones, dice_binary_similarity),
+        (np.zeros, dice_count_similarity),
+        (np.ones, dice_count_similarity),
     ],
 )
 @pytest.mark.parametrize("matrix_type", ["numpy", "scipy"])
@@ -40,13 +60,34 @@ def test_dice_similarity(data_type, similarity_function, matrix_type):
         (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), "<"),
     ],
 )
-def test_binary_dice_against_threshold(vec_a, vec_b, expected_comparison):
+def test_dice_binary_against_threshold(vec_a, vec_b, expected_comparison):
     threshold = 0.5
     similarity = dice_binary_similarity(vec_a, vec_b)
 
     if expected_comparison == "==":
         assert similarity == threshold
     elif expected_comparison == ">":
+        assert similarity > threshold
+    elif expected_comparison == "<":
+        assert similarity < threshold
+
+
+@pytest.mark.parametrize(
+    "vec_a, vec_b, expected_comparison",
+    [
+        (np.array([1, 1, 0, 1]), np.array([1, 0, 1, 1]), "=="),
+        (np.array([1, 0, 3, 0]), np.array([1, 0, 3, 0]), ">"),
+        (np.array([1, 7, 3, 9]), np.array([1, 1, 6, 0]), "<"),
+        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 0, 1]]), "=="),
+        (csr_array([[1, 0, 3, 0]]), csr_array([[1, 0, 3, 0]]), ">"),
+        (csr_array([[1, 7, 3, 9]]), csr_array([[1, 1, 6, 0]]), "<"),
+    ],
+)
+def test_dice_count_against_threshold(vec_a, vec_b, expected_comparison):
+    threshold = 0.5
+    similarity = dice_count_similarity(vec_a, vec_b)
+
+    if expected_comparison == ">":
         assert similarity > threshold
     elif expected_comparison == "<":
         assert similarity < threshold
@@ -63,13 +104,34 @@ def test_binary_dice_against_threshold(vec_a, vec_b, expected_comparison):
         (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), ">"),
     ],
 )
-def test_binary_distance(
+def test_dice_binary_distance_against_threshold(
     vec_a,
     vec_b,
     expected_comparison,
 ):
     threshold = 0.5
     distance = dice_binary_distance(vec_a, vec_b)
+
+    if expected_comparison == "<":
+        assert distance < threshold
+    elif expected_comparison == ">":
+        assert distance > threshold
+
+
+@pytest.mark.parametrize(
+    "vec_a, vec_b, expected_comparison",
+    [
+        (np.array([1, 1, 0, 1]), np.array([1, 0, 1, 1]), "=="),
+        (np.array([1, 0, 3, 0]), np.array([1, 0, 3, 0]), "<"),
+        (np.array([1, 9, 0, 0]), np.array([11, 1, 4, 5]), ">"),
+        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 0, 1]]), "=="),
+        (csr_array([[1, 0, 3, 0]]), csr_array([[1, 0, 3, 0]]), "<"),
+        (csr_array([[1, 9, 0, 0]]), csr_array([[11, 1, 4, 5]]), ">"),
+    ],
+)
+def test_dice_count_distance_against_threshold(vec_a, vec_b, expected_comparison):
+    threshold = 0.5
+    distance = dice_count_distance(vec_a, vec_b)
 
     if expected_comparison == "<":
         assert distance < threshold
@@ -97,6 +159,30 @@ def test_sklearn_pairwise_compatible_binary(vec_a, vec_b):
             vec_a, vec_b, metric=dice_binary_distance
         )
         assert dice_binary_distance(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
+
+
+@pytest.mark.parametrize(
+    "vec_a, vec_b",
+    [
+        (np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
+        (csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
+    ],
+)
+def test_sklearn_pairwise_compatible_count(vec_a, vec_b):
+    if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+        vec_a = sparse.csr_array(vec_a)
+        vec_b = sparse.csr_array(vec_b)
+        sklearn_dist = sklearn.metrics.pairwise_distances(
+            vec_a, vec_b, metric=dice_count_distance
+        )
+        assert dice_count_distance(vec_a, vec_b) == sklearn_dist[0][0]
+    else:
+        vec_a = [vec_a]
+        vec_b = [vec_b]
+        sklearn_dist = sklearn.metrics.pairwise_distances(
+            vec_a, vec_b, metric=dice_count_distance
+        )
+        assert dice_count_distance(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
 
 
 @pytest.mark.parametrize(
@@ -131,6 +217,38 @@ def test_sklearn_nearest_neighbors_compatible_binary(vec_a, vec_b):
         assert dice_binary_distance(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
 
 
+@pytest.mark.parametrize(
+    "vec_a, vec_b",
+    [
+        (np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
+        (csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
+    ],
+)
+def test_sklearn_nearest_neighbors_compatible_count(vec_a, vec_b):
+    if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+        vec_a = sparse.csr_array(vec_a)
+        vec_b = sparse.csr_array(vec_b)
+
+        nn = sklearn.neighbors.NearestNeighbors(
+            n_neighbors=1, metric=dice_count_distance
+        )
+        nn.fit(vec_a)
+        sklearn_dist, _ = nn.kneighbors(vec_b)
+
+        assert dice_count_distance(vec_a, vec_b) == sklearn_dist[0][0]
+    else:
+        vec_a = [vec_a]
+        vec_b = [vec_b]
+
+        nn = sklearn.neighbors.NearestNeighbors(
+            n_neighbors=1, metric=dice_binary_distance
+        )
+        nn.fit(vec_a)
+        sklearn_dist, _ = nn.kneighbors(vec_b)
+
+        assert dice_binary_distance(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
+
+
 def test_binary_different_types_raise_error(binary_numpy_array, binary_csr_array):
     with pytest.raises(TypeError) as exc_info:
         dice_binary_similarity(binary_numpy_array, binary_csr_array)
@@ -139,4 +257,14 @@ def test_binary_different_types_raise_error(binary_numpy_array, binary_csr_array
     assert (
         "got <class 'numpy.ndarray'> and <class 'scipy.sparse._csr.csr_array'>"
         in str(exc_info)
+    )
+
+
+def test_count_different_types_raise_error(binary_numpy_array, binary_csr_array):
+    with pytest.raises(TypeError) as exc_info:
+        dice_count_similarity(binary_numpy_array, binary_csr_array)
+
+    assert "Both vec_a and vec_b must be of the same type," in str(exc_info)
+    assert "<class 'numpy.ndarray'> and <class 'scipy.sparse._csr.csr_array'>" in str(
+        exc_info
     )

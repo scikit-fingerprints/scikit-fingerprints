@@ -60,7 +60,7 @@ def test_tanimoto_similarity(data_type, similarity_function, matrix_type):
         (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), "<"),
     ],
 )
-def test_binary_against_threshold(vec_a, vec_b, expected_comparison):
+def test_tanimoto_binary_against_threshold(vec_a, vec_b, expected_comparison):
     threshold = 0.5
     similarity = tanimoto_binary_similarity(vec_a, vec_b)
 
@@ -104,7 +104,7 @@ def test_count_against_threshold(vec_a, vec_b, expected_comparison):
         (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), ">"),
     ],
 )
-def test_binary_distance(
+def test_tanimoto_binary_distance_against_threshold(
     vec_a,
     vec_b,
     expected_comparison,
@@ -129,7 +129,7 @@ def test_binary_distance(
         (csr_array([[1, 9, 0, 0]]), csr_array([[11, 1, 4, 5]]), ">"),
     ],
 )
-def test_count_distance(vec_a, vec_b, expected_comparison):
+def test_tanimoto_count_distance_against_threshold(vec_a, vec_b, expected_comparison):
     threshold = 0.5
     distance = tanimoto_count_distance(vec_a, vec_b)
 
