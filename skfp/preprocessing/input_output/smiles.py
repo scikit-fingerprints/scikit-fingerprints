@@ -4,7 +4,7 @@ from typing import Optional
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import ensure_mols, ensure_smiles
+from skfp.utils.validators import check_mols, check_strings
 
 
 class MolFromSmilesTransformer(BasePreprocessor):
@@ -36,10 +36,10 @@ class MolFromSmilesTransformer(BasePreprocessor):
     MolFromSmilesTransformer()
 
     >>> mol_from_smiles.transform(smiles)  # doctest: +SKIP
-        [<rdkit.Chem.rdchem.Mol object at ...>,
-         <rdkit.Chem.rdchem.Mol object at ...>,
-         <rdkit.Chem.rdchem.Mol object at ...>,
-         <rdkit.Chem.rdchem.Mol object at ...>]
+        [<rdkit.Chem.rdchem.Mol>,
+         <rdkit.Chem.rdchem.Mol>,
+         <rdkit.Chem.rdchem.Mol>,
+         <rdkit.Chem.rdchem.Mol>]
     """
 
     _parameter_constraints: dict = {
@@ -58,7 +58,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
     def transform(self, X: Sequence[str], copy: bool = False) -> list[Mol]:
         # no parallelization, too fast to benefit from it
         self._validate_params()
-        X = ensure_smiles(X)
+        check_strings(X)
         replacements = self.replacements if self.replacements else {}
         return [
             MolFromSmiles(smi, sanitize=self.sanitize, replacements=replacements)
@@ -96,9 +96,8 @@ class MolToSmilesTransformer(BasePreprocessor):
 
     References
     ----------
-    .. [1] `Gregory Landrum
-        "The RDKit Book: Molecular Sanitization"
-        <https://www.rdkit.org/docs/RDKit_Book.html#molecular-sanitization>`_
+    .. [1] `RDKit MolToSmiles documentation
+        <https://www.rdkit.org/docs/source/rdkit.Chem.rdmolfiles.html#rdkit.Chem.rdmolfiles.MolToSmiles>`_
 
     Examples
     --------
@@ -142,7 +141,7 @@ class MolToSmilesTransformer(BasePreprocessor):
     def transform(self, X: Sequence[Mol], copy: bool = False) -> list[str]:
         # no parallelization, too fast to benefit from it
         self._validate_params()
-        X = ensure_mols(X)
+        check_mols(X)
         return [
             MolToSmiles(
                 mol,

@@ -24,5 +24,10 @@ from .filters import (
     TiceHerbicidesFilter,
     TiceInsecticidesFilter,
 )
-from .mol_to_from_smiles import MolFromSmilesTransformer, MolToSmilesTransformer
+from .input_output import (
+    MolFromInchiTransformer,
+    MolFromSmilesTransformer,
+    MolToInchiTransformer,
+    MolToSmilesTransformer,
+)
 from .standardization import MolStandardizer

@@ -80,10 +80,10 @@ class MolStandardizer(BasePreprocessor):
     MolStandardizer()
 
     >>> standardizer.transform(smiles)  # doctest: +SKIP
-        [<rdkit.Chem.rdchem.Mol object at ...>,
-         <rdkit.Chem.rdchem.Mol object at ...>,
-         <rdkit.Chem.rdchem.Mol object at ...>,
-         <rdkit.Chem.rdchem.Mol object at ...>]
+        [<rdkit.Chem.rdchem.Mol>,
+         <rdkit.Chem.rdchem.Mol>,
+         <rdkit.Chem.rdchem.Mol>,
+         <rdkit.Chem.rdchem.Mol>]
     """
 
     _parameter_constraints: dict = {
