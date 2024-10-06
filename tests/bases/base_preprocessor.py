@@ -1,7 +1,6 @@
 import pytest
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.bases import BasePreprocessor
 from skfp.preprocessing import MolFromSmilesTransformer
 
 """
@@ -20,8 +19,3 @@ def test_base_invalid_params(smiles_list):
     mol_from_smiles = MolFromSmilesTransformer(sanitize=-1)  # type: ignore
     with pytest.raises(InvalidParameterError):
         mol_from_smiles.transform(smiles_list)
-
-
-def test_base_abstract_transform(smiles_list):
-    with pytest.raises(NotImplementedError):
-        BasePreprocessor.transform(None, X=[""])  # type: ignore

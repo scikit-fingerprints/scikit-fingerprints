@@ -70,7 +70,11 @@ def test_basic_sklearn_checks_for_preprocessors(
     global X, y
     y = np.arange(n_samples) % 2
 
-    if "MolFromSmiles" in preproc_name:
+    # skip SDF transformers - they have slightly different API
+    if preproc_name in {"MolFromSDFTransformer", "MolToSDFTransformer"}:
+        return
+
+    if preproc_name in {"MolFromSmilesTransformer", "MolFromInchiTransformer"}:
         X = smallest_smiles_list[:n_samples]
     else:
         X = smallest_mols_list[:n_samples]

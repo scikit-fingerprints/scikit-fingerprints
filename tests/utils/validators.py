@@ -8,14 +8,17 @@ def test_ensure_mols(mols_list):
     ensure_mols(mols_list)
     with pytest.raises(ValueError) as exc_info:
         ensure_mols(mols_list + [1])
-    assert "either rdkit.Chem.rdChem.Mol or SMILES" in str(exc_info)
+
+    assert "Passed values must be one RDKit Mol objects" in str(exc_info)
 
 
 def test_ensure_mols_wrong_smiles():
     smiles_list = ["O", "O=N([O-])C1=C(CN=C1NCCSCc2ncccc2)Cc3ccccc3"]
     with pytest.raises(ValueError) as exc_info:
         ensure_mols(smiles_list)
-    assert f"Could not parse {smiles_list[-1]} as molecule" in str(exc_info)
+
+    assert "Could not parse" in str(exc_info)
+    assert "at index 1 as molecule" in str(exc_info)
 
 
 def test_ensure_mols_in_fingerprint():
@@ -23,7 +26,9 @@ def test_ensure_mols_in_fingerprint():
     fp = AtomPairFingerprint()
     with pytest.raises(ValueError) as exc_info:
         fp.transform(smiles_list)
-    assert f"Could not parse {smiles_list[-1]} as molecule" in str(exc_info)
+
+    assert "Could not parse" in str(exc_info)
+    assert "at index 1 as molecule" in str(exc_info)
 
 
 def test_ensure_smiles(smiles_list):
