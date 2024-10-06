@@ -90,6 +90,7 @@ optional = true
 
 [tool.poetry.group.eval.dependencies]
 lightgbm = "*"
+matplotlib = "*"
 ogb = "*"
 
 [tool.poetry-version-plugin]
