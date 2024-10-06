@@ -15,8 +15,10 @@ Reading and writing molecular formats:
     :toctree: generated/
 
     MolFromInchiTransformer
+    MolFromSDFTransformer
     MolFromSmilesTransformer
     MolToInchiTransformer
+    MolToSDFTransformer
     MolToSmilesTransformer
 
 Preprocessing classes:
