@@ -8,14 +8,26 @@ Preprocessing
 
 .. py:currentmodule:: skfp.preprocessing
 
+Reading and writing molecular formats:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    MolFromInchiTransformer
+    MolFromSmilesTransformer
+    MolToInchiTransformer
+    MolToSmilesTransformer
+
+Preprocessing classes:
+
 .. autosummary::
     :nosignatures:
     :toctree: generated/
 
     ConformerGenerator
-    MolFromSmilesTransformer
     MolStandardizer
-    MolToSmilesTransformer
+
 
 Molecular filters:
 
