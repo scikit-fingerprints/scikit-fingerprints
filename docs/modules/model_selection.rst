@@ -8,7 +8,7 @@ Model selection
 
 .. py:currentmodule:: skfp.model_selection
 
-Hyperparameter searching:
+Hyperparameter optimization:
 
 .. autosummary::
     :nosignatures:

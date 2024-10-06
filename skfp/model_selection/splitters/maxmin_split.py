@@ -57,13 +57,12 @@ def maxmin_train_test_split(
     compounds from a candidate pool. The original algorithm was introduced in [1]_,
     but here we use an optimized implementation by Roger Sayle [2]_ [3]_ [4]_.
 
-    It starts by vectorizing molecules with ECFP4 fingerprint. The first test molecule
-    is picked randomly. Each next one is selected to maximize the minimal distance to
-    the already selected molecules (hence the MaxMin name) [4]_, calculating and
-    recording the distances as required. This molecule is the most distant one to those
-    already picked, so is transferred to the picked set [3]_.
+    First, molecules are vectorized using binary ECFP4 fingerprint (radius 2) with
+    2048 bits. The first test molecule is picked randomly. Each next one is selected
+    to maximize the minimal distance to the already selected molecules (hence the
+    MaxMin name) [4]_. Distances are calculated on the fly as required.
 
-    First the test set is constructed, and training set are all other molecules.
+    First the test set is constructed, nd training set are all other molecules.
 
     The split fractions (train_size, test_size) must sum to 1.
 
@@ -118,7 +117,7 @@ def maxmin_train_test_split(
     )
 
     mols = ensure_mols(data)
-    fps = GetMorganGenerator().GetFingerprints(mols)
+    fps = GetMorganGenerator(radius=2, fpSize=2048).GetFingerprints(mols)
 
     picker = MaxMinPicker()
     test_idxs = picker.LazyBitVectorPick(
@@ -193,14 +192,13 @@ def maxmin_train_valid_test_split(
     compounds from a candidate pool. The original algorithm was introduced in [1]_,
     but here we use an optimized implementation by Roger Sayle [2]_ [3]_ [4]_.
 
-    It starts by vectorizing molecules with ECFP4 fingerprint. The first test molecule
-    is picked randomly. Each next one is selected to maximize the minimal distance to
-    the already selected molecules (hence the MaxMin name) [4]_, calculating and
-    recording the distances as required. This molecule is the most distant one to those
-    already picked, so is transferred to the picked set [3]_.
+    First, molecules are vectorized using binary ECFP4 fingerprint (radius 2) with
+    2048 bits. The first test molecule is picked randomly. Each next one is selected
+    to maximize the minimal distance to the already selected molecules (hence the
+    MaxMin name) [4]_. Distances are calculated on the fly as required.
 
-    First the test set is constructed, then the validation one, and training set
-    are all other molecules.
+    First the test set is constructed, then validation, and training set are all
+    other molecules.
 
     The split fractions (train_size, valid_size, test_size) must sum to 1.
 
@@ -264,7 +262,7 @@ def maxmin_train_valid_test_split(
         train_size, valid_size, test_size, len(data)
     )
     mols = ensure_mols(data)
-    fps = GetMorganGenerator().GetFingerprints(mols)
+    fps = GetMorganGenerator(radius=2, fpSize=2048).GetFingerprints(mols)
 
     picker = MaxMinPicker()
 
