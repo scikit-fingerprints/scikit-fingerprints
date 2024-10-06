@@ -40,7 +40,7 @@ class RuleOfVeber(BaseFilter):
     References
     -----------
     .. [1] `Veber, D.F, Johnson S. R., Cheng H., Smith B. R., Ward K. W. , Kopple K. D.
-        "Molecular properties that influence the oral bioavailability of drug candidates."
+        "Molecular Properties That Influence the Oral Bioavailability of Drug Candidates."
         J Med Chem. 2002 Jun 6;45(12):2615-23.
         <https://pubmed.ncbi.nlm.nih.gov/12036371/>`_
 
@@ -71,7 +71,7 @@ class RuleOfVeber(BaseFilter):
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
             rdMolDescriptors.CalcNumRotatableBonds(mol) <= 10,
-            rdMolDescriptors.CalcTPSA(mol) <= 140.0,
+            rdMolDescriptors.CalcTPSA(mol) <= 140,
         ]
 
         passed_rules = sum(rules)
