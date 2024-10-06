@@ -16,6 +16,7 @@ from .pfizer import PfizerFilter
 from .rule_of_four import RuleOfFour
 from .rule_of_three import RuleOfThree
 from .rule_of_two import RuleOfTwo
+from .rule_of_veber import RuleOfVeber
 from .surechembl import SureChEMBLFilter
 from .tice_herbicides import TiceHerbicidesFilter
 from .tice_insecticides import TiceInsecticidesFilter

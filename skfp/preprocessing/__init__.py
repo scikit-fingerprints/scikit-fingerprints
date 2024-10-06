@@ -20,6 +20,7 @@ from .filters import (
     RuleOfFour,
     RuleOfThree,
     RuleOfTwo,
+    RuleOfVeber,
     SureChEMBLFilter,
     TiceHerbicidesFilter,
     TiceInsecticidesFilter,
