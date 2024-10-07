@@ -6,6 +6,8 @@ from scipy.sparse import csr_array
 from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
 
+from .utils import _check_nan
+
 
 @validate_params(
     {
@@ -27,7 +29,7 @@ def tanimoto_binary_similarity(
 
         sim(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
 
-    The calculated similarity falls within the explicit range `[0, 1]`.
+    The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
@@ -116,7 +118,7 @@ def tanimoto_binary_distance(
 
         dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
 
-    The calculated distance falls within the range `[0, 1]`.
+    The calculated distance falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a distance of 0.
 
     Parameters
@@ -130,7 +132,7 @@ def tanimoto_binary_distance(
     Returns
     ----------
     distance : float
-        Tanimoto distance between vec_a and vec_b.
+        Tanimoto distance between ``vec_a`` and ``vec_b``.
 
     Examples
     ----------
@@ -317,16 +319,3 @@ def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
     dot_bb: float = vec_b.multiply(vec_b).sum()
 
     return dot_ab / (dot_aa + dot_bb - dot_ab)
-
-
-def _check_nan(arr: Union[np.ndarray, csr_array]) -> None:
-    if isinstance(arr, np.ndarray):
-        if np.isnan(arr).any():
-            raise ValueError("Input array contains NaN values")
-    elif isinstance(arr, csr_array):
-        if np.isnan(arr.data).any():
-            raise ValueError("Input sparse matrix contains NaN values")
-    else:
-        raise TypeError(
-            f"Expected numpy.ndarray or scipy.sparse.csr_array, got {type(arr)}"
-        )

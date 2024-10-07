@@ -3,11 +3,11 @@ import pytest
 from scipy import sparse
 from scipy.sparse import csr_array
 
-from skfp.distances.tanimoto import (
-    tanimoto_binary_distance,
-    tanimoto_binary_similarity,
-    tanimoto_count_distance,
-    tanimoto_count_similarity,
+from skfp.distances.dice import (
+    dice_binary_distance,
+    dice_binary_similarity,
+    dice_count_distance,
+    dice_count_similarity,
 )
 
 
@@ -20,21 +20,21 @@ from skfp.distances.tanimoto import (
         (np.array([0, 1, 0, 0]), np.array([0, 0, 2, 3]), 0.0),
     ],
 )
-def test_tanimoto_count_numpy(vec_a, vec_b, expected_similarity):
-    assert tanimoto_count_similarity(vec_a, vec_b) == expected_similarity
+def test_dice_count_numpy(vec_a, vec_b, expected_similarity):
+    assert dice_count_similarity(vec_a, vec_b) == expected_similarity
 
 
 @pytest.mark.parametrize(
     "data_type, similarity_function",
     [
-        (np.zeros, tanimoto_binary_similarity),
-        (np.ones, tanimoto_binary_similarity),
-        (np.zeros, tanimoto_count_similarity),
-        (np.ones, tanimoto_count_similarity),
+        (np.zeros, dice_binary_similarity),
+        (np.ones, dice_binary_similarity),
+        (np.zeros, dice_count_similarity),
+        (np.ones, dice_count_similarity),
     ],
 )
 @pytest.mark.parametrize("matrix_type", ["numpy", "scipy"])
-def test_tanimoto_similarity(data_type, similarity_function, matrix_type):
+def test_dice_similarity(data_type, similarity_function, matrix_type):
     size = 5
     if matrix_type == "numpy":
         vec_a = data_type(size, dtype=int)
@@ -49,17 +49,17 @@ def test_tanimoto_similarity(data_type, similarity_function, matrix_type):
 @pytest.mark.parametrize(
     "vec_a, vec_b, expected_comparison",
     [
-        (np.array([1, 1, 0, 1]), np.array([1, 0, 1, 1]), "=="),
+        (np.array([1, 1, 0, 1]), np.array([1, 0, 1, 1]), ">"),
         (np.array([1, 1, 0, 1]), np.array([1, 1, 1, 1]), ">"),
         (np.array([1, 0, 0, 0]), np.array([1, 1, 1, 1]), "<"),
-        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 0, 1, 1]]), "=="),
+        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 0, 1, 1]]), ">"),
         (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 1, 1]]), ">"),
         (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), "<"),
     ],
 )
-def test_tanimoto_binary_against_threshold(vec_a, vec_b, expected_comparison):
+def test_dice_binary_against_threshold(vec_a, vec_b, expected_comparison):
     threshold = 0.5
-    similarity = tanimoto_binary_similarity(vec_a, vec_b)
+    similarity = dice_binary_similarity(vec_a, vec_b)
 
     if expected_comparison == "==":
         assert similarity == threshold
@@ -80,9 +80,9 @@ def test_tanimoto_binary_against_threshold(vec_a, vec_b, expected_comparison):
         (csr_array([[1, 7, 3, 9]]), csr_array([[1, 1, 6, 0]]), "<"),
     ],
 )
-def test_count_against_threshold(vec_a, vec_b, expected_comparison):
+def test_dice_count_against_threshold(vec_a, vec_b, expected_comparison):
     threshold = 0.5
-    similarity = tanimoto_count_similarity(vec_a, vec_b)
+    similarity = dice_count_similarity(vec_a, vec_b)
 
     if expected_comparison == ">":
         assert similarity > threshold
@@ -101,13 +101,13 @@ def test_count_against_threshold(vec_a, vec_b, expected_comparison):
         (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), ">"),
     ],
 )
-def test_tanimoto_binary_distance_against_threshold(
+def test_dice_binary_distance_against_threshold(
     vec_a,
     vec_b,
     expected_comparison,
 ):
     threshold = 0.5
-    distance = tanimoto_binary_distance(vec_a, vec_b)
+    distance = dice_binary_distance(vec_a, vec_b)
 
     if expected_comparison == "<":
         assert distance < threshold
@@ -126,9 +126,9 @@ def test_tanimoto_binary_distance_against_threshold(
         (csr_array([[1, 9, 0, 0]]), csr_array([[11, 1, 4, 5]]), ">"),
     ],
 )
-def test_tanimoto_count_distance_against_threshold(vec_a, vec_b, expected_comparison):
+def test_dice_count_distance_against_threshold(vec_a, vec_b, expected_comparison):
     threshold = 0.5
-    distance = tanimoto_count_distance(vec_a, vec_b)
+    distance = dice_count_distance(vec_a, vec_b)
 
     if expected_comparison == "<":
         assert distance < threshold
