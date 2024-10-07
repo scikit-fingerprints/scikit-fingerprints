@@ -1,6 +1,7 @@
 from typing import Union
 
 import numpy as np
+from numba import njit, prange
 from scipy.sparse import csr_array
 from scipy.spatial.distance import dice
 from sklearn.utils._param_validation import validate_params
@@ -346,17 +347,26 @@ def dice_count_distance(
     return 1 - dice_count_similarity(vec_a, vec_b)
 
 
+@njit(parallel=True)
 def _dice_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    vec_a_squared = np.dot(vec_a, vec_a).sum()
-    vec_b_squared = np.dot(vec_b, vec_b).sum()
-    vec_a_dot_vec_b = np.dot(vec_a, vec_b).sum()
+    vec_a = vec_a.astype(np.float64).ravel()
+    vec_b = vec_b.astype(np.float64).ravel()
 
-    return 2 * vec_a_dot_vec_b / (vec_a_squared + vec_b_squared)
+    dot_ab = 0.0
+    dot_aa = 0.0
+    dot_bb = 0.0
+
+    for i in prange(vec_a.shape[0]):
+        dot_ab += vec_a[i] * vec_b[i]
+        dot_aa += vec_a[i] * vec_a[i]
+        dot_bb += vec_b[i] * vec_b[i]
+
+    return 2 * dot_ab / (dot_aa + dot_bb)
 
 
 def _dice_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    vec_a_squared = vec_a.multiply(vec_a).sum()
-    vec_b_squared = vec_b.multiply(vec_b).sum()
-    vec_a_dot_vec_b = vec_a.multiply(vec_b).sum()
+    dot_ab = vec_a.multiply(vec_b).sum()
+    dot_aa = vec_a.multiply(vec_a).sum()
+    dot_bb = vec_b.multiply(vec_b).sum()
 
-    return 2 * vec_a_dot_vec_b / (vec_a_squared + vec_b_squared)
+    return 2 * dot_ab / (dot_aa + dot_bb)
