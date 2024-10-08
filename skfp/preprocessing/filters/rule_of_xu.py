@@ -9,17 +9,15 @@ class RuleOfXu(BaseFilter):
     """
     Rule of Xu.
 
-    The Rule of Xu is designed to identify drug-like molecules based on key molecular
-    properties such as hydrogen bond donors (HBD), hydrogen bond acceptors (HBA),
-    the number of rotatable bonds, rings, and heavy atoms [1]_.
+    This rule is designed to identify drug-like molecules [1]_.
 
     Molecule must fulfill conditions:
 
     - HBD <= 5
     - HBA <= 10
-    - number of rotatable bonds in range `[2, 35]`
-    - number of rings in range `[1, 7]`
-    - number of heavy atoms in range `[10, 50]`
+    - number of rotatable bonds in range ``[2, 35]``
+    - number of rings in range ``[1, 7]``
+    - number of heavy atoms in range ``[10, 50]``
 
     Parameters
     ----------
