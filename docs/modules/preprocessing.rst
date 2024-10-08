@@ -55,6 +55,7 @@ Molecular filters:
     RuleOfThree
     RuleOfTwo
     RuleOfVeber
+    RuleOfXu
     SureChEMBLFilter
     TiceHerbicidesFilter
     TiceInsecticidesFilter
