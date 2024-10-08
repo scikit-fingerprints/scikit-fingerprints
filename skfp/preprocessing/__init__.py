@@ -21,6 +21,7 @@ from .filters import (
     RuleOfThree,
     RuleOfTwo,
     RuleOfVeber,
+    RuleOfXu,
     SureChEMBLFilter,
     TiceHerbicidesFilter,
     TiceInsecticidesFilter,
