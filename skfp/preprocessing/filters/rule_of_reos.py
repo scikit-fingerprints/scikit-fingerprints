@@ -19,7 +19,7 @@ class RuleOfReos(BaseFilter):
     - logP in range ``[-5, 5]``
     - HBA in range ``[0, 5]``
     - HBD in range ``[0, 10]``
-    - charge in range ``[-2, 2]
+    - charge in range ``[-2, 2]``
     - number of rotatable bonds in range ``[0, 8]``
     - number of heavy atoms in range ``[15, 50]``
 
