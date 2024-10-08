@@ -49,15 +49,14 @@ class RuleOfXu(BaseFilter):
 
     Examples
     ----------
-    TODO: poprawić przykład
     >>> from skfp.preprocessing import RuleOfXu
-    >>> smiles = ["CC=O", "CC(C)[C@@H](CC1=CC(=C(C=C1)OC)OCCCOC)C[C@@H]([C@H](C[C@@H](C(C)C)C(=O)NCC(C)(C)C(=O)N)O)N"]
+    >>> smiles = ["CCO", "CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O"]
     >>> filt = RuleOfXu()
     >>> filt
     RuleOfXu()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['CC=O']
+    ['CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O']
     """
 
     def __init__(
@@ -87,30 +86,3 @@ class RuleOfXu(BaseFilter):
             return passed_rules >= len(rules) - 1
         else:
             return passed_rules == len(rules)
-
-
-if __name__ == "__main__":
-    mol = "CCO"
-
-    from rdkit.Chem import MolFromSmiles
-
-    mol = MolFromSmiles(mol)
-
-    rule_set = [
-        rdMolDescriptors.CalcNumHBD(mol),
-        rdMolDescriptors.CalcNumHBA(mol),
-        rdMolDescriptors.CalcNumRotatableBonds(mol),
-        rdMolDescriptors.CalcNumRings(mol),
-        rdMolDescriptors.CalcNumHeavyAtoms(mol),
-    ]
-
-    rule_bools = [
-        rdMolDescriptors.CalcNumHBD(mol) <= 5,
-        rdMolDescriptors.CalcNumHBA(mol) <= 10,
-        2 <= rdMolDescriptors.CalcNumRotatableBonds(mol) <= 35,
-        1 <= rdMolDescriptors.CalcNumRings(mol) <= 7,
-        10 <= rdMolDescriptors.CalcNumHeavyAtoms(mol) <= 50,
-    ]
-
-    print(rule_set)
-    print(rule_bools)
