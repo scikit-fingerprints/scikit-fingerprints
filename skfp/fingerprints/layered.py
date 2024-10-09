@@ -8,7 +8,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils import ensure_mols
+from skfp.utils import ensure_mols, TQDMSettings
 
 
 class LayeredFingerprint(BaseFingerprintTransformer):
@@ -64,7 +64,7 @@ class LayeredFingerprint(BaseFingerprintTransformer):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when computing fingerprints.
 
     Attributes
@@ -119,7 +119,7 @@ class LayeredFingerprint(BaseFingerprintTransformer):
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         super().__init__(
             n_features_out=fp_size,

@@ -11,7 +11,7 @@ from rdkit.Chem.MolStandardize.rdMolStandardize import (
 )
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import ensure_mols, no_rdkit_logs
+from skfp.utils import ensure_mols, no_rdkit_logs, TQDMSettings
 
 
 class MolStandardizer(BasePreprocessor):
@@ -46,7 +46,7 @@ class MolStandardizer(BasePreprocessor):
         context. ``-1`` means using all processors. See Scikit-learn documentation on
         ``n_jobs`` for more details.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when standardizing molecules. By default, all warnings are
         turned off.
 
@@ -96,7 +96,7 @@ class MolStandardizer(BasePreprocessor):
         self,
         largest_fragment_only: bool = False,
         n_jobs: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         super().__init__()
         self.largest_fragment_only = largest_fragment_only

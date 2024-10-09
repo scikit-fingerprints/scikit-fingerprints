@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from rdkit.Chem import Mol
 from rdkit.Chem.Crippen import MolLogP
@@ -6,7 +6,7 @@ from rdkit.Chem.Descriptors import MolWt
 from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumHBD, CalcNumRotatableBonds
 
 from skfp.bases.base_filter import BaseFilter
-
+from skfp.utils import TQDMSettings
 
 class TiceHerbicidesFilter(BaseFilter):
     r"""
@@ -38,7 +38,7 @@ class TiceHerbicidesFilter(BaseFilter):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when generating conformers.
 
     References
@@ -67,7 +67,7 @@ class TiceHerbicidesFilter(BaseFilter):
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,

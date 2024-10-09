@@ -12,7 +12,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, InvalidParameterError
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils import require_mols_with_conf_ids
+from skfp.utils import require_mols_with_conf_ids, TQDMSettings
 
 """
 Note: this file cannot have the "e3fp.py" name due to conflict with E3FP library.
@@ -89,7 +89,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when computing fingerprints.
 
     random_state : int, RandomState instance or None, default=0
@@ -156,7 +156,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
         random_state: Optional[int] = 0,
     ):
         super().__init__(

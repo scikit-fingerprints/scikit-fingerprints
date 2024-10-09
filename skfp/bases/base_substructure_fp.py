@@ -7,7 +7,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
-from skfp.utils import ensure_mols
+from skfp.utils import ensure_mols, TQDMSettings
 
 
 class BaseSubstructureFingerprint(BaseFingerprintTransformer):
@@ -43,7 +43,7 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when computing fingerprints.
 
     Attributes
@@ -67,7 +67,7 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
         random_state: Optional[int] = 0,
     ):
         super().__init__(

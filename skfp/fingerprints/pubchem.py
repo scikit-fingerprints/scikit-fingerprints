@@ -7,7 +7,7 @@ from rdkit.Chem import GetSymmSSSR, Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils import ensure_mols
+from skfp.utils import ensure_mols, TQDMSettings
 
 
 class PubChemFingerprint(BaseFingerprintTransformer):
@@ -44,7 +44,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when computing fingerprints.
 
     Attributes
@@ -89,7 +89,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         n_features_out = 757 if count else 881
         super().__init__(

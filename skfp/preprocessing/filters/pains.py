@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Optional, Union
 
 from rdkit.Chem import FilterCatalog, Mol
 from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases.base_filter import BaseFilter
+from skfp.utils import TQDMSettings
 
 
 class PAINSFilter(BaseFilter):
@@ -39,7 +40,7 @@ class PAINSFilter(BaseFilter):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when generating conformers.
 
     References
@@ -84,7 +85,7 @@ class PAINSFilter(BaseFilter):
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,

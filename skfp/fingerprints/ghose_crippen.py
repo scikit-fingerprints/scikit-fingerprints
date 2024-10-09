@@ -6,6 +6,7 @@ from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseSubstructureFingerprint
+from skfp.utils import TQDMSettings
 
 
 class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
@@ -36,7 +37,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when computing fingerprints.
 
     Attributes
@@ -83,7 +84,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         # flake8: noqa: E501
         patterns = [
