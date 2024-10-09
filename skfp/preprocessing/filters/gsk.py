@@ -14,7 +14,7 @@ class GSKFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-    - molecular weight in range <= 400
+    - molecular weight <= 400
     - logP <= 4
 
     Parameters
