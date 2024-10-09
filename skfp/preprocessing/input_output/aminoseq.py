@@ -21,7 +21,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         Whether to perform sanitization, i.e. basic validity checks, on created
         molecules. For details see RDKit documentation [2]_.
 
-    flavor : int, default=1
+    flavor : int, default=0
         Type of molecule. See RDKit documentation [3]_ for more details.
 
     n_jobs : int, default=None
