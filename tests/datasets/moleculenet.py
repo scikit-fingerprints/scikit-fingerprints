@@ -44,6 +44,21 @@ def test_load_moleculenet_benchmark():
     assert benchmark_names == dataset_names
 
 
+def test_load_moleculenet_benchmark_subset():
+    dataset_names = ["ESOL", "SIDER", "BACE"]
+    benchmark_full = load_moleculenet_benchmark(subset=dataset_names, as_frames=True)
+    benchmark_names = [name for name, df in benchmark_full]
+    assert benchmark_names == dataset_names
+
+
+def test_load_moleculenet_benchmark_wrong_subset():
+    dataset_names = ["ESOL", "Nonexistent"]
+    with pytest.raises(ValueError) as exc_info:
+        load_moleculenet_benchmark(subset=dataset_names, as_frames=True)
+
+    assert "Dataset name 'Nonexistent' not recognized" in str(exc_info)
+
+
 @pytest.mark.parametrize("dataset_name", get_dataset_names())
 def test_load_ogb_splits(dataset_name):
     train, valid, test = load_ogb_splits(dataset_name)

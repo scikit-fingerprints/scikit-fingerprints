@@ -1,4 +1,5 @@
 import os
+from collections.abc import Iterator
 from typing import Optional, Union
 
 import numpy as np
@@ -34,6 +35,7 @@ from .toxcast import load_toxcast
                     "regression",
                 }
             ),
+            list,
         ],
         "data_dir": [None, str, os.PathLike],
         "as_frame": ["boolean"],
@@ -42,11 +44,13 @@ from .toxcast import load_toxcast
     prefer_skip_nested_validation=True,
 )
 def load_moleculenet_benchmark(
-    subset: Optional[str] = None,
+    subset: Optional[Union[str, list[str]]] = None,
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frames: bool = False,
     verbose: bool = False,
-) -> Union[list[tuple[str, pd.DataFrame]], list[tuple[str, list[str], np.ndarray]]]:
+) -> Union[
+    Iterator[tuple[str, pd.DataFrame]], Iterator[tuple[str, list[str], np.ndarray]]
+]:
     """
     Load and return the MoleculeNet benchmark datasets.
 
@@ -68,8 +72,9 @@ def load_moleculenet_benchmark(
     Parameters
     ----------
     subset : {None, "regression", "classification", "classification_single_task",
-              "classification_multitask", "classification_no_pcba"}
-        If not None, returns the given subset of datasets.
+              "classification_multitask", "classification_no_pcba"} or list of strings
+        If ``None``, returns all datasets. String loads only a given subset of all
+        datasets. List of strings loads only datasets with given names.
 
     data_dir : {None, str, path-like}, default=None
         Path to the root data directory. If ``None``, currently set scikit-learn directory
@@ -84,8 +89,9 @@ def load_moleculenet_benchmark(
 
     Returns
     -------
-    data : pd.DataFrame or tuple(list[str], np.ndarray)
-        Depending on the ``as_frame`` argument, one of:
+    data : generator of pd.DataFrame or tuples (list[str], np.ndarray)
+        Loads and returns datasets with a generator. Returned types depend on the
+        ``as_frame`` parameter, either:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
 
@@ -96,61 +102,69 @@ def load_moleculenet_benchmark(
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
     """
-    regression_datasets = [
-        ("ESOL", load_esol),
-        ("FreeSolv", load_freesolv),
-        ("Lipophilicity", load_lipophilicity),
-    ]
-    clf_single_task_datasets = [
-        ("BACE", load_bace),
-        ("BBBP", load_bbbp),
-        ("HIV", load_hiv),
-    ]
-    clf_multitask_datasets = [
-        ("ClinTox", load_clintox),
-        ("MUV", load_muv),
-        ("SIDER", load_sider),
-        ("Tox21", load_tox21),
-        ("ToxCast", load_toxcast),
-    ]
-    clf_pcba = [("PCBA", load_pcba)]
+    regression_names = ["ESOL", "FreeSolv", "Lipophilicity"]
+    clf_single_task_names = ["BACE", "BBBP", "HIV"]
+    clf_multitask_names = ["ClinTox", "MUV", "SIDER", "Tox21", "ToxCast"]
+    clf_pcba = ["PCBA"]
+
+    dataset_name_to_func = {
+        "ESOL": load_esol,
+        "FreeSolv": load_freesolv,
+        "Lipophilicity": load_lipophilicity,
+        "BACE": load_bace,
+        "BBBP": load_bbbp,
+        "HIV": load_hiv,
+        "ClinTox": load_clintox,
+        "MUV": load_muv,
+        "SIDER": load_sider,
+        "Tox21": load_tox21,
+        "ToxCast": load_toxcast,
+        "PCBA": load_pcba,
+    }
 
     if subset is None:
-        dataset_functions = (
-            regression_datasets
-            + clf_single_task_datasets
-            + clf_multitask_datasets
-            + clf_pcba
+        dataset_names = (
+            regression_names + clf_single_task_names + clf_multitask_names + clf_pcba
         )
-    elif subset == "classification":
-        dataset_functions = clf_single_task_datasets + clf_multitask_datasets + clf_pcba
-    elif subset == "classification_single_task":
-        dataset_functions = clf_single_task_datasets
-    elif subset == "classification_multitask":
-        dataset_functions = clf_multitask_datasets
-    elif subset == "classification_no_pcba":
-        dataset_functions = clf_single_task_datasets + clf_multitask_datasets
     elif subset == "regression":
-        dataset_functions = regression_datasets
+        dataset_names = regression_names
+    elif subset == "classification":
+        dataset_names = clf_single_task_names + clf_multitask_names + clf_pcba
+    elif subset == "classification_single_task":
+        dataset_names = clf_single_task_names
+    elif subset == "classification_multitask":
+        dataset_names = clf_multitask_names
+    elif subset == "classification_no_pcba":
+        dataset_names = clf_single_task_names + clf_multitask_names
+    elif isinstance(subset, (list, set, tuple)):
+        for name in subset:
+            if name not in dataset_name_to_func:
+                raise ValueError(
+                    f"Dataset name '{name}' not recognized among MoleculeNet datasets"
+                )
+        dataset_names = subset
     else:
         raise ValueError(
             f'Value "{subset}" for subset not recognized, must be one of: '
             f'"classification", "classification_single_task", '
-            f'"classification_no_pcba", "regression"'
+            f'"classification_no_pcba", "regression"; alternatively, it can'
+            f"be a list of strings with dataset names from MoleculeNet to load"
         )
 
+    dataset_functions = [dataset_name_to_func[name] for name in dataset_names]
+
     if as_frames:
-        # list of tuples (dataset_name, DataFrame)
-        datasets = [
+        # generator of tuples (dataset_name, DataFrame)
+        datasets = (
             (dataset_name, load_function(data_dir, as_frame=True, verbose=verbose))
-            for dataset_name, load_function in dataset_functions
-        ]
+            for dataset_name, load_function in zip(dataset_names, dataset_functions)
+        )
     else:
-        # list of tuples (dataset_name, SMILES, y)
-        datasets = [
+        # generator of tuples (dataset_name, SMILES, y)
+        datasets = (
             (dataset_name, *load_function(data_dir, as_frame=False, verbose=verbose))
-            for dataset_name, load_function in dataset_functions
-        ]
+            for dataset_name, load_function in zip(dataset_names, dataset_functions)
+        )
 
     return datasets
 
