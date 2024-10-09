@@ -18,6 +18,8 @@ from .filters import (
     PAINSFilter,
     PfizerFilter,
     RuleOfFour,
+    RuleOfGsk,
+    RuleOfOprea,
     RuleOfReos,
     RuleOfThree,
     RuleOfTwo,

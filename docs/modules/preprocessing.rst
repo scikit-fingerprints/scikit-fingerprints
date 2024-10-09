@@ -52,6 +52,8 @@ Molecular filters:
     PAINSFilter
     PfizerFilter
     RuleOfFour
+    RuleOfGsk
+    RuleOfOprea
     RuleOfReos
     RuleOfThree
     RuleOfTwo
