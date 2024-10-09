@@ -6,6 +6,7 @@ from typing import Optional
 from joblib import effective_n_jobs
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
+from tqdm import tqdm
 
 from skfp.utils import run_in_parallel
 
@@ -86,7 +87,10 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            results = self._transform_batch(X)
+            if self.verbose:
+                results = [self._transform_batch([mol]) for mol in tqdm(X)]
+            else:
+                results = self._transform_batch(X)
         else:
             results = run_in_parallel(
                 self._transform_batch,

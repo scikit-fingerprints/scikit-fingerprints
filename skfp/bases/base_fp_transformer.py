@@ -150,7 +150,7 @@ class BaseFingerprintTransformer(
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            if self.verbose > 0:
+            if self.verbose:
                 results = [self._calculate_fingerprint([mol]) for mol in tqdm(X)]
             else:
                 results = self._calculate_fingerprint(X)

@@ -9,6 +9,7 @@ from joblib import effective_n_jobs
 from rdkit.Chem import Mol
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
+from tqdm import tqdm
 
 from skfp.utils import ensure_mols, run_in_parallel
 
@@ -156,7 +157,12 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            filter_indicators = self._filter_mols_batch(mols)
+            if self.verbose:
+                filter_indicators = [
+                    self._filter_mols_batch([mol]) for mol in tqdm(mols)
+                ]
+            else:
+                filter_indicators = self._filter_mols_batch(mols)
         else:
             filter_indicators = run_in_parallel(
                 self._filter_mols_batch,
