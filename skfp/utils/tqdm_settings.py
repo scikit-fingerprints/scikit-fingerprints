@@ -1,6 +1,6 @@
 """Submodule providing the TQDM Settings data class."""
 
-from typing import Dict, Any, Iterable
+from typing import Dict, Any
 from tqdm.auto import tqdm
 
 
@@ -10,6 +10,8 @@ class TQDMSettings:
     def __init__(self):
         """Initialize the TQDM settings."""
         self._settings: Dict[str, Any] = {}
+        # Initialize with default settings
+        self.leave(True).dynamic_ncols(False).desc("")
 
     def disable(self) -> "TQDMSettings":
         """Disable TQDM."""
@@ -35,24 +37,9 @@ class TQDMSettings:
         self._settings["leave"] = leave
         return self
 
-    def position(self, position: int) -> "TQDMSettings":
-        """Set position."""
-        self._settings["position"] = position
-        return self
-
-    def ncols(self, ncols: int) -> "TQDMSettings":
-        """Set number of columns."""
-        self._settings["ncols"] = ncols
-        return self
-
     def dynamic_ncols(self, dynamic_ncols: bool) -> "TQDMSettings":
         """Set dynamic number of columns."""
         self._settings["dynamic_ncols"] = dynamic_ncols
-        return self
-
-    def iterable(self, iterable: Iterable) -> "TQDMSettings":
-        """Set iterable."""
-        self._settings["iterable"] = iterable
         return self
 
     def into_tqdm(self) -> tqdm:
