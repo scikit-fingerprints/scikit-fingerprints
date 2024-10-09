@@ -9,7 +9,7 @@ from typing import Optional, Union
 import numpy as np
 from datasketch import MinHash
 from rdkit.Chem import MolToSmiles, PathToSubmol
-from rdkit.Chem.rdchem import Mol
+from rdkit.Chem import Mol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, StrOptions

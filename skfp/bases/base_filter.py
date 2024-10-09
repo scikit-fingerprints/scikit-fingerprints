@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import numpy as np
 from joblib import effective_n_jobs
-from rdkit.Chem.rdchem import Mol
+from rdkit.Chem import Mol
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
 

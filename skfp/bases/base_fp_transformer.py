@@ -7,7 +7,7 @@ from typing import Any, Optional, Union
 import numpy as np
 import scipy.sparse
 from joblib import effective_n_jobs
-from rdkit.Chem.rdchem import Mol
+from rdkit.Chem import Mol
 from rdkit.DataStructs import (
     IntSparseIntVect,
     LongSparseIntVect,

@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from typing import Optional, Union
 
 import numpy as np
-from rdkit.Chem.rdchem import Mol
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
