@@ -4,7 +4,7 @@ from typing import Callable, Optional
 
 from joblib import effective_n_jobs
 from sklearn.utils.parallel import Parallel, delayed
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 class ProgressParallel(Parallel):
