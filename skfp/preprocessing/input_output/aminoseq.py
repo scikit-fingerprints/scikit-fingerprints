@@ -12,7 +12,8 @@ class MolFromAminoseqTransformer(BasePreprocessor):
     """
     Creates RDKit ``Mol`` objects from amino-acid sequence strings.
 
-    This implementation uses sequences defined by FASTA [1]_ format.
+    Inputs are either sequences in FASTA format [1]_, or plain strings with
+    amino-acid sequences.
 
     Parameters
     ----------
@@ -47,7 +48,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         "The RDKit Book: Molecular Sanitization"
         <https://www.rdkit.org/docs/RDKit_Book.html#molecular-sanitization>`_
 
-    .. [3] `"RDKit documentation - MolFromFASTA
+    .. [3] `RDKit documentation - MolFromFASTA
         <https://www.rdkit.org/docs/source/rdkit.Chem.rdmolfiles.html#rdkit.Chem.rdmolfiles.MolFromFASTA>`_
 
     Examples
