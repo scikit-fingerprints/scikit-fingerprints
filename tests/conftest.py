@@ -50,20 +50,6 @@ def mols_conformers_list(smallest_mols_list) -> list[PropertyMol]:
     return conf_gen.transform(smallest_mols_list)
 
 
-@pytest.fixture(scope="session")
-def fasta_list() -> list[str]:
-    return [
-        ">peptide_pm_1\nKWLRRVWRWWR\n",
-        ">peptide_pm_2\nFLPAIGRVLSGIL\n",
-        ">peptide_pm_3\nCGESCVWIPCISAVVGCSCKSKVCYKNGTLP\n",
-        ">peptide_pm_4\nILGKLLSTAWGLLSKL\n",
-        ">peptide_pm_5\nWKLFKKIPKFLHLAKKF\n",
-        ">peptide_pm_6\nRAGLQFPVGRLLRRLLRRLLR\n",
-        ">peptide_pm_7\nGLWSKIKTAGKSVAKAAAKAAVKAVTNAV\n",
-        ">peptide_pm_8\nCGESCVYIPCLTSAIGCSCKSKVCYRNGIP\n",
-    ]
-
-
 def _load_test_data_smiles() -> pd.DataFrame:
     # handle different paths and execution directories, e.g. from CLI and PyCharm
     if os.getcwd().endswith("scikit-fingerprints"):

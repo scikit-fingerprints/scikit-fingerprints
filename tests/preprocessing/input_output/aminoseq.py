@@ -29,7 +29,7 @@ def peptide_list(fasta_list):
 
 
 @pytest.fixture
-def peptide_smiles(peptide_list):
+def peptides_smiles_list(peptide_list):
     return [MolToSmiles(mol) for mol in peptide_list]
 
 
@@ -41,13 +41,13 @@ def test_mol_from_fasta(fasta_list):
     assert all(isinstance(x, Mol) for x in mols_list)
 
 
-def test_mol_to_and_from_fasta(fasta_list, peptide_smiles):
+def test_mol_to_and_from_fasta(fasta_list, peptides_smiles_list):
     mol_from_fasta = MolFromAminoseqTransformer()
 
     peptide_list = mol_from_fasta.transform(fasta_list)
     smiles_list = [MolToSmiles(mol) for mol in peptide_list]
 
-    assert smiles_list == peptide_smiles
+    assert smiles_list == peptides_smiles_list
 
 
 def test_mol_from_fasta_and_sequence(fasta_list, sequence_list):

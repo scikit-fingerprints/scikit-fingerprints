@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from typing import Optional
 
 from rdkit.Chem import Mol, MolFromFASTA
+from sklearn.utils._param_validation import Options
 
 from skfp.bases import BasePreprocessor
 from skfp.utils.validators import check_strings
@@ -10,6 +11,7 @@ from skfp.utils.validators import check_strings
 class MolFromAminoseqTransformer(BasePreprocessor):
     """
     Creates RDKit ``Mol`` objects from amino-acid sequence strings.
+
     This implementation uses sequences defined by FASTA [1]_ format.
 
     Parameters
@@ -19,8 +21,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         molecules. For details see RDKit documentation [2]_.
 
     flavor : int, default=1
-        Type of molecule [3]_.
-
+        Type of molecule. See RDKit documentation [3]_ for more details.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized
@@ -46,7 +47,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         "The RDKit Book: Molecular Sanitization"
         <https://www.rdkit.org/docs/RDKit_Book.html#molecular-sanitization>`_
 
-    .. [3] `RDKit documentation
+    .. [3] `"RDKit documentation - MolFromFASTA
         <https://www.rdkit.org/docs/source/rdkit.Chem.rdmolfiles.html#rdkit.Chem.rdmolfiles.MolFromFASTA>`_
 
     Examples
@@ -67,7 +68,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
     _parameter_constraints: dict = {
         **BasePreprocessor._parameter_constraints,
         "sanitize": ["boolean"],
-        "flavor": [int],
+        "flavor": [Options(int, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9})],
     }
 
     def __init__(

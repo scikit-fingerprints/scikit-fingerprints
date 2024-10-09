@@ -28,6 +28,20 @@ RDKit molecules.
 """
 
 
+@pytest.fixture
+def fasta_list() -> list[str]:
+    return [
+        ">peptide_pm_1\nKWLRRVWRWWR\n",
+        ">peptide_pm_2\nFLPAIGRVLSGIL\n",
+        ">peptide_pm_3\nCGESCVWIPCISAVVGCSCKSKVCYKNGTLP\n",
+        ">peptide_pm_4\nILGKLLSTAWGLLSKL\n",
+        ">peptide_pm_5\nWKLFKKIPKFLHLAKKF\n",
+        ">peptide_pm_6\nRAGLQFPVGRLLRRLLRRLLR\n",
+        ">peptide_pm_7\nGLWSKIKTAGKSVAKAAAKAAVKAVTNAV\n",
+        ">peptide_pm_8\nCGESCVYIPCLTSAIGCSCKSKVCYRNGIP\n",
+    ]
+
+
 # unfortunately, there is no way to pass data to Scikit-learn tests other than
 # global variables
 n_samples = 10
