@@ -50,7 +50,7 @@ class BaseFingerprintTransformer(
         "sparse": ["boolean"],
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", TQDMSettings],
         "random_state": ["random_state"],
     }
 

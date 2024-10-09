@@ -22,7 +22,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         "return_indicators": ["boolean"],
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", TQDMSettings],
     }
 
     def __init__(

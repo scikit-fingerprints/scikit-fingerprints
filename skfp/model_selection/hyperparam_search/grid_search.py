@@ -136,7 +136,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         "estimator_cv": [BaseSearchCV],
         "greater_is_better": ["boolean"],
         "cache_best_fp_array": ["boolean"],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", TQDMSettings],
     }
 
     def __init__(

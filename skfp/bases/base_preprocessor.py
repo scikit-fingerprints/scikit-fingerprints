@@ -17,7 +17,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
     _parameter_constraints: dict = {
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", TQDMSettings],
     }
 
     def __init__(

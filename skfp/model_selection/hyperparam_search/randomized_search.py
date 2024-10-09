@@ -138,7 +138,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         "greater_is_better": ["boolean"],
         "n_iter": [Interval(Integral, 1, None, closed="left")],
         "cache_best_fp_array": ["boolean"],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", TQDMSettings],
         "random_state": ["random_state"],
     }
 

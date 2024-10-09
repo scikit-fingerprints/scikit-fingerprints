@@ -139,7 +139,7 @@ class ConformerGenerator(BasePreprocessor):
         "errors": [StrOptions({"raise", "ignore", "filter"})],
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", TQDMSettings],
         "random_state": [Interval(Integral, left=-1, right=None, closed="left")],
     }
 

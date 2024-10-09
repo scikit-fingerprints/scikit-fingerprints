@@ -89,7 +89,7 @@ class MolStandardizer(BasePreprocessor):
     _parameter_constraints: dict = {
         "largest_fragment_only": ["boolean"],
         "n_jobs": [Integral, None],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", TQDMSettings],
     }
 
     def __init__(
