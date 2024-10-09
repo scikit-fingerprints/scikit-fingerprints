@@ -110,6 +110,7 @@ def run_in_parallel(
             tqdm_settings.disable()
     else:
         assert isinstance(verbose, TQDMSettings)
+        tqdm_settings = verbose
 
     if tqdm_settings.is_disabled():
         parallel = Parallel(n_jobs=n_jobs)
