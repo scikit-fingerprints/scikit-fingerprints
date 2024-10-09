@@ -7,11 +7,11 @@ from skfp.bases.base_filter import BaseFilter
 
 class RuleOfOprea(BaseFilter):
     # flake8: noqa E501
-    r"""
+    """
     Rule of Oprea
 
     Computes Oprea's rule of drug likeness obtained by comparing drug vs non drug
-    compounds across multiple datasets. [1]_.
+    compounds across multiple datasets [1]_.
 
     Molecule must fulfill conditions:
 
@@ -44,13 +44,13 @@ class RuleOfOprea(BaseFilter):
     -----------
     .. [1] `Oprea T. I.
         "Property distribution of drug-related chemical databases"
-         J Comput Aided Mol Des. 2000 Mar;14(3):251-64
+        J Comput Aided Mol Des. 2000 Mar;14(3):251-64
         <https://pubmed.ncbi.nlm.nih.gov/10756480/>`_
 
     Examples
     ----------
     >>> from skfp.preprocessing import RuleOfOprea
-    >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "CC(=O)OCC1=C(N2[C@@H]([C@@H](C2=O)NC(=O)/C(=N\OC)/C3=CSC(=N3)N)SC1)C(=O)O"]
+    >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = RuleOfOprea()
     >>> filt
     RuleOfOprea()
