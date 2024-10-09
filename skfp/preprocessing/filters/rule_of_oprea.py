@@ -8,7 +8,7 @@ from skfp.bases.base_filter import BaseFilter
 class RuleOfOprea(BaseFilter):
     # flake8: noqa E501
     """
-    Rule of Oprea
+    Rule of Oprea.
 
     Computes Oprea's rule of drug likeness obtained by comparing drug vs non drug
     compounds across multiple datasets [1]_.
@@ -19,7 +19,6 @@ class RuleOfOprea(BaseFilter):
     - HBA in range ``[2, 9]``
     - number of rotatable bonds in range ``[2, 8]``
     - number of rings in range ``[1, 4]``
-
 
     Parameters
     ----------

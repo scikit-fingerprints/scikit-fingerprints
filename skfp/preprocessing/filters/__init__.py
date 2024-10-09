@@ -4,6 +4,7 @@ from .bms import BMSFilter
 from .brenk import BrenkFilter
 from .ghose import GhoseFilter
 from .glaxo import GlaxoFilter
+from .gsk import GSKFilter
 from .hao import HaoFilter
 from .inpharmatica import InpharmaticaFilter
 from .lint import LINTFilter
@@ -14,7 +15,6 @@ from .nih import NIHFilter
 from .pains import PAINSFilter
 from .pfizer import PfizerFilter
 from .rule_of_four import RuleOfFour
-from .rule_of_gsk import RuleOfGsk
 from .rule_of_oprea import RuleOfOprea
 from .rule_of_reos import RuleOfReos
 from .rule_of_three import RuleOfThree

@@ -1,21 +1,21 @@
 from typing import Union
 
-from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
+from rdkit.Chem import Crippen, Mol, rdMolDescriptors
 
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfGsk(BaseFilter):
+class GSKFilter(BaseFilter):
     # flake8: noqa E501
     """
-    Rule of GSK (4/400).
+    GSK rule (4/400) filter.
 
     Compute GSK Rule (4/400) for druglikeness using interpretable ADMET rule of thumb [1]_.
 
     Molecule must fulfill conditions:
 
     - molecular weight in range <= 400
-    - logP in range <= 4
+    - logP <= 4
 
     Parameters
     ----------
@@ -45,11 +45,11 @@ class RuleOfGsk(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import RuleOfGsk
+    >>> from skfp.preprocessing import GSKFilter
     >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "O=C(O)c1ccccc1c2ccc(cc2)Cn3c4cc(cc(c4nc3CCC)C)c5nc6ccccc6n5C"]
-    >>> filt = RuleOfGsk()
+    >>> filt = GSKFilter()
     >>> filt
-    RuleOfGsk()
+    GSKFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O']
@@ -70,7 +70,7 @@ class RuleOfGsk(BaseFilter):
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
             rdMolDescriptors._CalcMolWt(mol) <= 400,
-            Crippen._pyMolLogP(mol) <= 4,
+            Crippen.MolLogP(mol) <= 4,
         ]
 
         passed_rules = sum(rules)

@@ -76,7 +76,7 @@ class RuleOfReos(BaseFilter):
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
             200 <= rdMolDescriptors._CalcMolWt(mol) <= 500,
-            -5 <= Crippen._pyMolLogP(mol) <= 5,
+            -5 <= Crippen.MolLogP(mol) <= 5,
             0 <= rdMolDescriptors.CalcNumHBA(mol) <= 10,
             0 <= rdMolDescriptors.CalcNumHBD(mol) <= 5,
             -2 <= rdmolops.GetFormalCharge(mol) <= 2,
