@@ -8,6 +8,7 @@ from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumHBD, CalcNumRotatable
 from skfp.bases.base_filter import BaseFilter
 from skfp.utils import TQDMSettings
 
+
 class TiceHerbicidesFilter(BaseFilter):
     r"""
     Tice rule for herbicides.
