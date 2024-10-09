@@ -22,6 +22,7 @@ from sklearn.base import (
     TransformerMixin,
 )
 from sklearn.utils._param_validation import InvalidParameterError
+from tqdm import tqdm
 
 from skfp.utils import run_in_parallel
 
@@ -149,7 +150,10 @@ class BaseFingerprintTransformer(
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            results = self._calculate_fingerprint(X)
+            if self.verbose > 0:
+                results = [self._calculate_fingerprint([mol]) for mol in tqdm(X)]
+            else:
+                results = self._calculate_fingerprint(X)
         else:
             results = run_in_parallel(
                 self._calculate_fingerprint,
