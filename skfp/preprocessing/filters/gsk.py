@@ -1,27 +1,21 @@
 from typing import Union
 
-from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
+from rdkit.Chem import Crippen, Mol, rdMolDescriptors
 
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfReos(BaseFilter):
+class GSKFilter(BaseFilter):
     # flake8: noqa E501
     """
-    Rule of REOS.
+    GSK rule (4/400) filter.
 
-    This rule (Rapid Elimination of Outliers for Screening) is designed
-    to filter out molecules with undesirable properties for drug discovery [1]_.
+    Compute GSK Rule (4/400) for druglikeness using interpretable ADMET rule of thumb [1]_.
 
     Molecule must fulfill conditions:
 
-    - molecular weight in range ``[200, 500]``
-    - logP in range ``[-5, 5]``
-    - HBA in range ``[0, 5]``
-    - HBD in range ``[0, 10]``
-    - charge in range ``[-2, 2]``
-    - number of rotatable bonds in range ``[0, 8]``
-    - number of heavy atoms in range ``[15, 50]``
+    - molecular weight <= 400
+    - logP <= 4
 
     Parameters
     ----------
@@ -44,21 +38,21 @@ class RuleOfReos(BaseFilter):
 
     References
     -----------
-    .. [1] `Walters, W. P., Namchuk, M.
-        "Designing screens: how to make your hits a hit"
-        Nat Rev Drug Discov. 2003 Apr;2(4):259-66
-        <https://pubmed.ncbi.nlm.nih.gov/12669025/>`_
+    .. [1] `Glesson, M. P.
+        "Generation of a Set of Simple, Interpretable ADMET Rules of Thumb"
+        J. Med. Chem. 2008, 51, 4, 817–834
+        <https://pubs.acs.org/doi/10.1021/jm701122q>`_
 
     Examples
     ----------
-    >>> from skfp.preprocessing import RuleOfReos
-    >>> smiles = ["CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",  "CC(=O)c1c(C(C)=O)c(C)n(CCCCn2c(C)c(C(C)=O)c(C(C)=O)c2C)c1C"]
-    >>> filt = RuleOfReos()
+    >>> from skfp.preprocessing import GSKFilter
+    >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "O=C(O)c1ccccc1c2ccc(cc2)Cn3c4cc(cc(c4nc3CCC)C)c5nc6ccccc6n5C"]
+    >>> filt = GSKFilter()
     >>> filt
-    RuleOfReos()
+    GSKFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['CC(C)CC1=CC=C(C=C1)C(C)C(=O)O']
+    ['C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O']
     """
 
     def __init__(
@@ -75,13 +69,8 @@ class RuleOfReos(BaseFilter):
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
-            200 <= rdMolDescriptors._CalcMolWt(mol) <= 500,
-            -5 <= Crippen.MolLogP(mol) <= 5,
-            0 <= rdMolDescriptors.CalcNumHBA(mol) <= 10,
-            0 <= rdMolDescriptors.CalcNumHBD(mol) <= 5,
-            -2 <= rdmolops.GetFormalCharge(mol) <= 2,
-            0 <= rdMolDescriptors.CalcNumRotatableBonds(mol) <= 8,
-            15 <= rdMolDescriptors.CalcNumHeavyAtoms(mol) <= 50,
+            rdMolDescriptors._CalcMolWt(mol) <= 400,
+            Crippen.MolLogP(mol) <= 4,
         ]
 
         passed_rules = sum(rules)

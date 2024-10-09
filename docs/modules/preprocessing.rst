@@ -42,6 +42,7 @@ Molecular filters:
     BrenkFilter
     GhoseFilter
     GlaxoFilter
+    GSKFilter
     HaoFilter
     InpharmaticaFilter
     LINTFilter
@@ -52,6 +53,7 @@ Molecular filters:
     PAINSFilter
     PfizerFilter
     RuleOfFour
+    RuleOfOprea
     RuleOfReos
     RuleOfThree
     RuleOfTwo
