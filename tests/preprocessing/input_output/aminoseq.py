@@ -5,20 +5,6 @@ from skfp.preprocessing import MolFromAminoseqTransformer
 
 
 @pytest.fixture
-def fasta_list():
-    return [
-        ">peptide_pm_1\nKWLRRVWRWWR\n",
-        ">peptide_pm_2\nFLPAIGRVLSGIL\n",
-        ">peptide_pm_3\nCGESCVWIPCISAVVGCSCKSKVCYKNGTLP\n",
-        ">peptide_pm_4\nILGKLLSTAWGLLSKL\n",
-        ">peptide_pm_5\nWKLFKKIPKFLHLAKKF\n",
-        ">peptide_pm_6\nRAGLQFPVGRLLRRLLRRLLR\n",
-        ">peptide_pm_7\nGLWSKIKTAGKSVAKAAAKAAVKAVTNAV\n",
-        ">peptide_pm_8\nCGESCVYIPCLTSAIGCSCKSKVCYRNGIP\n",
-    ]
-
-
-@pytest.fixture
 def sequence_list(fasta_list):
     return [fst.split("\n")[1] for fst in fasta_list]
 
