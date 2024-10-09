@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from copy import deepcopy
 from functools import partial
 from numbers import Integral
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 from joblib import effective_n_jobs
@@ -24,7 +24,7 @@ from rdkit.ForceField import ForceField
 from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import ensure_mols, run_in_parallel
+from skfp.utils import ensure_mols, run_in_parallel, TQDMSettings
 
 
 class ConformerGenerator(BasePreprocessor):
@@ -92,7 +92,7 @@ class ConformerGenerator(BasePreprocessor):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or TQDMSettings, default=0
         Controls the verbosity when generating conformers.
 
     random_state : int or None, default=0
@@ -152,7 +152,7 @@ class ConformerGenerator(BasePreprocessor):
         errors: str = "raise",
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
         random_state: Optional[int] = 0,
     ):
         self.num_conformers = num_conformers

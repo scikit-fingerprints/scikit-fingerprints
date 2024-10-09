@@ -1,19 +1,17 @@
 from abc import ABC
 from copy import deepcopy
 from numbers import Integral
-from typing import Optional
+from typing import Optional, Union
 
 from joblib import effective_n_jobs
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.utils import run_in_parallel
+from skfp.utils import run_in_parallel, TQDMSettings
 
 
 class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
     """Base class for molecule preprocessing classes."""
-
-    """Base class for fingerprint transformers."""
 
     # parameters common for all fingerprints
     _parameter_constraints: dict = {
@@ -26,7 +24,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         self,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         self.n_jobs = n_jobs
         self.batch_size = batch_size

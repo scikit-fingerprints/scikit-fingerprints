@@ -6,11 +6,11 @@ from typing import Optional, Union
 
 import numpy as np
 from joblib import effective_n_jobs
-from rdkit.Chem import Mol
+from rdkit.Chem.rdchem import Mol
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.utils import ensure_mols, run_in_parallel
+from skfp.utils import ensure_mols, run_in_parallel, TQDMSettings
 
 
 class BaseFilter(ABC, BaseEstimator, TransformerMixin):
@@ -31,7 +31,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, TQDMSettings] = 0,
     ):
         self.allow_one_violation = allow_one_violation
         self.return_indicators = return_indicators
