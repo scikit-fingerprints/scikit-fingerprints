@@ -86,14 +86,29 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
             enable_progress_bars()
 
 
-def get_smiles_and_labels(df: pd.DataFrame) -> tuple[list[str], np.ndarray]:
+def get_mol_strings_and_labels(
+    df: pd.DataFrame, mol_type: str = "SMILES"
+) -> tuple[list[str], np.ndarray]:
     """
-    Extract SMILES and labels (one or more) from the given DataFrame. Assumes
-    that SMILES strings are in "SMILES" column, and all other columns are labels.
+    Extract molecule strings (either SMILES or aminoacid sequences) and labels (one
+    or more) from the given DataFrame.
+
+    If ``mol_type`` is ``"SMILES"``, assumes that
+    SMILES strings are in the "SMILES" column, another option is ``"aminoseq"``, which
+    works similarly, but for aminoacid sequences. In both cases, all other columns are
+    taken as labels.
+
     If there is only a single task, labels are returned as a vector.
     """
-    smiles = df.pop("SMILES").tolist()
+    if mol_type == "SMILES":
+        mol_strings = df.pop("SMILES").tolist()
+    elif mol_type == "aminoseq":
+        mol_strings = df.pop("aminoseq").tolist()
+    else:
+        raise ValueError(f"mol_type {mol_type} not recognized")
+
     labels = df.values
     if labels.shape[1] == 1:
         labels = labels.ravel()
-    return smiles, labels
+
+    return mol_strings, labels

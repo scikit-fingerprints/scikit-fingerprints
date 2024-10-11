@@ -4,7 +4,7 @@ import shutil
 import numpy as np
 import pandas as pd
 
-from skfp.datasets.utils import get_data_home_dir, get_smiles_and_labels
+from skfp.datasets.utils import get_data_home_dir, get_mol_strings_and_labels
 
 
 def test_get_data_home_dir():
@@ -20,7 +20,7 @@ def test_get_data_home_dir():
 
 def test_get_smiles_and_labels():
     df = pd.DataFrame({"SMILES": ["a", "b", "c"], "label": [0, 0, 1]})
-    smiles_list, y = get_smiles_and_labels(df)
+    smiles_list, y = get_mol_strings_and_labels(df)
     assert smiles_list == ["a", "b", "c"]
     assert y.ndim == 1
     assert np.array_equal(y, np.array([0, 0, 1]))
@@ -28,7 +28,7 @@ def test_get_smiles_and_labels():
     df = pd.DataFrame(
         {"SMILES": ["a", "b", "c"], "label1": [0, 1, 1], "label2": [1, 1, 0]}
     )
-    smiles_list, y = get_smiles_and_labels(df)
+    smiles_list, y = get_mol_strings_and_labels(df)
     assert smiles_list == ["a", "b", "c"]
     assert y.ndim == 2
     assert np.array_equal(y, np.array([[0, 1], [1, 1], [1, 0]]))
