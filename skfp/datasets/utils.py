@@ -101,10 +101,8 @@ def get_mol_strings_and_labels(
     """
     if mol_type == "SMILES":
         mol_strings = df.pop("SMILES").tolist()
-        df.pop("aminoseq")
     elif mol_type == "aminoseq":
         mol_strings = df.pop("aminoseq").tolist()
-        df.pop("SMILES")
     else:
         raise ValueError(f"mol_type {mol_type} not recognized")
 
