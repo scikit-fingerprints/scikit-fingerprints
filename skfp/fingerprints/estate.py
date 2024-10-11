@@ -7,8 +7,7 @@ from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
-from skfp.utils import ensure_mols, TQDMSettings
-
+from skfp.utils import ensure_mols
 
 class EStateFingerprint(BaseFingerprintTransformer):
     """
@@ -50,10 +49,11 @@ class EStateFingerprint(BaseFingerprintTransformer):
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
-        equal-sized parts, as many as ``n_jobs``.verbose : int or TQDMSettings, default=0
+        equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int or TQDMSettings, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when computing fingerprints.
+        If a dictionary is passed, it is treated as kwargs for tqdm(), and can be used to control the progress bar
 
     Attributes
     ----------
@@ -102,7 +102,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: Union[int, TQDMSettings] = 0,
+        verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_features_out=79,

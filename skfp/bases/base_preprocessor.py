@@ -7,8 +7,7 @@ from joblib import effective_n_jobs
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.utils import run_in_parallel, TQDMSettings
-
+from skfp.utils import run_in_parallel
 
 class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
     """Base class for molecule preprocessing classes."""
@@ -17,14 +16,14 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
     _parameter_constraints: dict = {
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose", TQDMSettings],
+        "verbose": ["verbose", dict],
     }
 
     def __init__(
         self,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: Union[int, TQDMSettings] = 0,
+        verbose: Union[int, dict] = 0,
     ):
         self.n_jobs = n_jobs
         self.batch_size = batch_size

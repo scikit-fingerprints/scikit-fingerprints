@@ -3,7 +3,6 @@ from typing import Union
 from rdkit.Chem import Mol, rdMolDescriptors
 
 from skfp.bases.base_filter import BaseFilter
-from skfp.utils import TQDMSettings
 
 
 class RuleOfVeber(BaseFilter):
@@ -35,8 +34,9 @@ class RuleOfVeber(BaseFilter):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int or TQDMSettings, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when generating conformers.
+        If a dictionary is passed, it is treated as kwargs for `tqdm()`, and can be used to control the progress bar
 
     References
     -----------
@@ -63,7 +63,7 @@ class RuleOfVeber(BaseFilter):
         return_indicators: bool = False,
         n_jobs: Union[int, None] = None,
         batch_size: Union[int, None] = None,
-        verbose: Union[int, TQDMSettings] = 0,
+        verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             allow_one_violation, return_indicators, n_jobs, batch_size, verbose

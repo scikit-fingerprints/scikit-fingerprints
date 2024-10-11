@@ -5,7 +5,6 @@ from typing import Callable, Optional, Union
 from joblib import effective_n_jobs
 from sklearn.utils.parallel import Parallel, delayed
 from tqdm.auto import tqdm
-from .tqdm_settings import TQDMSettings
 
 
 class ProgressParallel(Parallel):
@@ -14,17 +13,17 @@ class ProgressParallel(Parallel):
 
     Parameters
     ----------
-    tqdm_settings: Optional[TQDMSettings] = None
+    tqdm_settings: Optional[dict] = None
         TQDM settings to use for the progress bar.
     """
 
-    def __init__(self, *args, tqdm_settings: Optional[TQDMSettings] = None, **kwargs):
+    def __init__(self, *args, tqdm_settings: Optional[dict] = None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.tqdm_settings: Optional[TQDMSettings] = tqdm_settings
+        self._tqdm_settings: Optional[dict] = tqdm_settings
         self._pbar: Optional[tqdm] = None
 
     def __call__(self, *args, **kwargs):
-        with self.tqdm_settings.into_tqdm() as self._pbar:
+        with tqdm(**self._tqdm_settings) as self._pbar:
             return Parallel.__call__(self, *args, **kwargs)
 
     def print_progress(self) -> None:
@@ -38,7 +37,7 @@ def run_in_parallel(
     n_jobs: Optional[int] = None,
     batch_size: Optional[int] = None,
     flatten_results: bool = False,
-    verbose: Union[int, TQDMSettings] = 0,
+    verbose: Union[int, dict] = 0,
 ) -> list:
     """Run a function in parallel on provided data in batches, using joblib.
 
@@ -73,10 +72,10 @@ def run_in_parallel(
         Whether to flatten the results, e.g. to change list of lists of integers
         into a list of integers.
 
-    verbose : int or TQDMSettings, default=0
+    verbose : int or dict, default=0
         Controls the verbosity. If higher than zero, progress bar will be shown,
-        tracking the processing of batches. If ``TQDMSettings`` object is provided,
-        it will be used to configure the progress bar.
+        tracking the processing of batches. If `dict` object is provided,
+        it will be used to configure the tqdm progress bar.
 
     Returns
     -------
@@ -105,17 +104,20 @@ def run_in_parallel(
     num_batches = len(data) // batch_size
 
     if isinstance(verbose, int):
-        tqdm_settings = TQDMSettings()
-        if verbose == 0:
-            tqdm_settings.disable()
+        tqdm_settings = {
+            "total": num_batches,
+            "desc": "Processing",
+            "disable": verbose == 0,
+        }
     else:
-        assert isinstance(verbose, TQDMSettings)
-        tqdm_settings = verbose
+        assert isinstance(verbose, dict)
+        tqdm_settings = verbose.copy()
+        tqdm_settings["total"] = num_batches
+        tqdm_settings["disable"] = verbose.get("disable", False)
 
-    if tqdm_settings.is_disabled():
+    if tqdm_settings["disable"]:
         parallel = Parallel(n_jobs=n_jobs)
     else:
-        tqdm_settings = tqdm_settings.total(num_batches)
         parallel = ProgressParallel(n_jobs=n_jobs, tqdm_settings=tqdm_settings)
 
     results = parallel(delayed(func)(data_batch) for data_batch in data_batch_gen)

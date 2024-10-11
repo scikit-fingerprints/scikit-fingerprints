@@ -5,7 +5,6 @@ from rdkit.Chem import Mol, MolFromInchi, MolToInchi
 
 from skfp.bases import BasePreprocessor
 from skfp.utils.validators import check_mols, check_strings
-from skfp.utils import TQDMSettings
 
 
 class MolFromInchiTransformer(BasePreprocessor):
@@ -34,8 +33,9 @@ class MolFromInchiTransformer(BasePreprocessor):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int or TQDMSettings, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
+        If a dictionary is passed, it is treated as kwargs for tqdm(), and can be used to control the progress bar.
 
     References
     ----------
@@ -67,7 +67,7 @@ class MolFromInchiTransformer(BasePreprocessor):
         remove_hydrogens: bool = True,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: Union[int, TQDMSettings] = 0,
+        verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -103,8 +103,9 @@ class MolToInchiTransformer(BasePreprocessor):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int or TQDMSettings, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
+        If a dictionary is passed, it is treated as kwargs for tqdm(), and can be used to control the progress bar
 
     References
     ----------
@@ -129,7 +130,7 @@ class MolToInchiTransformer(BasePreprocessor):
         self,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: Union[int, TQDMSettings] = 0,
+        verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,

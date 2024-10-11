@@ -46,7 +46,9 @@ def test_map_count_fingerprint(smallest_smiles_list, smallest_mols_list):
 def test_map_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         variant="raw_hashes",
-        verbose=0,
+        verbose={
+            "leave": False,
+        },
         n_jobs=-1,
     )
     X_skfp = map_fp.transform(smallest_smiles_list)
@@ -65,7 +67,9 @@ def test_map_sparse_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         variant="bit",
         sparse=True,
-        verbose=0,
+        verbose={
+            "dynamic_ncols": False,
+        },
         n_jobs=-1,
     )
     X_skfp = map_fp.transform(smallest_smiles_list)
@@ -87,7 +91,10 @@ def test_map_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         variant="count",
         sparse=True,
-        verbose=0,
+        verbose={
+            "dynamic_ncols": False,
+            "disable": True,
+        },
         n_jobs=-1,
     )
     X_skfp = map_fp.transform(smallest_smiles_list)

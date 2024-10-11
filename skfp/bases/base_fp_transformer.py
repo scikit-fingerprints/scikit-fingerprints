@@ -23,8 +23,7 @@ from sklearn.base import (
 )
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.utils import run_in_parallel, TQDMSettings
-
+from skfp.utils import run_in_parallel
 """
 If you get MaybeEncodingError, first check any worker functions for exceptions!
 That error isn't very informative, but gets thrown in Joblib multiprocessing.
@@ -50,7 +49,7 @@ class BaseFingerprintTransformer(
         "sparse": ["boolean"],
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose", TQDMSettings],
+        "verbose": ["verbose", dict],
         "random_state": ["random_state"],
     }
 
@@ -62,7 +61,7 @@ class BaseFingerprintTransformer(
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: Union[int, TQDMSettings] = 0,
+        verbose: Union[int, dict] = 0,
         random_state: Optional[int] = 0,
     ):
         self.count = count
