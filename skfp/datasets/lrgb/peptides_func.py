@@ -59,7 +59,7 @@ def load_peptides_func(
     Returns
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
-        Depending on the ``as_frame`` argument, one of:
+        Depending on the ``as_frame`` and ``mol_type`` parameters, one of:
         - Pandas DataFrame with columns: "SMILES"/"aminoseq", "label"
         - tuple of: list of strings (SMILES / aminoacid sequences), NumPy array (labels)
 
@@ -72,7 +72,7 @@ def load_peptides_func(
     """
     df = fetch_dataset(
         data_dir,
-        dataset_name="LRGB_Peptides_func",
+        dataset_name="LRGB_Peptides-func",
         filename="peptides_func.csv",
         verbose=verbose,
     )

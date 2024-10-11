@@ -95,17 +95,21 @@ def get_mol_strings_and_labels(
 
     If ``mol_type`` is ``"SMILES"``, assumes that
     SMILES strings are in the "SMILES" column, another option is ``"aminoseq"``, which
-    works similarly, but for aminoacid sequences. In both cases, all other columns are
-    taken as labels.
+    works similarly, but for aminoacid sequences. All other columns are taken as labels.
 
     If there is only a single task, labels are returned as a vector.
     """
     if mol_type == "SMILES":
         mol_strings = df.pop("SMILES").tolist()
+        df.pop("aminoseq")
     elif mol_type == "aminoseq":
         mol_strings = df.pop("aminoseq").tolist()
+        df.pop("SMILES")
     else:
         raise ValueError(f"mol_type {mol_type} not recognized")
+
+    # make sure we remove both columns if present
+    df = df.drop(columns=["SMILES", "aminoseq"], errors="ignore")
 
     labels = df.values
     if labels.shape[1] == 1:

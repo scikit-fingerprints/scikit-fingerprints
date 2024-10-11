@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import scale
 from sklearn.utils._param_validation import StrOptions, validate_params
 
 from skfp.datasets.utils import fetch_dataset, get_mol_strings_and_labels
@@ -66,7 +67,7 @@ def load_peptides_struct(
     Returns
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
-        Depending on the ``as_frame`` argument, one of:
+        Depending on the ``as_frame`` and ``mol_type`` parameters, one of:
         - Pandas DataFrame with columns: "SMILES"/"aminoseq", "label"
         - tuple of: list of strings (SMILES / aminoacid sequences), NumPy array (labels)
 
@@ -79,7 +80,7 @@ def load_peptides_struct(
     """
     df = fetch_dataset(
         data_dir,
-        dataset_name="LRGB_Peptides_struct",
+        dataset_name="LRGB_Peptides-struct",
         filename="peptides_struct.csv",
         verbose=verbose,
     )
@@ -88,14 +89,11 @@ def load_peptides_struct(
             label_cols = [
                 col for col in df.columns if col not in {"SMILES", "aminoseq"}
             ]
-            means = df[label_cols].mean()
-            stddevs = df[label_cols].std()
-            df.loc[:, label_cols] = (df[label_cols] - means) / stddevs
+            labels = scale(df[label_cols].values)
+            df.loc[:, label_cols] = labels
         return df
     else:
         mol_strings, labels = get_mol_strings_and_labels(df, mol_type=mol_type)
         if standardize_labels:
-            means = np.mean(labels, axis=0)
-            stddevs = np.std(labels, axis=0)
-            labels = (labels - means) / stddevs
+            labels = scale(labels)
         return mol_strings, labels
