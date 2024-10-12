@@ -108,7 +108,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         Returns
         -------
         X : list of shape (n_samples_conf_gen,) or array of shape (n_samples,)
-            List with filtered RDKit Mol objects, or indicator vector which molecules
+            List with filtered molecules, or indicator vector which molecules
             fulfill the filter rules.
         """
         filter_ind = self._get_filter_indicators(X, copy)
@@ -119,9 +119,10 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
 
     def transform_x_y(
         self, X: Sequence[Union[str, Mol]], y: np.ndarray, copy: bool = False
-    ) -> tuple[list[Union[str, Mol]], np.ndarray]:
+    ) -> Union[tuple[list[Union[str, Mol]], np.ndarray], tuple[np.ndarray, np.ndarray]]:
         """
-        Apply a filter to input molecules.
+        Apply a filter to input molecules. Output depends on ``return_indicators``
+        attribute.
 
         Parameters
         ----------
@@ -137,7 +138,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         Returns
         -------
         X : list of shape (n_samples_conf_gen,) or array of shape (n_samples,)
-            List with filtered RDKit Mol objects, or indicator vector which molecules
+            List with filtered molecules, or indicator vector which molecules
             fulfill the filter rules.
 
         y : np.ndarray of shape (n_samples_conf_gen,)
@@ -146,7 +147,10 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         filter_ind = self._get_filter_indicators(X, copy)
         mols = [mol for idx, mol in enumerate(X) if filter_ind[idx]]
         y = y[filter_ind]
-        return mols, y
+        if self.return_indicators:
+            return filter_ind, y
+        else:
+            return mols, y
 
     def _get_filter_indicators(
         self, mols: Sequence[Union[str, Mol]], copy: bool = True
