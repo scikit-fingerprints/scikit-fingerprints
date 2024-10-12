@@ -5,5 +5,5 @@ Datasets
 .. toctree::
     :maxdepth: 2
 
-    moleculenet
-
+    datasets/lrgb
+    datasets/moleculenet

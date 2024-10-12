@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.utils._param_validation import validate_params
 
-from skfp.datasets.utils import fetch_dataset, get_smiles_and_labels
+from skfp.datasets.utils import fetch_dataset, get_mol_strings_and_labels
 
 
 @validate_params(
@@ -44,7 +44,7 @@ def load_clintox(
     as_frame : bool, default=False
         If True, returns the raw DataFrame with columns "SMILES" and 2 label columns,
         FDA approval and clinical trial toxicity. Otherwise, returns SMILES as list
-        of strings,and labels as a NumPy array (2D integer array).
+        of strings, and labels as a NumPy array (2D integer array).
 
     verbose : bool, default=False
         If True, progress bar will be shown for downloading or loading files.
@@ -69,4 +69,4 @@ def load_clintox(
         filename="clintox.csv",
         verbose=verbose,
     )
-    return df if as_frame else get_smiles_and_labels(df)
+    return df if as_frame else get_mol_strings_and_labels(df)
