@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from copy import deepcopy
 from numbers import Integral
 from typing import Optional, Union
 
@@ -102,8 +101,8 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         X : {sequence, array-like} of shape (n_samples,)
             Sequence containing RDKit Mol objects.
 
-        copy : bool, default=True
-            Copy the input X or not.
+        copy : bool, default=False
+            Unused, kept for Scikit-learn compatibility.
 
         Returns
         -------
@@ -111,7 +110,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
             List with filtered molecules, or indicator vector which molecules
             fulfill the filter rules.
         """
-        filter_ind = self._get_filter_indicators(X, copy)
+        filter_ind = self._get_filter_indicators(X)
         if self.return_indicators:
             return filter_ind
         else:
@@ -132,8 +131,8 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         y : array-like of shape (n_samples,)
             Array with labels for molecules.
 
-        copy : bool, default=True
-            Copy the input X or not.
+        copy : bool, default=False
+            Unused, kept for Scikit-learn compatibility.
 
         Returns
         -------
@@ -144,7 +143,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         y : np.ndarray of shape (n_samples_conf_gen,)
             Array with labels for molecules.
         """
-        filter_ind = self._get_filter_indicators(X, copy)
+        filter_ind = self._get_filter_indicators(X)
         mols = [mol for idx, mol in enumerate(X) if filter_ind[idx]]
         y = y[filter_ind]
         if self.return_indicators:
@@ -152,11 +151,8 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         else:
             return mols, y
 
-    def _get_filter_indicators(
-        self, mols: Sequence[Union[str, Mol]], copy: bool = True
-    ) -> np.ndarray:
+    def _get_filter_indicators(self, mols: Sequence[Union[str, Mol]]) -> np.ndarray:
         self._validate_params()
-        mols = deepcopy(mols) if copy else mols
         mols = ensure_mols(mols)
 
         n_jobs = effective_n_jobs(self.n_jobs)

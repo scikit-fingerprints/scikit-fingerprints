@@ -11,6 +11,7 @@ from .lint import LINTFilter
 from .lipinski import LipinskiFilter
 from .mlsmr import MLSMRFilter
 from .mol_weight import MolecularWeightFilter
+from .nibr import NIBRFilter
 from .nih import NIHFilter
 from .pains import PAINSFilter
 from .pfizer import PfizerFilter
