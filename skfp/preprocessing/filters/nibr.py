@@ -98,15 +98,15 @@ class NIBRFilter(BaseFilter):
         # note that this is rejection filter, trying to return False and remove
         # molecule as fast as possible
 
-        excluded_violations = 0
+        exclusions = 0
         flags_counter = 0
         for smarts, min_count, exclude in self._filters:
             num_matches = len(mol.GetSubstructMatches(smarts, maxMatches=min_count))
             if num_matches < min_count:
                 continue
             elif exclude:
-                excluded_violations += 1
-                if excluded_violations >= self.allow_one_violation:
+                exclusions += 1
+                if exclusions >= self.allow_one_violation:
                     return False
             else:  # flag
                 flags_counter += 1
