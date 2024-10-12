@@ -35,12 +35,16 @@ class RuleOfThree(BaseFilter):
     Parameters
     ----------
     extended : bool, default=False
-         results in the application of an extended version of this rule
-         i.e. apply TPSA and rotatable bonds filtering
+        Whether to use an extended version of this rule, additionally including TPSA and
+        rotatable bonds conditions.
 
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
+
+    return_indicators : bool, default=False
+        Whether to return a binary vector with indicators which molecules pass the
+        filter, instead of list of molecules.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
