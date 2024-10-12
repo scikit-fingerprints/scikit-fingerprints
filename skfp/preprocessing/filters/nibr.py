@@ -99,7 +99,7 @@ class NIBRFilter(BaseFilter):
         # molecule as fast as possible
 
         excluded_violations = 0
-        severity_counter = 0
+        flags_counter = 0
         for smarts, min_count, exclude in self._filters:
             num_matches = len(mol.GetSubstructMatches(smarts, maxMatches=min_count))
             if num_matches < min_count:
@@ -109,8 +109,8 @@ class NIBRFilter(BaseFilter):
                 if excluded_violations >= self.allow_one_violation:
                     return False
             else:  # flag
-                severity_counter += 1
-                if severity_counter >= self.severity:
+                flags_counter += 1
+                if flags_counter >= self.severity:
                     return False
 
         return True
