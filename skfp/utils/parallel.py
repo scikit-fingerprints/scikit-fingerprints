@@ -111,11 +111,12 @@ def run_in_parallel(
             "desc": "Processing",
             "disable": verbose == 0,
         }
-    else:
-        assert isinstance(verbose, dict)
+    elif isinstance(verbose, dict):
         tqdm_settings = verbose.copy()
         tqdm_settings["total"] = num_batches
         tqdm_settings["disable"] = verbose.get("disable", False)
+    else:
+        raise ValueError(f"The `verbose` argument must be int or `dict`, got {type(verbose)}")
 
     if tqdm_settings["disable"]:
         parallel = Parallel(n_jobs=n_jobs)
