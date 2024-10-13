@@ -15,6 +15,7 @@ from .filters import (
     LipinskiFilter,
     MLSMRFilter,
     MolecularWeightFilter,
+    NIBRFilter,
     NIHFilter,
     PAINSFilter,
     PfizerFilter,

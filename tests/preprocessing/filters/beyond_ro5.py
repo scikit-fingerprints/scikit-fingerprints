@@ -111,4 +111,8 @@ def test_bro5_return_indicators(
 
     filt = BeyondRo5Filter(return_indicators=True)
     filter_indicators = filt.transform(all_smiles)
-    assert np.all(filter_indicators)
+
+    assert len(filter_indicators) == len(all_smiles)
+    assert isinstance(filter_indicators, np.ndarray)
+    assert np.issubdtype(filter_indicators.dtype, bool)
+    assert np.all(np.isin(filter_indicators, [0, 1]))

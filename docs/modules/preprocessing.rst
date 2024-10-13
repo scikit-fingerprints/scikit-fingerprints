@@ -51,6 +51,7 @@ Molecular filters:
     LipinskiFilter
     MLSMRFilter
     MolecularWeightFilter
+    NIBRFilter
     NIHFilter
     PAINSFilter
     PfizerFilter

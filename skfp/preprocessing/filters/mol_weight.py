@@ -23,6 +23,10 @@ class MolecularWeightFilter(BaseFilter):
     max_weight : int, default=1000
         Maximal weight in Daltons.
 
+    return_indicators : bool, default=False
+        Whether to return a binary vector with indicators which molecules pass the
+        filter, instead of list of molecules.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
