@@ -14,12 +14,14 @@ class ProgressParallel(Parallel):
     Parameters
     ----------
     tqdm_settings: Optional[dict] = None
-        TQDM settings to use for the progress bar.
+        Settings to use for the ``tqdm()`` progress bar.
     """
 
     def __init__(self, *args, tqdm_settings: Optional[dict] = None, **kwargs):
         super().__init__(*args, **kwargs)
-        self._tqdm_settings: Optional[dict] = tqdm_settings
+        if tqdm_settings is None:
+            tqdm_settings = {}
+        self._tqdm_settings dict = tqdm_settings
         self._pbar: Optional[tqdm] = None
 
     def __call__(self, *args, **kwargs):
@@ -72,10 +74,10 @@ def run_in_parallel(
         Whether to flatten the results, e.g. to change list of lists of integers
         into a list of integers.
 
-    verbose : int or dict, default=0
+    verbose : int or ``dict``, default=0
         Controls the verbosity. If higher than zero, progress bar will be shown,
         tracking the processing of batches. If `dict` object is provided,
-        it will be used to configure the tqdm progress bar.
+        it will be used to configure the `tqdm` progress bar.
 
     Returns
     -------
