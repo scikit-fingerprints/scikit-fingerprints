@@ -91,10 +91,7 @@ def test_map_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         variant="count",
         sparse=True,
-        verbose={
-            "dynamic_ncols": False,
-            "disable": True,
-        },
+        verbose=0,
         n_jobs=-1,
     )
     X_skfp = map_fp.transform(smallest_smiles_list)
