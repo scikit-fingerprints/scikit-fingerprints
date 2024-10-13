@@ -133,7 +133,7 @@ verbose : int or ``dict``, default=0
 
     _parameter_constraints: dict = {
         "fingerprint": [BaseFingerprintTransformer],
-        "fp_param_grid": [``dict``, list],
+        "fp_param_grid": [dict, list],
         "estimator_cv": [BaseSearchCV],
         "greater_is_better": ["boolean"],
         "cache_best_fp_array": ["boolean"],
@@ -143,7 +143,7 @@ verbose : int or ``dict``, default=0
     def __init__(
         self,
         fingerprint: BaseFingerprintTransformer,
-        fp_param_grid: Union[``dict``, list[dict]],
+        fp_param_grid: Union[dict, list[dict]],
         estimator_cv: BaseSearchCV,
         greater_is_better: bool = True,
         cache_best_fp_array: bool = False,
@@ -245,7 +245,7 @@ verbose : int or ``dict``, default=0
         self,
         curr_idx: int,
         grid_size: int,
-        curr_params: ``dict``,
+        curr_params: dict,
         start_time: float,
         end_time: float,
         curr_score: float,

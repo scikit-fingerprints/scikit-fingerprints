@@ -19,7 +19,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
         Whether to perform sanitization [1]_, i.e. basic validity checks, on created
         molecules.
 
-    replacements : ``dict``, default=None
+    replacements : dict, default=None
         If provided, will be used to do string substitution of abbreviations in the
         input SMILES.
 
@@ -61,7 +61,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
     _parameter_constraints: dict = {
         **BasePreprocessor._parameter_constraints,
         "sanitize": ["boolean"],
-        "replacements": [``dict``, None],
+        "replacements": [dict, None],
     }
 
     def __init__(

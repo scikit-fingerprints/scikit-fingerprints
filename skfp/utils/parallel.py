@@ -21,7 +21,7 @@ class ProgressParallel(Parallel):
         super().__init__(*args, **kwargs)
         if tqdm_settings is None:
             tqdm_settings = {}
-        self._tqdm_settings dict = tqdm_settings
+        self._tqdm_settings: dict = tqdm_settings
         self._pbar: Optional[tqdm] = None
 
     def __call__(self, *args, **kwargs):

@@ -128,7 +128,7 @@ def train_and_tune_fp_classifier(
     y_train: np.ndarray,
     y_test: np.ndarray,
     fp: BaseFingerprintTransformer,
-    fp_params_grid: ``dict``,
+    fp_params_grid: dict,
 ) -> tuple[float, float, float]:
     pipeline = Pipeline(
         [("fp", fp), ("clf", RandomForestClassifier(n_jobs=-1, random_state=0))]

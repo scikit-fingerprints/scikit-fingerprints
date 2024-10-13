@@ -134,7 +134,7 @@ verbose : int or ``dict``, default=0
 
     _parameter_constraints: dict = {
         "fingerprint": [BaseFingerprintTransformer],
-        "fp_param_distributions": [``dict``, list],
+        "fp_param_distributions": [dict, list],
         "estimator_cv": [BaseSearchCV],
         "greater_is_better": ["boolean"],
         "n_iter": [Interval(Integral, 1, None, closed="left")],
@@ -146,7 +146,7 @@ verbose : int or ``dict``, default=0
     def __init__(
         self,
         fingerprint: BaseFingerprintTransformer,
-        fp_param_distributions: Union[``dict``, list[dict]],
+        fp_param_distributions: Union[dict, list[dict]],
         estimator_cv: BaseSearchCV,
         greater_is_better: bool = True,
         n_iter: int = 10,
@@ -248,7 +248,7 @@ verbose : int or ``dict``, default=0
     def _print_end_msg(
         self,
         curr_idx: int,
-        curr_params: ``dict``,
+        curr_params: dict,
         start_time: float,
         end_time: float,
         curr_score: float,
