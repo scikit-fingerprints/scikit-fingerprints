@@ -35,7 +35,8 @@ class MolFromInchiTransformer(BasePreprocessor):
 
     verbose : int or ``dict``, default=0
         Controls the verbosity when processing molecules.
-        If a dictionary is passed, it is treated as kwargs for ``tqdm()``, and can be used to control the progress bar.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar..
 
     References
     ----------
@@ -105,7 +106,8 @@ class MolToInchiTransformer(BasePreprocessor):
 
     verbose : int or ``dict``, default=0
         Controls the verbosity when processing molecules.
-        If a dictionary is passed, it is treated as kwargs for ``tqdm()``, and can be used to control the progress bar
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     References
     ----------

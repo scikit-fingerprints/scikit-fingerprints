@@ -36,7 +36,8 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
 
     verbose : int or ``dict``, default=0
         Controls the verbosity when computing fingerprints.
-        If a dictionary is passed, it is treated as kwargs for ``tqdm()``, and can be used to control the progress bar
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     Attributes
     ----------

@@ -73,7 +73,8 @@ verbose : int or ``dict``, default=0
         - >0 : size of parameter grid, parameter candidate for each fold
         - >1 : the computation time and score for each candidate
 
-        If a dictionary is passed, it is treated as kwargs for ``tqdm()``, and can be used to control the progress bar
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     Attributes
     ----------
