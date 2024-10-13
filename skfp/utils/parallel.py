@@ -76,8 +76,8 @@ def run_in_parallel(
 
     verbose : int or ``dict``, default=0
         Controls the verbosity. If higher than zero, progress bar will be shown,
-        tracking the processing of batches. If `dict` object is provided,
-        it will be used to configure the `tqdm` progress bar.
+        tracking the processing of batches. If ``dict`` object is provided,
+        it will be used to configure the ``tqdm`` progress bar.
 
     Returns
     -------
