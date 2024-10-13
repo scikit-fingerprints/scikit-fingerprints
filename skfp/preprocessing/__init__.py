@@ -18,6 +18,7 @@ from .filters import (
     NIHFilter,
     PAINSFilter,
     PfizerFilter,
+    RuleOfDrugLikeSoft,
     RuleOfFour,
     RuleOfOprea,
     RuleOfReos,

@@ -69,7 +69,7 @@ class GSKFilter(BaseFilter):
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
-            rdMolDescriptors._CalcMolWt(mol) <= 400,
+            rdMolDescriptors.CalcExactMolWt(mol) <= 400,
             Crippen.MolLogP(mol) <= 4,
         ]
 
