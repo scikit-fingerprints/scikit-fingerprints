@@ -46,15 +46,15 @@ def test_laggner_count_sparse_fingerprint(smiles_list):
 
 def test_laggner_salt_matching():
     non_salts = ["O", "CC", "[C-]#N", "CC=O"]
-    salts = ["[Na+].[Cl-]", "[NH4+].[Na+]"]
+    salts = ["[Na+].[Cl-]", "[Ca+2].[Cl-].[Cl-]"]
     smiles_list = non_salts + salts
 
     fp = LaggnerFingerprint()
     X = fp.transform(smiles_list)
 
-    assert X[0, 299] == 0
-    assert X[1, 299] == 0
-    assert X[2, 299] == 0
-    assert X[3, 299] == 0
-    assert X[4, 299] == 1
-    assert X[5, 299] == 1
+    assert X[0, 298] == 0
+    assert X[1, 298] == 0
+    assert X[2, 298] == 0
+    assert X[3, 298] == 0
+    assert X[4, 298] == 1
+    assert X[5, 298] == 1
