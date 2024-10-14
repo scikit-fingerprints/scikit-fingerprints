@@ -7,6 +7,7 @@ from .filters import (
     BMSFilter,
     BrenkFilter,
     FAF4DruglikeFilter,
+    FAF4LeadlikeFilter,
     GhoseFilter,
     GlaxoFilter,
     GSKFilter,

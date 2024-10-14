@@ -25,7 +25,7 @@ from .utils import (
 
 class FAF4DruglikeFilter(BaseFilter):
     """
-    FAFDrugs4 Druglike Soft filter.
+    FAFDrugs4 Drug-Like Soft filter.
 
     Designed as a part of FAFDrugs4 software [1]_ [2]_. Based on literature describing
     physico-chemical properties of drugs and their statistical analysis. Selected
@@ -40,21 +40,20 @@ class FAF4DruglikeFilter(BaseFilter):
 
     - molecular weight in range ``[100, 600]``
     - logP in range ``[-3, 6]``
-    - HBD <= 7
     - HBA <= 12
+    - HBD <= 7
     - TPSA <= 180
     - number of rotatable bonds <= 11
     - number of rigid bonds <= 30
-    - number of rings in range <= 6
-    - max size of A ring <= 18
-    - number of carbon atoms in range ``[3, 35]``
+    - number of rings <= 6
+    - max ring size <= 18
+    - number of carbons in range ``[3, 35]``
     - number of heteroatoms in range ``[1, 15]``
-    - number of heavy atoms in range ``[10, 50]``
     - non-carbons to carbons ratio in range ``[0.1, 1.1]``
-    - charge in range ``[-4, 4]``
     - number of charged functional groups <= 4
+    - total formal charge in range ``[-4, 4]``
 
-    Note that the FAF4Drugs uses ChemAxon for determining functional groups. We use
+    Note that the FAFDrugs4 uses ChemAxon for determining functional groups. We use
     their publicly available CXSMARTS list of functional groups [3]_. Phosphine and
     sulfoxide patterns could not be parsed by RDKit, so we manually fixed them.
 
@@ -124,8 +123,8 @@ class FAF4DruglikeFilter(BaseFilter):
         rules = [
             100 <= MolWt(mol) <= 600,
             -3 <= MolLogP(mol) <= 6,
-            CalcNumHBD(mol) <= 7,
             CalcNumHBA(mol) <= 12,
+            CalcNumHBD(mol) <= 7,
             CalcTPSA(mol) <= 180,
             CalcNumRotatableBonds(mol) <= 11,
             get_num_rigid_bonds(mol) <= 30,
@@ -134,8 +133,8 @@ class FAF4DruglikeFilter(BaseFilter):
             3 <= get_num_carbon_atoms(mol) <= 35,
             1 <= CalcNumHeteroatoms(mol) <= 15,
             0.1 <= get_non_carbon_to_carbon_ratio(mol) <= 1.1,
-            -4 <= GetFormalCharge(mol) <= 4,
             get_num_charged_functional_groups(mol) <= 4,
+            -4 <= GetFormalCharge(mol) <= 4,
         ]
         passed_rules = sum(rules)
 

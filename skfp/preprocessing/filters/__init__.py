@@ -2,7 +2,8 @@ from .basic_zinc import BasicZINCFilter
 from .beyond_ro5 import BeyondRo5Filter
 from .bms import BMSFilter
 from .brenk import BrenkFilter
-from .faf4_druglike_soft_filter import FAF4DruglikeFilter
+from .faf4_druglike_filter import FAF4DruglikeFilter
+from .faf4_leadlike_filter import FAF4LeadlikeFilter
 from .ghose import GhoseFilter
 from .glaxo import GlaxoFilter
 from .gsk import GSKFilter
