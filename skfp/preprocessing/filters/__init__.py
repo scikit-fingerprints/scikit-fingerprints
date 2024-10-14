@@ -27,3 +27,4 @@ from .rule_of_xu import RuleOfXu
 from .surechembl import SureChEMBLFilter
 from .tice_herbicides import TiceHerbicidesFilter
 from .tice_insecticides import TiceInsecticidesFilter
+from .valence_discovery import ValenceDiscoveryFilter

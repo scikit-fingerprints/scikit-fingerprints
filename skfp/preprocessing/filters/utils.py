@@ -1,15 +1,70 @@
 import functools
+from collections.abc import Iterable
 
-from rdkit.Chem import Mol, MolFromSmarts, rdMolDescriptors
+from rdkit.Chem import Atom, Mol, MolFromSmarts, rdMolDescriptors
 
 
-def get_non_carbon_to_carbon_ratio(mol: Mol) -> float:
+def get_num_carbon_atoms(mol: Mol) -> int:
     """
-    Calculates ratio of non-carbon to carbon atoms.
+    Calculated number of carbon atoms in a molecule.
     """
-    num_carbons = get_num_carbon_atoms(mol)
-    num_non_carbons = mol.GetNumAtoms() - num_carbons
-    return num_non_carbons / num_carbons if num_carbons > 0 else 0.0
+    return sum(atom.GetSymbol() == "C" for atom in mol.GetAtoms())
+
+
+def get_num_rigid_bonds(mol: Mol) -> int:
+    """
+    Calculates number of rigid bonds in a molecule.
+    """
+    total_bonds = mol.GetNumBonds()
+    rotatable_bonds = rdMolDescriptors.CalcNumRotatableBonds(mol)
+    return total_bonds - rotatable_bonds
+
+
+def get_num_aromatic_rings(mol: Mol) -> int:
+    """
+    Calculates number of aromatic rings in a molecule.
+    """
+    return sum(is_ring_aromatic(mol, ring) for ring in mol.GetRingInfo().AtomRings())
+
+
+def get_max_num_fused_aromatic_rings(mol: Mol) -> int:
+    """
+    Calculates the number of rings in the largest system of fused
+    aromatic rings in a molecule.
+    """
+    ring_info = mol.GetRingInfo()
+
+    fused_aromatic_ring_idxs = []
+    for idx, ring in enumerate(mol.GetRingInfo().AtomRings()):
+        if is_ring_aromatic(mol, ring) and ring_info.IsRingFused(idx):
+            fused_aromatic_ring_idxs.append(idx)
+
+    # find the largest fused ring system by exhaustively checking
+    # all combinations
+
+    largest_size = 0
+    for i, ring_idx in enumerate(fused_aromatic_ring_idxs):
+        fused_rings = [
+            ring_idx_2
+            for ring_idx_2 in fused_aromatic_ring_idxs[i + 1 :]
+            if ring_info.AreRingsFused(ring_idx, ring_idx_2)
+        ]
+        if fused_rings:
+            # original ring and fused ones
+            largest_size = max(largest_size, 1 + len(fused_rings))
+
+    return largest_size
+
+
+def is_ring_aromatic(mol: Mol, ring_atoms: Iterable[Atom]) -> bool:
+    """
+    Checks whether a ring is aromatic.
+    """
+    for atom_idx in ring_atoms:
+        if not mol.GetAtomWithIdx(atom_idx).GetIsAromatic():
+            return False
+
+    return True
 
 
 def get_max_ring_size(mol: Mol) -> int:
@@ -20,11 +75,13 @@ def get_max_ring_size(mol: Mol) -> int:
     return max(len(ring) for ring in rings) if rings else 0
 
 
-def get_num_carbon_atoms(mol: Mol) -> int:
+def get_non_carbon_to_carbon_ratio(mol: Mol) -> float:
     """
-    Calculated number of carbon atoms in a molecule.
+    Calculates ratio of non-carbon to carbon atoms.
     """
-    return sum(atom.GetSymbol() == "C" for atom in mol.GetAtoms())
+    num_carbons = get_num_carbon_atoms(mol)
+    num_non_carbons = mol.GetNumAtoms() - num_carbons
+    return num_non_carbons / num_carbons if num_carbons > 0 else 0.0
 
 
 def get_num_charged_functional_groups(mol: Mol) -> int:
@@ -55,16 +112,6 @@ def get_num_charged_functional_groups(mol: Mol) -> int:
     )
 
     return num_charged_groups
-
-
-def get_num_rigid_bonds(mol: Mol) -> int:
-    """
-    Calculates number of rigid bonds in a molecule.
-    """
-    total_bonds: int = mol.GetNumBonds()
-    rotatable_bonds: int = rdMolDescriptors.CalcNumRotatableBonds(mol)
-
-    return total_bonds - rotatable_bonds
 
 
 @functools.cache

@@ -2,8 +2,10 @@ import pytest
 from rdkit.Chem import Mol, MolFromSmiles
 
 from skfp.preprocessing.filters.utils import (
+    get_max_num_fused_aromatic_rings,
     get_max_ring_size,
     get_non_carbon_to_carbon_ratio,
+    get_num_aromatic_rings,
     get_num_carbon_atoms,
     get_num_charged_functional_groups,
     get_num_rigid_bonds,
@@ -11,28 +13,71 @@ from skfp.preprocessing.filters.utils import (
 
 
 @pytest.fixture
-def ibuprofren_mol() -> Mol:
-    ibuprofen_smiles: str = "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"
-    return MolFromSmiles(ibuprofen_smiles)
+def ibuprofen() -> Mol:
+    return MolFromSmiles("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O")
+
+
+def test_get_num_carbon_atoms(ibuprofen):
+    assert get_num_carbon_atoms(ibuprofen) == 13
+
+
+def test_get_num_rigid_bonds(ibuprofen):
+    assert get_num_rigid_bonds(ibuprofen) == 11
+
+
+def test_get_num_aromatic_rings():
+    # tetrahydrothiophene
+    mol = MolFromSmiles("S1CCCC1")
+    assert get_num_aromatic_rings(mol) == 0
+
+    # benzene
+    mol = MolFromSmiles("c1ccccc1")
+    assert get_num_aromatic_rings(mol) == 1
+
+    # naphthalene
+    mol = MolFromSmiles("c1c2ccccc2ccc1")
+    assert get_num_aromatic_rings(mol) == 2
+
+    # pyrene
+    mol = MolFromSmiles("c1cc2cccc3c2c4c1cccc4cc3")
+    assert get_num_aromatic_rings(mol) == 4
+
+    # chlordiazepoxide
+    mol = MolFromSmiles("ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1")
+    assert get_num_aromatic_rings(mol) == 2
+
+
+def test_get_max_num_fused_aromatic_rings():
+    # tetrahydrothiophene
+    mol = MolFromSmiles("S1CCCC1")
+    assert get_max_num_fused_aromatic_rings(mol) == 0
+
+    # benzene
+    mol = MolFromSmiles("c1ccccc1")
+    assert get_max_num_fused_aromatic_rings(mol) == 0
+
+    # naphthalene
+    mol = MolFromSmiles("c1c2ccccc2ccc1")
+    assert get_max_num_fused_aromatic_rings(mol) == 2
+
+    # pyrene
+    mol = MolFromSmiles("c1cc2cccc3c2c4c1cccc4cc3")
+    assert get_max_num_fused_aromatic_rings(mol) == 4
+
+    # chlordiazepoxide
+    mol = MolFromSmiles("ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1")
+    assert get_max_num_fused_aromatic_rings(mol) == 0
+
+
+def test_get_max_ring_size(ibuprofen):
+    assert get_max_ring_size(ibuprofen) == 6
+
+
+def test_get_non_carbon_to_carbon_ratio(ibuprofen):
+    assert get_non_carbon_to_carbon_ratio(ibuprofen) == 4.0
 
 
 def test_get_num_charged_functional_groups(mols_list):
     # just a smoke test - this should not error
     for mol in mols_list:
         get_num_charged_functional_groups(mol)
-
-
-def test_get_max_sized_ring(ibuprofren_mol):
-    assert get_max_ring_size(ibuprofren_mol) == 6
-
-
-def test_get_number_of_carbons(ibuprofren_mol):
-    assert get_num_carbon_atoms(ibuprofren_mol) == 13
-
-
-def test_get_hc_ratio(ibuprofren_mol):
-    assert get_non_carbon_to_carbon_ratio(ibuprofren_mol) == 4.0
-
-
-def test_get_rigbonds(ibuprofren_mol):
-    assert get_num_rigid_bonds(ibuprofren_mol) == 11

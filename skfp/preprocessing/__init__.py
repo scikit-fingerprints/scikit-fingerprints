@@ -31,6 +31,7 @@ from .filters import (
     SureChEMBLFilter,
     TiceHerbicidesFilter,
     TiceInsecticidesFilter,
+    ValenceDiscoveryFilter,
 )
 from .input_output import (
     MolFromAminoseqTransformer,
