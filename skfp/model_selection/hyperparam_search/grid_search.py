@@ -67,11 +67,14 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         Whether to cache the array of values from the best fingerprint in ``best_fp_array_``
         parameter. Note that this can result in high memory usage.
 
-    verbose : int, default=0
-        Controls the verbosity: the higher, the more messages.
+verbose : int or dict, default=0
+        Controls the verbosity when computing fingerprints.
 
         - >0 : size of parameter grid, parameter candidate for each fold
         - >1 : the computation time and score for each candidate
+
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     Attributes
     ----------
@@ -135,7 +138,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         "estimator_cv": [BaseSearchCV],
         "greater_is_better": ["boolean"],
         "cache_best_fp_array": ["boolean"],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", dict],
     }
 
     def __init__(
@@ -145,7 +148,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         estimator_cv: BaseSearchCV,
         greater_is_better: bool = True,
         cache_best_fp_array: bool = False,
-        verbose: int = 0,
+        verbose: Union[int, dict] = 0,
     ):
         self.fingerprint = fingerprint
         self.fp_param_grid = fp_param_grid

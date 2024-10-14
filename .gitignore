@@ -14,3 +14,4 @@ docs/modules/generated/
 docs/_build/
 
 .tmp_coverage_files/
+tests/preprocessing/input_output/data/mol_out.sdf

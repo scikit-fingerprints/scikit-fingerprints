@@ -9,7 +9,7 @@ from skfp.utils.parallel import ProgressParallel, run_in_parallel
 def test_progress_parallel(capsys):
     func = lambda x: x + 1
     data = list(range(100))
-    parallel = ProgressParallel(total=len(data))
+    parallel = ProgressParallel(tqdm_settings={"total": len(data)})
     _ = parallel(delayed(func)(num) for num in data)
     stderr = capsys.readouterr().err  # tqdm outputs to stderr
 
@@ -43,7 +43,7 @@ def test_run_in_parallel_batch_size():
     result_parallel = run_in_parallel(
         func, data, n_jobs=-1, batch_size=1, flatten_results=True
     )
-    assert result_sequential == result_parallel
+    assert result_sequential == result_parallel 
 
 
 def test_run_in_parallel_invalid_batch_size():
