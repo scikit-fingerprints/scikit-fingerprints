@@ -32,6 +32,10 @@ class LipinskiFilter(BaseFilter):
         filter less restrictive, and is the part of the original definition of this
         filter.
 
+    return_indicators : bool, default=False
+        Whether to return a binary vector with indicators which molecules pass the
+        filter, instead of list of molecules.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1

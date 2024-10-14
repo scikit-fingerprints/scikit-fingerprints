@@ -26,7 +26,12 @@ class TiceInsecticidesFilter(BaseFilter):
     Parameters
     ----------
     allow_one_violation : bool, default=False
-        Whether to allow violating one of the rules for a molecule.
+        Whether to allow violating one of the rules for a molecule. This makes the
+        filter less restrictive.
+
+    return_indicators : bool, default=False
+        Whether to return a binary vector with indicators which molecules pass the
+        filter, instead of list of molecules.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and

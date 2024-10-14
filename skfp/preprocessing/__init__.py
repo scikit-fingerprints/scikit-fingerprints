@@ -16,6 +16,7 @@ from .filters import (
     LipinskiFilter,
     MLSMRFilter,
     MolecularWeightFilter,
+    NIBRFilter,
     NIHFilter,
     PAINSFilter,
     PfizerFilter,
@@ -31,6 +32,7 @@ from .filters import (
     TiceInsecticidesFilter,
 )
 from .input_output import (
+    MolFromAminoseqTransformer,
     MolFromInchiTransformer,
     MolFromSDFTransformer,
     MolFromSmilesTransformer,

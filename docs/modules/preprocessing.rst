@@ -14,12 +14,14 @@ Reading and writing molecular formats:
     :nosignatures:
     :toctree: generated/
 
+    MolFromAminoseqTransformer
     MolFromInchiTransformer
     MolFromSDFTransformer
     MolFromSmilesTransformer
     MolToInchiTransformer
     MolToSDFTransformer
     MolToSmilesTransformer
+
 
 Preprocessing classes:
 
@@ -49,6 +51,7 @@ Molecular filters:
     LipinskiFilter
     MLSMRFilter
     MolecularWeightFilter
+    NIBRFilter
     NIHFilter
     PAINSFilter
     PfizerFilter
