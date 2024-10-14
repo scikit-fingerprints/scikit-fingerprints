@@ -2,6 +2,7 @@ from .basic_zinc import BasicZINCFilter
 from .beyond_ro5 import BeyondRo5Filter
 from .bms import BMSFilter
 from .brenk import BrenkFilter
+from .faf4_druglike_soft_filter import FAF4DruglikeFilter
 from .ghose import GhoseFilter
 from .glaxo import GlaxoFilter
 from .gsk import GSKFilter
@@ -14,7 +15,6 @@ from .mol_weight import MolecularWeightFilter
 from .nih import NIHFilter
 from .pains import PAINSFilter
 from .pfizer import PfizerFilter
-from .rule_of_druglike_soft import RuleOfDrugLikeSoft
 from .rule_of_four import RuleOfFour
 from .rule_of_oprea import RuleOfOprea
 from .rule_of_reos import RuleOfReos

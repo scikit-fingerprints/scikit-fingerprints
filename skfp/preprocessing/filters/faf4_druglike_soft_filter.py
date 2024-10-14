@@ -1,23 +1,40 @@
 from typing import Union
 
-from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
+from rdkit.Chem import GetFormalCharge, Mol
+from rdkit.Chem.Crippen import MolLogP
+from rdkit.Chem.Descriptors import MolWt
+from rdkit.Chem.rdMolDescriptors import (
+    CalcNumHBA,
+    CalcNumHBD,
+    CalcNumHeteroatoms,
+    CalcNumRings,
+    CalcNumRotatableBonds,
+    CalcTPSA,
+)
 
 from skfp.bases.base_filter import BaseFilter
 
 from .utils import (
-    get_hc_ratio,
     get_max_ring_size,
+    get_non_carbon_to_carbon_ratio,
     get_num_carbon_atoms,
     get_num_charged_functional_groups,
     get_num_rigid_bonds,
 )
 
 
-class RuleOfDrugLikeSoft(BaseFilter):
+class FAF4DruglikeFilter(BaseFilter):
     """
-    Rule of DrugLike Soft.
+    FAFDrugs4 Druglike Soft filter.
 
-    Compute the DrugLike Soft rule [1]_.
+    Designed as a part of FAFDrugs4 software [1]_ [2]_. Based on literature describing
+    physico-chemical properties of drugs and their statistical analysis. Selected
+    so that up to 90% of the 916 FDA-approved oral drugs fulfill the rules of this
+    filter.
+
+    Known to reject accepted, but atypical drugs, mostly due to high molecular weight
+    (e.g. Rinfampin), hydrophobicity (e.g. Probucol), rotatable bonds (e.g. Aliskerin)
+    or HBD (e.g. Kanamycin).
 
     Molecule must fulfill conditions:
 
@@ -33,9 +50,13 @@ class RuleOfDrugLikeSoft(BaseFilter):
     - number of carbon atoms in range ``[3, 35]``
     - number of heteroatoms in range ``[1, 15]``
     - number of heavy atoms in range ``[10, 50]``
-    - HC ratio in range ``[0.1, 1.1]``
+    - non-carbons to carbons ratio in range ``[0.1, 1.1]``
     - charge in range ``[-4, 4]``
     - number of charged functional groups <= 4
+
+    Note that the FAF4Drugs uses ChemAxon for determining functional groups. We use
+    their publicly available CXSMARTS list of functional groups [3]_. Phosphine and
+    sulfoxide patterns could not be parsed by RDKit, so we manually fixed them.
 
     Parameters
     ----------
@@ -58,20 +79,29 @@ class RuleOfDrugLikeSoft(BaseFilter):
 
     References
     -----------
-    .. [1] `
-        TODO
+    .. [1] `Details of physico-chemical property filters available in FAF-Drugs4
         <https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html>`_
+
+    .. [2] `D. Lagorce et al.
+        "FAF-Drugs4: free ADME-tox filtering computations for chemical biology and
+        early stages drug discovery"
+        Bioinformatics, 33(22), 2017, 3658–3660
+        <https://doi.org/10.1093/bioinformatics/btx491>`_
+
+    .. [3] `ChemAxon documentation: Predefined Functional Groups and Named Molecule Groups
+        <https://docs.chemaxon.com/display/docs/attachments/attachments_1829721_1_functionalgroups.cxsmi>`_
 
     Examples
     ----------
-    >>> from skfp.preprocessing import RuleOfDrugLikeSoft
-    >>> smiles = [TODO]
-    >>> filt = RuleOfDrugLikeSoft()
+    >>> from skfp.preprocessing import FAF4DruglikeFilter
+    >>> smiles = ["C", "CC(=O)Nc1ccc(O)cc1"]
+    >>> filt = FAF4DruglikeFilter()
     >>> filt
-    RuleOfDrugLikeSoft()
+    FAF4DruglikeFilter()
+
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    [TODO]
+    ['CC(=O)Nc1ccc(O)cc1']
     """
 
     def __init__(
@@ -88,22 +118,21 @@ class RuleOfDrugLikeSoft(BaseFilter):
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         rules = [
-            100 <= rdMolDescriptors.CalcExactMolWt(mol) <= 600,
-            -3 <= Crippen.MolLogP(mol) <= 6,
-            rdMolDescriptors.CalcNumHBD(mol) <= 7,
-            rdMolDescriptors.CalcNumHBA(mol) <= 12,
-            rdMolDescriptors.CalcTPSA(mol) <= 180,
-            rdMolDescriptors.CalcNumRotatableBonds(mol) <= 11,
+            100 <= MolWt(mol) <= 600,
+            -3 <= MolLogP(mol) <= 6,
+            CalcNumHBD(mol) <= 7,
+            CalcNumHBA(mol) <= 12,
+            CalcTPSA(mol) <= 180,
+            CalcNumRotatableBonds(mol) <= 11,
             get_num_rigid_bonds(mol) <= 30,
-            rdMolDescriptors.CalcNumRings(mol) <= 6,
+            CalcNumRings(mol) <= 6,
             get_max_ring_size(mol) <= 18,
             3 <= get_num_carbon_atoms(mol) <= 35,
-            1 <= rdMolDescriptors.CalcNumHeteroatoms(mol) <= 15,
-            0.1 <= get_hc_ratio(mol) <= 1.1,
-            -4 <= rdmolops.GetFormalCharge(mol) <= 4,
+            1 <= CalcNumHeteroatoms(mol) <= 15,
+            0.1 <= get_non_carbon_to_carbon_ratio(mol) <= 1.1,
+            -4 <= GetFormalCharge(mol) <= 4,
             get_num_charged_functional_groups(mol) <= 4,
         ]
-
         passed_rules = sum(rules)
 
         if self.allow_one_violation:

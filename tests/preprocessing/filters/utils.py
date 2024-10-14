@@ -2,8 +2,8 @@ import pytest
 from rdkit.Chem import Mol, MolFromSmiles
 
 from skfp.preprocessing.filters.utils import (
-    get_hc_ratio,
     get_max_ring_size,
+    get_non_carbon_to_carbon_ratio,
     get_num_carbon_atoms,
     get_num_charged_functional_groups,
     get_num_rigid_bonds,
@@ -31,7 +31,7 @@ def test_get_number_of_carbons(ibuprofren_mol):
 
 
 def test_get_hc_ratio(ibuprofren_mol):
-    assert get_hc_ratio(ibuprofren_mol) == 4.0
+    assert get_non_carbon_to_carbon_ratio(ibuprofren_mol) == 4.0
 
 
 def test_get_rigbonds(ibuprofren_mol):

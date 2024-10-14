@@ -3,21 +3,13 @@ import functools
 from rdkit.Chem import Mol, MolFromSmarts, rdMolDescriptors
 
 
-def get_hc_ratio(mol: Mol) -> float:
+def get_non_carbon_to_carbon_ratio(mol: Mol) -> float:
     """
-    Calculates hydrogen-carbon ratio in a molecule.
+    Calculates ratio of non-carbon to carbon atoms.
     """
-    num_carbons: int = get_num_carbon_atoms(mol)
-    num_hydrogens = sum(
-        atom.GetNumImplicitHs() + atom.GetExplicitValence()
-        for atom in mol.GetAtoms()
-        if atom.GetSymbol() == "C"
-    )
-
-    if num_carbons > 0:
-        return num_hydrogens / num_carbons
-    else:
-        return 0.0
+    num_carbons = get_num_carbon_atoms(mol)
+    num_non_carbons = mol.GetNumAtoms() - num_carbons
+    return num_non_carbons / num_carbons if num_carbons > 0 else 0.0
 
 
 def get_max_ring_size(mol: Mol) -> int:
@@ -25,7 +17,6 @@ def get_max_ring_size(mol: Mol) -> int:
     Calculates maximum ring size in a molecule.
     """
     rings = mol.GetRingInfo().AtomRings()
-
     return max(len(ring) for ring in rings) if rings else 0
 
 
@@ -33,7 +24,7 @@ def get_num_carbon_atoms(mol: Mol) -> int:
     """
     Calculated number of carbon atoms in a molecule.
     """
-    return sum(1 for atom in mol.GetAtoms() if atom.GetSymbol() == "C")
+    return sum(atom.GetSymbol() == "C" for atom in mol.GetAtoms())
 
 
 def get_num_charged_functional_groups(mol: Mol) -> int:
@@ -45,8 +36,8 @@ def get_num_charged_functional_groups(mol: Mol) -> int:
     definite answers, we use a list of CXSMARTS by ChemAxon:
     https://docs.chemaxon.com/display/docs/attachments/attachments_1829721_1_functionalgroups.cxsmi.
 
-    Phosphine and sulfoxide patterns could not be parsed by RDKit, so for those we
-    used patterns from Laggner fingerprint.
+    Phosphine and sulfoxide patterns could not be parsed by RDKit, so we manually fixed
+    them.
     """
     atomic_charges = {atom.GetIdx(): atom.GetFormalCharge() for atom in mol.GetAtoms()}
     fragment_smarts = _get_functional_groups_smarts_patterns()
