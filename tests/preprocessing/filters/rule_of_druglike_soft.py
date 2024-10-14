@@ -9,29 +9,23 @@ from skfp.preprocessing import RuleOfDrugLikeSoft
 
 @pytest.fixture
 def smiles_passing_rule_of_druglike_soft() -> list[str]:
-    return [
-        # TODO
-    ]
+    return ["CC1=CC2=C(C=C1C)N(C3=NC(=O)NC(=O)C3=N2)C[C@@H]([C@@H]([C@@H](CO)O)O)O"]
 
 
 @pytest.fixture
 def smiles_passing_one_fail() -> list[str]:
     return [
-        # TODO
+        r"CC(=O)OCC1=C(N2[C@@H]([C@@H](C2=O)NC(=O)/C(=N\OC)/C3=CSC(=N3)N)SC1)C(=O)O",  # Cefotaxime
+        "CN1CC[C@@]23CCCC[C@@H]2[C@@H]1CC4=C3C=C(C=C4)OC",  # Dextromethorphan
     ]
 
 
 @pytest.fixture
 def smiles_failing_rule_of_druglike_soft() -> list[str]:
     return [
-        # TODO
+        "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",  # Ibuprofen
+        "CN1CC[C@@]23CCCC[C@@H]2[C@@H]1CC4=C3C=C(C=C4)OC",  # Dextromethorphan
     ]
-
-
-@pytest.fixture
-def ibuprofren_mol() -> Mol:
-    ibuprofen_smiles: str = "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"
-    return MolFromSmiles(ibuprofen_smiles)
 
 
 def test_mols_passing_rule_of_druglike_soft(smiles_passing_rule_of_druglike_soft):
@@ -95,23 +89,3 @@ def test_rule_of_druglike_soft_parallel(smiles_list):
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
-
-
-def test_get_max_sized_ring(ibuprofren_mol):
-    filter = RuleOfDrugLikeSoft()
-    assert filter._get_max_ring_size(ibuprofren_mol) == 6
-
-
-def test_get_number_of_carbons(ibuprofren_mol):
-    filter = RuleOfDrugLikeSoft()
-    assert filter._get_number_of_carbons(ibuprofren_mol) == 13
-
-
-def test_get_hc_ratio(ibuprofren_mol):
-    filter = RuleOfDrugLikeSoft()
-    assert filter._get_hc_ratio(ibuprofren_mol) == 4.0
-
-
-def test_get_rigbonds(ibuprofren_mol):
-    filter = RuleOfDrugLikeSoft()
-    assert filter._get_hc_ratio(ibuprofren_mol) == 11

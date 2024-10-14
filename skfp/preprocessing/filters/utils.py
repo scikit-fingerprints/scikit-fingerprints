@@ -1,6 +1,39 @@
 import functools
 
-from rdkit.Chem import Mol, MolFromSmarts
+from rdkit.Chem import Mol, MolFromSmarts, rdMolDescriptors
+
+
+def get_hc_ratio(mol: Mol) -> float:
+    """
+    Calculates hydrogen-carbon ratio in a molecule.
+    """
+    num_carbons: int = get_num_carbon_atoms(mol)
+    num_hydrogens = sum(
+        atom.GetNumImplicitHs() + atom.GetExplicitValence()
+        for atom in mol.GetAtoms()
+        if atom.GetSymbol() == "C"
+    )
+
+    if num_carbons > 0:
+        return num_hydrogens / num_carbons
+    else:
+        return 0.0
+
+
+def get_max_ring_size(mol: Mol) -> int:
+    """
+    Calculates maximum ring size in a molecule.
+    """
+    rings = mol.GetRingInfo().AtomRings()
+
+    return max(len(ring) for ring in rings) if rings else 0
+
+
+def get_num_carbon_atoms(mol: Mol) -> int:
+    """
+    Calculated number of carbon atoms in a molecule.
+    """
+    return sum(1 for atom in mol.GetAtoms() if atom.GetSymbol() == "C")
 
 
 def get_num_charged_functional_groups(mol: Mol) -> int:
@@ -31,6 +64,16 @@ def get_num_charged_functional_groups(mol: Mol) -> int:
     )
 
     return num_charged_groups
+
+
+def get_num_rigid_bonds(mol: Mol) -> int:
+    """
+    Calculates number of rigid bonds in a molecule.
+    """
+    total_bonds: int = mol.GetNumBonds()
+    rotatable_bonds: int = rdMolDescriptors.CalcNumRotatableBonds(mol)
+
+    return total_bonds - rotatable_bonds
 
 
 @functools.cache

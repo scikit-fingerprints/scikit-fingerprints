@@ -4,6 +4,14 @@ from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
 
 from skfp.bases.base_filter import BaseFilter
 
+from .utils import (
+    get_hc_ratio,
+    get_max_ring_size,
+    get_num_carbon_atoms,
+    get_num_charged_functional_groups,
+    get_num_rigid_bonds,
+)
+
 
 class RuleOfDrugLikeSoft(BaseFilter):
     """
@@ -19,7 +27,7 @@ class RuleOfDrugLikeSoft(BaseFilter):
     - HBA <= 12
     - TPSA <= 180
     - number of rotatable bonds <= 11
-    - RIGBONDS <= 30
+    - number of rigid bonds <= 30
     - number of rings in range <= 6
     - max size of A ring <= 18
     - number of carbon atoms in range ``[3, 35]``
@@ -27,7 +35,7 @@ class RuleOfDrugLikeSoft(BaseFilter):
     - number of heavy atoms in range ``[10, 50]``
     - HC ratio in range ``[0.1, 1.1]``
     - charge in range ``[-4, 4]``
-    - number of atoms carrying a charge <= 4
+    - number of charged functional groups <= 4
 
     Parameters
     ----------
@@ -51,18 +59,19 @@ class RuleOfDrugLikeSoft(BaseFilter):
     References
     -----------
     .. [1] `
+        TODO
         <https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html>`_
 
     Examples
     ----------
     >>> from skfp.preprocessing import RuleOfDrugLikeSoft
-    >>> smiles = ["CCO", "CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O"]
+    >>> smiles = [TODO]
     >>> filt = RuleOfDrugLikeSoft()
     >>> filt
     RuleOfDrugLikeSoft()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
-    ['CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O']
+    [TODO]
     """
 
     def __init__(
@@ -85,14 +94,14 @@ class RuleOfDrugLikeSoft(BaseFilter):
             rdMolDescriptors.CalcNumHBA(mol) <= 12,
             rdMolDescriptors.CalcTPSA(mol) <= 180,
             rdMolDescriptors.CalcNumRotatableBonds(mol) <= 11,
-            self._get_rigbonds(mol) <= 30,
+            get_num_rigid_bonds(mol) <= 30,
             rdMolDescriptors.CalcNumRings(mol) <= 6,
-            self._get_max_ring_size(mol) <= 18,
-            3 <= self._get_number_of_carbons(mol) <= 35,
+            get_max_ring_size(mol) <= 18,
+            3 <= get_num_carbon_atoms(mol) <= 35,
             1 <= rdMolDescriptors.CalcNumHeteroatoms(mol) <= 15,
-            0.1 <= self._get_hc_ratio(mol) <= 1.1,
+            0.1 <= get_hc_ratio(mol) <= 1.1,
             -4 <= rdmolops.GetFormalCharge(mol) <= 4,
-            # TODO: N_ATOM_CHARGE <= 4
+            get_num_charged_functional_groups(mol) <= 4,
         ]
 
         passed_rules = sum(rules)
@@ -101,75 +110,3 @@ class RuleOfDrugLikeSoft(BaseFilter):
             return passed_rules >= len(rules) - 1
         else:
             return passed_rules == len(rules)
-
-    def _get_max_ring_size(self, mol: Mol) -> int:
-        rings = mol.GetRingInfo().AtomRings()
-
-        return max(len(ring) for ring in rings) if rings else 0
-
-    def _get_number_of_carbons(self, mol: Mol) -> int:
-        return sum(1 for atom in mol.GetAtoms() if atom.GetSymbol() == "C")
-
-    def _get_hc_ratio(self, mol: Mol) -> float:
-        num_carbons: int = self._get_number_of_carbons(mol)
-        num_hydrogens = sum(
-            atom.GetNumImplicitHs() + atom.GetExplicitValence()
-            for atom in mol.GetAtoms()
-            if atom.GetSymbol() == "C"
-        )
-
-        if num_carbons > 0:
-            return num_hydrogens / num_carbons
-        else:
-            return 0.0
-
-    def _get_rigbonds(self, mol: Mol) -> int:
-        total_bonds: int = mol.GetNumBonds()
-        rotatable_bonds: int = rdMolDescriptors.CalcNumRotatableBonds(mol)
-
-        return total_bonds - rotatable_bonds
-
-
-if __name__ == "__main__":
-    smiles = "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"
-    filter = RuleOfDrugLikeSoft()
-
-    from rdkit.Chem import MolFromSmiles
-
-    mol = MolFromSmiles(smiles)
-    rule_set = [
-        rdMolDescriptors.CalcExactMolWt(mol),
-        Crippen.MolLogP(mol),
-        rdMolDescriptors.CalcNumHBD(mol),
-        rdMolDescriptors.CalcNumHBA(mol),
-        rdMolDescriptors.CalcTPSA(mol),
-        rdMolDescriptors.CalcNumRotatableBonds(mol),
-        filter._get_rigbonds(mol),
-        rdMolDescriptors.CalcNumRings(mol),
-        filter._get_max_ring_size(mol),
-        filter._get_number_of_carbons(mol),
-        rdMolDescriptors.CalcNumHeteroatoms(mol),
-        filter._get_hc_ratio(mol),
-        rdmolops.GetFormalCharge(mol),
-        # TODO: N_ATOM_CHARGE <= 4
-    ]
-
-    rule_bools = [
-        100 <= rdMolDescriptors.CalcExactMolWt(mol) <= 600,
-        -3 <= Crippen.MolLogP(mol) <= 6,
-        rdMolDescriptors.CalcNumHBD(mol) <= 7,
-        rdMolDescriptors.CalcNumHBA(mol) <= 12,
-        rdMolDescriptors.CalcTPSA(mol) <= 180,
-        rdMolDescriptors.CalcNumRotatableBonds(mol) <= 11,
-        filter._get_rigbonds(mol) <= 30,
-        rdMolDescriptors.CalcNumRings(mol) <= 6,
-        filter._get_max_ring_size(mol) <= 18,
-        3 <= filter._get_number_of_carbons(mol) <= 35,
-        1 <= rdMolDescriptors.CalcNumHeteroatoms(mol) <= 15,
-        0.1 <= filter._get_hc_ratio(mol) <= 1.1,
-        -4 <= rdmolops.GetFormalCharge(mol) <= 4,
-        # TODO: N_ATOM_CHARGE <= 4
-    ]
-
-    print(rule_set)
-    print(rule_bools)
