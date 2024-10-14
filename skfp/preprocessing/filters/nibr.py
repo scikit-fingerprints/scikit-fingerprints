@@ -50,7 +50,7 @@ class NIBRFilter(BaseFilter):
         equal-sized parts, as many as ``n_jobs``.
 
     verbose : int, default=0
-        Controls the verbosity when generating conformers.
+        Controls the verbosity when filtering molecules.
 
     References
     ----------
