@@ -31,37 +31,3 @@ Preprocessing classes:
 
     ConformerGenerator
     MolStandardizer
-
-Molecular filters:
-
-.. autosummary::
-    :nosignatures:
-    :toctree: generated/
-
-    BasicZINCFilter
-    BeyondRo5Filter
-    BMSFilter
-    BrenkFilter
-    GhoseFilter
-    GlaxoFilter
-    GSKFilter
-    HaoFilter
-    InpharmaticaFilter
-    LINTFilter
-    LipinskiFilter
-    MLSMRFilter
-    MolecularWeightFilter
-    NIBRFilter
-    NIHFilter
-    PAINSFilter
-    PfizerFilter
-    RuleOfFour
-    RuleOfOprea
-    RuleOfReos
-    RuleOfThree
-    RuleOfTwo
-    RuleOfVeber
-    RuleOfXu
-    SureChEMBLFilter
-    TiceHerbicidesFilter
-    TiceInsecticidesFilter

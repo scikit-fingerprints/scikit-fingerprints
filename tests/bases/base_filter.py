@@ -1,7 +1,7 @@
 import pytest
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.preprocessing import LipinskiFilter
+from skfp.filters import LipinskiFilter
 
 """
 We cannot test most of BaseFilter directly, as it is an abstract base class (ABC),
