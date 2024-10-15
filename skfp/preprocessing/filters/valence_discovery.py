@@ -124,7 +124,6 @@ class ValenceDiscoveryFilter(BaseFilter):
             -2 <= GetFormalCharge(mol) <= 2,
             get_num_charged_atoms(mol) <= 2,
         ]
-        print(list(map(int, rules)))
         passed_rules = sum(rules)
 
         if self.allow_one_violation:
