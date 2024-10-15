@@ -1,9 +1,8 @@
-from .basic_zinc import BasicZINCFilter
 from .beyond_ro5 import BeyondRo5Filter
 from .bms import BMSFilter
 from .brenk import BrenkFilter
-from .faf4_druglike_filter import FAF4DruglikeFilter
-from .faf4_leadlike_filter import FAF4LeadlikeFilter
+from .faf4_druglike import FAF4DruglikeFilter
+from .faf4_leadlike import FAF4LeadlikeFilter
 from .ghose import GhoseFilter
 from .glaxo import GlaxoFilter
 from .gsk import GSKFilter
@@ -28,3 +27,5 @@ from .surechembl import SureChEMBLFilter
 from .tice_herbicides import TiceHerbicidesFilter
 from .tice_insecticides import TiceInsecticidesFilter
 from .valence_discovery import ValenceDiscoveryFilter
+from .zinc_basic import ZINCBasicFilter
+from .zinc_druglike import ZINCDruglikeFilter

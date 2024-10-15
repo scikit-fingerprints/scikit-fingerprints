@@ -2,7 +2,6 @@
 
 from .conformer_generator import ConformerGenerator
 from .filters import (
-    BasicZINCFilter,
     BeyondRo5Filter,
     BMSFilter,
     BrenkFilter,
@@ -32,6 +31,8 @@ from .filters import (
     TiceHerbicidesFilter,
     TiceInsecticidesFilter,
     ValenceDiscoveryFilter,
+    ZINCBasicFilter,
+    ZINCDruglikeFilter,
 )
 from .input_output import (
     MolFromAminoseqTransformer,

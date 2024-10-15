@@ -6,9 +6,9 @@ from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 from skfp.bases.base_filter import BaseFilter
 
 
-class BasicZINCFilter(BaseFilter):
+class ZINCBasicFilter(BaseFilter):
     """
-    Basic ZINC filter.
+    ZINC basic filter.
 
     Designed to keep only drug-like molecules, removing molecules with unwanted
     functional groups. Used by docking.org for ZINC database [1]_ as basic set of
@@ -50,11 +50,11 @@ class BasicZINCFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import BasicZINCFilter
+    >>> from skfp.preprocessing import ZINCBasicFilter
     >>> smiles = ["O", "O=P(N(C)C)(N(C)C)N(C)C"]
-    >>> filt = BasicZINCFilter()
+    >>> filt = ZINCBasicFilter()
     >>> filt
-    BasicZINCFilter()
+    ZINCBasicFilter()
 
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
