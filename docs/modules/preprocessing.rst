@@ -38,10 +38,11 @@ Molecular filters:
     :nosignatures:
     :toctree: generated/
 
-    BasicZINCFilter
     BeyondRo5Filter
     BMSFilter
     BrenkFilter
+    FAF4DruglikeFilter
+    FAF4LeadlikeFilter
     GhoseFilter
     GlaxoFilter
     GSKFilter
@@ -66,3 +67,6 @@ Molecular filters:
     SureChEMBLFilter
     TiceHerbicidesFilter
     TiceInsecticidesFilter
+    ValenceDiscoveryFilter
+    ZINCBasicFilter
+    ZINCDruglikeFilter
