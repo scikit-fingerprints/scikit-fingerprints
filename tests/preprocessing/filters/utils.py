@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from rdkit.Chem import Mol, MolFromSmiles
 
@@ -73,8 +74,10 @@ def test_get_max_ring_size(ibuprofen):
     assert get_max_ring_size(ibuprofen) == 6
 
 
-def test_get_non_carbon_to_carbon_ratio(ibuprofen):
-    assert get_non_carbon_to_carbon_ratio(ibuprofen) == 4.0
+def test_get_non_carbon_to_carbon_ratio():
+    # phenol
+    mol = MolFromSmiles("Oc1ccccc1")
+    assert np.isclose(get_non_carbon_to_carbon_ratio(mol), 1 / 6)
 
 
 def test_get_num_charged_functional_groups(mols_list):
