@@ -11,6 +11,31 @@ def get_num_carbon_atoms(mol: Mol) -> int:
     return sum(atom.GetSymbol() == "C" for atom in mol.GetAtoms())
 
 
+def get_num_heavy_metals(mol: Mol) -> int:
+    """
+    Calculated number of heavy metals in a molecule.
+
+    Heavy atoms are defined as metals other than ["Li", "Be", "K", "Na", "Ca", "Mg"].
+    """
+    # non-metals and non-heavy metals
+    # fmt: off
+    not_heavy_metals = {
+        "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Si", "P", "S",
+        "Cl", "Ar", "K", "Ca", "As", "Se", "Br", "Kr", "Te", "I", "Xe", "At", "Rn"
+    }
+    # fmt: on
+
+    # easier to reject than to list all heavy metals
+    return sum(atom.GetSymbol() not in not_heavy_metals for atom in mol.GetAtoms())
+
+
+def get_num_charged_atoms(mol: Mol) -> int:
+    """
+    Calculated number of charged atoms in a molecule.
+    """
+    return sum(atom.GetFormalCharge() != 0 for atom in mol.GetAtoms())
+
+
 def get_num_rigid_bonds(mol: Mol) -> int:
     """
     Calculates number of rigid bonds in a molecule.

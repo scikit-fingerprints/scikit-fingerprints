@@ -16,10 +16,10 @@ from skfp.bases.base_filter import BaseFilter
 from .utils import (
     get_max_num_fused_aromatic_rings,
     get_max_ring_size,
-    get_non_carbon_to_carbon_ratio,
     get_num_aromatic_rings,
     get_num_carbon_atoms,
-    get_num_charged_functional_groups,
+    get_num_charged_atoms,
+    get_num_heavy_metals,
     get_num_rigid_bonds,
 )
 
@@ -118,22 +118,13 @@ class ValenceDiscoveryFilter(BaseFilter):
             get_max_num_fused_aromatic_rings(mol) <= 2,
             get_max_ring_size(mol) <= 18,
             mol.GetNumHeavyAtoms() < 70,
-            3 <= get_num_carbon_atoms(mol) <= 35,
+            get_num_heavy_metals(mol) < 1,
+            3 <= get_num_carbon_atoms(mol) <= 40,
             1 <= CalcNumHeteroatoms(mol) <= 15,
-            0.1 <= get_non_carbon_to_carbon_ratio(mol) <= 1.1,
-            get_num_charged_functional_groups(mol) <= 4,
-            -4 <= GetFormalCharge(mol) <= 4,
+            -2 <= GetFormalCharge(mol) <= 2,
+            get_num_charged_atoms(mol) <= 2,
         ]
-
-        #     - number of fused aromatic rings <= 2
-        #     - max ring size <= 18
-        #     - number of heavy atoms < 70
-        #     - number of heavy metals < 1
-        #     - number of carbons in range ``[3, 40]``
-        #     - number of heteroatoms in range ``[1, 15]``
-        #     - total formal charge in range ``[-2, 2]``
-        #     - number of charged atoms <= 2
-
+        print(list(map(int, rules)))
         passed_rules = sum(rules)
 
         if self.allow_one_violation:

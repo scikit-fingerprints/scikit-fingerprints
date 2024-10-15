@@ -44,7 +44,7 @@ def test_mols_partially_passing_rule_of_reos(smiles_passing_one_fail):
     assert len(smiles_filtered) == len(smiles_passing_one_fail)
 
 
-def test_mols_failling_rule_of_reos(smiles_failing_rule_of_reos):
+def test_mols_failing_rule_of_reos(smiles_failing_rule_of_reos):
     mol_filter = RuleOfReos()
     smiles_filtered = mol_filter.transform(smiles_failing_rule_of_reos)
     assert all(isinstance(x, str) for x in smiles_filtered)

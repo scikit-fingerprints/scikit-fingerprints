@@ -56,7 +56,7 @@ def test_mols_partially_passing_faf4_druglike(
     assert len(smiles_filtered) == len(smiles_passing_one_violation_faf4_druglike)
 
 
-def test_mols_failling_faf4_druglike(smiles_failing_faf4_druglike):
+def test_mols_failing_faf4_druglike(smiles_failing_faf4_druglike):
     mol_filter = FAF4DruglikeFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_faf4_druglike)
     assert all(isinstance(x, str) for x in smiles_filtered)

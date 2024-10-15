@@ -39,7 +39,7 @@ def test_mols_passing_faf4_leadlike(smiles_passing_faf4_leadlike):
     assert len(smiles_filtered) == len(smiles_passing_faf4_leadlike)
 
 
-def test_mols_failling_faf4_leadlike(smiles_failing_faf4_leadlike):
+def test_mols_failing_faf4_leadlike(smiles_failing_faf4_leadlike):
     mol_filter = FAF4LeadlikeFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_faf4_leadlike)
     assert all(isinstance(x, str) for x in smiles_filtered)

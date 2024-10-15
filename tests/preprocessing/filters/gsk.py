@@ -44,7 +44,7 @@ def test_mols_partially_passing_gsk(smiles_passing_one_fail):
     assert len(smiles_filtered) == len(smiles_passing_one_fail)
 
 
-def test_mols_failling_gsk(smiles_failing_gsk):
+def test_mols_failing_gsk(smiles_failing_gsk):
     mol_filter = GSKFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_gsk)
     assert all(isinstance(x, str) for x in smiles_filtered)
