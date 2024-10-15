@@ -56,7 +56,6 @@ Molecular filters:
     NIHFilter
     PAINSFilter
     PfizerFilter
-    RuleOfDrugLikeSoft
     RuleOfFour
     RuleOfOprea
     RuleOfReos

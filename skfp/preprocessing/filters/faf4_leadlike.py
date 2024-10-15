@@ -147,8 +147,6 @@ class FAF4LeadlikeFilter(BaseFilter):
         ]
         passed_rules = sum(rules)
 
-        print(CalcNumAtomStereoCenters(mol))
-
         if self.allow_one_violation:
             return passed_rules >= len(rules) - 1
         else:
