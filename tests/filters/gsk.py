@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import GSKFilter
+from skfp.filters import GSKFilter
 
 
 @pytest.fixture

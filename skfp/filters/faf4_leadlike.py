@@ -97,7 +97,7 @@ class FAF4LeadlikeFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import FAF4LeadlikeFilter
+    >>> from skfp.filters import FAF4LeadlikeFilter
     >>> smiles = ["C", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = FAF4LeadlikeFilter()
     >>> filt

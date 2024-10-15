@@ -56,7 +56,7 @@ class SureChEMBLFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import SureChEMBLFilter
+    >>> from skfp.filters import SureChEMBLFilter
     >>> smiles = ["C", "O", "C#CC#C"]
     >>> filt = SureChEMBLFilter()
     >>> filt

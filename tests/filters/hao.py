@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import HaoFilter
+from skfp.filters import HaoFilter
 
 
 @pytest.fixture

@@ -56,7 +56,7 @@ class BMSFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import BMSFilter
+    >>> from skfp.filters import BMSFilter
     >>> smiles = ["C", "O", "c1(C=O)cc(OC)c(O)cc1"]
     >>> filt = BMSFilter()
     >>> filt

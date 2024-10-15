@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import ZINCBasicFilter
+from skfp.filters import ZINCBasicFilter
 
 
 def test_zinc_basic(mols_list):

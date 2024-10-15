@@ -50,7 +50,7 @@ class ZINCBasicFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import ZINCBasicFilter
+    >>> from skfp.filters import ZINCBasicFilter
     >>> smiles = ["O", "O=P(N(C)C)(N(C)C)N(C)C"]
     >>> filt = ZINCBasicFilter()
     >>> filt

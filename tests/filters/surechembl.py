@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import SureChEMBLFilter
+from skfp.filters import SureChEMBLFilter
 
 
 def test_surechembl(mols_list):

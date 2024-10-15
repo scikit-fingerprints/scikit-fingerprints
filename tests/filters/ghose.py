@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import GhoseFilter
+from skfp.filters import GhoseFilter
 
 
 @pytest.fixture

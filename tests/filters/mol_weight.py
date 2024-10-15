@@ -3,7 +3,8 @@ import pytest
 from rdkit.Chem import Mol
 from sklearn.utils._param_validation import InvalidParameterError
 
-from skfp.preprocessing import MolecularWeightFilter, MolFromSmilesTransformer
+from skfp.filters import MolecularWeightFilter
+from skfp.preprocessing import MolFromSmilesTransformer
 
 
 @pytest.fixture

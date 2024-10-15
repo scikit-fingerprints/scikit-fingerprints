@@ -58,7 +58,7 @@ class HaoFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import HaoFilter
+    >>> from skfp.filters import HaoFilter
     >>> smiles = ["CN(C)c1ccc(C=Cc2cc[n+](C)c3ccccc23)cc1","c1cnc2c(c1)ccc1cccnc12",\
     "Cn1c(SSc2ccc(-c3cccnc3)n2C)ccc1-c1cccnc1"]
     >>> filt = HaoFilter()

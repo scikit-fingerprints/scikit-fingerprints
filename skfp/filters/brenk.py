@@ -52,7 +52,7 @@ class BrenkFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import BrenkFilter
+    >>> from skfp.filters import BrenkFilter
     >>> smiles = ["C", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "c1cc([NH2])ccc1"]
     >>> filt = BrenkFilter()
     >>> filt

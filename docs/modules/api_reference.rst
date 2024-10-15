@@ -2,7 +2,7 @@
 API Reference
 =============
 
-This is the class and function reference of scikit-fingerprints.
+This is the API reference (classes and functions) of scikit-fingerprints.
 
 .. toctree::
     :maxdepth: 2
@@ -10,6 +10,7 @@ This is the class and function reference of scikit-fingerprints.
     bases
     datasets
     distances
+    filters
     fingerprints
     metrics
     model_selection

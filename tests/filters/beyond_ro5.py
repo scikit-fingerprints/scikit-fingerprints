@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import BeyondRo5Filter, LipinskiFilter
+from skfp.filters import BeyondRo5Filter, LipinskiFilter
 
 
 @pytest.fixture

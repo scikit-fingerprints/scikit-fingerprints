@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import PfizerFilter
+from skfp.filters import PfizerFilter
 
 
 @pytest.fixture

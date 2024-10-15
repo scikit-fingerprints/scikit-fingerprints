@@ -49,7 +49,7 @@ class GSKFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import GSKFilter
+    >>> from skfp.filters import GSKFilter
     >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "O=C(O)c1ccccc1c2ccc(cc2)Cn3c4cc(cc(c4nc3CCC)C)c5nc6ccccc6n5C"]
     >>> filt = GSKFilter()
     >>> filt

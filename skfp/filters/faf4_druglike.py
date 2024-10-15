@@ -96,7 +96,7 @@ class FAF4DruglikeFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import FAF4DruglikeFilter
+    >>> from skfp.filters import FAF4DruglikeFilter
     >>> smiles = ["C", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = FAF4DruglikeFilter()
     >>> filt

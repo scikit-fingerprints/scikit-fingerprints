@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import FAF4DruglikeFilter
+from skfp.filters import FAF4DruglikeFilter
 
 
 @pytest.fixture

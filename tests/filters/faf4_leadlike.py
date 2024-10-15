@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import FAF4LeadlikeFilter
+from skfp.filters import FAF4LeadlikeFilter
 
 
 @pytest.fixture

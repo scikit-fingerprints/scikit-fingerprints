@@ -59,7 +59,7 @@ class LipinskiFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import LipinskiFilter
+    >>> from skfp.filters import LipinskiFilter
     >>> smiles = ["[C-]#N", "CC=O", "O=C(O)c1ccccc1c2ccc(cc2)Cn3c4cc(cc(c4nc3CCC)C)c5nc6ccccc6n5C"]
     >>> filt = LipinskiFilter()
     >>> filt

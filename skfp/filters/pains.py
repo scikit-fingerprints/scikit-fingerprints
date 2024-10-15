@@ -65,7 +65,7 @@ class PAINSFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import PAINSFilter
+    >>> from skfp.filters import PAINSFilter
     >>> smiles = ["[C-]#N", "CC=O", "C1=CC(=O)C(=O)C=C1"]
     >>> filt = PAINSFilter()
     >>> filt

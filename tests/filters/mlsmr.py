@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import MLSMRFilter
+from skfp.filters import MLSMRFilter
 
 
 def test_mlsmr(mols_list):

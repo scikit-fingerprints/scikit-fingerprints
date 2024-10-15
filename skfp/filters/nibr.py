@@ -64,7 +64,7 @@ class NIBRFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import NIBRFilter
+    >>> from skfp.filters import NIBRFilter
     >>> smiles = ["C", "C1=CC2(C=CC1=O)C=C2	"]
     >>> filt = NIBRFilter()
     >>> filt

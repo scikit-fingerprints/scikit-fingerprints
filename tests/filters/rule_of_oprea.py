@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import RuleOfOprea
+from skfp.filters import RuleOfOprea
 
 
 @pytest.fixture

@@ -68,7 +68,7 @@ class RuleOfThree(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import RuleOfThree
+    >>> from skfp.filters import RuleOfThree
     >>> smiles = ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
     >>> filt = RuleOfThree()
     >>> filt

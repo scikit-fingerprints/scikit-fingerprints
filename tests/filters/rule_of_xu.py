@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import RuleOfXu
+from skfp.filters import RuleOfXu
 
 
 @pytest.fixture

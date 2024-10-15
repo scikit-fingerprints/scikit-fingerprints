@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import RuleOfTwo
+from skfp.filters import RuleOfTwo
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import BrenkFilter
+from skfp.filters import BrenkFilter
 
 
 def test_brenk(mols_list):

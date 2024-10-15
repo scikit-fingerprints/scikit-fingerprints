@@ -12,7 +12,7 @@ from rdkit.Chem.rdMolDescriptors import (
 )
 
 from skfp.bases.base_filter import BaseFilter
-from skfp.preprocessing.filters.utils import (
+from skfp.filters.utils import (
     get_max_ring_size,
     get_non_carbon_to_carbon_ratio,
     get_num_carbon_atoms,
@@ -81,7 +81,7 @@ class ZINCDruglikeFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import ZINCDruglikeFilter
+    >>> from skfp.filters import ZINCDruglikeFilter
     >>> smiles = ["C", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = ZINCDruglikeFilter()
     >>> filt

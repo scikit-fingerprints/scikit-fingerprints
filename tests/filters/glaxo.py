@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import GlaxoFilter
+from skfp.filters import GlaxoFilter
 
 
 def test_glaxo(mols_list):

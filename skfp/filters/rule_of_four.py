@@ -54,7 +54,7 @@ class RuleOfFour(BaseFilter):
 
     Examples
     ---------
-    >>> from skfp.preprocessing import RuleOfFour
+    >>> from skfp.filters import RuleOfFour
     >>> smiles = ['c1ccc2oc(-c3ccc(Nc4nc(N5CCCCC5)nc(N5CCOCC5)n4)cc3)nc2c1', \
     'c1nc(N2CCOCC2)c2sc3nc(N4CCOCC4)c4c(c3c2n1)CCCC4']
     >>> filt = RuleOfFour()

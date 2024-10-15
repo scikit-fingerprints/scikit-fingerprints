@@ -53,7 +53,7 @@ class GlaxoFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import GlaxoFilter
+    >>> from skfp.filters import GlaxoFilter
     >>> smiles = ["C", "O", "N=C=N"]
     >>> filt = GlaxoFilter()
     >>> filt

@@ -46,7 +46,7 @@ class InpharmaticaFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import InpharmaticaFilter
+    >>> from skfp.filters import InpharmaticaFilter
     >>> smiles = ["C", "O", "O=C(S)C"]
     >>> filt = InpharmaticaFilter()
     >>> filt

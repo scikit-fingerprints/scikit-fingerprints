@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import LINTFilter
+from skfp.filters import LINTFilter
 
 
 def test_lint(mols_list):

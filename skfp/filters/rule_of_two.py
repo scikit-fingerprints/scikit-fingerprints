@@ -53,7 +53,7 @@ class RuleOfTwo(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import RuleOfTwo
+    >>> from skfp.filters import RuleOfTwo
     >>> smiles = ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1', 'C=CCC1C=C(C)CC(CC=C)N1']
     >>> filt = RuleOfTwo()
     >>> filt

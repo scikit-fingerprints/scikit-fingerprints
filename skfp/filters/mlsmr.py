@@ -46,7 +46,7 @@ class MLSMRFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import MLSMRFilter
+    >>> from skfp.filters import MLSMRFilter
     >>> smiles = ["C", "O", "OP(=O)(O)O"]
     >>> filt = MLSMRFilter()
     >>> filt

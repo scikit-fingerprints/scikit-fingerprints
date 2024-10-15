@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from rdkit.Chem import Mol, MolFromSmiles
 
-from skfp.preprocessing.filters.utils import (
+from skfp.filters.utils import (
     get_max_num_fused_aromatic_rings,
     get_max_ring_size,
     get_non_carbon_to_carbon_ratio,

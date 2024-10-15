@@ -42,7 +42,7 @@ class MolecularWeightFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import MolecularWeightFilter
+    >>> from skfp.filters import MolecularWeightFilter
     >>> smiles = ["C", "O", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"]
     >>> filt = MolecularWeightFilter(max_weight=100)
     >>> filt

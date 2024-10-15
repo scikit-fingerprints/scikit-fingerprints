@@ -57,7 +57,7 @@ class NIHFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import NIHFilter
+    >>> from skfp.filters import NIHFilter
     >>> smiles = ["C", "C=P"]
     >>> filt = NIHFilter()
     >>> filt

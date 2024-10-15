@@ -53,7 +53,7 @@ class LINTFilter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import LINTFilter
+    >>> from skfp.filters import LINTFilter
     >>> smiles = ["C", "O", "O1CC1"]
     >>> filt = LINTFilter()
     >>> filt

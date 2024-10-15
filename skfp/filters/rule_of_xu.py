@@ -51,7 +51,7 @@ class RuleOfXu(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import RuleOfXu
+    >>> from skfp.filters import RuleOfXu
     >>> smiles = ["CCO", "CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O"]
     >>> filt = RuleOfXu()
     >>> filt

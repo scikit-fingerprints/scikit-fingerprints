@@ -82,7 +82,7 @@ class ValenceDiscoveryFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import ValenceDiscoveryFilter
+    >>> from skfp.filters import ValenceDiscoveryFilter
     >>> smiles = ["C", "ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1"]
     >>> filt = ValenceDiscoveryFilter()
     >>> filt

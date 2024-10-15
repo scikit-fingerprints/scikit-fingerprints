@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import NIBRFilter
+from skfp.filters import NIBRFilter
 
 
 @pytest.fixture

@@ -54,7 +54,7 @@ class GhoseFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import GhoseFilter
+    >>> from skfp.filters import GhoseFilter
     >>> smiles = ["CC(=O)C1=C(O)C(=O)N(CCc2c[nH]c3ccccc23)C1c1ccc(C)cc1", "CC(=O)c1c(C)n(CC2CCCO2)c2ccc(O)cc12",\
     "CC(=O)c1c(C(C)=O)c(C)n(CCCCn2c(C)c(C(C)=O)c(C(C)=O)c2C)c1C"]
     >>> filt = GhoseFilter()

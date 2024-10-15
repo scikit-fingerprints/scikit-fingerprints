@@ -56,7 +56,7 @@ class TiceInsecticidesFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import TiceInsecticidesFilter
+    >>> from skfp.filters import TiceInsecticidesFilter
     >>> smiles = ["O=C(CC1COc2ccccc2O1)NCCc1ccccc1", "O=C(Nc1cccc(Cl)c1)N1CCCC1", "CNc1nc(N)c([N+](=O)[O-])c(NCCO)n1"]
     >>> filt = TiceInsecticidesFilter()
     >>> filt

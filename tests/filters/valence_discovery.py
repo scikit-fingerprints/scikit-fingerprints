@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import ValenceDiscoveryFilter
+from skfp.filters import ValenceDiscoveryFilter
 
 
 @pytest.fixture

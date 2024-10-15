@@ -56,7 +56,7 @@ class TiceHerbicidesFilter(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.preprocessing import TiceHerbicidesFilter
+    >>> from skfp.filters import TiceHerbicidesFilter
     >>> smiles = ["OCCNc1nc2ccc(Cl)cc2[nH]1", "Nc1nnc(-c2ccco2)s1", "S=C1NCCS1"]
     >>> filt = TiceHerbicidesFilter()
     >>> filt

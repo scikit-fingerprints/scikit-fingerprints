@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import RuleOfReos
+from skfp.filters import RuleOfReos
 
 
 @pytest.fixture

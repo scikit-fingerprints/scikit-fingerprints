@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import RuleOfVeber
+from skfp.filters import RuleOfVeber
 
 
 @pytest.fixture

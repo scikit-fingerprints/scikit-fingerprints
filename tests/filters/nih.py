@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import NIHFilter
+from skfp.filters import NIHFilter
 
 
 def test_nih(mols_list):

@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import BMSFilter
+from skfp.filters import BMSFilter
 
 
 def test_bms(mols_list):

@@ -67,7 +67,7 @@ class BeyondRo5Filter(BaseFilter):
 
     Examples
     --------
-    >>> from skfp.preprocessing import BeyondRo5Filter, LipinskiFilter
+    >>> from skfp.filters import BeyondRo5Filter, LipinskiFilter
     >>> smiles = ["[C-]#N", "CC=O", "O=C(O)C[C@H](O)C[C@H](O)CCn2c(c(c(c2c1ccc(F)cc1)c3ccccc3)C(=O)Nc4ccccc4)C(C)C"]
     >>> filt_bro5 = BeyondRo5Filter()
     >>> filt_bro5

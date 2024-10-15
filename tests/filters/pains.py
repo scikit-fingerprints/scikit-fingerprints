@@ -1,7 +1,7 @@
 import pytest
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import PAINSFilter
+from skfp.filters import PAINSFilter
 
 
 def test_basic_pains(mols_list):

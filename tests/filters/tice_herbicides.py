@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import TiceHerbicidesFilter
+from skfp.filters import TiceHerbicidesFilter
 
 
 @pytest.fixture

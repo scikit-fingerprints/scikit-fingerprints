@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import InpharmaticaFilter
+from skfp.filters import InpharmaticaFilter
 
 
 def test_inpharmatica(mols_list):

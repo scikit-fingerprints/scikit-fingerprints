@@ -1,6 +1,6 @@
 from rdkit.Chem import Mol
 
-from skfp.preprocessing import ZINCDruglikeFilter
+from skfp.filters import ZINCDruglikeFilter
 
 
 def test_zinc_druglike(mols_list):

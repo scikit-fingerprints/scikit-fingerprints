@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.preprocessing import RuleOfFour
+from skfp.filters import RuleOfFour
 
 
 @pytest.fixture
