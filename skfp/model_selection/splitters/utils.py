@@ -3,6 +3,7 @@ from itertools import chain
 from typing import Any, Optional, Union
 
 import numpy as np
+import pandas as pd
 from sklearn.utils import _safe_indexing
 
 
@@ -77,7 +78,10 @@ def get_data_from_indices(data: Sequence, indices: Sequence[int]) -> list:
     """
     Helper function to retrieve data elements from specified indices.
     """
-    return [data[idx] for idx in set(indices)]
+    if isinstance(data, (pd.Series, pd.DataFrame)):
+        return [data.iloc[idx] for idx in set(indices)]
+    else:
+        return [data[idx] for idx in set(indices)]
 
 
 def split_additional_data(
