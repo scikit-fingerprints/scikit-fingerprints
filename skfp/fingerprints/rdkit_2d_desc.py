@@ -138,3 +138,16 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
             return csr_array(X, dtype=np.float32)
         else:
             return np.array(X, dtype=np.float32)
+
+    def get_feature_names_out(self, input_features=None):
+        super().get_feature_names_out(input_features)
+
+        from descriptastorus.descriptors.rdDescriptors import RDKit2D
+        from descriptastorus.descriptors.rdNormalizedDescriptors import (
+            RDKit2DNormalized,
+        )
+
+        gen = RDKit2DNormalized() if self.normalized else RDKit2D()
+        names = list(zip(*gen.columns))[0]
+
+        return np.asarray(names)
