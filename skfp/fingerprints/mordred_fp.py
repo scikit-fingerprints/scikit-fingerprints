@@ -121,3 +121,9 @@ class MordredFingerprint(BaseFingerprintTransformer):
             if self.sparse
             else np.array(X, dtype=np.float32)
         )
+
+    def get_feature_names_out(self, input_features=None):
+        super().get_feature_names_out(input_features)
+        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
+
+        return np.asarray([str(d) for d in calc.descriptors])
