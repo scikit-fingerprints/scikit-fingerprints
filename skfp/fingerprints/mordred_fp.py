@@ -145,4 +145,4 @@ class MordredFingerprint(BaseFingerprintTransformer):
         super().get_feature_names_out(input_features)
         calc = Calculator(descriptors, ignore_3D=not self.use_3D)
 
-        return np.asarray([str(d) for d in calc.descriptors])
+        return np.asarray([str(d) for d in calc.descriptors], dtype=object)
