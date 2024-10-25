@@ -1,10 +1,14 @@
 from collections.abc import Sequence
+from contextlib import nullcontext
 from typing import Optional
 
+import numpy as np
 from rdkit.Chem import Mol, MolFromFASTA
 from sklearn.utils._param_validation import Options
 
 from skfp.bases import BasePreprocessor
+from skfp.utils import no_rdkit_logs
+from skfp.utils.functions import get_data_from_indices
 from skfp.utils.validators import check_strings
 
 
@@ -24,6 +28,10 @@ class MolFromAminoseqTransformer(BasePreprocessor):
     flavor : int, default=0
         Type of molecule. See RDKit documentation [3]_ for more details.
 
+    valid_only: bool, default=False
+        Whether to return only molecules that were successfully loaded. By default,
+        returns ``None`` for molecules that got errors.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
@@ -33,6 +41,9 @@ class MolFromAminoseqTransformer(BasePreprocessor):
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
+
+    suppress_warnings: bool, default=False
+        Whether to suppress warnings and errors on loading molecules.
 
     verbose : int, default=0
         Controls the verbosity when processing molecules.
@@ -70,26 +81,90 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         **BasePreprocessor._parameter_constraints,
         "sanitize": ["boolean"],
         "flavor": [Options(int, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9})],
+        "valid_only": ["boolean"],
     }
 
     def __init__(
         self,
         sanitize: bool = True,
         flavor: int = 0,
+        valid_only: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
+        suppress_warnings: bool = False,
         verbose: int = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
             batch_size=batch_size,
+            suppress_warnings=suppress_warnings,
             verbose=verbose,
         )
         self.sanitize = sanitize
         self.flavor = flavor
+        self.valid_only = valid_only
+
+    def transform(self, X, copy: bool = False) -> list[Mol]:
+        """
+        Create RDKit ``Mol`` objects from amino-acid sequence strings. If ``valid_only``
+        is set toTrue, returns only a subset of molecules which could be successfully
+        loaded.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing amino-acid sequence strings.
+
+        copy : bool, default=False
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        -------
+        X : list of shape (n_samples_conf_gen,)
+            List with RDKit ``Mol`` objects.
+        """
+        X = super().transform(X, copy)
+        if self.valid_only:
+            X = [mol for mol in X if mol is not None]
+        return X
+
+    def transform_x_y(self, X, y, copy: bool = False) -> tuple[list[Mol], np.ndarray]:
+        """
+        Create RDKit ``Mol`` objects from amino-acid sequence strings. If ``valid_only``
+        is set to True, returns only a subset of molecules and labels which could be
+        successfully loaded.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing amino-acid sequence strings
+
+        y : np.ndarray of shape (n_samples,)
+            Array with labels for molecules.
+
+        copy : bool, default=False
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        -------
+        X : list of shape (n_samples,)
+            List with RDKit ``Mol`` objects.
+
+        y : np.ndarray of shape (n_samples,)
+            Array with labels for molecules.
+        """
+        X = super().transform(X, copy)
+        if self.valid_only:
+            idxs_to_keep = [idx for idx, mol in X if mol is not None]
+            X = get_data_from_indices(X, idxs_to_keep)
+            y = y[idxs_to_keep]
+
+        return X, y
 
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
-        check_strings(X)
-        return [
-            MolFromFASTA(fst, sanitize=self.sanitize, flavor=self.flavor) for fst in X
-        ]
+        with no_rdkit_logs() if self.suppress_warnings else nullcontext():
+            check_strings(X)
+            return [
+                MolFromFASTA(fst, sanitize=self.sanitize, flavor=self.flavor)
+                for fst in X
+            ]

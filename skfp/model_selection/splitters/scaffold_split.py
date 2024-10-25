@@ -11,11 +11,11 @@ from sklearn.utils._param_validation import Interval, RealNotInt, validate_param
 
 from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
-    get_data_from_indices,
     split_additional_data,
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
+from skfp.utils.functions import get_data_from_indices
 from skfp.utils.validators import ensure_mols
 
 
@@ -72,7 +72,8 @@ def scaffold_train_test_split(
     The split is fully deterministic, with the smallest scaffold sets assigned to the test
     subset and the rest to the training subset.
 
-    The split fractions (train_size, test_size) must sum to 1.
+    If ``train_size`` and ``test_size`` are integers, they must sum up to the ``data``
+    length. If they are floating numbers, they must sum up to 1.
 
     Parameters
     ----------
@@ -145,9 +146,6 @@ def scaffold_train_test_split(
         train_subset = get_data_from_indices(data, train_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
 
-    ensure_nonempty_subset(train_subset, "train")
-    ensure_nonempty_subset(test_subset, "test")
-
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
             list(additional_data), train_idxs, test_idxs
@@ -219,7 +217,8 @@ def scaffold_train_valid_test_split(
     The split is fully deterministic, with the smallest scaffold sets assigned to the test
     subset, larger to the validation subset, and the rest to the training subset.
 
-    The split fractions (train_size, valid_size, test_size) must sum to 1.
+    If ``train_size``, ``valid_size`` and ``test_size`` are integers, they must sum up
+    to the ``data`` length. If they are floating numbers, they must sum up to 1.
 
     Parameters
     ----------
@@ -295,6 +294,10 @@ def scaffold_train_valid_test_split(
         else:
             train_idxs.extend(scaffold_set)
 
+    ensure_nonempty_subset(train_idxs, "train")
+    ensure_nonempty_subset(valid_idxs, "validation")
+    ensure_nonempty_subset(test_idxs, "test")
+
     if return_indices:
         train_subset = train_idxs
         valid_subset = valid_idxs
@@ -303,10 +306,6 @@ def scaffold_train_valid_test_split(
         train_subset = get_data_from_indices(data, train_idxs)
         valid_subset = get_data_from_indices(data, valid_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
-
-    ensure_nonempty_subset(train_subset, "train")
-    ensure_nonempty_subset(valid_subset, "validation")
-    ensure_nonempty_subset(test_subset, "test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(

@@ -63,6 +63,22 @@ class MolFromSDFTransformer(BasePreprocessor):
         self.remove_hydrogens = remove_hydrogens
 
     def transform(self, X: str, copy: bool = False) -> list[Mol]:
+        """
+        Create RDKit ``Mol`` objects from SDF file.
+
+        Parameters
+        ----------
+        X : str
+            Path to SDF file.
+
+        copy : bool, default=False
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        -------
+        X : list of shape (n_samples_conf_gen,)
+            List with RDKit ``Mol`` objects.
+        """
         self._validate_params()
 
         if X.endswith(".sdf"):

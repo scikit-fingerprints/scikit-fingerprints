@@ -20,6 +20,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
     _parameter_constraints: dict = {
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
+        "suppress_warnings": ["boolean"],
         "verbose": ["verbose"],
     }
 
@@ -27,10 +28,12 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         self,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
+        suppress_warnings: bool = False,
         verbose: int = 0,
     ):
         self.n_jobs = n_jobs
         self.batch_size = batch_size
+        self.suppress_warnings = suppress_warnings
         self.verbose = verbose
 
     def __sklearn_is_fitted__(self) -> bool:
@@ -80,8 +83,6 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         return self.transform(X)
 
     def transform(self, X, copy: bool = False):
-        self._validate_params()
-
         if copy:
             X = deepcopy(X)
 
