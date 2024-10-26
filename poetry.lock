@@ -471,12 +471,12 @@ test = ["cassandra-driver (>=3.20)", "coverage", "mock (>=2.0.0)", "mockredispy"
 
 [[package]]
 name = "descriptastorus"
-version = "2.7.0.5"
+version = "2.8.0"
 description = "Descriptor creation, storage and molecular file indexing"
 optional = false
 python-versions = "*"
 files = [
-    {file = "descriptastorus-2.7.0.5-py3-none-any.whl", hash = "sha256:669962fe52bee32a28ae03fddd56e49505e321230068bc833efe6b660a6daebe"},
+    {file = "descriptastorus-2.8.0-py3-none-any.whl", hash = "sha256:cc0c8201d6d9d8534dc8a45ce629aeaf4cf1e62ba848b9b1e392b2600ca834dc"},
 ]
 
 [package.dependencies]
@@ -2920,4 +2920,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "c5e0105f702835bffa5c2d227c491382d79ecec14039054d00401e6bd2ebe94d"
+content-hash = "b80a93a27ed874bc5225d7375c8cd713c5d78e4bd50f9cbcd2b70ffc47b659b9"
