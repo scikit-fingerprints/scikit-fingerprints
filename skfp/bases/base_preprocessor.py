@@ -83,6 +83,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         return self.transform(X)
 
     def transform(self, X, copy: bool = False):
+        self._validate_params()
         if copy:
             X = deepcopy(X)
 
