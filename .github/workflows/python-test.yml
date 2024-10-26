@@ -41,7 +41,7 @@ jobs:
           poetry config virtualenvs.in-project true --local
 
       - uses: actions/cache@v3
-        name: Define dependencies cache based
+        name: Define a cache for the virtual environment
         with:
           path: ./.venv
           key: venv-${{ hashFiles('poetry.lock') }}
