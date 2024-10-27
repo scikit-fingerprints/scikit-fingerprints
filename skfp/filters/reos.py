@@ -59,7 +59,7 @@ class REOSFilter(BaseFilter):
     >>> smiles = ["CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",  "CC(=O)c1c(C(C)=O)c(C)n(CCCCn2c(C)c(C(C)=O)c(C(C)=O)c2C)c1C"]
     >>> filt = REOSFilter()
     >>> filt
-    RuleOfReos()
+    REOSFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['CC(C)CC1=CC=C(C=C1)C(C)C(=O)O']

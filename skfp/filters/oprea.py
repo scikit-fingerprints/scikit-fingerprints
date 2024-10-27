@@ -56,7 +56,7 @@ class OpreaFilter(BaseFilter):
     >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = OpreaFilter()
     >>> filt
-    RuleOfOprea()
+    OpreaFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O']
