@@ -112,10 +112,11 @@ class MolStandardizer(BasePreprocessor):
         # here, we perform basic validity check and create new molecules
         # this is too fast to benefit from parallelization
         mols = ensure_mols(X)
-        for mol in mols:
-            SanitizeMol(mol)
 
         with nullcontext() if self.verbose else no_rdkit_logs():
+            for mol in mols:
+                SanitizeMol(mol)
+
             # select the largest ("parent") fragment if needed
             if self.largest_fragment_only:
                 FragmentParentInPlace(mols, numThreads=n_jobs)

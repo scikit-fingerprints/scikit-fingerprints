@@ -3,7 +3,7 @@ from itertools import chain
 from typing import Any, Optional, Union
 
 import numpy as np
-import pandas as pd
+from sklearn.model_selection._split import _validate_shuffle_split
 from sklearn.utils import _safe_indexing
 
 
@@ -13,75 +13,6 @@ def ensure_nonempty_subset(data: list, subset: str) -> None:
     """
     if len(data) == 0:
         raise ValueError(f"{subset.capitalize()} subset is empty")
-
-
-def validate_train_test_split_sizes(
-    train_size: Optional[Union[float, int]],
-    test_size: Optional[Union[float, int]],
-    data_length: int,
-) -> tuple[int, int]:
-    """
-    Fill in missing sizes for train and test sets based on the provided sizes.
-    If test_size and train_size are floats, this method returns concrete
-    number of rows, i.e. int(size * data_length)
-
-    If test_size and train_size are ints, this method returns the provided sizes.
-    """
-    if train_size is None and test_size is None:
-        train_size, test_size = 0.8, 0.2
-
-    if (
-        train_size is not None
-        and test_size is not None
-        and type(train_size) is not type(test_size)
-    ):
-        raise TypeError(
-            f"train_size and test_size must be of the same type, got {type(train_size)} for "
-            f"train_size and {type(test_size)} for test_size"
-        )
-
-    if train_size is None:
-        train_size = 1 - test_size if test_size is not None else 0
-
-    if isinstance(train_size, int) and train_size >= data_length:
-        raise ValueError(
-            f"train_size as an integer must be smaller than data_length, got {train_size} for "
-            f"data_length {data_length}"
-        )
-
-    if test_size is None:
-        test_size = 1 - train_size if train_size is not None else 0
-
-    if isinstance(test_size, int) and test_size >= data_length:
-        raise ValueError(
-            f"test_size as an integer must be smaller than data_length, got {test_size} for "
-            f"data_length {data_length}"
-        )
-
-    if isinstance(train_size, float) and not np.isclose(train_size + test_size, 1.0):
-        raise ValueError("train_size and test_size must sum to 1.0")
-
-    if train_size == 0.0:
-        raise ValueError("train_size is 0.0")
-    if test_size == 0.0:
-        raise ValueError("test_size is 0.0")
-
-    if isinstance(train_size, float):
-        train_size = int(train_size * data_length)
-        test_size = data_length - train_size
-        return train_size, test_size
-    else:
-        return int(train_size), int(test_size)
-
-
-def get_data_from_indices(data: Sequence, indices: Sequence[int]) -> list:
-    """
-    Helper function to retrieve data elements from specified indices.
-    """
-    if isinstance(data, (pd.Series, pd.DataFrame)):
-        return [data.iloc[idx] for idx in set(indices)]
-    else:
-        return [data[idx] for idx in set(indices)]
 
 
 def split_additional_data(
@@ -99,57 +30,99 @@ def split_additional_data(
     )
 
 
+def validate_train_test_split_sizes(
+    train_size: Optional[Union[float, int]],
+    test_size: Optional[Union[float, int]],
+    n_samples: int,
+) -> tuple[int, int]:
+    """
+    Ensure the sum of train_size and test_size equals 1.0 and provide default values
+    if necessary. Returns integers with number of rows in those subsets.
+    """
+    return _validate_shuffle_split(
+        n_samples, test_size, train_size, default_test_size=0.2
+    )
+
+
 def validate_train_valid_test_split_sizes(
     train_size: Optional[Union[float, int]],
     valid_size: Optional[Union[float, int]],
     test_size: Optional[Union[float, int]],
-    data_length: int,
+    n_samples: int,
 ) -> tuple[int, int, int]:
     """
-    Ensure the sum of train_size, valid_size, and test_size equals 1.0 and provide default values if necessary.
-    If test_size, valid_size and train_size are floats, this method returns concrete
-    number of rows, i.e. int(size * data_length)
-    If test_size, valid_size and train_size are ints, this method returns the provided sizes.
+    Ensure the sum of train_size, valid_size and test_size equals 1.0 and provide
+    default values if necessary. Returns integers with number of rows in those subsets.
     """
     if train_size is None and valid_size is None and test_size is None:
-        train_size, valid_size, test_size = 0.8, 0.1, 0.1
+        train_size = 0.8
+        valid_size = 0.1
+        test_size = 0.1
 
-    if train_size is None or valid_size is None or test_size is None:
-        raise ValueError("All of the sizes must be provided")
+    sizes = (train_size, valid_size, test_size)
+    if None in sizes:
+        raise ValueError(f"All of the sizes must be provided, got: {sizes}")
 
-    sizes: tuple[Union[float, int], Union[float, int], Union[float, int]] = (
-        train_size,
-        valid_size,
-        test_size,
-    )
+    test_size_type = np.asarray(test_size).dtype.kind
+    valid_size_type = np.asarray(valid_size).dtype.kind
+    train_size_type = np.asarray(train_size).dtype.kind
 
-    if not all(isinstance(size, (int, float)) for size in sizes):
-        types = [type(size) for size in sizes]
-        raise TypeError(f"All sizes must be either int or float, got: {types}")
+    train_size: Union[int, float]
+    valid_size: Union[int, float]
+    test_size: Union[int, float]
 
-    if not all(isinstance(size, type(train_size)) for size in sizes):
-        types = [type(size) for size in sizes]
-        raise TypeError(f"All sizes must be of the same type, got: {types}")
+    _check_subset_size(train_size, n_samples, "train")
+    _check_subset_size(valid_size, n_samples, "valid")
+    _check_subset_size(test_size, n_samples, "test")
 
-    if isinstance(train_size, float):
-        if not np.isclose(sum(sizes), 1.0):
-            raise ValueError(
-                f"The sum of train_size, valid_size, and test_size must be 1.0, got: "
-                f"{sum(sizes)}"
-            )
+    if (
+        train_size_type == "f"
+        and valid_size_type == "f"
+        and test_size_type == "f"
+        and train_size + valid_size + test_size > 1
+    ):
+        raise ValueError(
+            f"The sum of float train_size, valid_size and test_size = "
+            f"{train_size + valid_size + test_size}, should be in the (0, 1) "
+            f"range."
+        )
 
-        train_size_int = int(train_size * data_length)
-        valid_size_int = int(max(valid_size * data_length, 1))
-        test_size_int = max(int(data_length - train_size_int - valid_size_int), 1)
+    n_test = int(test_size * n_samples) if test_size_type == "f" else test_size
+    n_valid = int(valid_size * n_samples) if valid_size_type == "f" else valid_size
+    n_train = n_samples - (n_test + n_valid) if valid_size_type == "f" else train_size
 
-        return train_size_int, valid_size_int, test_size_int
+    if not n_train or not n_valid or not n_test:
+        raise ValueError(
+            f"With current sizes of train_size={train_size}, valid_size={valid_size}, "
+            f"test_size={test_size}, and n_samples={n_samples}, one of the sets will "
+            f"be empty."
+        )
+    if n_train + n_valid + n_test != n_samples:
+        raise ValueError(
+            f"The sum of train, valid and test sizes must be equal to the "
+            f"n_samples={n_samples}, got: "
+            f"n_train={n_train} (train_size={train_size}), "
+            f"n_valid={n_valid} (valid_size={valid_size}), "
+            f"n_test={n_test} (test_size={test_size})."
+        )
 
-    if isinstance(train_size, int):
-        total = sum(sizes)
-        if total != data_length:
-            raise ValueError(
-                f"The sum of train_size, valid_size, and test_size must equal data_length, "
-                f"got {total} instead"
-            )
+    return int(n_train), int(n_valid), int(n_test)
 
-        return int(train_size), int(valid_size), int(test_size)
+
+def _check_subset_size(size: Union[float, int], n_samples: int, subset: str) -> None:
+    size_type = np.asarray(size).dtype.kind
+    subset_size_str = f"{subset}_size"  # e.g. "train_size", "test_size"
+
+    if size_type not in ("i", "f"):
+        raise ValueError(f"Invalid value for {subset_size_str}: {size}")
+
+    if (
+        size_type == "i"
+        and (size >= n_samples or size <= 0)
+        or size_type == "f"
+        and (size <= 0 or size >= 1)
+    ):
+        raise ValueError(
+            f"{subset_size_str}={size} should be either positive and smaller than "
+            f"the number of samples {n_samples} or a float in the (0, 1) range"
+        )

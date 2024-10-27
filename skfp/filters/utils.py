@@ -124,11 +124,11 @@ def get_num_charged_functional_groups(mol: Mol) -> int:
     atomic_charges = {atom.GetIdx(): atom.GetFormalCharge() for atom in mol.GetAtoms()}
     fragment_smarts = _get_functional_groups_smarts_patterns()
 
-    matched_groups = []
+    matched_groups: list[tuple[int]] = []
     for smarts in fragment_smarts:
         # note that this returns lists of atom indexes
         matches = mol.GetSubstructMatches(smarts)
-        matches = matches if matches else []
+        matches = list(matches) if matches else []
         matched_groups.extend(matches)
 
     num_charged_groups = sum(

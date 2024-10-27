@@ -1,4 +1,3 @@
-import warnings
 from collections.abc import Sequence
 from numbers import Integral
 from typing import Any, Optional, Union
@@ -10,11 +9,11 @@ from sklearn.utils._param_validation import Interval, RealNotInt, validate_param
 
 from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
-    get_data_from_indices,
     split_additional_data,
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
+from skfp.utils.functions import get_data_from_indices
 from skfp.utils.validators import ensure_mols
 
 
@@ -62,9 +61,10 @@ def maxmin_train_test_split(
     to maximize the minimal distance to the already selected molecules (hence the
     MaxMin name) [4]_. Distances are calculated on the fly as required.
 
-    First the test set is constructed, nd training set are all other molecules.
+    First, the test set is constructed, and training set are all other molecules.
 
-    The split fractions (train_size, test_size) must sum to 1.
+    If ``train_size`` and ``test_size`` are integers, they must sum up to the ``data``
+    length. If they are floating numbers, they must sum up to 1.
 
     Parameters
     ----------
@@ -128,15 +128,15 @@ def maxmin_train_test_split(
     )
     train_idxs = list(set(range(data_size)) - set(test_idxs))
 
+    ensure_nonempty_subset(train_idxs, "train")
+    ensure_nonempty_subset(test_idxs, "test")
+
     if return_indices:
         train_subset = train_idxs
         test_subset = test_idxs
     else:
         train_subset = get_data_from_indices(data, train_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
-
-    ensure_nonempty_subset(train_subset, "train")
-    ensure_nonempty_subset(test_subset, "test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
@@ -197,10 +197,11 @@ def maxmin_train_valid_test_split(
     to maximize the minimal distance to the already selected molecules (hence the
     MaxMin name) [4]_. Distances are calculated on the fly as required.
 
-    First the test set is constructed, then validation, and training set are all
+    First, the test set is constructed, then validation, and training set are all
     other molecules.
 
-    The split fractions (train_size, valid_size, test_size) must sum to 1.
+    If ``train_size``, ``valid_size`` and ``test_size`` are integers, they must sum up
+    to the ``data`` length. If they are floating numbers, they must sum up to 1.
 
     Parameters
     ----------
@@ -287,6 +288,10 @@ def maxmin_train_valid_test_split(
 
     train_idxs = list(set(range(data_size)) - set(test_idxs) - set(valid_idxs))
 
+    ensure_nonempty_subset(train_idxs, "train")
+    ensure_nonempty_subset(valid_idxs, "valid")
+    ensure_nonempty_subset(test_idxs, "test")
+
     if return_indices:
         train_subset = train_idxs
         test_subset = test_idxs
@@ -295,14 +300,6 @@ def maxmin_train_valid_test_split(
         train_subset = get_data_from_indices(data, train_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
         valid_subset = get_data_from_indices(data, valid_idxs)
-
-    ensure_nonempty_subset(train_subset, "train")
-    ensure_nonempty_subset(test_subset, "test")
-
-    if len(valid_subset) == 0:
-        warnings.warn(
-            "Warning: Valid subset is empty. Consider using maxmin_train_test_split instead."
-        )
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(

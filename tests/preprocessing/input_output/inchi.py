@@ -50,3 +50,15 @@ def test_parallel_to_and_from_inchi(inchi_list):
 
     assert inchi_list_2_seq == inchi_list
     assert inchi_list_2_seq == inchi_list_2_parallel
+
+
+def test_from_invalid_inchi(inchi_list):
+    invalid_inchi_list = ["noninchi", "invalid"]
+    mol_from_inchi = MolFromInchiTransformer(valid_only=False)
+    mols_list = mol_from_inchi.transform(inchi_list + invalid_inchi_list)
+
+    mol_from_inchi = MolFromInchiTransformer(valid_only=True)
+    mols_list_2 = mol_from_inchi.transform(inchi_list + invalid_inchi_list)
+
+    assert len(mols_list) == len(inchi_list) + len(invalid_inchi_list)
+    assert len(mols_list_2) == len(inchi_list)

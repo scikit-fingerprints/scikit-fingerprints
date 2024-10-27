@@ -44,3 +44,15 @@ def test_parallel_to_and_from_smiles(smiles_list):
 
     assert smiles_list_2_seq == smiles_list
     assert smiles_list_2_seq == smiles_list_2_parallel
+
+
+def test_from_invalid_smiles(smiles_list):
+    invalid_smiles_list = ["[H]=[H]", "invalid"]
+    mol_from_smiles = MolFromSmilesTransformer(valid_only=False)
+    mols_list = mol_from_smiles.transform(smiles_list + invalid_smiles_list)
+
+    mol_from_smiles = MolFromSmilesTransformer(valid_only=True)
+    mols_list_2 = mol_from_smiles.transform(smiles_list + invalid_smiles_list)
+
+    assert len(mols_list) == len(smiles_list) + len(invalid_smiles_list)
+    assert len(mols_list_2) == len(smiles_list)

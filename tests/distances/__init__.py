@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-import scipy.sparse as sparse
-import sklearn
 from scipy.sparse import csr_array
+from sklearn.metrics import pairwise_distances
+from sklearn.neighbors import NearestNeighbors
 
 from skfp.distances import (
     dice_binary_distance,
@@ -49,12 +49,12 @@ def test_check_nan_wrong_type():
 )
 def test_sklearn_pairwise_compatible_binary(method, vec_a, vec_b):
     if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        sklearn_dist = sklearn.metrics.pairwise_distances(vec_a, vec_b, metric=method)
+        sklearn_dist = pairwise_distances(vec_a, vec_b, metric=method)
         assert method(vec_a, vec_b) == sklearn_dist[0][0]
     else:
         vec_a = [vec_a]
         vec_b = [vec_b]
-        sklearn_dist = sklearn.metrics.pairwise_distances(vec_a, vec_b, metric=method)
+        sklearn_dist = pairwise_distances(vec_a, vec_b, metric=method)
         assert method(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
 
 
@@ -69,14 +69,14 @@ def test_sklearn_pairwise_compatible_binary(method, vec_a, vec_b):
 )
 def test_sklearn_pairwise_compatible_count(method, vec_a, vec_b):
     if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        vec_a = sparse.csr_array(vec_a)
-        vec_b = sparse.csr_array(vec_b)
-        sklearn_dist = sklearn.metrics.pairwise_distances(vec_a, vec_b, metric=method)
+        vec_a = csr_array(vec_a)
+        vec_b = csr_array(vec_b)
+        sklearn_dist = pairwise_distances(vec_a, vec_b, metric=method)
         assert method(vec_a, vec_b) == sklearn_dist[0][0]
     else:
         vec_a = [vec_a]
         vec_b = [vec_b]
-        sklearn_dist = sklearn.metrics.pairwise_distances(vec_a, vec_b, metric=method)
+        sklearn_dist = pairwise_distances(vec_a, vec_b, metric=method)
         assert method(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
 
 
@@ -99,10 +99,10 @@ def test_sklearn_pairwise_compatible_count(method, vec_a, vec_b):
 )
 def test_sklearn_nearest_neighbors_compatible_binary(method, vec_a, vec_b):
     if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        vec_a = sparse.csr_array(vec_a)
-        vec_b = sparse.csr_array(vec_b)
+        vec_a = csr_array(vec_a)
+        vec_b = csr_array(vec_b)
 
-        nn = sklearn.neighbors.NearestNeighbors(n_neighbors=1, metric=method)
+        nn = NearestNeighbors(n_neighbors=1, metric=method)
         nn.fit(vec_a)
         sklearn_dist, _ = nn.kneighbors(vec_b)
 
@@ -111,7 +111,7 @@ def test_sklearn_nearest_neighbors_compatible_binary(method, vec_a, vec_b):
         vec_a = [vec_a]
         vec_b = [vec_b]
 
-        nn = sklearn.neighbors.NearestNeighbors(n_neighbors=1, metric=method)
+        nn = NearestNeighbors(n_neighbors=1, metric=method)
         nn.fit(vec_a)
         sklearn_dist, _ = nn.kneighbors(vec_b)
 
