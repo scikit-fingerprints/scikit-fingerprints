@@ -1,7 +1,6 @@
 from typing import Union
 
 import numpy as np
-from numba import njit, prange
 from scipy.sparse import csr_array
 from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
@@ -179,9 +178,6 @@ def tanimoto_count_similarity(
     Calculated similarity falls within the range of `[0, 1]`.
     Passing all-zero vectors to this function results in similarity of 1.
 
-    Note that Numpy version is optimized with Numba JIT compiler, resulting in significantly faster
-    performance compared to SciPy sparse arrays. First usage may be slightly slower due to Numba compilation.
-
     Parameters
     ----------
     vec_a : {ndarray, sparse matrix}
@@ -296,19 +292,13 @@ def tanimoto_count_distance(
     return 1 - tanimoto_count_similarity(vec_a, vec_b)
 
 
-@njit(parallel=True)
 def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
     vec_a = vec_a.astype(np.float64).ravel()
     vec_b = vec_b.astype(np.float64).ravel()
 
-    dot_ab = 0.0
-    dot_aa = 0.0
-    dot_bb = 0.0
-
-    for i in prange(vec_a.shape[0]):
-        dot_ab += vec_a[i] * vec_b[i]
-        dot_aa += vec_a[i] * vec_a[i]
-        dot_bb += vec_b[i] * vec_b[i]
+    dot_ab = np.dot(vec_a, vec_b)
+    dot_aa = np.dot(vec_a, vec_a)
+    dot_bb = np.dot(vec_b, vec_b)
 
     return dot_ab / (dot_aa + dot_bb - dot_ab)
 
