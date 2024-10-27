@@ -5,7 +5,6 @@ from numbers import Integral
 from typing import Optional
 
 import numpy as np
-from joblib import effective_n_jobs
 from rdkit.Chem import AddHs, Mol, MolToSmiles, RemoveHs, SanitizeMol
 from rdkit.Chem.PropertyMol import PropertyMol
 from rdkit.Chem.rdDistGeom import (
@@ -24,7 +23,6 @@ from rdkit.ForceField import ForceField
 from sklearn.utils._param_validation import Interval, InvalidParameterError, StrOptions
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import ensure_mols, run_in_parallel
 
 
 class ConformerGenerator(BasePreprocessor):
@@ -155,14 +153,16 @@ class ConformerGenerator(BasePreprocessor):
         verbose: int = 0,
         random_state: Optional[int] = 0,
     ):
+        super().__init__(
+            n_jobs=n_jobs,
+            batch_size=batch_size,
+            verbose=verbose,
+        )
         self.num_conformers = num_conformers
         self.max_gen_attempts = max_gen_attempts
         self.optimize_force_field = optimize_force_field
         self.multiple_confs_select = multiple_confs_select
         self.errors = errors
-        self.n_jobs = n_jobs
-        self.batch_size = batch_size
-        self.verbose = verbose
         self.random_state = random_state
 
     def _validate_params(self) -> None:
@@ -193,7 +193,7 @@ class ConformerGenerator(BasePreprocessor):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects.
+            Sequence containing RDKit ``Mol`` objects.
 
         y : np.ndarray of shape (n_samples,)
             Array with labels for molecules.
@@ -205,8 +205,8 @@ class ConformerGenerator(BasePreprocessor):
         Returns
         -------
         X : list of shape (n_samples_conf_gen,)
-            List with RDKit PropertyMol objects, each one with conformers computed and
-            ``conf_id`` integer property set.
+            List with RDKit ``PropertyMol`` objects, each one with conformers computed
+            and ``conf_id`` integer property set.
 
         y : np.ndarray of shape (n_samples_conf_gen,)
             Array with labels for molecules.
@@ -225,7 +225,7 @@ class ConformerGenerator(BasePreprocessor):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects.
+            Sequence containing RDKit ``Mol`` objects.
 
         copy : bool, default=True
             Copy the input X or not. In contrast to most classes, input molecules
@@ -234,8 +234,8 @@ class ConformerGenerator(BasePreprocessor):
         Returns
         -------
         X : list of shape (n_samples_conf_gen,)
-            List with RDKit PropertyMol objects, each one with conformers computed and
-            ``conf_id`` integer property set.
+            List with RDKit ``PropertyMol`` objects, each one with conformers computed
+            and ``conf_id`` integer property set.
         """
         y = np.empty(len(X))
         X, y = self._transform(X, y, copy)
@@ -244,26 +244,10 @@ class ConformerGenerator(BasePreprocessor):
     def _transform(
         self, X: Sequence[Mol], y: np.ndarray, copy: bool = True
     ) -> tuple[list[PropertyMol], np.ndarray]:
-        self._validate_params()
+        mols = super().transform(X)
 
         if copy:
-            X = deepcopy(X)
             y = deepcopy(y)
-
-        X = ensure_mols(X)
-
-        n_jobs = effective_n_jobs(self.n_jobs)
-        if n_jobs == 1:
-            mols = self._embed_molecules(X)
-        else:
-            mols = run_in_parallel(
-                self._embed_molecules,
-                data=X,
-                n_jobs=n_jobs,
-                batch_size=self.batch_size,
-                flatten_results=True,
-                verbose=self.verbose,
-            )
 
         # keep only molecules and labels for which we generated conformers
         mols_with_conformers = []
@@ -277,9 +261,9 @@ class ConformerGenerator(BasePreprocessor):
 
         return mols_with_conformers, y
 
-    def _embed_molecules(self, mols: Sequence[Mol]) -> list[Mol]:
+    def _transform_batch(self, X: Sequence[Mol]) -> list[Mol]:
         # adding hydrogens and sanitizing is recommended for conformer generation
-        mols = [AddHs(mol) for mol in mols]
+        mols = [AddHs(mol) for mol in X]
         for mol in mols:
             SanitizeMol(mol)
 
