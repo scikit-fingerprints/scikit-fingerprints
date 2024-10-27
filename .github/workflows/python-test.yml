@@ -26,20 +26,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
         run: pipx install poetry --python python${{ matrix.python-version }}
 
-      - name: Setup a local virtual environment
+      - name: Set up venv
         run: |
           poetry config virtualenvs.create true --local
           poetry config virtualenvs.in-project true --local
 
       - uses: actions/cache@v3
-        name: Define a cache for the virtual environment
+        name: Define a venv cache
         with:
           path: ./.venv
           key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}

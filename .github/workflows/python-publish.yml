@@ -14,12 +14,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
-      - name: Install poetry
+      - name: Install Poetry
         run: pipx install poetry --python python3.9
 
       - name: Install Poetry plugins
