@@ -28,11 +28,11 @@ Molecular filters
     MolecularWeightFilter
     NIBRFilter
     NIHFilter
+    OpreaFilter
     PAINSFilter
     PfizerFilter
+    REOSFilter
     RuleOfFour
-    RuleOfOprea
-    RuleOfReos
     RuleOfThree
     RuleOfTwo
     RuleOfVeber

@@ -14,11 +14,11 @@ from .mlsmr import MLSMRFilter
 from .mol_weight import MolecularWeightFilter
 from .nibr import NIBRFilter
 from .nih import NIHFilter
+from .oprea import OpreaFilter
 from .pains import PAINSFilter
 from .pfizer import PfizerFilter
+from .reos import REOSFilter
 from .rule_of_four import RuleOfFour
-from .rule_of_oprea import RuleOfOprea
-from .rule_of_reos import RuleOfReos
 from .rule_of_three import RuleOfThree
 from .rule_of_two import RuleOfTwo
 from .rule_of_veber import RuleOfVeber
