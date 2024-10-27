@@ -26,14 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v3
-        with:
-          poetry-plugins: "poetry-plugin-export"
 
       - name: Setup a local virtual environment
         run: |
@@ -44,7 +42,7 @@ jobs:
         name: Define a cache for the virtual environment
         with:
           path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install the project dependencies
         run: poetry install --with test
