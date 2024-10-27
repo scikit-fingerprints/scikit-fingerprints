@@ -28,12 +28,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry --python ${{ matrix.python-version }}
-
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Install the project dependencies
         run: poetry install --with doc
