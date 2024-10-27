@@ -31,7 +31,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
-        run: pipx install poetry
+        run: pipx install poetry --python python${{ matrix.python-version }}
 
       - name: Setup a local virtual environment
         run: |
