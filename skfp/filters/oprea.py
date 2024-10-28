@@ -5,12 +5,12 @@ from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfOprea(BaseFilter):
+class OpreaFilter(BaseFilter):
     # flake8: noqa E501
     """
-    Rule of Oprea.
+    Oprea filter.
 
-    Computes Oprea's rule of drug likeness obtained by comparing drug vs non drug
+    Computes Oprea's filter for drug likeness, designed by comparing drug and non-drug
     compounds across multiple datasets [1]_.
 
     Molecule must fulfill conditions:
@@ -52,11 +52,11 @@ class RuleOfOprea(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.filters import RuleOfOprea
+    >>> from skfp.filters import OpreaFilter
     >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "CC(=O)Nc1ccc(O)cc1"]
-    >>> filt = RuleOfOprea()
+    >>> filt = OpreaFilter()
     >>> filt
-    RuleOfOprea()
+    OpreaFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O']

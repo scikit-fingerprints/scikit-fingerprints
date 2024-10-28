@@ -5,13 +5,13 @@ from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfReos(BaseFilter):
+class REOSFilter(BaseFilter):
     # flake8: noqa E501
     """
-    Rule of REOS.
+    REOS filter.
 
-    This rule (Rapid Elimination of Outliers for Screening) is designed
-    to filter out molecules with undesirable properties for drug discovery [1]_.
+    REOS (Rapid Elimination Of Swill) is designed to filter out molecules with
+    undesirable properties for drug discovery [1]_.
 
     Molecule must fulfill conditions:
 
@@ -55,11 +55,11 @@ class RuleOfReos(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.filters import RuleOfReos
+    >>> from skfp.filters import REOSFilter
     >>> smiles = ["CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",  "CC(=O)c1c(C(C)=O)c(C)n(CCCCn2c(C)c(C(C)=O)c(C(C)=O)c2C)c1C"]
-    >>> filt = RuleOfReos()
+    >>> filt = REOSFilter()
     >>> filt
-    RuleOfReos()
+    REOSFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['CC(C)CC1=CC=C(C=C1)C(C)C(=O)O']
