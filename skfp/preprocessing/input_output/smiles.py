@@ -145,7 +145,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
         """
         X = super().transform(X, copy)
         if self.valid_only:
-            idxs_to_keep = [idx for idx, mol in X if mol is not None]
+            idxs_to_keep = [idx for idx, mol in enumerate(X) if mol is not None]
             X = get_data_from_indices(X, idxs_to_keep)
             y = y[idxs_to_keep]
 
