@@ -5,7 +5,7 @@ from rdkit.Chem import Mol, rdMolDescriptors
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfXu(BaseFilter):
+class RuleOfXuFilter(BaseFilter):
     """
     Rule of Xu.
 
@@ -51,11 +51,11 @@ class RuleOfXu(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.filters import RuleOfXu
+    >>> from skfp.filters import RuleOfXuFilter
     >>> smiles = ["CCO", "CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O"]
-    >>> filt = RuleOfXu()
+    >>> filt = RuleOfXuFilter()
     >>> filt
-    RuleOfXu()
+    RuleOfXuFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O']

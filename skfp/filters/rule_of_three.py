@@ -13,7 +13,7 @@ from rdkit.Chem.rdMolDescriptors import (
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfThree(BaseFilter):
+class RuleOfThreeFilter(BaseFilter):
     """
     Rule of three (Ro3).
 
@@ -68,15 +68,15 @@ class RuleOfThree(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.filters import RuleOfThree
+    >>> from skfp.filters import RuleOfThreeFilter
     >>> smiles = ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
-    >>> filt = RuleOfThree()
+    >>> filt = RuleOfThreeFilter()
     >>> filt
-    RuleOfThree()
+    RuleOfThreeFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
-    >>> filt = RuleOfThree(extended=True)
+    >>> filt = RuleOfThreeFilter(extended=True)
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['C=CCNc1ncnc2ccccc12']

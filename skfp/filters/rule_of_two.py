@@ -8,7 +8,7 @@ from rdkit.Chem.rdMolDescriptors import CalcNumHBA, CalcNumHBD
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfTwo(BaseFilter):
+class RuleOfTwoFilter(BaseFilter):
     """
     Rule of two (Ro2).
 
@@ -53,11 +53,11 @@ class RuleOfTwo(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.filters import RuleOfTwo
+    >>> from skfp.filters import RuleOfTwoFilter
     >>> smiles = ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1', 'C=CCC1C=C(C)CC(CC=C)N1']
-    >>> filt = RuleOfTwo()
+    >>> filt = RuleOfTwoFilter()
     >>> filt
-    RuleOfTwo()
+    RuleOfTwoFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1']

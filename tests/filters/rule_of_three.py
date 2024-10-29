@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.filters import RuleOfThree
+from skfp.filters import RuleOfThreeFilter
 
 
 @pytest.fixture
@@ -51,28 +51,28 @@ def smiles_passing_one_violation_extended_rule_of_three() -> list[str]:
 
 
 def test_mols_passing_basic_rule_of_three(smiles_passing_basic_rule_of_three):
-    mol_filter = RuleOfThree()
+    mol_filter = RuleOfThreeFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_basic_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_basic_rule_of_three)
 
 
 def test_mols_passing_extended_rule_of_three(smiles_passing_extended_rule_of_three):
-    mol_filter = RuleOfThree(extended=True)
+    mol_filter = RuleOfThreeFilter(extended=True)
     smiles_filtered = mol_filter.transform(smiles_passing_extended_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_extended_rule_of_three)
 
 
 def test_mols_failing_basic_rule_of_three(smiles_failing_basic_rule_of_three):
-    mol_filter = RuleOfThree()
+    mol_filter = RuleOfThreeFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_basic_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_failing_basic_rule_of_three)
     assert len(smiles_filtered) == 0
 
 
 def test_mols_failing_extended_rule_of_three(smiles_failing_extended_rule_of_three):
-    mol_filter = RuleOfThree(extended=True)
+    mol_filter = RuleOfThreeFilter(extended=True)
     smiles_filtered = mol_filter.transform(smiles_failing_extended_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == 0
@@ -81,13 +81,13 @@ def test_mols_failing_extended_rule_of_three(smiles_failing_extended_rule_of_thr
 def test_mols_passing_with_violation_basic_rule_of_three(
     smiles_passing_one_violation_basic_rule_of_three,
 ):
-    mol_filter = RuleOfThree(allow_one_violation=True)
+    mol_filter = RuleOfThreeFilter(allow_one_violation=True)
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_basic_rule_of_three
     )
     assert len(smiles_filtered) == 3
 
-    mol_filter = RuleOfThree(allow_one_violation=False)
+    mol_filter = RuleOfThreeFilter(allow_one_violation=False)
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_basic_rule_of_three
     )
@@ -97,13 +97,13 @@ def test_mols_passing_with_violation_basic_rule_of_three(
 def test_mols_passing_with_violation_extended_rule_of_three(
     smiles_passing_one_violation_extended_rule_of_three,
 ):
-    mol_filter = RuleOfThree(allow_one_violation=True, extended=True)
+    mol_filter = RuleOfThreeFilter(allow_one_violation=True, extended=True)
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_extended_rule_of_three
     )
     assert len(smiles_filtered) == 3
 
-    mol_filter = RuleOfThree(allow_one_violation=False, extended=True)
+    mol_filter = RuleOfThreeFilter(allow_one_violation=False, extended=True)
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_extended_rule_of_three
     )
@@ -121,7 +121,7 @@ def test_rule_of_three_return_indicators(
         + smiles_passing_one_violation_extended_rule_of_three
     )
 
-    mol_filter = RuleOfThree(extended=True, return_indicators=True)
+    mol_filter = RuleOfThreeFilter(extended=True, return_indicators=True)
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_extended_rule_of_three)
@@ -131,7 +131,7 @@ def test_rule_of_three_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = RuleOfThree(
+    mol_filter = RuleOfThreeFilter(
         extended=True, allow_one_violation=True, return_indicators=True
     )
     filter_indicators = mol_filter.transform(all_smiles)
@@ -145,10 +145,10 @@ def test_rule_of_three_return_indicators(
 
 
 def test_rule_of_three_parallel(smiles_list):
-    mol_filter = RuleOfThree(extended=True)
+    mol_filter = RuleOfThreeFilter(extended=True)
     mols_filtered_sequential = mol_filter.transform(smiles_list)
 
-    mol_filter = RuleOfThree(extended=True, n_jobs=-1, batch_size=1)
+    mol_filter = RuleOfThreeFilter(extended=True, n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel

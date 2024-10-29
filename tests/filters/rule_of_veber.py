@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.filters import RuleOfVeber
+from skfp.filters import RuleOfVeberFilter
 
 
 @pytest.fixture
@@ -26,21 +26,21 @@ def smiles_failing_rule_of_veber() -> list[str]:
 
 
 def test_mols_passing_rule_of_veber(smiles_passing_rule_of_veber):
-    mol_filter = RuleOfVeber()
+    mol_filter = RuleOfVeberFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_rule_of_veber)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_rule_of_veber)
 
 
 def test_mols_partially_passing_rule_of_veber(smiles_passing_one_fail):
-    mol_filter = RuleOfVeber(allow_one_violation=True)
+    mol_filter = RuleOfVeberFilter(allow_one_violation=True)
     smiles_filtered = mol_filter.transform(smiles_passing_one_fail)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_one_fail)
 
 
 def test_mols_failing_rule_of_veber(smiles_failing_rule_of_veber):
-    mol_filter = RuleOfVeber()
+    mol_filter = RuleOfVeberFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_rule_of_veber)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == 0
@@ -57,7 +57,7 @@ def test_rule_of_veber_return_indicators(
         + smiles_passing_one_fail
     )
 
-    mol_filter = RuleOfVeber(return_indicators=True)
+    mol_filter = RuleOfVeberFilter(return_indicators=True)
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_rule_of_veber)
@@ -67,7 +67,7 @@ def test_rule_of_veber_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = RuleOfVeber(allow_one_violation=True, return_indicators=True)
+    mol_filter = RuleOfVeberFilter(allow_one_violation=True, return_indicators=True)
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_rule_of_veber)
@@ -79,10 +79,10 @@ def test_rule_of_veber_return_indicators(
 
 
 def test_rule_of_veber_parallel(smiles_list):
-    mol_filter = RuleOfVeber()
+    mol_filter = RuleOfVeberFilter()
     mols_filtered_sequential = mol_filter.transform(smiles_list)
 
-    mol_filter = RuleOfVeber(n_jobs=-1, batch_size=1)
+    mol_filter = RuleOfVeberFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel

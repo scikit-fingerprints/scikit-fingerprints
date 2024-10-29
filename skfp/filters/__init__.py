@@ -18,11 +18,11 @@ from .oprea import OpreaFilter
 from .pains import PAINSFilter
 from .pfizer import PfizerFilter
 from .reos import REOSFilter
-from .rule_of_four import RuleOfFour
-from .rule_of_three import RuleOfThree
-from .rule_of_two import RuleOfTwo
-from .rule_of_veber import RuleOfVeber
-from .rule_of_xu import RuleOfXu
+from .rule_of_four import RuleOfFourFilter
+from .rule_of_three import RuleOfThreeFilter
+from .rule_of_two import RuleOfTwoFilter
+from .rule_of_veber import RuleOfVeberFilter
+from .rule_of_xu import RuleOfXuFilter
 from .surechembl import SureChEMBLFilter
 from .tice_herbicides import TiceHerbicidesFilter
 from .tice_insecticides import TiceInsecticidesFilter
