@@ -32,11 +32,11 @@ Molecular filters
     PAINSFilter
     PfizerFilter
     REOSFilter
-    RuleOfFour
-    RuleOfThree
-    RuleOfTwo
-    RuleOfVeber
-    RuleOfXu
+    RuleOfFourFilter
+    RuleOfThreeFilter
+    RuleOfTwoFilter
+    RuleOfVeberFilter
+    RuleOfXuFilter
     SureChEMBLFilter
     TiceHerbicidesFilter
     TiceInsecticidesFilter
