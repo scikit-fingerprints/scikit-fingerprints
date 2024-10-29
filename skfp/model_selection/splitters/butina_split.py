@@ -117,9 +117,9 @@ def butina_train_test_split(
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES
-    strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
-    is True, lists of indices are returned instead of actual data.
+        Tuple with train-test subsets of provided arrays. First two are lists of SMILES
+        strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
+        is True, lists of indices are returned instead of actual data.
 
     References
     ----------
@@ -303,9 +303,9 @@ def butina_train_valid_test_split(
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-valid-test subsets of provided arrays. First three are lists of
-    SMILES strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
-    is True, lists of indices are returned instead of actual data.
+        Tuple with train-valid-test subsets of provided arrays. First three are lists of
+        SMILES strings or RDKit ``Mol`` objects, depending on the input type. If
+        `return_indices` is True, lists of indices are returned instead of actual data.
 
     References
     ----------
