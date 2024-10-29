@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from skfp.filters import RuleOfTwo
+from skfp.filters import RuleOfTwoFilter
 
 
 @pytest.fixture
@@ -24,14 +24,14 @@ def smiles_passing_one_violation_rule_of_two() -> list[str]:
 
 
 def test_mols_passing_rule_of_two(smiles_passing_rule_of_two):
-    mol_filter = RuleOfTwo()
+    mol_filter = RuleOfTwoFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_rule_of_two)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_rule_of_two)
 
 
 def test_mols_failing_rule_of_two(smiles_failing_rule_of_two):
-    mol_filter = RuleOfTwo()
+    mol_filter = RuleOfTwoFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_rule_of_two)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == 0
@@ -40,11 +40,11 @@ def test_mols_failing_rule_of_two(smiles_failing_rule_of_two):
 def test_mols_passing_with_violation_rule_of_two(
     smiles_passing_one_violation_rule_of_two,
 ):
-    mol_filter = RuleOfTwo(allow_one_violation=True)
+    mol_filter = RuleOfTwoFilter(allow_one_violation=True)
     smiles_filtered = mol_filter.transform(smiles_passing_one_violation_rule_of_two)
     assert len(smiles_filtered) == 3
 
-    mol_filter = RuleOfTwo(allow_one_violation=False)
+    mol_filter = RuleOfTwoFilter(allow_one_violation=False)
     smiles_filtered = mol_filter.transform(smiles_passing_one_violation_rule_of_two)
     assert len(smiles_filtered) == 0
 
@@ -60,7 +60,7 @@ def test_rule_of_two_return_indicators(
         + smiles_passing_one_violation_rule_of_two
     )
 
-    mol_filter = RuleOfTwo(return_indicators=True)
+    mol_filter = RuleOfTwoFilter(return_indicators=True)
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_rule_of_two)
@@ -70,7 +70,7 @@ def test_rule_of_two_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = RuleOfTwo(allow_one_violation=True, return_indicators=True)
+    mol_filter = RuleOfTwoFilter(allow_one_violation=True, return_indicators=True)
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_rule_of_two)
@@ -82,10 +82,10 @@ def test_rule_of_two_return_indicators(
 
 
 def test_rule_of_two_parallel(smiles_list):
-    mol_filter = RuleOfTwo()
+    mol_filter = RuleOfTwoFilter()
     mols_filtered_sequential = mol_filter.transform(smiles_list)
 
-    mol_filter = RuleOfTwo(n_jobs=-1, batch_size=1)
+    mol_filter = RuleOfTwoFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel

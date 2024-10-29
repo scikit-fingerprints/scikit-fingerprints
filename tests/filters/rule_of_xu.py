@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from skfp.filters import RuleOfXu
+from skfp.filters import RuleOfXuFilter
 
 
 @pytest.fixture
@@ -31,21 +31,21 @@ def smiles_failing_rule_of_xu() -> list[str]:
 
 
 def test_mols_passing_rule_of_xu(smiles_passing_rule_of_xu):
-    mol_filter = RuleOfXu()
+    mol_filter = RuleOfXuFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_rule_of_xu)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_rule_of_xu)
 
 
 def test_mols_partially_passing_rule_of_xu(smiles_passing_one_fail):
-    mol_filter = RuleOfXu(allow_one_violation=True)
+    mol_filter = RuleOfXuFilter(allow_one_violation=True)
     smiles_filtered = mol_filter.transform(smiles_passing_one_fail)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_one_fail)
 
 
 def test_mols_failing_rule_of_xu(smiles_failing_rule_of_xu):
-    mol_filter = RuleOfXu()
+    mol_filter = RuleOfXuFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_rule_of_xu)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == 0
@@ -60,7 +60,7 @@ def test_rule_of_xu_return_indicators(
         smiles_passing_rule_of_xu + smiles_failing_rule_of_xu + smiles_passing_one_fail
     )
 
-    mol_filter = RuleOfXu(return_indicators=True)
+    mol_filter = RuleOfXuFilter(return_indicators=True)
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_rule_of_xu)
@@ -70,7 +70,7 @@ def test_rule_of_xu_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = RuleOfXu(allow_one_violation=True, return_indicators=True)
+    mol_filter = RuleOfXuFilter(allow_one_violation=True, return_indicators=True)
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_rule_of_xu)
@@ -82,10 +82,10 @@ def test_rule_of_xu_return_indicators(
 
 
 def test_rule_of_xu_parallel(smiles_list):
-    mol_filter = RuleOfXu()
+    mol_filter = RuleOfXuFilter()
     mols_filtered_sequential = mol_filter.transform(smiles_list)
 
-    mol_filter = RuleOfXu(n_jobs=-1, batch_size=1)
+    mol_filter = RuleOfXuFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel

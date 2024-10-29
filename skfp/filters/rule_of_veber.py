@@ -5,7 +5,7 @@ from rdkit.Chem import Mol, rdMolDescriptors
 from skfp.bases.base_filter import BaseFilter
 
 
-class RuleOfVeber(BaseFilter):
+class RuleOfVeberFilter(BaseFilter):
     """
     Rule of Veber.
 
@@ -50,9 +50,9 @@ class RuleOfVeber(BaseFilter):
 
     Examples
     ----------
-    >>> from skfp.filters import RuleOfVeber
+    >>> from skfp.filters import RuleOfVeberFilter
     >>> smiles = ["CC=O", "CC(C)[C@@H](CC1=CC(=C(C=C1)OC)OCCCOC)C[C@@H]([C@H](C[C@@H](C(C)C)C(=O)NCC(C)(C)C(=O)N)O)N"]
-    >>> filt = RuleOfVeber()
+    >>> filt = RuleOfVeberFilter()
     >>> filt
     RuleOfVeber()
     >>> filtered_mols = filt.transform(smiles)
