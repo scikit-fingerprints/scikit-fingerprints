@@ -72,7 +72,7 @@ class RuleOfThreeFilter(BaseFilter):
     >>> smiles = ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
     >>> filt = RuleOfThreeFilter()
     >>> filt
-    RuleOfThree()
+    RuleOfThreeFilter()
     >>> filtered_mols = filt.transform(smiles)
     >>> filtered_mols
     ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
