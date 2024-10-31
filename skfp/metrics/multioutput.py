@@ -21,48 +21,6 @@ from skfp.metrics.spearman import spearman_correlation
 
 
 @validate_params(
-    {"predictions": ["array-like"]},
-    prefer_skip_nested_validation=True,
-)
-def extract_multioutput_pos_proba(predictions: list[np.ndarray]) -> np.ndarray:
-    """
-    Extract positive class probabilities (``y-score``) for multioutput problems.
-
-    When using ``.predict_proba()`` method for multioutput problems, scikit-learn
-    returns a list of NumPy arrays with predicted probabilities of negative and
-    positive class for each task. This is essentially a 3D tensor of shape
-    ``(n_tasks, n_samples, 2)``. However, multioutput metrics expect shape
-    ``(n_samples, n_tasks)`` with predicted positive classes' probabilities.
-
-    This function reshapes the raw prediction output to that shape, extracting just
-    positive classes' probabilities.
-
-    Parameters
-    ----------
-    predictions : list of NumPy arrays
-        Raw predictions of shape ``(n_tasks, n_samples, 2)``, with predicted negative
-        and positive class probability in the last dimension.
-
-    Returns
-    -------
-    y_score : NumPy array of shape (n_samples, n_tasks)
-        Predicted positive class probabilities for each task.
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from skfp.metrics import extract_multioutput_pos_proba
-    >>> y_pred = [np.array([[0.6, 0.1], [0.2, 0.3]]), np.array([[0.0, 0.9], [0.7, 0.8]])]
-    >>> extract_multioutput_pos_proba(y_pred)
-    array([[0.1, 0.9],
-           [0.3, 0.8]])
-    """
-    # (n_tasks, n_samples, 2) -> (n_tasks, n_samples) -> (n_samples, n_tasks)
-    predictions = np.array(predictions)
-    return np.transpose(predictions[:, :, 1])
-
-
-@validate_params(
     {
         "y_true": ["array-like"],
         "y_pred": ["array-like"],
