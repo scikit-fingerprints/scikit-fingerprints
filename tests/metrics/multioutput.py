@@ -23,7 +23,6 @@ from sklearn.metrics import (
 from sklearn.model_selection import GridSearchCV
 
 from skfp.metrics import (
-    extract_multioutput_pos_proba,
     multioutput_accuracy_score,
     multioutput_auprc_score,
     multioutput_auroc_score,
@@ -221,13 +220,3 @@ def test_multioutput_metrics_grid_search_compatible(
         scoring=scorer,
     )
     cv.fit(X, y)
-
-
-def test_extract_multioutput_pos_proba():
-    n_samples = 10
-    n_tasks = 5
-
-    predictions = [np.random.rand(n_samples, 2) for _ in range(n_tasks)]
-    predictions = extract_multioutput_pos_proba(predictions)
-
-    assert predictions.shape == (n_samples, n_tasks)
