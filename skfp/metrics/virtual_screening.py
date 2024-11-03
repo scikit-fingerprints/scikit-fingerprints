@@ -1,4 +1,5 @@
 from numbers import Real
+from typing import Union
 
 import numpy as np
 from rdkit.ML.Scoring.Scoring import CalcBEDROC, CalcEnrichment, CalcRIE
@@ -16,8 +17,8 @@ from sklearn.utils.multiclass import type_of_target
     prefer_skip_nested_validation=True,
 )
 def enrichment_factor(
-    y_true: np.ndarray,
-    y_score: np.ndarray,
+    y_true: Union[np.ndarray, list[int]],
+    y_score: Union[np.ndarray, list[float]],
     fraction: float = 0.05,
 ) -> float:
     """
@@ -38,7 +39,7 @@ def enrichment_factor(
         EF(X) = \\frac{a}{X*n}
 
     Minimal value is 0. Maximal value depends on the fraction of actives in the
-    dataset, and is equal to ``1/X`` if ``X >= n/N``, or ``N/n`` otherwise. Model
+    dataset, and is equal to ``1/X`` if ``X >= n/N``, and ``N/n`` otherwise. Model
     as good as random guessing would get 1. Note that values depend on the ratio
     of actives in the dataset and ``fraction`` value.
 
@@ -71,8 +72,8 @@ def enrichment_factor(
     --------
     >>> import numpy as np
     >>> from skfp.metrics import enrichment_factor
-    >>> y_true = np.array([0, 0, 1])
-    >>> y_score = np.array([0.1, 0.2, 0.7])
+    >>> y_true = [0, 0, 1]
+    >>> y_score = [0.1, 0.2, 0.7]
     >>> enrichment_factor(y_true, y_score)
     3.0
     """
@@ -92,7 +93,7 @@ def enrichment_factor(
     # it can sometimes return an empty list, so we catch that and return 0.0 then, see:
     # https://github.com/rdkit/rdkit/issues/7981
     ef = CalcEnrichment(scores, col=1, fractions=[fraction])
-    return 0.0 if not len(ef) else ef
+    return 0.0 if not len(ef) else ef[0]
 
 
 @validate_params(
@@ -104,8 +105,8 @@ def enrichment_factor(
     prefer_skip_nested_validation=True,
 )
 def rie_score(
-    y_true: np.ndarray,
-    y_score: np.ndarray,
+    y_true: Union[np.ndarray, list[int]],
+    y_score: Union[np.ndarray, list[float]],
     alpha: float = 20,
 ) -> float:
     """
@@ -131,7 +132,7 @@ def rie_score(
 
         RIE_{min}(\\alpha) = \\frac{N}{n} \\frac{1 - e^{\\alpha n/N}}{1 - e^{\\alpha}}
 
-        RIE_{max}(\\alpha) = \\frac{N}{n} \\frac{1 - e^{\\alpha n/N}}{1 - e^{-\\alpha}}
+        RIE_{max}(\\alpha) = \\frac{N}{n} \\frac{1 - e^{-\\alpha n/N}}{1 - e^{-\\alpha}}
 
     Parameters
     ----------
@@ -171,8 +172,8 @@ def rie_score(
     --------
     >>> import numpy as np
     >>> from skfp.metrics import rie_score
-    >>> y_true = np.array([0, 0, 1])
-    >>> y_score = np.array([0.1, 0.2, 0.7])
+    >>> y_true = [0, 0, 1]
+    >>> y_score = [0.1, 0.2, 0.7]
     >>> rie_score(y_true, y_score)  # doctest: +SKIP
     2.996182104771572
     """
@@ -197,8 +198,8 @@ def rie_score(
     prefer_skip_nested_validation=True,
 )
 def bedroc_score(
-    y_true: np.ndarray,
-    y_score: np.ndarray,
+    y_true: Union[np.ndarray, list[int]],
+    y_score: Union[np.ndarray, list[float]],
     alpha: float = 20,
 ) -> float:
     """
@@ -248,8 +249,8 @@ def bedroc_score(
     --------
     >>> import numpy as np
     >>> from skfp.metrics import bedroc_score
-    >>> y_true = np.array([0, 0, 1])
-    >>> y_score = np.array([0.1, 0.2, 0.7])
+    >>> y_true = [0, 0, 1]
+    >>> y_score = [0.1, 0.2, 0.7]
     >>> bedroc_score(y_true, y_score)  # doctest: +SKIP
     0.9999999999999999
     """
