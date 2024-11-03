@@ -42,9 +42,9 @@ Virtual screening metrics:
     :nosignatures:
     :toctree: generated/
 
+    bedroc_score
     enrichment_factor
     rie_score
-    bedroc_score
 
 Utility functions:
 
