@@ -52,4 +52,4 @@ Utility functions:
     :nosignatures:
     :toctree: generated/
 
-    extract_multioutput_pos_proba
+    extract_pos_proba

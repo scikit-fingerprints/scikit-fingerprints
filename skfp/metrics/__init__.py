@@ -2,7 +2,6 @@
 
 from .auroc import auroc_score
 from .multioutput import (
-    extract_multioutput_pos_proba,
     multioutput_accuracy_score,
     multioutput_auprc_score,
     multioutput_auroc_score,
@@ -19,3 +18,4 @@ from .multioutput import (
 )
 from .spearman import spearman_correlation
 from .virtual_screening import bedroc_score, enrichment_factor, rie_score
+from .utils import extract_pos_proba
