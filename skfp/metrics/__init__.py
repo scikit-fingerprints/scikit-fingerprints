@@ -18,3 +18,4 @@ from .multioutput import (
     multioutput_spearman_correlation,
 )
 from .spearman import spearman_correlation
+from .virtual_screening import bedroc_score, enrichment_factor, rie_score
