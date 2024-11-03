@@ -105,7 +105,7 @@ can be loaded directly.
 ```python
 from skfp.datasets.moleculenet import load_clintox
 from skfp.metrics import multioutput_auroc_score
-from skfp.model_selection.scaffold_split import scaffold_train_test_split
+from skfp.model_selection.splitters.scaffold_split import scaffold_train_test_split
 from skfp.fingerprints import ECFPFingerprint, MACCSFingerprint
 from skfp.preprocessing import MolFromSmilesTransformer
 
