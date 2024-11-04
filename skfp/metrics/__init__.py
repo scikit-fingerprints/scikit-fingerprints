@@ -18,3 +18,4 @@ from .multioutput import (
 )
 from .spearman import spearman_correlation
 from .utils import extract_pos_proba
+from .virtual_screening import bedroc_score, enrichment_factor, rie_score
