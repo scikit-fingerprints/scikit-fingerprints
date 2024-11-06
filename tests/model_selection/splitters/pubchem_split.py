@@ -6,31 +6,11 @@ from rdkit import Chem
 from rdkit.Chem import Mol
 
 from skfp.model_selection.splitters.pubchem_split import (
-    get_cid_for_smiles,
-    get_earliest_publication_date,
+    _get_cid_for_smiles,
+    _get_earliest_publication_date,
     pubchem_train_test_split,
     pubchem_train_valid_test_split,
 )
-
-
-@pytest.fixture
-def proper_smiles() -> str:
-    return "Cc1cc(cc(c1)Oc2ccc(cc2Br)Cc3c4ccnnc4[nH]n3)C#N"
-
-
-@pytest.fixture
-def smiles_that_cannot_be_standarized() -> str:
-    return "c1ccccc12cCc4"
-
-
-@pytest.fixture
-def smiles_that_not_exists_in_pubchem() -> str:
-    return "C[Fe](C)(C)OC(C)=O"
-
-
-@pytest.fixture
-def proper_pubchem_cid() -> str:
-    return "24261"
 
 
 @pytest.fixture
@@ -60,17 +40,19 @@ def varied_mols_years() -> list[Union[int, None]]:
 
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
-def test_get_cid_for_smiles_with_proper_smiles(mock, proper_smiles):
+def test_get_cid_for_smiles_with_proper_smiles(mock):
+    proper_smiles = "Cc1cc(cc(c1)Oc2ccc(cc2Br)Cc3c4ccnnc4[nH]n3)C#N"
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {"IdentifierList": {"CID": [25058138]}}
 
-    cid = get_cid_for_smiles(proper_smiles)
+    cid = _get_cid_for_smiles(proper_smiles)
 
     assert cid == "25058138"
 
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
-def test_get_cid_for_smiles_with_wrong_smiles(mock, smiles_that_cannot_be_standarized):
+def test_get_cid_for_smiles_with_wrong_smiles(mock):
+    smiles_that_cannot_be_standarized = "c1ccccc12cCc4"
     mock.return_value.status_code = 400
     mock.return_value.json.return_value = {
         "Fault": {
@@ -90,26 +72,26 @@ def test_get_cid_for_smiles_with_wrong_smiles(mock, smiles_that_cannot_be_standa
         }
     }
 
-    cid = get_cid_for_smiles(smiles_that_cannot_be_standarized)
+    cid = _get_cid_for_smiles(smiles_that_cannot_be_standarized)
     assert cid is None
 
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
-def test_get_cid_for_smiles_with_no_existing_smiles(
-    mock, smiles_that_not_exists_in_pubchem
-):
+def test_get_cid_for_smiles_with_no_existing_smiles(mock):
+    smiles_that_not_exists_in_pubchem = "C[Fe](C)(C)OC(C)=O"
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {"IdentifierList": {"CID": [0]}}
-    cid = get_cid_for_smiles(smiles_that_not_exists_in_pubchem)
+    cid = _get_cid_for_smiles(smiles_that_not_exists_in_pubchem)
     assert cid is None
 
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
-def test_get_earliest_publication_date_proper_cid(mock, proper_pubchem_cid):
+def test_get_earliest_publication_date_proper_cid(mock):
+    proper_pubchem_cid = "24261"
     mock_response = [{"pclid": "204154486", "articlepubdate": "1833-11"}]
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = mock_response
-    year = get_earliest_publication_date(proper_pubchem_cid)
+    year = _get_earliest_publication_date(proper_pubchem_cid)
     assert year == 1833
 
 
@@ -117,7 +99,7 @@ def test_get_earliest_publication_date_proper_cid(mock, proper_pubchem_cid):
 def test_get_earliest_publication_date_none_cid(mock, get_none):
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {}
-    year = get_earliest_publication_date(get_none)
+    year = _get_earliest_publication_date(get_none)
     assert year is None
 
 

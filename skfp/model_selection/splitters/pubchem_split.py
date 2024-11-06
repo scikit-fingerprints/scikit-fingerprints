@@ -8,7 +8,7 @@ from urllib.parse import quote
 
 import pandas as pd
 import requests
-from rdkit.Chem import Mol, MolToSmiles
+from rdkit.Chem import Mol
 from sklearn.utils._param_validation import (
     Interval,
     RealNotInt,
@@ -19,11 +19,12 @@ from sklearn.utils._param_validation import (
 from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
     get_data_from_indices,
-    run_in_parallel,
     split_additional_data,
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
+from skfp.utils.parallel import run_in_parallel
+from skfp.utils.validators import ensure_smiles
 
 
 @validate_params(
@@ -54,6 +55,7 @@ def pubchem_train_test_split(
     not_found_behavior: str = "test",
     return_indices: bool = False,
     n_jobs: int = 5,
+    verbose: int = 0,
 ) -> Union[
     tuple[
         Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
@@ -108,6 +110,10 @@ def pubchem_train_test_split(
         At most 5 requests per second are made to avoid throttling, which limits
         parallelism even if high ``n_jobs`` is set.
 
+    verbose : int, default=1
+        Controls the level of messaging during execution. Values less than 1 surpass all messages.
+        Higher values activate messages.
+
     Returns
     ----------
     subsets : tuple[list, list, ...]
@@ -122,7 +128,7 @@ def pubchem_train_test_split(
         Nucleic Acids Res. 2018 Jul 2;46(W1):W563-W570.
         <https://doi.org/10.1093/nar/gky294>`_
     """
-    years = _get_pubchem_years(data, n_jobs)
+    years = _get_pubchem_years(data, n_jobs, verbose)
     data_df = pd.DataFrame({"idx": list(range(len(data))), "year": years})
 
     if not_found_behavior != "remove":
@@ -141,8 +147,7 @@ def pubchem_train_test_split(
 
     if not_found_behavior == "train":
         train_idxs.extend(not_found_mols)
-
-    if not_found_behavior == "test":
+    elif not_found_behavior == "test":
         test_idxs.extend(not_found_mols)
 
     ensure_nonempty_subset(train_idxs, "train")
@@ -201,6 +206,7 @@ def pubchem_train_valid_test_split(
     not_found_behavior: str = "test",
     return_indices: bool = False,
     n_jobs: int = 5,
+    verbose: int = 1,
 ) -> Union[
     tuple[
         Sequence[Union[str, Mol]],
@@ -271,6 +277,10 @@ def pubchem_train_valid_test_split(
         At most 5 requests per second are made to avoid throttling, which limits
         parallelism even if high ``n_jobs`` is set.
 
+    verbose : int, default=1
+        Controls the level of messaging during execution. Values less than 1 surpass all messages.
+        Higher values activate messages.
+
     Returns
     ----------
     subsets : tuple[list, list, ...]
@@ -285,7 +295,7 @@ def pubchem_train_valid_test_split(
         Nucleic Acids Res. 2018 Jul 2;46(W1):W563-W570.
         <https://doi.org/10.1093/nar/gky294>`_
     """
-    years = _get_pubchem_years(data, n_jobs)
+    years = _get_pubchem_years(data, n_jobs, verbose)
 
     data_df = pd.DataFrame({"idx": list(range(len(data))), "year": years})
 
@@ -299,14 +309,13 @@ def pubchem_train_valid_test_split(
         train_size, valid_size, test_size, len(data)
     )
 
-    train_idxs: list[int] = list(data_df.iloc[:train_size].idx)
-    valid_idxs: list[int] = list(data_df.iloc[train_size : train_size + valid_size].idx)
-    test_idxs: list[int] = list(data_df.iloc[train_size + valid_size :].idx)
+    train_idxs: list[int] = data_df.index[:train_size].tolist()
+    valid_idxs: list[int] = data_df.index[train_size : train_size + valid_size].tolist()
+    test_idxs: list[int] = data_df.index[train_size + valid_size :].tolist()
 
     if not_found_behavior == "train":
         train_idxs.extend(not_found_mols)
-
-    if not_found_behavior == "test":
+    elif not_found_behavior == "test":
         test_idxs.extend(not_found_mols)
 
     if return_indices:
@@ -332,38 +341,29 @@ def pubchem_train_valid_test_split(
 
 
 def _get_pubchem_years(
-    data: Sequence[Union[str, Mol]], n_jobs: int = 5
+    data: Sequence[Union[str, Mol]], n_jobs: int = 5, verbose: int = 1
 ) -> list[list[int]]:
     """
     Get first literature publication year from PubChem for a list of molecules, either
     as SMILES strings or RDKit Mol objects.
-
-    Parameters
-    ----------
-    data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
     """
-    data = list(
-        map(
-            lambda mol: (
-                MolToSmiles(mol, canonical=True, isomericSmiles=True)
-                if mol is Mol
-                else mol
-            ),
-            data,
-        )
-    )
+    if n_jobs > 5:
+        n_jobs = 5
 
-    print("Converting SMILES to CIDs")
-    cids = run_in_parallel(get_cid_for_smiles, data, n_jobs)
+    data = ensure_smiles(data)
 
-    print("Searching for CIDs literature")
-    years = run_in_parallel(get_earliest_publication_date, cids, n_jobs)
+    if verbose > 0:
+        print("Converting SMILES to CIDs")
+    cids = run_in_parallel(_get_cid_for_smiles, data, n_jobs)
+
+    if verbose > 0:
+        print("Searching for CIDs literature")
+    years = run_in_parallel(_get_earliest_publication_date, cids, n_jobs)
 
     return years
 
 
-def get_cid_for_smiles(smiles: str) -> Optional[str]:
+def _get_cid_for_smiles(smiles: str) -> Optional[str]:
     """
 
     Parameters:
@@ -376,41 +376,32 @@ def get_cid_for_smiles(smiles: str) -> Optional[str]:
         PubChem compound identifier if  else None
 
     """
-    PUG_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{quote(smiles)}/cids/JSON"
+    url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{quote(smiles)}/cids/JSON"
 
-    PUG_response = requests.get(PUG_url, timeout=10)
-    PUG_response_status = PUG_response.status_code
+    response = requests.get(url, timeout=10)
+    response_status = response.status_code
 
-    if PUG_response_status != 200:
+    if response_status != 200:
         warnings.warn(
-            f"PUG error \n, {PUG_url} \n status code {PUG_response_status}, \n check your input"
+            f"PUG error \n, {url} \n status code {response_status}, \n check your input"
         )
 
-    PUG_response_json = PUG_response.json()
+    response_json = response.json()
 
-    if "IdentifierList" in PUG_response_json:
-        cid = PUG_response_json["IdentifierList"]["CID"][0]
-        if bool(cid):
-            cid = str(cid)
-        else:
-            cid = None
-    else:
+    try:
+        cid = response_json["IdentifierList"]["CID"][0]
+        cid = str(cid) if cid else None
+    except (KeyError, ValueError):
         cid = None
     return cid
 
 
-def get_earliest_publication_date(cid: Union[str, None]) -> Optional[int]:
+def _get_earliest_publication_date(
+    cid: Optional[str], n_trials: int = 5
+) -> Optional[int]:
     """
     Get the date of the earliest publication from PubChem where a given molecule appears.
     There are molecules without publications, for which we return None.
-
-    Parameters
-    ----------
-    Optional[int]
-        year of earliest publication date associated to cid
-
-    Returns
-    ----------
 
     """
     if not cid:
@@ -434,11 +425,10 @@ def get_earliest_publication_date(cid: Union[str, None]) -> Optional[int]:
         for entry in response:
             if "articlepubdate" in entry:
                 return int(entry["articlepubdate"][:4])  # get year of publication
-            else:
-                continue
         return article_pub_date
 
-    while True:
+    trial = 0
+    while trial < n_trials:
         try:
             response = requests.get(base_url, params=params, timeout=10).json()
             if isinstance(response, list):
@@ -454,3 +444,6 @@ def get_earliest_publication_date(cid: Union[str, None]) -> Optional[int]:
         except requests.ConnectionError:
             # most probably unstable PubChem network
             time.sleep(1)
+        trial += 1
+
+    return None

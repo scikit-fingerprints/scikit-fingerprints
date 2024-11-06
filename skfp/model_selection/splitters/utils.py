@@ -1,11 +1,9 @@
 from collections.abc import Sequence
 from itertools import chain
-from typing import Any, Callable, Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
-from joblib import Parallel, delayed
 from sklearn.utils import _safe_indexing
-from tqdm import tqdm
 
 
 def ensure_nonempty_subset(data: list, subset: str) -> None:
@@ -151,30 +149,3 @@ def validate_train_valid_test_split_sizes(
             )
 
         return int(train_size), int(valid_size), int(test_size)
-
-
-def run_in_parallel(function: Callable, data: Sequence, n_jobs: int = 5) -> list:
-    """
-    Runs provided function in parallel on provided data. Returns results in the same
-    order as inputs, with the same length.
-
-    We run 5 jobs in parallel, since typically each one takes 1 second, and PUG REST
-    API has limit of 5 requests per second.
-    """
-    tasks = (delayed(function)(item) for item in data)
-    results = ProgressParallel(n_jobs=n_jobs, total=len(data))(tasks)
-    return results
-
-
-class ProgressParallel(Parallel):
-    def __init__(self, total: Optional[int] = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.total = total
-
-    def __call__(self, *args, **kwargs):
-        with tqdm(total=self.total) as self._pbar:
-            return Parallel.__call__(self, *args, **kwargs)
-
-    def print_progress(self):
-        self._pbar.n = self.n_completed_tasks
-        self._pbar.refresh()
