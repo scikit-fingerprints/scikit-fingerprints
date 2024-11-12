@@ -123,7 +123,8 @@ class MordredFingerprint(BaseFingerprintTransformer):
         )
 
     def get_feature_names_out(self):
-        """Get output feature names for transformation.
+        """
+        Get fingerprint output feature names.
 
         Returns
         -------
