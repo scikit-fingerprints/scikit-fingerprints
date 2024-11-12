@@ -140,7 +140,8 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
             return np.array(X, dtype=np.float32)
 
     def get_feature_names_out(self):
-        """Get output feature names for transformation.
+        """
+        Get fingerprint output feature names.
 
         Returns
         -------
