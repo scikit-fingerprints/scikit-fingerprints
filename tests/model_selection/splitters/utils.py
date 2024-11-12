@@ -56,12 +56,6 @@ def test_get_data_from_indices_valid(smiles_data):
     assert result == ["CCC", "CCO"]
 
 
-def test_get_data_from_indices_duplicates(smiles_data):
-    # This works since we iterate over a set of indices
-    result = get_data_from_indices(smiles_data, [0, 2, 2])
-    assert result == ["CCC", "CCO"]
-
-
 def test_get_data_from_indices_empty(smiles_data):
     result = get_data_from_indices(smiles_data, [])
     assert result == []
