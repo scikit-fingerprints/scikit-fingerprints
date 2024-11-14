@@ -74,7 +74,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         Whether to cache the array of values from the best fingerprint in ``best_fp_array_``
         parameter. Note that this can result in high memory usage.
 
-verbose : int or dict, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when computing fingerprints.
 
         - >0 : size of parameter grid, parameter candidate for each fold
