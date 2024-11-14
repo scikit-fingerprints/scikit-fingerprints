@@ -43,7 +43,7 @@ def test_run_in_parallel_batch_size():
     result_parallel = run_in_parallel(
         func, data, n_jobs=-1, batch_size=1, flatten_results=True
     )
-    assert result_sequential == result_parallel 
+    assert result_sequential == result_parallel
 
 
 def test_run_in_parallel_invalid_batch_size():
