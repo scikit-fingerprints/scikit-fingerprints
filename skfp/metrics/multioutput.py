@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union
 
 import numpy as np
 from sklearn.metrics import (
@@ -21,48 +21,6 @@ from skfp.metrics.spearman import spearman_correlation
 
 
 @validate_params(
-    {"predictions": ["array-like"]},
-    prefer_skip_nested_validation=True,
-)
-def extract_multioutput_pos_proba(predictions: list[np.ndarray]) -> np.ndarray:
-    """
-    Extract positive class probabilities (``y-score``) for multioutput problems.
-
-    When using ``.predict_proba()`` method for multioutput problems, scikit-learn
-    returns a list of NumPy arrays with predicted probabilities of negative and
-    positive class for each task. This is essentially a 3D tensor of shape
-    ``(n_tasks, n_samples, 2)``. However, multioutput metrics expect shape
-    ``(n_samples, n_tasks)`` with predicted positive classes' probabilities.
-
-    This function reshapes the raw prediction output to that shape, extracting just
-    positive classes' probabilities.
-
-    Parameters
-    ----------
-    predictions : list of NumPy arrays
-        Raw predictions of shape ``(n_tasks, n_samples, 2)``, with predicted negative
-        and positive class probability in the last dimension.
-
-    Returns
-    -------
-    y_score : NumPy array of shape (n_samples, n_tasks)
-        Predicted positive class probabilities for each task.
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from skfp.metrics import extract_multioutput_pos_proba
-    >>> y_pred = [np.array([[0.6, 0.1], [0.2, 0.3]]), np.array([[0.0, 0.9], [0.7, 0.8]])]
-    >>> extract_multioutput_pos_proba(y_pred)
-    array([[0.1, 0.9],
-           [0.3, 0.8]])
-    """
-    # (n_tasks, n_samples, 2) -> (n_tasks, n_samples) -> (n_samples, n_tasks)
-    predictions = np.array(predictions)
-    return np.transpose(predictions[:, :, 1])
-
-
-@validate_params(
     {
         "y_true": ["array-like"],
         "y_pred": ["array-like"],
@@ -70,8 +28,8 @@ def extract_multioutput_pos_proba(predictions: list[np.ndarray]) -> np.ndarray:
     prefer_skip_nested_validation=True,
 )
 def multioutput_accuracy_score(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -126,8 +84,8 @@ def multioutput_accuracy_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_auroc_score(
-    y_true: np.ndarray,
-    y_score: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_score: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -186,8 +144,8 @@ def multioutput_auroc_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_auprc_score(
-    y_true: np.ndarray,
-    y_score: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_score: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -246,8 +204,8 @@ def multioutput_auprc_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_balanced_accuracy_score(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -304,8 +262,8 @@ def multioutput_balanced_accuracy_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_cohen_kappa_score(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -360,8 +318,8 @@ def multioutput_cohen_kappa_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_f1_score(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -418,8 +376,8 @@ def multioutput_f1_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_matthews_corr_coef(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -474,8 +432,8 @@ def multioutput_matthews_corr_coef(
     prefer_skip_nested_validation=True,
 )
 def multioutput_mean_absolute_error(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -532,8 +490,8 @@ def multioutput_mean_absolute_error(
     prefer_skip_nested_validation=True,
 )
 def multioutput_mean_squared_error(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -588,8 +546,8 @@ def multioutput_mean_squared_error(
     prefer_skip_nested_validation=True,
 )
 def multioutput_precision_score(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -647,8 +605,8 @@ def multioutput_precision_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_recall_score(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -703,8 +661,8 @@ def multioutput_recall_score(
     prefer_skip_nested_validation=True,
 )
 def multioutput_root_mean_squared_error(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -761,8 +719,8 @@ def multioutput_root_mean_squared_error(
     prefer_skip_nested_validation=True,
 )
 def multioutput_spearman_correlation(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:
@@ -811,8 +769,8 @@ def multioutput_spearman_correlation(
 
 def _safe_multioutput_metric(
     metric: Callable,
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list],
+    y_pred: Union[np.ndarray, list],
     *args,
     **kwargs,
 ) -> float:

@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from scipy.stats import spearmanr
 from sklearn.metrics._regression import _check_reg_targets
@@ -14,8 +16,8 @@ from sklearn.utils._param_validation import StrOptions, validate_params
     prefer_skip_nested_validation=True,
 )
 def spearman_correlation(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list[float]],
+    y_pred: Union[np.ndarray, list[float]],
     *,
     alternative: str = "two-sided",
     return_p_value: bool = False,

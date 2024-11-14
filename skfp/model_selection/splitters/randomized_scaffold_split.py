@@ -10,12 +10,12 @@ from sklearn.utils._param_validation import Interval, RealNotInt, validate_param
 from skfp.model_selection.splitters.scaffold_split import _create_scaffold_sets
 from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
-    get_data_from_indices,
     split_additional_data,
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
 from skfp.utils import ensure_mols
+from skfp.utils.functions import get_data_from_indices
 
 
 @validate_params(
@@ -70,7 +70,8 @@ def randomized_scaffold_train_test_split(
     as "balanced scaffold split", and typically leads to more optimistic evaluation than
     regular, deterministic scaffold split [4]_.
 
-    The split fractions (train_size, test_size) must sum to 1.
+    If ``train_size`` and ``test_size`` are integers, they must sum up to the ``data``
+    length. If they are floating numbers, they must sum up to 1.
 
     Parameters
     ----------
@@ -103,9 +104,9 @@ def randomized_scaffold_train_test_split(
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES
-    strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
-    is True, lists of indices are returned instead of actual data.
+        Tuple with train-test subsets of provided arrays. First two are lists of SMILES
+        strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
+        is True, lists of indices are returned instead of actual data.
 
     References
     ----------
@@ -158,9 +159,6 @@ def randomized_scaffold_train_test_split(
     else:
         train_subset = get_data_from_indices(data, train_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
-
-    ensure_nonempty_subset(train_subset, "train")
-    ensure_nonempty_subset(test_subset, "test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(
@@ -228,7 +226,8 @@ def randomized_scaffold_train_valid_test_split(
     as "balanced scaffold split", and typically leads to more optimistic evaluation than
     regular, deterministic scaffold split [4]_.
 
-    The split fractions (train_size, valid_size, test_size) must sum to 1.
+    If ``train_size``, ``valid_size`` and ``test_size`` are integers, they must sum up
+    to the ``data`` length. If they are floating numbers, they must sum up to 1.
 
     Parameters
     ----------
@@ -270,9 +269,9 @@ def randomized_scaffold_train_valid_test_split(
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-valid-test subsets of provided arrays. First three are lists of
-    SMILES strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
-    is True, lists of indices are returned instead of actual data.
+        Tuple with train-valid-test subsets of provided arrays. First three are lists of
+        SMILES strings or RDKit ``Mol`` objects, depending on the input type. If
+        `return_indices` is True, lists of indices are returned instead of actual data.
 
     References
     ----------
@@ -318,6 +317,10 @@ def randomized_scaffold_train_valid_test_split(
         else:
             train_idxs.extend(scaffold_set)
 
+    ensure_nonempty_subset(train_idxs, "train")
+    ensure_nonempty_subset(valid_idxs, "validation")
+    ensure_nonempty_subset(test_idxs, "test")
+
     if return_indices:
         train_subset = train_idxs
         valid_subset = valid_idxs
@@ -326,10 +329,6 @@ def randomized_scaffold_train_valid_test_split(
         train_subset = get_data_from_indices(data, train_idxs)
         valid_subset = get_data_from_indices(data, valid_idxs)
         test_subset = get_data_from_indices(data, test_idxs)
-
-    ensure_nonempty_subset(train_subset, "train")
-    ensure_nonempty_subset(valid_subset, "validation")
-    ensure_nonempty_subset(test_subset, "test")
 
     if additional_data:
         additional_data_split: list[Sequence[Any]] = split_additional_data(

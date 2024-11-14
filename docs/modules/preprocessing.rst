@@ -14,12 +14,14 @@ Reading and writing molecular formats:
     :nosignatures:
     :toctree: generated/
 
+    MolFromAminoseqTransformer
     MolFromInchiTransformer
     MolFromSDFTransformer
     MolFromSmilesTransformer
     MolToInchiTransformer
     MolToSDFTransformer
     MolToSmilesTransformer
+
 
 Preprocessing classes:
 
@@ -29,34 +31,3 @@ Preprocessing classes:
 
     ConformerGenerator
     MolStandardizer
-
-Molecular filters:
-
-.. autosummary::
-    :nosignatures:
-    :toctree: generated/
-
-    BasicZINCFilter
-    BeyondRo5Filter
-    BMSFilter
-    BrenkFilter
-    GhoseFilter
-    GlaxoFilter
-    HaoFilter
-    InpharmaticaFilter
-    LINTFilter
-    LipinskiFilter
-    MLSMRFilter
-    MolecularWeightFilter
-    NIHFilter
-    PAINSFilter
-    PfizerFilter
-    RuleOfFour
-    RuleOfReos
-    RuleOfThree
-    RuleOfTwo
-    RuleOfVeber
-    RuleOfXu
-    SureChEMBLFilter
-    TiceHerbicidesFilter
-    TiceInsecticidesFilter

@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-from scipy import sparse
 from scipy.sparse import csr_array
 
 from skfp.distances.tanimoto import (
@@ -40,8 +39,8 @@ def test_tanimoto_similarity(data_type, similarity_function, matrix_type):
         vec_a = data_type(size, dtype=int)
         vec_b = data_type(size, dtype=int)
     elif matrix_type == "scipy":
-        vec_a = sparse.csr_array(data_type((size, size), dtype=int))
-        vec_b = sparse.csr_array(data_type((size, size), dtype=int))
+        vec_a = csr_array(data_type((size, size), dtype=int))
+        vec_b = csr_array(data_type((size, size), dtype=int))
 
     assert similarity_function(vec_a, vec_b) == 1.0
 

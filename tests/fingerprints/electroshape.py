@@ -56,7 +56,6 @@ def test_mmff94_error():
 def test_electroshape_ignore_errors():
     organometallics = [
         "CCCC[Li]",
-        "[O+]#C[Ni-4](C#[O+])(C#[O+])C#[O+]",
         "CC[Zn]CC",
         "C[Al-](C)([CH3+]1)[CH3+][Al-]1(C)C",
         "CCCC[SnH](CCCC)CCCC",

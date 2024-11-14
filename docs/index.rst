@@ -6,7 +6,7 @@ Welcome to scikit-fingerprints documentation!
    :caption: Contents:
 
    usage
-   modules/classes
+   modules/api_reference
 
 Indices and tables
 ==================

@@ -168,7 +168,7 @@ verbose : int or dict, default=0
         self.best_fp_: BaseFingerprintTransformer = None  # type: ignore
         self.best_fp_params_: dict = None  # type: ignore
         self.best_fp_array_: np.ndarray = None  # type: ignore
-        self.best_score_ = -1  # in scikit-learn, higher score is always better
+        self.best_score_ = None
         self.best_estimator_cv_: BaseSearchCV = None  # type: ignore
 
         param_grid = ParameterGrid(self.fp_param_grid)
@@ -198,8 +198,10 @@ verbose : int or dict, default=0
             result = {**fp_params, **estimator_params, "score": curr_score}
             self.cv_results_.append(result)
 
-            if (self.greater_is_better and curr_score > self.best_score_) or (
-                not self.greater_is_better and curr_score < self.best_score_
+            if (
+                (self.best_score_ is None)
+                or (self.greater_is_better and curr_score > self.best_score_)
+                or (not self.greater_is_better and curr_score < self.best_score_)
             ):
                 self.best_fp_ = fp
                 self.best_fp_params_ = fp_params

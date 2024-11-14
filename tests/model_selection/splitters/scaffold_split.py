@@ -181,7 +181,7 @@ def test_empty_train_subset_raises_an_error_train_test():
 
     with pytest.raises(
         ValueError,
-        match="Train subset is empty",
+        match="the resulting train set will be empty",
     ):
         scaffold_train_test_split(data=smiles_list)
 
@@ -194,7 +194,7 @@ def test_empty_train_subset_raises_an_error_train_valid_test():
 
     with pytest.raises(
         ValueError,
-        match="Train subset is empty",
+        match="one of the sets will be empty",
     ):
         scaffold_train_valid_test_split(data=smiles_list)
 
@@ -265,11 +265,16 @@ def test_train_test_split_with_additional_data(smiles_ten_scaffolds):
 
 
 def test_train_valid_test_split_with_additional_data(smiles_ten_scaffolds):
-    train_set, valid_set, test_set, train_data, valid_data, test_data = (
-        scaffold_train_valid_test_split(
-            smiles_ten_scaffolds,
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        )
+    (
+        train_set,
+        valid_set,
+        test_set,
+        train_data,
+        valid_data,
+        test_data,
+    ) = scaffold_train_valid_test_split(
+        smiles_ten_scaffolds,
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     )
     assert len(train_set) == 8
     assert len(valid_set) == 1

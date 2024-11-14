@@ -6,8 +6,10 @@ from typing import Optional, Union
 from joblib import effective_n_jobs
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
+from tqdm import tqdm
 
 from skfp.utils import run_in_parallel
+
 
 class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
     """Base class for molecule preprocessing classes."""
@@ -16,6 +18,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
     _parameter_constraints: dict = {
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
+        "suppress_warnings": ["boolean"],
         "verbose": ["verbose", dict],
     }
 
@@ -23,10 +26,12 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         self,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
+        suppress_warnings: bool = False,
         verbose: Union[int, dict] = 0,
     ):
         self.n_jobs = n_jobs
         self.batch_size = batch_size
+        self.suppress_warnings = suppress_warnings
         self.verbose = verbose
 
     def __sklearn_is_fitted__(self) -> bool:
@@ -83,7 +88,10 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            results = self._transform_batch(X)
+            if self.verbose:
+                results = [self._transform_batch([mol]) for mol in tqdm(X)]
+            else:
+                results = self._transform_batch(X)
         else:
             results = run_in_parallel(
                 self._transform_batch,

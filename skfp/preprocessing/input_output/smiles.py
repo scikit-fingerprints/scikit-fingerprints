@@ -1,9 +1,13 @@
 from collections.abc import Sequence
+from contextlib import nullcontext
 from typing import Optional, Union
 
+import numpy as np
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 from skfp.bases import BasePreprocessor
+from skfp.utils import no_rdkit_logs
+from skfp.utils.functions import get_data_from_indices
 from skfp.utils.validators import check_mols, check_strings
 
 
@@ -23,6 +27,10 @@ class MolFromSmilesTransformer(BasePreprocessor):
         If provided, will be used to do string substitution of abbreviations in the
         input SMILES.
 
+    valid_only: bool, default=False
+        Whether to return only molecules that were successfully loaded. By default,
+        returns ``None`` for molecules that got errors.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
@@ -32,6 +40,9 @@ class MolFromSmilesTransformer(BasePreprocessor):
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
+
+    suppress_warnings: bool, default=False
+        Whether to suppress warnings and errors on loading molecules.
 
     verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
@@ -63,31 +74,93 @@ class MolFromSmilesTransformer(BasePreprocessor):
         **BasePreprocessor._parameter_constraints,
         "sanitize": ["boolean"],
         "replacements": [dict, None],
+        "valid_only": ["boolean"],
     }
 
     def __init__(
         self,
         sanitize: bool = True,
         replacements: Optional[dict] = None,
+        valid_only: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
+        suppress_warnings: bool = False,
         verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
             batch_size=batch_size,
+            suppress_warnings=suppress_warnings,
             verbose=verbose,
         )
         self.sanitize = sanitize
         self.replacements = replacements
+        self.valid_only = valid_only
+
+    def transform(self, X, copy: bool = False) -> list[Mol]:
+        """
+        Create RDKit ``Mol`` objects from SMILES strings. If ``valid_only`` is set to
+        True, returns only a subset of molecules which could be successfully loaded.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings.
+
+        copy : bool, default=False
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        -------
+        X : list of shape (n_samples_conf_gen,)
+            List with RDKit ``Mol`` objects.
+        """
+        X = super().transform(X, copy)
+        if self.valid_only:
+            X = [mol for mol in X if mol is not None]
+        return X
+
+    def transform_x_y(self, X, y, copy: bool = False) -> tuple[list[Mol], np.ndarray]:
+        """
+        Create RDKit ``Mol`` objects from SMILES strings. If ``valid_only`` is set to
+        True, returns only a subset of molecules and labels which could be successfully
+        loaded.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings.
+
+        y : np.ndarray of shape (n_samples,)
+            Array with labels for molecules.
+
+        copy : bool, default=False
+            Unused, kept for Scikit-learn compatibility.
+
+        Returns
+        -------
+        X : list of shape (n_samples,)
+            List with RDKit ``Mol`` objects.
+
+        y : np.ndarray of shape (n_samples,)
+            Array with labels for molecules.
+        """
+        X = super().transform(X, copy)
+        if self.valid_only:
+            idxs_to_keep = [idx for idx, mol in enumerate(X) if mol is not None]
+            X = get_data_from_indices(X, idxs_to_keep)
+            y = y[idxs_to_keep]
+
+        return X, y
 
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
-        check_strings(X)
-        replacements = self.replacements if self.replacements else {}
-        return [
-            MolFromSmiles(smi, sanitize=self.sanitize, replacements=replacements)
-            for smi in X
-        ]
+        with no_rdkit_logs() if self.suppress_warnings else nullcontext():
+            check_strings(X)
+            replacements = self.replacements if self.replacements else {}
+            return [
+                MolFromSmiles(smi, sanitize=self.sanitize, replacements=replacements)
+                for smi in X
+            ]
 
 
 class MolToSmilesTransformer(BasePreprocessor):

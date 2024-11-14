@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.utils._param_validation import validate_params
 
-from skfp.datasets.utils import fetch_dataset, get_smiles_and_labels
+from skfp.datasets.utils import fetch_dataset, get_mol_strings_and_labels
 
 
 @validate_params(
@@ -68,4 +68,4 @@ def load_lipophilicity(
         filename="lipophilicity.csv",
         verbose=verbose,
     )
-    return df if as_frame else get_smiles_and_labels(df)
+    return df if as_frame else get_mol_strings_and_labels(df)

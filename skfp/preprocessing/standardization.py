@@ -3,7 +3,6 @@ from contextlib import nullcontext
 from numbers import Integral
 from typing import Optional, Union
 
-import joblib
 from rdkit.Chem import Mol, SanitizeMol
 from rdkit.Chem.MolStandardize.rdMolStandardize import (
     CleanupInPlace,
@@ -99,27 +98,44 @@ class MolStandardizer(BasePreprocessor):
     ):
         super().__init__()
         self.largest_fragment_only = largest_fragment_only
-        # note that parallelization, where possible, is handled at RDKit functions level
         self.n_jobs = n_jobs
         self.verbose = verbose
 
     def transform(self, X: Sequence[Union[str, Mol]], copy: bool = True) -> list[Mol]:
-        self._validate_params()
+        """
+        Standardize molecule structures.
 
-        n_jobs = joblib.effective_n_jobs(self.n_jobs)
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
-        # here, we perform basic validity check and create new molecules
-        # this is too fast to benefit from parallelization
+        copy : bool, default=True
+            Copy the input X or not. In contrast to most classes, input molecules
+            are copied by default, since RDKit standardizes their structure in place.
+
+        Returns
+        -------
+        X : list of shape (n_samples_conf_gen,)
+            List with RDKit ``Mol`` objects.
+        """
+        return super().transform(X, copy)
+
+    def _transform_batch(self, X: Sequence[Union[str, Mol]]) -> list[Mol]:
+        # if SMILES is provided, MolFromSmiles also includes sanitization
         mols = ensure_mols(X)
-        for mol in mols:
-            SanitizeMol(mol)
 
         with nullcontext() if self.verbose else no_rdkit_logs():
-            # select the largest ("parent") fragment if needed
-            if self.largest_fragment_only:
-                FragmentParentInPlace(mols, numThreads=n_jobs)
+            # we can safely modify in place here, thanks to default copy=True
+            for mol in mols:
+                # basic sanitization, if Mol objects were passed
+                SanitizeMol(mol)
 
-            # remove Hs, disconnect metals, normalize functional groups, reionize
-            CleanupInPlace(mols, numThreads=n_jobs)
+                # select the largest ("parent") fragment if needed
+                if self.largest_fragment_only:
+                    FragmentParentInPlace(mol)
+
+                # remove Hs, disconnect metals, normalize functional groups, reionize
+                CleanupInPlace(mol)
 
         return mols

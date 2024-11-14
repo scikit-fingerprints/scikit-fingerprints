@@ -24,8 +24,8 @@ from sklearn.utils._param_validation import (
     prefer_skip_nested_validation=True,
 )
 def auroc_score(
-    y_true: np.ndarray,
-    y_score: np.ndarray,
+    y_true: Union[np.ndarray, list[float]],
+    y_score: Union[np.ndarray, list[float]],
     *args,
     constant_target_behavior: Union[str, float] = np.NaN,
     **kwargs,

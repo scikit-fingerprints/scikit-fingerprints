@@ -65,7 +65,7 @@ def test_basic_sklearn_checks_for_fingerprints(fp_name, fp_cls, mols_conformers_
 
 @pytest.mark.parametrize("preproc_name, preproc_cls", get_all_preprocessors())
 def test_basic_sklearn_checks_for_preprocessors(
-    preproc_name, preproc_cls, smallest_smiles_list, smallest_mols_list
+    preproc_name, preproc_cls, smallest_smiles_list, smallest_mols_list, fasta_list
 ):
     global X, y
     y = np.arange(n_samples) % 2
@@ -78,6 +78,9 @@ def test_basic_sklearn_checks_for_preprocessors(
         X = smallest_smiles_list[:n_samples]
     else:
         X = smallest_mols_list[:n_samples]
+
+    if preproc_name == "MolFromAminoseqTransformer":
+        X = fasta_list
 
     preproc_obj = preproc_cls()
     run_checks(preproc_name, preproc_obj)
