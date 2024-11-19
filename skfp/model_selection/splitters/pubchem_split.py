@@ -110,16 +110,15 @@ def pubchem_train_test_split(
         At most 5 requests per second are made to avoid throttling, which limits
         parallelism even if high ``n_jobs`` is set.
 
-    verbose : int, default=1
-        Controls the level of messaging during execution. Values less than 1 surpass all messages.
-        Higher values activate messages.
+    verbose : int, default=0
+        Controls the verbosity when fetching data from PubChem.
 
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-test subsets of provided arrays. First two are lists of SMILES
-    strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
-    is True, lists of indices are returned instead of actual data.
+        Tuple with train-test subsets of provided arrays. First two are lists of SMILES
+        strings or RDKit ``Mol`` objects, depending on the input type. If ``return_indices``
+        is True, lists of indices are returned instead of actual data.
 
     References
     ----------
@@ -236,7 +235,7 @@ def pubchem_train_valid_test_split(
     Parameters
     ----------
     data : sequence
-        A sequence representing either SMILES strings or RDKit `Mol` objects.
+        A sequence representing either SMILES strings or RDKit ``Mol`` objects.
 
     additional_data: sequence
         Additional sequences to be split alongside the main data, e.g. labels.
@@ -277,16 +276,15 @@ def pubchem_train_valid_test_split(
         At most 5 requests per second are made to avoid throttling, which limits
         parallelism even if high ``n_jobs`` is set.
 
-    verbose : int, default=1
-        Controls the level of messaging during execution. Values less than 1 surpass all messages.
-        Higher values activate messages.
+    verbose : int, default=0
+        Controls the verbosity when fetching data from PubChem.
 
     Returns
     ----------
     subsets : tuple[list, list, ...]
-    Tuple with train-valid-test subsets of provided arrays. First three are lists of
-    SMILES strings or RDKit `Mol` objects, depending on the input type. If `return_indices`
-    is True, lists of indices are returned instead of actual data.
+        Tuple with train-valid-test subsets of provided arrays. First three are lists of
+        SMILES strings or RDKit ``Mol`` objects, depending on the input type. If ``return_indices``
+        is True, lists of indices are returned instead of actual data.
 
     References
     ----------
