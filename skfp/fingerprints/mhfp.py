@@ -15,15 +15,15 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     """
     MinHashed FingerPrint (MHFP).
 
-    The implementation uses RDKit. This is a hashed fingerprint, where
+    The implementation uses RDKit. This is a hashed fingerprint [1]_, where
     fragments are computed based on circular substructures around each atom.
 
     Subgraphs are created around each atom with increasing radius, starting
     with just an atom itself. It is then transformed into a canonical SMILES
     and hashed into an integer. In each iteration, it is increased by another
     atom (one "hop" on the graph). The resulting hashes are MinHashed. Depending
-    on `variant` argument, either those values are returned, or they are further
-    folded (with modulo) into a vector of size `fp_size`.
+    on ``variant`` argument, either those values are returned, or they are further
+    folded (with modulo) into a vector of size ``fp_size``.
 
     Additionally, the SMILES strings of the symmetrized smallest set of smallest
     rings (SSSR) are included by default, to incorporate ring information for
@@ -55,7 +55,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     variant : {"bit", "count", "raw_hashes"}, default="bit"
         Fingerprint variant. "raw_hashes" follows the original paper and results in
         raw integer values of hashes. "bit" and "count" result in integer vectors
-        with hashes folded with modulo operation into a `fp_size` length.
+        with hashes folded with modulo operation into a ``fp_size`` length.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -76,7 +76,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features. Equal to `fp_size`.
+        Number of output features. Equal to ``fp_size``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

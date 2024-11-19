@@ -1,7 +1,9 @@
+import gc
 import inspect
 import os
-from time import time
+from time import sleep, time
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -10,6 +12,8 @@ from ogb.graphproppred import GraphPropPredDataset
 
 import skfp.fingerprints as fps
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
+
+matplotlib.rcParams.update({"font.size": 18})
 
 DATASET_NAME = "ogbg-molhiv"
 
@@ -49,6 +53,8 @@ def get_times_skfp(X: np.ndarray, transformer_cls: type, **kwargs) -> np.ndarray
                 transformer = transformer_cls(n_jobs=n_jobs, **kwargs)
                 _ = transformer.transform(X[:idx])
                 end = time()
+                gc.collect()
+                sleep(10)
                 times.append(end - start)
             result.append(np.mean(times))
 
@@ -64,7 +70,7 @@ def make_plot(
     times: np.ndarray,
     title: str = "",
     save: bool = True,
-    format="png",
+    format="pdf",
 ) -> None:
     dir_name = plot_type
 
@@ -111,11 +117,10 @@ def make_combined_plot(
     fingerprints: list,
     times: list,
     save: bool = True,
-    format="png",
+    format="pdf",
 ) -> None:
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
-    ax1.set_ylabel("Fingerprints")
     fp_names = [fp.__name__.removesuffix("Fingerprint") for fp in fingerprints]
 
     if type == "time":
@@ -126,6 +131,8 @@ def make_combined_plot(
         ax1.barh(fp_names, times_to_plot, color="skyblue")
     elif type == "speedup":
         file_name = f"speedup_for_{MAX_CORES}_cores"
+        plt.xticks(np.arange(0, 17))
+        ax1.axvline(x=1, linestyle="dashed")
         ax1.set_xlabel("speedup")
         ax1.set_title("Speedup")
         times_to_plot = [time[0, -1] / time[-1, -1] for time in times]

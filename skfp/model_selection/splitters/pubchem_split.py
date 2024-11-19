@@ -18,11 +18,11 @@ from sklearn.utils._param_validation import (
 
 from skfp.model_selection.splitters.utils import (
     ensure_nonempty_subset,
-    get_data_from_indices,
     split_additional_data,
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
+from skfp.utils.functions import get_data_from_indices
 from skfp.utils.parallel import run_in_parallel
 from skfp.utils.validators import ensure_smiles
 

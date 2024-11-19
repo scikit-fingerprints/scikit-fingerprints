@@ -29,13 +29,13 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     """
     E3FP (Extended 3-Dimensional FingerPrint) fingerprint.
 
-    The implementation uses `e3fp` library. This is a hashed fingerprint, where
+    The implementation uses ``e3fp`` library. This is a hashed fingerprint [1]_, where
     fragments are computed based on "shells", i.e. spherical areas around each
     atom in the 3D conformation of a molecule. The initial vector is quite large,
-    and is then folded to the `fp_size` length.
+    and is then folded to the ``fp_size`` length.
 
     Shells are created around each atom with increasing radius, multiplied each
-    time by `radius_multiplier`, until `level` iterations are reached or when there
+    time by ``radius_multiplier``, until ``level`` iterations are reached or when there
     is no change. Shell of each radius is hashed.
 
     Each shells get an identifier based on atom types in their radius, which is then
@@ -60,7 +60,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
 
     n_bits_before_folding : int, default=4096
         Size of fingerprint vector after initial hashing. It is then folded to
-        `fp_size`. Must be positive, and larger or equal to `fp_size`.
+        ``fp_size``. Must be positive, and larger or equal to ``fp_size``.
 
     level : int, default=None
         Maximal number of iterations with increasing shell radius. None means that
@@ -98,7 +98,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+        Number of output features, size of fingerprints. Equal to ``fp_size``.
 
     requires_conformers : bool = True
         Value is always True, as this fingerprint is 3D based. It always requires

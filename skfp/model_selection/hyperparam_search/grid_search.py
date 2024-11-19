@@ -21,8 +21,8 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
 
     This approach is useful for pipelines which first compute fingerprints and then
     operate on the resulting matrices, and when both fingerprint and estimator
-    hyperparameters are optimized. Regular scikit-learn combination of `Pipeline` and
-    `GridSearchCV` would recompute the fingerprint for each set of hyperparameter values.
+    hyperparameters are optimized. Regular scikit-learn combination of ``Pipeline`` and
+    ``GridSearchCV`` would recompute the fingerprint for each set of hyperparameter values.
 
     Here, we instead perform a nested loop:
 
@@ -32,15 +32,15 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
 
     This way, computed fingerprint representations are efficiently used for many sets of
     estimator hyperparameters. This is useful when tuning classifier or fingerprint and
-    classifier. When only fingerprint is tuned, combination of `Pipeline` and `GridSearchCV`
-    is enough. The difference is particularly significant for more computationally heavy
-    fingerprints and large grids for estimators.
+    classifier. When only fingerprint is tuned, combination of ``Pipeline`` and
+    ``GridSearchCV`` is enough. The difference is particularly significant for more
+    computationally heavy fingerprints and large grids for estimators.
 
-    Note that much of the behavior is controlled via passed `estimator_cv` object, e.g.
-    the `scoring` metric used to select the best pipeline. In particular, if `GridSearchCV`
-    is used, then the result is equivalent to using grid search on all hyperparameters,
-    but faster. However, any other strategy can be used for the estimator, e.g.
-    `RandomizedSearchCV`.
+    Note that much of the behavior is controlled via passed ``estimator_cv`` object, e.g.
+    the ``scoring`` metric used to select the best pipeline. In particular, if
+    ``GridSearchCV`` is used, then the result is equivalent to using grid search on all
+    hyperparameters, but faster. However, any other strategy can be used for the
+    estimator, e.g. ``RandomizedSearchCV``.
 
     Parameters
     ----------
@@ -50,17 +50,21 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         through fingerprint hyperparameter grid.
 
     fp_param_grid : dict or list[dict]
-        Dictionary with names of fingerprint hyperparameters (`str`) as keys and lists of
+        Dictionary with names of fingerprint hyperparameters as keys and lists of
         hyperparameter settings to try as values, or a list of such dictionaries, in which
         case the grids spanned by each dictionary in the list are explored. This enables
         searching over any sequence of hyperparameter settings.
 
     estimator_cv : object
-        Inner cross-validation object for tuning estimator, e.g. `GridSearchCV`. Should
-        be an instantiated object, not a class.
+        Inner cross-validation object for tuning estimator, e.g. ``GridSearchCV``.
+        Should be an instantiated object, not a class.
+
+    greater_is_better : bool, default=True
+        Whether higher values of scoring metric in ``estimator_cv`` are better or not.
+        ``False`` should be used for error (loss) functions, typically used in regression.
 
     cache_best_fp_array : bool, default=False
-        Whether to cache the array of values from the best fingerprint in `best_fp_array_`
+        Whether to cache the array of values from the best fingerprint in ``best_fp_array_``
         parameter. Note that this can result in high memory usage.
 
     verbose : int, default=0
@@ -73,19 +77,19 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
     ----------
     cv_results_ : list[dict]
         List of dictionaries, where each one represents the set of hyperparameters
-        (names and values) and `"score"` key with the cross-validated performance of the
+        (names and values) and ``"score"`` key with the cross-validated performance of the
         pipeline with those hyperparameters.
 
     best_fp_ : fingerprint object
         Fingerprint that was chosen by the search, i.e. fingerprint which gave the highest
         score (or smallest loss if specified) on the left out data. Use with
-        `best_estimator_cv_` to obtain the best found pipeline.
+        ``best_estimator_cv_`` to obtain the best found pipeline.
 
     best_fp_params_ : dict
         Fingerprint hyperparameter values that gave the best results on the hold out data.
 
     best_fp_array_ : np.ndarray
-        Fingerprint values for `best_fp_`. If `cache_best_fp_array` is False, this will not
+        Fingerprint values for ``best_fp_``. If ``cache_best_fp_array`` is False, this will not
         be used and will be None instead.
 
     best_score_ : float
@@ -93,7 +97,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
 
     best_estimator_cv_ : CV object
         Inner cross-validation object that gave the best results on the hold out data. Use
-        with `best_fp_` to obtain the best found pipeline.
+        with ``best_fp_`` to obtain the best found pipeline.
 
     See Also
     --------
@@ -129,6 +133,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         "fingerprint": [BaseFingerprintTransformer],
         "fp_param_grid": [dict, list],
         "estimator_cv": [BaseSearchCV],
+        "greater_is_better": ["boolean"],
         "cache_best_fp_array": ["boolean"],
         "verbose": ["verbose"],
     }
@@ -138,12 +143,14 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         fingerprint: BaseFingerprintTransformer,
         fp_param_grid: Union[dict, list[dict]],
         estimator_cv: BaseSearchCV,
+        greater_is_better: bool = True,
         cache_best_fp_array: bool = False,
         verbose: int = 0,
     ):
         self.fingerprint = fingerprint
         self.fp_param_grid = fp_param_grid
         self.estimator_cv = estimator_cv
+        self.greater_is_better = greater_is_better
         self.cache_best_fp_array = cache_best_fp_array
         self.verbose = verbose
 
@@ -158,7 +165,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         self.best_fp_: BaseFingerprintTransformer = None  # type: ignore
         self.best_fp_params_: dict = None  # type: ignore
         self.best_fp_array_: np.ndarray = None  # type: ignore
-        self.best_score_ = -1  # in scikit-learn, higher score is always better
+        self.best_score_ = None
         self.best_estimator_cv_: BaseSearchCV = None  # type: ignore
 
         param_grid = ParameterGrid(self.fp_param_grid)
@@ -188,7 +195,11 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
             result = {**fp_params, **estimator_params, "score": curr_score}
             self.cv_results_.append(result)
 
-            if curr_score > self.best_score_:
+            if (
+                (self.best_score_ is None)
+                or (self.greater_is_better and curr_score > self.best_score_)
+                or (not self.greater_is_better and curr_score < self.best_score_)
+            ):
                 self.best_fp_ = fp
                 self.best_fp_params_ = fp_params
                 self.best_score_ = curr_score

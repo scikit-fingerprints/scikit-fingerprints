@@ -57,7 +57,7 @@ class LingoFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+        Number of output features, size of fingerprints. Equal to ``fp_size``.
 
     References
     ----------

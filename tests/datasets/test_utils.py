@@ -36,12 +36,12 @@ def run_basic_dataset_checks(
 
 def assert_valid_smiles_list(smiles_list: list[str], expected_length: int) -> None:
     assert isinstance(smiles_list, list)
-    assert all(isinstance(smiles, str) for smiles in smiles_list)
+    assert all(isinstance(s, str) for s in smiles_list)
     assert len(smiles_list) == expected_length
 
 
 def assert_valid_mols_from_smiles(smiles_list: list[str]) -> None:
-    mol_from_smiles = MolFromSmilesTransformer()
+    mol_from_smiles = MolFromSmilesTransformer(n_jobs=-1)
     mols = mol_from_smiles.transform(smiles_list)
     assert all(isinstance(mol, Mol) for mol in mols)
     assert all(mol.GetNumAtoms() >= 1 for mol in mols)
@@ -97,14 +97,20 @@ def assert_valid_dataframe(
     smiles_list: list[str],
     y: np.ndarray,
     expected_length: int,
-    num_tasks: int = 1,
+    num_tasks: int,
 ) -> None:
     assert isinstance(df, pd.DataFrame)
-    assert df.shape == (expected_length, num_tasks + 1)
+    if "aminoseq" in df.columns:
+        # SMILES + aminoseq + labels
+        assert df.shape == (expected_length, num_tasks + 2)
+    else:
+        # SMILES + labels
+        assert df.shape == (expected_length, num_tasks + 1)
+
     assert "SMILES" in df.columns
 
     df_smiles = df["SMILES"].tolist()
-    df_y = df.drop(columns="SMILES").values
+    df_y = df.drop(columns=["SMILES", "aminoseq"], errors="ignore").values
     if num_tasks == 1:
         df_y = df_y.ravel()
 

@@ -10,6 +10,20 @@ from rdkit.Chem.PropertyMol import PropertyMol
 from skfp.preprocessing import ConformerGenerator
 
 
+@pytest.fixture(scope="session")
+def fasta_list():
+    return [
+        ">peptide_pm_1\nKWLRRVWRWWR\n",
+        ">peptide_pm_2\nFLPAIGRVLSGIL\n",
+        ">peptide_pm_3\nCGESCVWIPCISAVVGCSCKSKVCYKNGTLP\n",
+        ">peptide_pm_4\nILGKLLSTAWGLLSKL\n",
+        ">peptide_pm_5\nWKLFKKIPKFLHLAKKF\n",
+        ">peptide_pm_6\nRAGLQFPVGRLLRRLLRRLLR\n",
+        ">peptide_pm_7\nGLWSKIKTAGKSVAKAAAKAAVKAVTNAV\n",
+        ">peptide_pm_8\nCGESCVYIPCLTSAIGCSCKSKVCYRNGIP\n",
+    ]
+
+
 def pytest_addoption(parser) -> None:
     parser.addoption("--num_mols", action="store", default="100")
 

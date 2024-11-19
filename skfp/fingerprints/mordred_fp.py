@@ -14,7 +14,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
     """
     Mordred fingerprint.
 
-    The implementation uses `mordredcommunity` [3]_ library. This is a descriptor-based
+    The implementation uses ``mordredcommunity`` [3]_ library. This is a descriptor-based
     fingerprint, implementing a very large number of 2D, and optionally 3D, molecular
     descriptors, originally implemented in the Mordred [2]_ library.
 
@@ -121,3 +121,16 @@ class MordredFingerprint(BaseFingerprintTransformer):
             if self.sparse
             else np.array(X, dtype=np.float32)
         )
+
+    def get_feature_names_out(self):
+        """
+        Get fingerprint output feature names.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the Mordred descriptors.
+        """
+        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
+
+        return np.asarray([str(d) for d in calc.descriptors], dtype=object)

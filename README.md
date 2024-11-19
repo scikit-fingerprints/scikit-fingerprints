@@ -105,7 +105,7 @@ can be loaded directly.
 ```python
 from skfp.datasets.moleculenet import load_clintox
 from skfp.metrics import multioutput_auroc_score
-from skfp.model_selection.scaffold_split import scaffold_train_test_split
+from skfp.model_selection import scaffold_train_test_split
 from skfp.fingerprints import ECFPFingerprint, MACCSFingerprint
 from skfp.preprocessing import MolFromSmilesTransformer
 
@@ -169,18 +169,24 @@ conduct, and the process for submitting pull requests to us.
 
 ## Citing
 
-If you use scikit-fingerprints in your work, please cite [our paper, available on ArXiv](https://arxiv.org/abs/2407.13291):
+If you use scikit-fingerprints in your work, please cite our main publication, 
+[available on SoftwareX (open access)](https://doi.org/10.1016/j.softx.2024.101944):
 ```
-@misc{scikit-fingeprints,
-      title={Scikit-fingerprints: easy and efficient computation of molecular fingerprints in Python}, 
-      author={Jakub Adamczyk and Piotr Ludynia},
-      year={2024},
-      eprint={2407.13291},
-      archivePrefix={arXiv},
-      primaryClass={cs.SE},
-      url={https://arxiv.org/abs/2407.13291}, 
+@article{scikit_fingerprints,
+   title = {Scikit-fingerprints: Easy and efficient computation of molecular fingerprints in Python},
+   author = {Jakub Adamczyk and Piotr Ludynia},
+   journal = {SoftwareX},
+   volume = {28},
+   pages = {101944},
+   year = {2024},
+   issn = {2352-7110},
+   doi = {https://doi.org/10.1016/j.softx.2024.101944},
+   url = {https://www.sciencedirect.com/science/article/pii/S2352711024003145},
+   keywords = {Molecular fingerprints, Chemoinformatics, Molecular property prediction, Python, Machine learning, Scikit-learn},
 }
 ```
+
+Its preprint is also [available on ArXiv](https://arxiv.org/abs/2407.13291).
 
 ## License
 

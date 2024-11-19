@@ -16,7 +16,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     """
     Atom Pair fingerprint.
 
-    The implementation uses RDKit. This is a hashed fingerprint, where
+    The implementation uses RDKit. This is a hashed fingerprint [1]_, where
     fragments are computed based on pairs of atoms and distance between them.
 
     Concretely, the hashed fragment is a triplet: (atom type 1, atom type 2, distance)
@@ -29,16 +29,16 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
 
     Distance is normally the topological distance, i.e. length of the shortest path
     in the molecular graph (number of bonds between atoms). Only pairs with distance
-    between `min_distance` and `max_distance` (both inclusive) are used.
+    between ``min_distance`` and ``max_distance`` (both inclusive) are used.
 
-    If `use_3D` is True, then the Euclidean distance between atoms in a conformation
-    is used. Note that this uses `conf_id` property of input molecules, and requires
+    If ``use_3D`` is True, then the Euclidean distance between atoms in a conformation
+    is used. Note that this uses ``conf_id`` property of input molecules, and requires
     them to have this property set.
 
     Values of count version are sensitive to the molecule size, since the number of
     shortest paths scales with square of heavy atom count (HAC). This can be offset
-    by setting `scale_by_hac` to True (divide counts by HAC), or integer value greater
-    than 1, which divides by HAC to the given power. Setting `scale_by_hac=2` makes
+    by setting ``scale_by_hac`` to True (divide counts by HAC), or integer value greater
+    than 1, which divides by HAC to the given power. Setting ``scale_by_hac=2`` makes
     valeus independent of molecule size.
 
     Parameters
@@ -49,11 +49,11 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
 
     min_distance : int, default = 1
         Minimal distance between atoms. Must be positive and less or equal to
-        `max_distance`.
+        ``max_distance``.
 
     max_distance : int, default = 30
         Maximal distance between atoms. Must be positive and greater or equal to
-        `min_distance`.
+        ``min_distance``.
 
     use_pharmacophoric_invariants: bool, default=False
         Whether to use pharmacophoric invariants (atom types) instead of default ones.
@@ -76,7 +76,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     scale_by_hac: bool or int, default=False
         Whether to scale count fingerprint by the heavy atom count (HAC) to
         obtain a proportionality to molecule size [2]_. If integer value is given,
-        scaling uses given power of HAC, e.g. `scale_by_hac=2` divides counts by
+        scaling uses given power of HAC, e.g. ``scale_by_hac=2`` divides counts by
         squared HAC. Using squared HAC results in values range [0, 1].
 
     sparse : bool, default=False
@@ -98,7 +98,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+        Number of output features, size of fingerprints. Equal to ``fp_size``.
 
     requires_conformers : bool
         Whether the fingerprint is 3D-based and requires molecules with conformers as
@@ -209,9 +209,9 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects. If `use_3D`
+            Sequence containing SMILES strings or RDKit Mol objects. If ``use_3D``
             is True, only Mol objects with computed conformations and with
-            `conf_id` property are allowed.
+            ``conf_id`` property are allowed.
 
         copy : bool, default=False
             Copy the input X or not.

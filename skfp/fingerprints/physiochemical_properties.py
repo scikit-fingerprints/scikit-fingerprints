@@ -15,7 +15,7 @@ class PhysiochemicalPropertiesFingerprint(BaseFingerprintTransformer):
     """
     Physiochemical properties fingerprint.
 
-    The implementation uses RDKit. Variants of this fingerprint are
+    The implementation uses RDKit. Variants of this fingerprint [1]_ are
     binding property pairs (bp) and binding property torsions (bt), based on
     Atom Pairs and Topological Torsion fingerprint, respectively.
 
@@ -62,7 +62,7 @@ class PhysiochemicalPropertiesFingerprint(BaseFingerprintTransformer):
     Attributes
     ----------
     n_features_out : int
-        Number of output features, size of fingerprints. Equal to `fp_size`.
+        Number of output features, size of fingerprints. Equal to ``fp_size``.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.

@@ -16,7 +16,7 @@ class ERGFingerprint(BaseFingerprintTransformer):
     Extended-Reduced Graph (ERG) fingerprint.
 
     The implementation uses RDKit. This fingerprint is descriptor-based, but has
-    variable length, depending on distance parameters.
+    variable length, depending on distance parameters. Originally described in [1]_.
 
     This fingerprint can be seen as a hybrid of reduced graphs [2]_ and binding
     property (BP) pairs [3]_. It uses fuzzy incrementation instead of counts.

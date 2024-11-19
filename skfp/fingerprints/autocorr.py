@@ -30,13 +30,15 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
 
     3D variant has the following differences:
 
-    - requires passing molecules with conformers and `conf_id` integer property set
+    - requires passing molecules with conformers and ``conf_id`` integer property set
     - weights topological distances by Euclidean distance between atoms
     - uses 2 additional features: constant 1 (which measures Euclidean distance
       autocorrelation due to weighting) and covalent radius (RCov)
     - uses shortest paths distances between 1 and 9 (inclusive)
     - uses only Moreau-Broto autocrrelation
     - results in 80 features: 8 atom features * 10 distances
+
+    For more details on autocorrelation descriptors, see [5]_.
 
     Parameters
     ----------

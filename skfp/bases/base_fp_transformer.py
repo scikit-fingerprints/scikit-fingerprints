@@ -22,6 +22,7 @@ from sklearn.base import (
     TransformerMixin,
 )
 from sklearn.utils._param_validation import InvalidParameterError
+from tqdm import tqdm
 
 from skfp.utils import run_in_parallel
 
@@ -119,15 +120,15 @@ class BaseFingerprintTransformer(
         self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params
     ):
         """
-        The same as `transform` method, kept for Scikit-learn compatibility.
+        The same as ``.transform()`` method, kept for Scikit-learn compatibility.
 
         Parameters
         ----------
         X : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         y : any
-            See `transform` method.
+            See ``.transform()`` method.
 
         **fit_params : dict
             Unused, kept for Scikit-learn compatibility.
@@ -135,7 +136,7 @@ class BaseFingerprintTransformer(
         Returns
         -------
         X_new : any
-            See `transform` method.
+            See ``.transform()`` method.
         """
         return self.transform(X)
 
@@ -149,7 +150,10 @@ class BaseFingerprintTransformer(
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
-            results = self._calculate_fingerprint(X)
+            if self.verbose:
+                results = [self._calculate_fingerprint([mol]) for mol in tqdm(X)]
+            else:
+                results = self._calculate_fingerprint(X)
         else:
             results = run_in_parallel(
                 self._calculate_fingerprint,

@@ -1,15 +1,9 @@
-============
+========
 Datasets
-============
+========
 
-.. automodule:: skfp.datasets
+.. toctree::
+    :maxdepth: 2
 
-=========================================================
-
-.. py:currentmodule:: skfp.datasets
-
-.. autosummary::
-    :nosignatures:
-    :toctree: generated/
-
-    moleculenet
+    datasets/lrgb
+    datasets/moleculenet

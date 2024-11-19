@@ -3,6 +3,7 @@ import pickle
 from functools import partial
 
 import numpy as np
+import pytest
 from sklearn import clone
 from sklearn.utils._testing import create_memmap_backed_data, set_random_state
 from sklearn.utils.estimator_checks import (
@@ -34,45 +35,58 @@ X = []
 y = None
 
 
-def test_basic_sklearn_checks_for_fingerprints(mols_conformers_list):
+def get_all_fingerprints() -> list[tuple[str, type]]:
+    return [
+        (name, obj)
+        for name, obj in inspect.getmembers(skfp.fingerprints)
+        if inspect.isclass(obj)
+    ]
+
+
+def get_all_preprocessors() -> list[tuple[str, type]]:
+    return [
+        (name, obj)
+        for name, obj in inspect.getmembers(skfp.preprocessing)
+        if inspect.isclass(obj)
+    ]
+
+
+@pytest.mark.parametrize("fp_name, fp_cls", get_all_fingerprints())
+def test_basic_sklearn_checks_for_fingerprints(fp_name, fp_cls, mols_conformers_list):
     global X, y
     X = mols_conformers_list[:n_samples]
     y = np.arange(n_samples) % 2
 
-    for name, obj in inspect.getmembers(skfp.fingerprints):
-        if not inspect.isclass(obj):
-            continue
+    # USR and USRCAT don't work for molecules with 3 or fewer atoms, so we use NaNs there
+    fp_obj = fp_cls(errors="NaN") if "USR" in fp_name else fp_cls()
 
-        # USR and USRCAT don't work for molecules with 3 or fewer atoms, so we use
-        # NaNs there
-        if "USR" in name:
-            fp = obj(errors="NaN")
-        else:
-            fp = obj()
-
-        run_checks(name, fp)
+    run_checks(fp_name, fp_obj)
 
 
+@pytest.mark.parametrize("preproc_name, preproc_cls", get_all_preprocessors())
 def test_basic_sklearn_checks_for_preprocessors(
-    smallest_smiles_list, smallest_mols_list
+    preproc_name, preproc_cls, smallest_smiles_list, smallest_mols_list, fasta_list
 ):
     global X, y
     y = np.arange(n_samples) % 2
 
-    for name, obj in inspect.getmembers(skfp.preprocessing):
-        if not inspect.isclass(obj):
-            continue
+    # skip SDF transformers - they have slightly different API
+    if preproc_name in {"MolFromSDFTransformer", "MolToSDFTransformer"}:
+        return
 
-        if "MolFromSmiles" in name:
-            X = smallest_smiles_list[:n_samples]
-        else:
-            X = smallest_mols_list[:n_samples]
+    if preproc_name in {"MolFromSmilesTransformer", "MolFromInchiTransformer"}:
+        X = smallest_smiles_list[:n_samples]
+    else:
+        X = smallest_mols_list[:n_samples]
 
-        fp = obj()
-        run_checks(name, fp)
+    if preproc_name == "MolFromAminoseqTransformer":
+        X = fasta_list
+
+    preproc_obj = preproc_cls()
+    run_checks(preproc_name, preproc_obj)
 
 
-def run_checks(fp_name: str, fp: BaseFingerprintTransformer):
+def run_checks(fp_name: str, fp_obj: BaseFingerprintTransformer):
     checks = [
         check_no_attributes_set_in_init,
         check_fit_score_takes_y,
@@ -88,7 +102,7 @@ def run_checks(fp_name: str, fp: BaseFingerprintTransformer):
     for check in checks:
         try:
             check = partial(check, fp_name)
-            check(fp)
+            check(fp_obj)
         except Exception:
             print(f"\n{fp_name} failed check {check.func.__name__}")
             raise
@@ -105,17 +119,20 @@ def check_fit_score_takes_y(name: str, estimator_orig: BaseFingerprintTransforme
     funcs = ["fit", "fit_transform"]
     for func_name in funcs:
         func = getattr(estimator, func_name, None)
-        if func is not None:
-            func(X, y)
-            args = [p.name for p in inspect.signature(func).parameters.values()]
-            if args[0] == "self":
-                # available_if makes methods into functions
-                # with an explicit "self", so need to shift arguments
-                args = args[1:]
-            assert args[1] in ["y", "Y"], (
-                "Expected y or Y as second argument for method "
-                "%s of %s. Got arguments: %r."
-                % (func_name, type(estimator).__name__, args)
+        if func is None:
+            continue
+
+        func(X, y)
+        args = [p.name for p in inspect.signature(func).parameters.values()]
+        if args[0] == "self":
+            # available_if makes methods into functions
+            # with an explicit "self", so need to shift arguments
+            args = args[1:]
+        if args[1] not in ["y", "Y"]:
+            est_name = type(estimator).__name__
+            raise AssertionError(
+                f"Expected y or Y as second argument for method"
+                f"{func_name} of {est_name}, got arguments: {args}"
             )
 
 

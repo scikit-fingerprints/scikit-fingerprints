@@ -24,9 +24,9 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
     proposed in [2]_. Distributions for normalization have been determined using a
     large collection of molecules from ChEMBL [3]_.
 
-    Typical correct values should be small, but it often results in NaN or infinity for
-    some descriptors. Value clipping with `clip_val` parameter, feature selection, and/or
-    imputation should be used.
+    Typical correct values should be small, but it often results in NaN or infinity
+    for some descriptors. Value clipping with ``clip_val`` parameter, feature selection,
+    and/or imputation should be used.
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
     clip_val : float or None, default=2147483647
         Value to clip results at, both positive and negative ones.The default value is
         the maximal value of 32-bit integer, but should often be set lower, depending
-        on the application. `None` means that no clipping is applied.
+        on the application. ``None`` means that no clipping is applied.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -138,3 +138,22 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
             return csr_array(X, dtype=np.float32)
         else:
             return np.array(X, dtype=np.float32)
+
+    def get_feature_names_out(self):
+        """
+        Get fingerprint output feature names.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the RDKit 2D descriptors.
+        """
+        from descriptastorus.descriptors.rdDescriptors import RDKit2D
+        from descriptastorus.descriptors.rdNormalizedDescriptors import (
+            RDKit2DNormalized,
+        )
+
+        gen = RDKit2DNormalized() if self.normalized else RDKit2D()
+        names = list(zip(*gen.columns))[0]
+
+        return np.asarray(names, dtype=object)

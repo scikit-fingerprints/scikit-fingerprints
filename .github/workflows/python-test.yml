@@ -26,25 +26,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v3
-        with:
-          poetry-plugins: "poetry-plugin-export"
+      - name: Install poetry
+        run: pipx install poetry --python python${{ matrix.python-version }}
 
-      - name: Setup a local virtual environment
+      - name: Set up venv
         run: |
           poetry config virtualenvs.create true --local
           poetry config virtualenvs.in-project true --local
 
       - uses: actions/cache@v3
-        name: Define dependencies cache based
+        name: Define a venv cache
         with:
           path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
+          key: ${{ matrix.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install the project dependencies
         run: poetry install --with test

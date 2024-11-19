@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from scipy.stats import spearmanr
 from sklearn.metrics._regression import _check_reg_targets
@@ -14,8 +16,8 @@ from sklearn.utils._param_validation import StrOptions, validate_params
     prefer_skip_nested_validation=True,
 )
 def spearman_correlation(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
+    y_true: Union[np.ndarray, list[float]],
+    y_pred: Union[np.ndarray, list[float]],
     *,
     alternative: str = "two-sided",
     return_p_value: bool = False,
@@ -28,13 +30,13 @@ def spearman_correlation(
     measure of rank correlation. High value means that values of two variables change
     with monotonic relationship.
 
-    For constant inputs, i.e. exactly the same `y_true` and `y_pred`, 1.0 is returned.
+    For constant inputs, i.e. exactly the same ``y_true`` and ``y_pred``, 1.0 is returned.
     This differs from SciPy behavior, which returns NaN in that situation. This can be
-    controlled with `equal_values_result` parameter.
+    controlled with ``equal_values_result`` parameter.
 
     Mainly intended for use as quality metric, where higher correlation between model
     prediction and ground truth is better. Can also be used for general correlation
-    testing, by using `alternative` and `return_p_value` parameters.
+    testing, by using ``alternative`` and ``return_p_value`` parameters.
 
     Parameters
     ----------
@@ -52,13 +54,13 @@ def spearman_correlation(
         Whether to return p-value instead of correlation value.
 
     equal_values_result : float, default=1.0
-        What value to return if `y_true` and `y_pred` are equal. This overrides the
-        `return_p_value` parameter if necessary.
+        What value to return if ``y_true`` and ``y_pred`` are equal. This overrides the
+        ``return_p_value`` parameter if necessary.
 
     Returns
     -------
     score : float
-        Spearman correlation value, or p-value if `return_p_value` is True.
+        Spearman correlation value, or p-value if ``return_p_value`` is True.
 
     Examples
     --------

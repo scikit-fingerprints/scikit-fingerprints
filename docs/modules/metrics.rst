@@ -35,3 +35,21 @@ Multioutput metrics:
     multioutput_precision_score
     multioutput_recall_score
     multioutput_root_mean_squared_error
+
+Virtual screening metrics:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    bedroc_score
+    enrichment_factor
+    rie_score
+
+Utility functions:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    extract_pos_proba
