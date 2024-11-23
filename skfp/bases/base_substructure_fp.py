@@ -9,6 +9,7 @@ from sklearn.utils._param_validation import InvalidParameterError
 from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
 
+
 class BaseSubstructureFingerprint(BaseFingerprintTransformer):
     """
     Base class for substructure fingerprints.

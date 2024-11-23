@@ -10,6 +10,7 @@ from sklearn.utils._param_validation import Interval
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import require_mols_with_conf_ids
 
+
 class GETAWAYFingerprint(BaseFingerprintTransformer):
     r"""
     GETAWAY (GEometry, Topology, and Atom-Weights AssemblY) fingerprint.

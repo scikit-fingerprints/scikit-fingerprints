@@ -8,6 +8,7 @@ from scipy.sparse import csr_array
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import require_mols_with_conf_ids
 
+
 class MORSEFingerprint(BaseFingerprintTransformer):
     r"""
     MoRSE (Molecule Representation of Structures based on Electron diffraction)

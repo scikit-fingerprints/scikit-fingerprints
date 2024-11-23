@@ -10,6 +10,7 @@ from sklearn.utils._param_validation import Interval, InvalidParameterError
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
 
+
 class LayeredFingerprint(BaseFingerprintTransformer):
     """
     Layered fingerprint.

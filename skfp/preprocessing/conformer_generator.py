@@ -24,6 +24,7 @@ from sklearn.utils._param_validation import Interval, InvalidParameterError, Str
 
 from skfp.bases import BasePreprocessor
 
+
 class ConformerGenerator(BasePreprocessor):
     """
     Generate molecule conformer.

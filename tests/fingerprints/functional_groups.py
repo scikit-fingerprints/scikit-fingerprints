@@ -8,7 +8,7 @@ from skfp.fingerprints import FunctionalGroupsFingerprint
 
 
 def test_functional_groups_bit_fingerprint(smiles_list, mols_list):
-    fg_fp = FunctionalGroupsFingerprint(n_jobs=-1, verbose=0)
+    fg_fp = FunctionalGroupsFingerprint(n_jobs=-1)
     X_skfp = fg_fp.transform(smiles_list)
 
     func_groups_functions = [

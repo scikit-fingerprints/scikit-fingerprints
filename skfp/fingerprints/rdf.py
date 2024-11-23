@@ -8,6 +8,7 @@ from scipy.sparse import csr_array
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import require_mols_with_conf_ids
 
+
 class RDFFingerprint(BaseFingerprintTransformer):
     r"""
     RDF (Radial Distribution Function descriptors) fingerprint.

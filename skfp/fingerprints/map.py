@@ -8,14 +8,14 @@ from typing import Optional, Union
 
 import numpy as np
 from datasketch import MinHash
-from rdkit.Chem import MolToSmiles, PathToSubmol
-from rdkit.Chem import Mol
+from rdkit.Chem import Mol, MolToSmiles, PathToSubmol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
+
 
 class MAPFingerprint(BaseFingerprintTransformer):
     """

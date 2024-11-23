@@ -11,6 +11,7 @@ from sklearn.utils._param_validation import Interval, InvalidParameterError
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols, require_mols_with_conf_ids
 
+
 class AtomPairFingerprint(BaseFingerprintTransformer):
     """
     Atom Pair fingerprint.

@@ -8,6 +8,7 @@ from scipy.sparse import csr_array
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
 
+
 class MACCSFingerprint(BaseFingerprintTransformer):
     """
     MACCS fingerprint.

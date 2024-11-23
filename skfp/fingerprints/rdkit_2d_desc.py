@@ -10,6 +10,7 @@ from sklearn.utils._param_validation import Interval
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols, ensure_smiles, no_rdkit_logs
 
+
 class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
     """
     RDKit 2D descriptors fingerprint.

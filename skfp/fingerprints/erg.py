@@ -10,6 +10,7 @@ from sklearn.utils._param_validation import Interval, InvalidParameterError, Str
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
 
+
 class ERGFingerprint(BaseFingerprintTransformer):
     """
     Extended-Reduced Graph (ERG) fingerprint.

@@ -13,6 +13,7 @@ from sklearn.utils._param_validation import Interval, StrOptions
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import require_mols_with_conf_ids
 
+
 class ElectroShapeFingerprint(BaseFingerprintTransformer):
     """
     ElectroShape fingerprint.

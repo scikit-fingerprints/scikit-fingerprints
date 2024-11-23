@@ -66,9 +66,9 @@ def mols_conformers_list(smallest_mols_list) -> list[PropertyMol]:
 
 def _load_test_data_smiles() -> pd.DataFrame:
     # handle different paths and execution directories, e.g. from CLI and PyCharm
-    if os.getcwd().endswith("scikit-fingerprints"):
+    if "tests" in os.listdir():
         df = pd.read_csv(os.path.join("tests", "hiv_mol.csv.zip"))
-    elif os.getcwd().endswith("tests"):
+    elif "hiv_mol.csv.zip" in os.listdir():
         df = pd.read_csv("hiv_mol.csv.zip")
     else:
         curr_dir = Path(os.getcwd()).parent
@@ -77,7 +77,6 @@ def _load_test_data_smiles() -> pd.DataFrame:
             try:
                 filepath = os.path.join(str(curr_dir), "hiv_mol.csv.zip")
                 df = pd.read_csv(filepath)
-                break
             except FileNotFoundError:
                 curr_dir = curr_dir.parent
                 counter += 1

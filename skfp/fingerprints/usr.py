@@ -10,6 +10,7 @@ from sklearn.utils._param_validation import StrOptions
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import require_mols_with_conf_ids
 
+
 class USRFingerprint(BaseFingerprintTransformer):
     """
     USR (Ultrafast Shape Recognition) fingerprint.

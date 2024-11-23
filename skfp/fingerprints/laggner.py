@@ -9,6 +9,7 @@ from scipy.sparse import csr_array
 from skfp.bases import BaseSubstructureFingerprint
 from skfp.utils import ensure_mols
 
+
 class LaggnerFingerprint(BaseSubstructureFingerprint):
     """
     Substructure fingerprint with definitions by Christian Laggner.

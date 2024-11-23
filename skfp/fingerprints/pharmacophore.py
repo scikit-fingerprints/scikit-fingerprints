@@ -10,6 +10,7 @@ from sklearn.utils._param_validation import Interval, InvalidParameterError, Str
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols, require_mols_with_conf_ids
 
+
 class PharmacophoreFingerprint(BaseFingerprintTransformer):
     """
     Pharmacophore fingerprint.

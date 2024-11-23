@@ -12,6 +12,7 @@ from rdkit.Chem.MolStandardize.rdMolStandardize import (
 from skfp.bases import BasePreprocessor
 from skfp.utils import ensure_mols, no_rdkit_logs
 
+
 class MolStandardizer(BasePreprocessor):
     """
     Performs common molecule standardization operations.

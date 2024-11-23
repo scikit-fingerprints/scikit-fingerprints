@@ -10,6 +10,7 @@ from sklearn.utils._param_validation import Interval, StrOptions
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
 
+
 class PhysiochemicalPropertiesFingerprint(BaseFingerprintTransformer):
     """
     Physiochemical properties fingerprint.

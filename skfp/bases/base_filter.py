@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 from skfp.utils import ensure_mols, run_in_parallel
 
+
 class BaseFilter(ABC, BaseEstimator, TransformerMixin):
     """Base class for molecular filters."""
 

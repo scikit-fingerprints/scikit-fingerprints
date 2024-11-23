@@ -22,7 +22,6 @@ class ProgressParallel(Parallel):
         if tqdm_settings is None:
             tqdm_settings = {}
         self._tqdm_settings: dict = tqdm_settings
-        self._pbar: Optional[tqdm] = None
 
     def __call__(self, *args, **kwargs):
         with tqdm(**self._tqdm_settings) as self._pbar:
@@ -108,7 +107,6 @@ def run_in_parallel(
     if isinstance(verbose, int):
         tqdm_settings = {
             "total": num_batches,
-            "desc": "Processing",
             "disable": verbose == 0,
         }
     elif isinstance(verbose, dict):
@@ -116,7 +114,9 @@ def run_in_parallel(
         tqdm_settings["total"] = num_batches
         tqdm_settings["disable"] = verbose.get("disable", False)
     else:
-        raise ValueError(f"The `verbose` argument must be int or `dict`, got {type(verbose)}")
+        raise ValueError(
+            f"The `verbose` argument must be int or `dict`, got {type(verbose)}"
+        )
 
     if tqdm_settings["disable"]:
         parallel = Parallel(n_jobs=n_jobs)

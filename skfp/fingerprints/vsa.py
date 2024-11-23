@@ -9,6 +9,7 @@ from sklearn.utils._param_validation import StrOptions
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
 
+
 class VSAFingerprint(BaseFingerprintTransformer):
     """
     VSA (Van der Waals Surface Area) fingerprint.

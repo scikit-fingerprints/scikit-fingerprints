@@ -185,7 +185,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
             print(f"Fitting {self.n_iter} candidate hyperparameter sets.")
 
         for idx, fp_params in enumerate(param_sampler):
-            if self.verbose:
+            if self._print_messages():
                 self._print_start_msg(
                     curr_idx=idx + 1,
                     curr_params=fp_params,
@@ -218,7 +218,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
                     self.best_fp_array_ = X_fp
 
             end_time = time()
-            if self.verbose > 1:
+            if self._print_messages():
                 self._print_end_msg(
                     curr_idx=idx + 1,
                     curr_params=fp_params,
@@ -239,6 +239,12 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
 
     def transform(self, X: Sequence[Union[str, Mol]]) -> Union[np.ndarray, csr_array]:
         return self.best_fp_.transform(X)
+
+    def _print_messages(self) -> bool:
+        if isinstance(self.verbose, int):
+            return self.verbose > 0
+        elif isinstance(self.verbose, dict):
+            return len(self.verbose) > 0
 
     def _print_start_msg(self, curr_idx: int, curr_params: dict) -> None:
         progress_msg = f"{curr_idx}/{self.n_iter}"
