@@ -333,7 +333,7 @@ def dice_count_distance(
     >>> vec_b = np.array([7, 1, 2])
     >>> dist = dice_count_distance(vec_a, vec_b)
     >>> dist
-    0.00952380952380949
+     np.float64(0.00952380952380949)
 
     >>> from skfp.distances import dice_count_distance
     >>> from scipy.sparse import csr_array
@@ -341,7 +341,7 @@ def dice_count_distance(
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> dist = dice_count_distance(vec_a, vec_b)
     >>> dist
-    0.00952380952380949
+    np.float64(0.00952380952380949)
     """
 
     return 1 - dice_count_similarity(vec_a, vec_b)

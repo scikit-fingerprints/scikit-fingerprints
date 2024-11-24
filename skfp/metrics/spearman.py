@@ -84,4 +84,4 @@ def spearman_correlation(
         return equal_values_result
 
     result = spearmanr(y_true, y_pred, alternative=alternative)
-    return result.pvalue if return_p_value else result.statistic
+    return float(result.pvalue if return_p_value else result.statistic)
