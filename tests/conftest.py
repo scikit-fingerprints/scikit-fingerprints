@@ -77,6 +77,7 @@ def _load_test_data_smiles() -> pd.DataFrame:
             try:
                 filepath = os.path.join(str(curr_dir), "hiv_mol.csv.zip")
                 df = pd.read_csv(filepath)
+                break
             except FileNotFoundError:
                 curr_dir = curr_dir.parent
                 counter += 1
