@@ -50,7 +50,6 @@ rdkit = "<=2024.3.3"
 scikit-learn = "*"
 scipy = "*"
 tqdm = "*"
-pytest = "^8.3.3"
 
 [tool.poetry.group.dev]
 optional = true
