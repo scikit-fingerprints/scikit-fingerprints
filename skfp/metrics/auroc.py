@@ -27,7 +27,7 @@ def auroc_score(
     y_true: Union[np.ndarray, list[float]],
     y_score: Union[np.ndarray, list[float]],
     *args,
-    constant_target_behavior: Union[str, float] = np.NaN,
+    constant_target_behavior: Union[str, float] = np.nan,
     **kwargs,
 ) -> float:
     """
@@ -50,9 +50,9 @@ def auroc_score(
     *args, **kwargs
         Any additional parameters for the underlying ``roc_auc_score`` function.
 
-    constant_target_behavior : "raise", np.NaN, None, or float, default=np.NaN
+    constant_target_behavior : "raise", np.nan, None, or float, default=np.nan
         Value returned if ``y_true`` contains only constant values. ``"raise"`` is the
-        default scikit-learn behavior, which raises an error. Default ``np.NaN``
+        default scikit-learn behavior, which raises an error. Default ``np.nan``
         (or None) ignores the given fold in cross-validation. Alternatively, float value
         (e.g. 0.5, 1.0) can be returned.
 

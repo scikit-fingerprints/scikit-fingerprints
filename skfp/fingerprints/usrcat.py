@@ -197,7 +197,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
                 try:
                     fp = GetUSRCAT(mol, confId=mol.GetIntProp("conf_id"))
                 except ValueError:
-                    fp = np.full(self.n_features_out, np.NaN)
+                    fp = np.full(self.n_features_out, np.nan)
                 fps.append(fp)
 
         return np.array(fps)
