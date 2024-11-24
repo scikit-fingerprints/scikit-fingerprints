@@ -310,7 +310,7 @@ def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
         dot_aa += vec_a[i] * vec_a[i]
         dot_bb += vec_b[i] * vec_b[i]
 
-    return dot_ab / (dot_aa + dot_bb - dot_ab)
+    return float(dot_ab / (dot_aa + dot_bb - dot_ab))
 
 
 def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
@@ -318,4 +318,4 @@ def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
     dot_aa: float = vec_a.multiply(vec_a).sum()
     dot_bb: float = vec_b.multiply(vec_b).sum()
 
-    return dot_ab / (dot_aa + dot_bb - dot_ab)
+    return float(dot_ab / (dot_aa + dot_bb - dot_ab))
