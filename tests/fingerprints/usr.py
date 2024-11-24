@@ -22,7 +22,7 @@ def test_usr_bit_fingerprint(mols_conformers_3_plus_atoms):
         ]
     )
 
-    diffs = np.sort(np.abs(X_skfp - X_rdkit))[::-1]
+    diffs = np.sort(np.abs(X_skfp - X_rdkit))
     print(diffs[:10])
 
     assert np.allclose(X_skfp, X_rdkit, atol=1e-2)
