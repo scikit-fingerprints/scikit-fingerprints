@@ -361,7 +361,7 @@ def _dice_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
         dot_aa += vec_a[i] * vec_a[i]
         dot_bb += vec_b[i] * vec_b[i]
 
-    return 2 * dot_ab / (dot_aa + dot_bb)
+    return float(2 * dot_ab / (dot_aa + dot_bb))
 
 
 def _dice_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
@@ -369,4 +369,4 @@ def _dice_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
     dot_aa = vec_a.multiply(vec_a).sum()
     dot_bb = vec_b.multiply(vec_b).sum()
 
-    return 2 * dot_ab / (dot_aa + dot_bb)
+    return float(2 * dot_ab / (dot_aa + dot_bb))
