@@ -22,6 +22,9 @@ def test_usr_bit_fingerprint(mols_conformers_3_plus_atoms):
         ]
     )
 
+    diffs = np.sort(np.abs(X_skfp - X_rdkit))[::-1]
+    print(diffs[:10])
+
     assert np.allclose(X_skfp, X_rdkit, atol=1e-2)
     assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 12)
     assert np.issubdtype(X_skfp.dtype, np.floating)
