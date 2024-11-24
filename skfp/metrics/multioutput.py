@@ -824,4 +824,4 @@ def _safe_multioutput_metric(
             "missing or constant values in all columns."
         )
 
-    return np.mean(values)
+    return float(np.mean(values))
