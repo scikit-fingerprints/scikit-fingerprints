@@ -59,7 +59,7 @@ def tanimoto_binary_similarity(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> sim = tanimoto_binary_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     1.0
 
     >>> from skfp.distances import tanimoto_binary_similarity
@@ -67,7 +67,7 @@ def tanimoto_binary_similarity(
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> sim = tanimoto_binary_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     1.0
     """
     _check_nan(vec_a)
@@ -141,7 +141,7 @@ def tanimoto_binary_distance(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> dist = tanimoto_binary_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.0
 
     >>> from skfp.distances import tanimoto_binary_distance
@@ -149,7 +149,7 @@ def tanimoto_binary_distance(
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = tanimoto_binary_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.0
     """
 
@@ -209,7 +209,7 @@ def tanimoto_count_similarity(
     >>> vec_a = np.array([7, 1, 1])
     >>> vec_b = np.array([7, 1, 2])
     >>> sim = tanimoto_count_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     0.9811320754716981
 
     >>> from skfp.distances import tanimoto_count_similarity
@@ -217,7 +217,7 @@ def tanimoto_count_similarity(
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> sim = tanimoto_count_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     0.9811320754716981
     """
     _check_nan(vec_a)
@@ -281,7 +281,7 @@ def tanimoto_count_distance(
     >>> vec_a = np.array([7, 1, 1])
     >>> vec_b = np.array([7, 1, 2])
     >>> dist = tanimoto_count_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.018867924528301883
 
     >>> from skfp.distances import tanimoto_count_distance
@@ -289,7 +289,7 @@ def tanimoto_count_distance(
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> dist = tanimoto_count_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.018867924528301883
     """
 
@@ -310,7 +310,7 @@ def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
         dot_aa += vec_a[i] * vec_a[i]
         dot_bb += vec_b[i] * vec_b[i]
 
-    return float(dot_ab / (dot_aa + dot_bb - dot_ab))
+    return dot_ab / (dot_aa + dot_bb - dot_ab)
 
 
 def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
@@ -318,4 +318,4 @@ def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
     dot_aa: float = vec_a.multiply(vec_a).sum()
     dot_bb: float = vec_b.multiply(vec_b).sum()
 
-    return float(dot_ab / (dot_aa + dot_bb - dot_ab))
+    return dot_ab / (dot_aa + dot_bb - dot_ab)

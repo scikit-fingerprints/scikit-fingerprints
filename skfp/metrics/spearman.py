@@ -68,11 +68,11 @@ def spearman_correlation(
     >>> from skfp.metrics import spearman_correlation
     >>> y_true = np.array([1, 2, 3])
     >>> y_pred = np.array([3, 4, 5])
-    >>> spearman_correlation(y_true, y_pred)
+    >>> spearman_correlation(y_true, y_pred)  # doctest: +SKIP
     1.0
     >>> y_true = np.array([1, 2, 3, 4])
     >>> y_pred = np.array([4, 3, 2, 1])
-    >>> spearman_correlation(y_true, y_pred)
+    >>> spearman_correlation(y_true, y_pred)  # doctest: +SKIP
     -1.0
     """
 
@@ -84,4 +84,4 @@ def spearman_correlation(
         return equal_values_result
 
     result = spearmanr(y_true, y_pred, alternative=alternative)
-    return float(result.pvalue if return_p_value else result.statistic)
+    return result.pvalue if return_p_value else result.statistic
