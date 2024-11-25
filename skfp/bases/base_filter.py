@@ -23,7 +23,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         "return_indicators": ["boolean"],
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", dict],
     }
 
     def __init__(
@@ -32,7 +32,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, dict] = 0,
     ):
         self.allow_one_violation = allow_one_violation
         self.return_indicators = return_indicators

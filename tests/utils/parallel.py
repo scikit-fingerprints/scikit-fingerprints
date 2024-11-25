@@ -9,7 +9,7 @@ from skfp.utils.parallel import ProgressParallel, run_in_parallel
 def test_progress_parallel(capsys):
     func = lambda x: x + 1
     data = list(range(100))
-    parallel = ProgressParallel(total=len(data))
+    parallel = ProgressParallel(tqdm_settings={"total": len(data)})
     _ = parallel(delayed(func)(num) for num in data)
     stderr = capsys.readouterr().err  # tqdm outputs to stderr
 
