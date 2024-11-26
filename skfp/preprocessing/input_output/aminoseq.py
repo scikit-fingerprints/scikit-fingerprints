@@ -107,7 +107,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
     def transform(self, X, copy: bool = False) -> list[Mol]:
         """
         Create RDKit ``Mol`` objects from amino-acid sequence strings. If ``valid_only``
-        is set tonTrue, returns only a subset of molecules which could be successfully
+        is set to True, returns only a subset of molecules which could be successfully
         loaded.
 
         Parameters
