@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from contextlib import nullcontext
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, MolFromInchi, MolToInchi
@@ -44,8 +44,10 @@ class MolFromInchiTransformer(BasePreprocessor):
     suppress_warnings: bool, default=False
         Whether to suppress warnings and errors on loading molecules.
 
-    verbose : int, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar..
 
     References
     ----------
@@ -80,7 +82,7 @@ class MolFromInchiTransformer(BasePreprocessor):
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
         suppress_warnings: bool = False,
-        verbose: int = 0,
+        verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -177,8 +179,10 @@ class MolToInchiTransformer(BasePreprocessor):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     References
     ----------
@@ -203,7 +207,7 @@ class MolToInchiTransformer(BasePreprocessor):
         self,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,

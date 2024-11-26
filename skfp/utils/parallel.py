@@ -1,10 +1,10 @@
 import itertools
 from collections.abc import Sequence
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 from joblib import effective_n_jobs
 from sklearn.utils.parallel import Parallel, delayed
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 class ProgressParallel(Parallel):
@@ -13,16 +13,18 @@ class ProgressParallel(Parallel):
 
     Parameters
     ----------
-    total : int, default=None
-        Total number of inputs to process in parallel.
+    tqdm_settings: Optional[dict] = None
+        Settings to use for the ``tqdm()`` progress bar.
     """
 
-    def __init__(self, total: Optional[int] = None, *args, **kwargs):
+    def __init__(self, *args, tqdm_settings: Optional[dict] = None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.total = total
+        if tqdm_settings is None:
+            tqdm_settings = {}
+        self._tqdm_settings: dict = tqdm_settings
 
     def __call__(self, *args, **kwargs):
-        with tqdm(total=self.total) as self._pbar:
+        with tqdm(**self._tqdm_settings) as self._pbar:
             return Parallel.__call__(self, *args, **kwargs)
 
     def print_progress(self) -> None:
@@ -36,7 +38,7 @@ def run_in_parallel(
     n_jobs: Optional[int] = None,
     batch_size: Optional[int] = None,
     flatten_results: bool = False,
-    verbose: int = 0,
+    verbose: Union[int, dict] = 0,
 ) -> list:
     """Run a function in parallel on provided data in batches, using joblib.
 
@@ -71,9 +73,10 @@ def run_in_parallel(
         Whether to flatten the results, e.g. to change list of lists of integers
         into a list of integers.
 
-    verbose : int, default=0
+    verbose : int or dict, default=0
         Controls the verbosity. If higher than zero, progress bar will be shown,
-        tracking the processing of batches.
+        tracking the processing of batches. If ``dict`` object is provided,
+        it will be used to configure the ``tqdm`` progress bar.
 
     Returns
     -------
@@ -101,10 +104,24 @@ def run_in_parallel(
     data_batch_gen = (data[i : i + batch_size] for i in range(0, len(data), batch_size))
     num_batches = len(data) // batch_size
 
-    if verbose > 0:
-        parallel = ProgressParallel(n_jobs=n_jobs, total=num_batches)
+    if isinstance(verbose, int):
+        tqdm_settings = {
+            "total": num_batches,
+            "disable": verbose == 0,
+        }
+    elif isinstance(verbose, dict):
+        tqdm_settings = verbose.copy()
+        tqdm_settings["total"] = num_batches
+        tqdm_settings["disable"] = verbose.get("disable", False)
     else:
+        raise ValueError(
+            f"The `verbose` argument must be int or `dict`, got {type(verbose)}"
+        )
+
+    if tqdm_settings["disable"]:
         parallel = Parallel(n_jobs=n_jobs)
+    else:
+        parallel = ProgressParallel(n_jobs=n_jobs, tqdm_settings=tqdm_settings)
 
     results = parallel(delayed(func)(data_batch) for data_batch in data_batch_gen)
 

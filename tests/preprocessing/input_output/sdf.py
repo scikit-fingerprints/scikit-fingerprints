@@ -51,12 +51,11 @@ def test_error_nonexistent_sdf_file():
 
 
 def _get_sdf_file_path(filename: str) -> str:
-    curr_dir = os.getcwd()
-    if curr_dir.endswith("scikit-fingerprints"):
+    if "tests" in os.listdir():
         return os.path.join("tests", "preprocessing", "input_output", "data", filename)
-    elif curr_dir.endswith("tests"):
+    elif "preprocessing" in os.listdir():
         return os.path.join("preprocessing", "input_output", "data", filename)
-    elif curr_dir.endswith("preprocessing"):
+    elif "input_output" in os.listdir():
         return os.path.join("input_output", "data", filename)
     else:
         raise FileNotFoundError(f"File {filename} not found")

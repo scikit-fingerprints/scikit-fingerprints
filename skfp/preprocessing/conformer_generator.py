@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from copy import deepcopy
 from functools import partial
 from numbers import Integral
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import AddHs, Mol, MolToSmiles, RemoveHs, SanitizeMol
@@ -90,8 +90,10 @@ class ConformerGenerator(BasePreprocessor):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when generating conformers.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     random_state : int or None, default=0
         Controls the randomness of conformer generation. Note that in constrast to
@@ -137,7 +139,7 @@ class ConformerGenerator(BasePreprocessor):
         "errors": [StrOptions({"raise", "ignore", "filter"})],
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
-        "verbose": ["verbose"],
+        "verbose": ["verbose", dict],
         "random_state": [Interval(Integral, left=-1, right=None, closed="left")],
     }
 
@@ -150,7 +152,7 @@ class ConformerGenerator(BasePreprocessor):
         errors: str = "raise",
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, dict] = 0,
         random_state: Optional[int] = 0,
     ):
         super().__init__(
