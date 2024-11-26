@@ -35,7 +35,7 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.13"
 
 datasketch = "*"
 descriptastorus = "*"
@@ -44,7 +44,7 @@ huggingface_hub = "*"
 joblib = "*"
 mordredcommunity = "*"
 numba = ">=0.48.0"
-numpy = "^1.20.0"
+numpy = ">=1.20.0,<2"
 pandas = "*"
 rdkit = "<=2024.3.3"
 scikit-learn = "*"

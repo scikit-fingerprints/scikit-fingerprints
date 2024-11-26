@@ -54,7 +54,7 @@ def test_rdkit_2d_desc_normalized_fingerprint(smallest_mols_list):
             np.array(gen.calculateMol(mol, None)) for mol in smallest_mols_list
         ]
     X_descriptastorus = [np.clip(x, -2147483647, 2147483647) for x in X_descriptastorus]
-    X_descriptastorus = np.row_stack(X_descriptastorus)
+    X_descriptastorus = np.vstack(X_descriptastorus)
     colnames = getaway_fp.get_feature_names_out()
 
     assert np.allclose(X_skfp, X_descriptastorus, atol=1e-3, equal_nan=True)

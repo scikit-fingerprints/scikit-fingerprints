@@ -226,7 +226,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
                 try:
                     fp = self._get_fp(mol)
                 except ValueError:
-                    fp = np.full(self.n_features_out, np.NaN)
+                    fp = np.full(self.n_features_out, np.nan)
                 fps.append(fp)
 
         return np.array(fps)
