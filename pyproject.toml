@@ -82,7 +82,7 @@ optional = true
 
 [tool.poetry.group.doc.dependencies]
 pydata-sphinx-theme = "^0.1.0"
-sphinx = "^8.0.0"
+sphinx = "^7.0.0"
 sphinx-copybutton = "^0.1"
 
 [tool.poetry.group.eval]
