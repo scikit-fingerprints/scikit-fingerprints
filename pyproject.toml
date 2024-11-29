@@ -37,61 +37,61 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
 
-datasketch = "*"
-descriptastorus = "*"
-e3fp = "*"
-huggingface_hub = "*"
-joblib = "*"
-mordredcommunity = "*"
+datasketch = "^1.1.0"
+descriptastorus = "^2.4.2"
+e3fp = "^1.0"
+huggingface_hub = "^0.0.1"
+joblib = "^1.0.1"
+mordredcommunity = "^2.0.0"
 numba = ">=0.48.0"
 numpy = ">=1.20.0,<2"
-pandas = "*"
+pandas = "^2.0.0"
 rdkit = "<=2024.3.3"
-scikit-learn = "*"
-scipy = "*"
-tqdm = "*"
+scikit-learn = "^1.0"
+scipy = "^1.10.0"
+tqdm = "^4.1.0"
 
 [tool.poetry.group.dev]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "*"
-coverage = "*"
+black = "^24.1.0"
+coverage = "^7.0.0"
 flake8 = "*"
-isort = "*"
-mypy = "*"
-pre-commit = "*"
-pytest = "*"
-pytest-cov = "*"
-setuptools = "*"  # to avoid PyCharm errors
-xenon = "*"
+isort = "^5.0.0"
+mypy = "^1.0.0"
+pre-commit = "^4.0.0"
+pytest = "^8.0.0"
+pytest-cov = "^6.0"
+setuptools = "^75.0.0"  # to avoid PyCharm errors
+xenon = "^0.1"
 
 [tool.poetry.group.test]
 optional = true
 
 [tool.poetry.group.test.dependencies]
-black = "*"
-isort = "*"
-mypy = "*"
-pre-commit = "*"
-pytest = "*"
-xenon = "*"
+black = "^24.1.0"
+isort = "^5.0.0"
+mypy = "^1.0.0"
+pre-commit = "^4.0.0"
+pytest = "^8.0.0"
+xenon = "^0.1"
 
 [tool.poetry.group.doc]
 optional = true
 
 [tool.poetry.group.doc.dependencies]
-pydata-sphinx-theme = "*"
-sphinx = "*"
-sphinx-copybutton = "*"
+pydata-sphinx-theme = "^0.1.0"
+sphinx = "^8.0.0"
+sphinx-copybutton = "^0.1"
 
 [tool.poetry.group.eval]
 optional = true
 
 [tool.poetry.group.eval.dependencies]
-lightgbm = "*"
-matplotlib = "*"
-ogb = "*"
+lightgbm = "^4.0.0"
+matplotlib = "^3.0.0"
+ogb = "^1.0.0"
 
 [tool.poetry-version-plugin]
 source = "git-tag"
