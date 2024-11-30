@@ -6,7 +6,6 @@ from skfp.fingerprints import MAPFingerprint
 
 def test_map_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
-        variant="bit",
         n_jobs=-1,
     )
     X_skfp = map_fp.transform(smallest_smiles_list)
@@ -26,7 +25,6 @@ def test_map_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
 
 def test_map_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
-        variant="count",
         verbose=0,
         n_jobs=-1,
     )
@@ -38,13 +36,12 @@ def test_map_count_fingerprint(smallest_smiles_list, smallest_mols_list):
 
     assert np.array_equal(X_skfp, X_map)
     assert X_skfp.shape == (len(smallest_smiles_list), map_fp.fp_size)
-    assert X_skfp.dtype == np.uint32
+    assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp >= 0)
 
 
 def test_map_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
-        variant="raw_hashes",
         n_jobs=-1,
     )
     X_skfp = map_fp.transform(smallest_smiles_list)
@@ -61,7 +58,6 @@ def test_map_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
 
 def test_map_sparse_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
-        variant="bit",
         sparse=True,
         n_jobs=-1,
     )
@@ -82,7 +78,7 @@ def test_map_sparse_bit_fingerprint(smallest_smiles_list, smallest_mols_list):
 
 def test_map_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
-        variant="count",
+        include_duplicated_shingles=True,
         sparse=True,
         n_jobs=-1,
     )
@@ -94,13 +90,12 @@ def test_map_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list):
 
     assert np.array_equal(X_skfp.data, X_map.data)
     assert X_skfp.shape == (len(smallest_smiles_list), map_fp.fp_size)
-    assert X_skfp.dtype == np.uint32
+    assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data > 0)
 
 
 def test_map_sparse_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
-        variant="raw_hashes",
         sparse=True,
         n_jobs=-1,
     )
