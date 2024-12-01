@@ -1,6 +1,4 @@
-import hashlib
 import itertools
-import struct
 from collections import defaultdict
 from collections.abc import Sequence
 from numbers import Integral
@@ -11,7 +9,7 @@ from mhfp.encoder import MHFPEncoder
 from rdkit.Chem import Mol, MolToSmiles, PathToSubmol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
-from sklearn.utils._param_validation import Interval, StrOptions
+from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
@@ -176,10 +174,10 @@ class MAPFingerprint(BaseFingerprintTransformer):
             The SMILES representation of the atom environment, or
             None if the atom is not found
         """
-        atom_identifiers_within_radius: List[int] = FindAtomEnvironmentOfRadiusN(
+        atom_identifiers_within_radius: list[int] = FindAtomEnvironmentOfRadiusN(
             mol=mol, radius=radius, rootedAtAtom=atom_identifier
         )
-        atom_map = {}
+        atom_map: dict = {}
 
         sub_molecule: Mol = PathToSubmol(
             mol, atom_identifiers_within_radius, atomMap=atom_map
@@ -210,16 +208,16 @@ class MAPFingerprint(BaseFingerprintTransformer):
                 )
         return atoms_env
 
-    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> list[bytes]:
+    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> set[bytes]:
         """
         Gets a list of atom molecular shingles - circular structures around atom pairs,
         written as SMILES, separated by the bond distance between the two atoms along the
         shortest path.
         """
-        atom_pairs: Set[str] = set()
+        atom_pairs: set[bytes] = set()
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()
-        shingle_dict = defaultdict(int)
+        shingle_dict: dict[str, int] = defaultdict(int)
         for idx1, idx2 in itertools.combinations(range(num_atoms), 2):
             dist = str(int(distance_matrix[idx1][idx2]))
 
@@ -237,8 +235,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
                     larger_env: str = env_a
                     smaller_env: str = env_b
                 else:
-                    larger_env: str = env_b
-                    smaller_env: str = env_a
+                    larger_env = env_b
+                    smaller_env = env_a
 
                 shingle: str = f"{smaller_env}|{dist}|{larger_env}"
 
