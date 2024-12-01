@@ -136,7 +136,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         self.fp_size = fp_size
         self.radius = radius
         self.include_duplicated_shingles = include_duplicated_shingles
-        self.encoder: MHFPEncoder = MHFPEncoder(self.fp_size, seed=random_state)
+        self._encoder: MHFPEncoder = MHFPEncoder(self.fp_size, seed=random_state)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
@@ -152,8 +152,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
         atoms_envs = self._get_atom_envs(mol)
         shingles = self._get_atom_pair_shingles(mol, atoms_envs)
 
-        fp_hash = self.encoder.hash(shingles)
-        return self.encoder.fold(fp_hash, self.fp_size)
+        fp_hash = self._encoder.hash(shingles)
+        return self._encoder.fold(fp_hash, self.fp_size)
 
     @classmethod
     def _find_env(cls, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
