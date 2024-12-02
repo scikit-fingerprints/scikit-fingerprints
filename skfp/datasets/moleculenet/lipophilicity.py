@@ -61,6 +61,26 @@ def load_lipophilicity(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_lipophilicity
+    >>> dataset = load_lipophilicity()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['Cn1c(CN2CCN(CC2)c3ccc(Cl)cc3)nc4ccccc14', ..., 'CN1C(=O)C=C(CCc2ccc3ccccc3c2)N=C1N'],
+        array([ 3.54, -1.18,  3.69, ...,  2.1 ,  2.65,  2.7 ]))
+
+    >>> dataset = load_lipophilicity(as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                  SMILES  label
+    0            Cn1c(CN2CCN(CC2)c3ccc(Cl)cc3)nc4ccccc14   3.54
+    1  COc1cc(OC)c(cc1NC(=O)CSCC(=O)O)S(=O)(=O)N2C(C)...  -1.18
+    2             COC(=O)[C@@H](N1CCc2sccc2C1)c3ccccc3Cl   3.69
+    3  OC[C@H](O)CN1C(=O)C(Cc2ccccc12)NC(=O)c3cc4cc(C...   3.37
+    4  Cc1cccc(C[C@H](NC(=O)c2cc(nn2C)C(C)(C)C)C(=O)N...   3.10
+
+
+
     """
     df = fetch_dataset(
         data_dir,

@@ -67,6 +67,24 @@ def load_freesolv(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_freesolv
+    >>> dataset = load_freesolv()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['CN(C)C(=O)c1ccc(cc1)OC', ..., 'C1COCCO1'], array([-1.101e+01, -4.870e+00,  ..., 2.900e-01, -5.060e+00]))
+
+    >>> dataset = load_freesolv(as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                       SMILES  label
+    0  CN(C)C(=O)c1ccc(cc1)OC -11.01
+    1            CS(=O)(=O)Cl  -4.87
+    2                CC(C)C=C   1.83
+    3              CCc1cnccn1  -5.45
+    4                CCCCCCCO  -4.21
+
+
     """
     df = fetch_dataset(
         data_dir,

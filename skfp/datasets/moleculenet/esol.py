@@ -66,6 +66,25 @@ def load_esol(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_esol
+    >>> dataset = load_esol()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['OCC3OC(OCC2OC(OC(C#N)c1ccccc1)C(O)C(O)C2O)C(O)C(O)C3O ', ..., 'COP(=O)(OC)OC(=CCl)c1cc(Cl)c(Cl)cc1Cl'],
+        array([-0.77 , -3.3  , -2.06 , ..., -3.091, -3.18 , -4.522]))
+
+    >>> dataset = load_esol(as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                  SMILES  label
+    0  OCC3OC(OCC2OC(OC(C#N)c1ccccc1)C(O)C(O)C2O)C(O)...  -0.77
+    1                             Cc1occc1C(=O)Nc2ccccc2  -3.30
+    2                               CC(C)=CCCC(C)=CC(=O)  -2.06
+    3                 c1ccc2c(c1)ccc3c2ccc4c5ccccc5ccc43  -7.87
+    4                                            c1ccsc1  -1.33
+
+
     """
     df = fetch_dataset(
         data_dir,

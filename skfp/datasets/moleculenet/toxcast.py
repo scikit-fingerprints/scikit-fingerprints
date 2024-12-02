@@ -71,6 +71,31 @@ def load_toxcast(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_toxcast
+    >>> dataset = load_toxcast()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['[O-][N+](=O)C1=CC=C(Cl)C=C1', ..., 'CN1CC2=C(N[C@H](CC(O)=O)C1=O)C=CC(=C2)C(=O)N1CCC(CC1)C1CCNCC1'], \
+array([[ 0.,  0., nan, ...,  0.,  0.,  0.],
+           [nan, nan, nan, ..., nan, nan, nan],
+           [nan, nan, nan, ..., nan, nan, nan],
+           ...,
+           [nan, nan, nan, ..., nan, nan, nan],
+           [nan, nan, nan, ..., nan, nan, nan],
+           [nan, nan, nan, ..., nan, nan, nan]]))
+
+    >>> dataset = load_toxcast(as_frame=True)
+    >>> dataset.head() # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+                                          SMILES  ...  Tanguay_ZF_120hpf_YSE_up
+    0                [O-][N+](=O)C1=CC=C(Cl)C=C1  ...                       0.0
+    1  C[SiH](C)O[Si](C)(C)O[Si](C)(C)O[SiH](C)C  ...                       NaN
+    2                   CN1CCN(CC1)C(=O)C1CCCCC1  ...                       NaN
+    3                 NC1=CC=C(C=C1)[N+]([O-])=O  ...                       0.0
+    4                 OC1=CC=C(C=C1)[N+]([O-])=O  ...                       0.0
+    ...
+
     """
     df = fetch_dataset(
         data_dir,
