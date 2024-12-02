@@ -94,6 +94,7 @@ def load_muv(
     2  COc1cc2c(cc1NC(=O)CN1C(=O)NC3(CCc4ccccc43)C1=O...      NaN  ...      NaN      0.0
     3  O=C1/C(=C/NC2CCS(=O)(=O)C2)c2ccccc2C(=O)N1c1cc...      NaN  ...      0.0      NaN
     4                          NC(=O)NC(Cc1ccccc1)C(=O)O      0.0  ...      NaN      NaN
+    ...
 
     """
     df = fetch_dataset(
