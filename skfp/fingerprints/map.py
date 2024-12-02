@@ -2,18 +2,15 @@
 
 import itertools
 import struct
-from typing import Optional, Union
-
-from hashlib import sha1
-
 from collections import defaultdict
 from collections.abc import Sequence
+from hashlib import sha1
 from numbers import Integral
+from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, MolToSmiles, PathToSubmol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
-from rdkit.Chem import AllChem
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval
 
