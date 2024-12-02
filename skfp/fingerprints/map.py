@@ -1,13 +1,19 @@
+"""SKFP fingerprinting module for MinHashed Atom Pair fingerprint (MAP)."""
+
 import itertools
+import struct
+from typing import Optional, Union
+
+from hashlib import sha1
+
 from collections import defaultdict
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
-from mhfp.encoder import MHFPEncoder
 from rdkit.Chem import Mol, MolToSmiles, PathToSubmol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
+from rdkit.Chem import AllChem
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import Interval
 
@@ -48,6 +54,10 @@ class MAPFingerprint(BaseFingerprintTransformer):
 
     include_duplicated_shingles : bool, default=False
         Whether to include duplicated shingles in the final fingerprint.
+
+    counts : bool, default=False
+        Whether to return counts of each shingle in the fingerprint, instead of
+        binary presence/absence.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -112,6 +122,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "radius": [Interval(Integral, 0, None, closed="left")],
         "include_duplicated_shingles": [bool],
+        "counts": [bool],
     }
 
     def __init__(
@@ -119,6 +130,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         fp_size: int = 1024,
         radius: int = 2,
         include_duplicated_shingles: bool = False,
+        counts: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
@@ -136,24 +148,35 @@ class MAPFingerprint(BaseFingerprintTransformer):
         self.fp_size = fp_size
         self.radius = radius
         self.include_duplicated_shingles = include_duplicated_shingles
-        self._encoder: MHFPEncoder = MHFPEncoder(self.fp_size, seed=random_state)
+        self.counts = counts
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         X = ensure_mols(X)
         X = np.stack(
-            [self._calculate_single_mol_fingerprint(mol) for mol in X], dtype=np.uint8
+            [self._calculate_single_mol_fingerprint(mol) for mol in X],
+            dtype=np.uint32 if self.counts else np.uint8,
         )
 
         return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
         atoms_envs = self._get_atom_envs(mol)
-        shingles = self._get_atom_pair_shingles(mol, atoms_envs)
+        shinglings = self._get_atom_pair_shingles(mol, atoms_envs)
 
-        fp_hash = self._encoder.hash(shingles)
-        return self._encoder.fold(fp_hash, self.fp_size)
+        if self.counts:
+            folded = np.zeros(self.fp_size, dtype=np.uint32)
+            for shingling in shinglings:
+                hashed = struct.unpack("<I", sha1(shingling).digest()[:4])[0]
+                folded[hashed % self.fp_size] += 1
+            return folded
+
+        folded = np.zeros(self.fp_size, dtype=np.uint8)
+        for shingling in shinglings:
+            hashed = struct.unpack("<I", sha1(shingling).digest()[:4])[0]
+            folded[hashed % self.fp_size] = 1
+        return folded
 
     @classmethod
     def _find_env(cls, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
@@ -197,12 +220,10 @@ class MAPFingerprint(BaseFingerprintTransformer):
         """
         For each atom get its environment, i.e. radius-hop neighborhood.
         """
-        atoms_env: dict[int, list[Optional[str]]] = {}
+        atoms_env: dict[int, list[Optional[str]]] = defaultdict(list)
         for atom in mol.GetAtoms():
             atom_identifier: int = atom.GetIdx()
             for radius in range(1, self.radius + 1):
-                if atom_identifier not in atoms_env:
-                    atoms_env[atom_identifier] = []
                 atoms_env[atom_identifier].append(
                     MAPFingerprint._find_env(mol, atom_identifier, radius)
                 )

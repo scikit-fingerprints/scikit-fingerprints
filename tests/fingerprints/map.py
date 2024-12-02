@@ -93,6 +93,23 @@ def test_map_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data > 0)
 
+    map_fp = MAPFingerprint(
+        include_duplicated_shingles=True,
+        sparse=True,
+        counts=True,
+        n_jobs=-1,
+    )
+    X_skfp = map_fp.transform(smallest_smiles_list)
+
+    X_map = csr_array(
+        [map_fp._calculate_single_mol_fingerprint(mol) for mol in smallest_mols_list],
+    )
+
+    assert np.array_equal(X_skfp.data, X_map.data)
+    assert X_skfp.shape == (len(smallest_smiles_list), map_fp.fp_size)
+    assert X_skfp.dtype == np.uint32
+    assert np.all(X_skfp.data > 0)
+
 
 def test_map_sparse_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
