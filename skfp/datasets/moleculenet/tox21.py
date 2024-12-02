@@ -94,6 +94,7 @@ array([[ 0.,  0.,  1., ...,  0.,  0.,  0.],
     2  CC[C@]1(O)CC[C@H]2[C@@H]3CCC4=CCCC[C@@H]4[C@H]...    NaN  ...     NaN     NaN
     3                    CCCN(CC)C(CC)C(=O)Nc1c(C)cccc1C    0.0  ...     0.0     0.0
     4                          CC(O)(P(=O)(O)O)P(=O)(O)O    0.0  ...     0.0     0.0
+    ...
 
     """
     df = fetch_dataset(
