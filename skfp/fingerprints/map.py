@@ -4,7 +4,7 @@ import itertools
 import struct
 from collections import defaultdict
 from collections.abc import Sequence
-from hashlib import sha1
+from hashlib import sha256
 from numbers import Integral
 from typing import Optional, Union
 
@@ -165,13 +165,13 @@ class MAPFingerprint(BaseFingerprintTransformer):
         if self.counts:
             folded = np.zeros(self.fp_size, dtype=np.uint32)
             for shingling in shinglings:
-                hashed = struct.unpack("<I", sha1(shingling).digest()[:4])[0]
+                hashed = struct.unpack("<I", sha256(shingling).digest()[:4])[0]
                 folded[hashed % self.fp_size] += 1
             return folded
 
         folded = np.zeros(self.fp_size, dtype=np.uint8)
         for shingling in shinglings:
-            hashed = struct.unpack("<I", sha1(shingling).digest()[:4])[0]
+            hashed = struct.unpack("<I", sha256(shingling).digest()[:4])[0]
             folded[hashed % self.fp_size] = 1
         return folded
 
