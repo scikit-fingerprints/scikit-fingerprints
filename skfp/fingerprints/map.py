@@ -185,7 +185,6 @@ class MAPFingerprint(BaseFingerprintTransformer):
         smiles = MolToSmiles(
             sub_molecule,
             rootedAtAtom=atom_map[atom_identifier],
-            canonical=True,
             isomericSmiles=False,
         )
         return smiles
