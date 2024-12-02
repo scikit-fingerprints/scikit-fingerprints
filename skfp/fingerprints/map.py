@@ -1,5 +1,3 @@
-"""SKFP fingerprinting module for MinHashed Atom Pair fingerprint (MAP)."""
-
 import itertools
 import struct
 from collections import defaultdict
@@ -53,8 +51,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         Whether to include duplicated shingles in the final fingerprint.
 
     counts : bool, default=False
-        Whether to return counts of each shingle in the fingerprint, instead of
-        binary presence/absence.
+        Whether to return binary (bit) features, or their counts.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -162,38 +159,18 @@ class MAPFingerprint(BaseFingerprintTransformer):
         atoms_envs = self._get_atom_envs(mol)
         shinglings = self._get_atom_pair_shingles(mol, atoms_envs)
 
-        if self.counts:
-            folded = np.zeros(self.fp_size, dtype=np.uint32)
-            for shingling in shinglings:
-                hashed = struct.unpack("<I", sha256(shingling).digest()[:4])[0]
-                folded[hashed % self.fp_size] += 1
-            return folded
-
-        folded = np.zeros(self.fp_size, dtype=np.uint8)
+        folded = np.zeros(self.fp_size, dtype=np.uint32 if self.counts else np.uint8)
         for shingling in shinglings:
             hashed = struct.unpack("<I", sha256(shingling).digest()[:4])[0]
-            folded[hashed % self.fp_size] = 1
+            if self.counts:
+                folded[hashed % self.fp_size] += 1
+            else:
+                folded[hashed % self.fp_size] = 1
         return folded
 
     @classmethod
     def _find_env(cls, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
-        """Returns a smile representation of the atom environment of a given radius.
-
-        Parameters
-        ----------
-        mol : Mol
-            The molecule to calculate the fingerprint for
-        atom_identifier : int
-            The index of the atom to calculate the environment for
-        radius : int
-            The radius of the environment
-
-        Returns
-        -------
-        str
-            The SMILES representation of the atom environment, or
-            None if the atom is not found
-        """
+        """Returns a smile representation of the atom environment of a given radius."""
         atom_identifiers_within_radius: list[int] = FindAtomEnvironmentOfRadiusN(
             mol=mol, radius=radius, rootedAtAtom=atom_identifier
         )
@@ -202,16 +179,16 @@ class MAPFingerprint(BaseFingerprintTransformer):
         sub_molecule: Mol = PathToSubmol(
             mol, atom_identifiers_within_radius, atomMap=atom_map
         )
-        if atom_identifier in atom_map:
-            smiles = MolToSmiles(
-                sub_molecule,
-                rootedAtAtom=atom_map[atom_identifier],
-                canonical=True,
-                isomericSmiles=False,
-            )
-            return smiles
+        if atom_identifier not in atom_map:
+            return None
 
-        return None
+        smiles = MolToSmiles(
+            sub_molecule,
+            rootedAtAtom=atom_map[atom_identifier],
+            canonical=True,
+            isomericSmiles=False,
+        )
+        return smiles
 
     def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
         """
