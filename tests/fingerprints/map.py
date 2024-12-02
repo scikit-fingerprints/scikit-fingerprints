@@ -96,7 +96,7 @@ def test_map_sparse_count_fingerprint(smallest_smiles_list, smallest_mols_list):
     map_fp = MAPFingerprint(
         include_duplicated_shingles=True,
         sparse=True,
-        counts=True,
+        count=True,
         n_jobs=-1,
     )
     X_skfp = map_fp.transform(smallest_smiles_list)

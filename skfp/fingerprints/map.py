@@ -50,7 +50,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
     include_duplicated_shingles : bool, default=False
         Whether to include duplicated shingles in the final fingerprint.
 
-    counts : bool, default=False
+    count : bool, default=False
         Whether to return binary (bit) features, or their counts.
 
     sparse : bool, default=False
@@ -116,7 +116,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "radius": [Interval(Integral, 0, None, closed="left")],
         "include_duplicated_shingles": [bool],
-        "counts": [bool],
+        "count": [bool],
     }
 
     def __init__(
@@ -124,7 +124,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         fp_size: int = 1024,
         radius: int = 2,
         include_duplicated_shingles: bool = False,
-        counts: bool = False,
+        count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
@@ -142,7 +142,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         self.fp_size = fp_size
         self.radius = radius
         self.include_duplicated_shingles = include_duplicated_shingles
-        self.counts = counts
+        self.count = count
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
@@ -150,7 +150,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         X = ensure_mols(X)
         X = np.stack(
             [self._calculate_single_mol_fingerprint(mol) for mol in X],
-            dtype=np.uint32 if self.counts else np.uint8,
+            dtype=np.uint32 if self.count else np.uint8,
         )
 
         return csr_array(X) if self.sparse else np.array(X)
@@ -159,10 +159,10 @@ class MAPFingerprint(BaseFingerprintTransformer):
         atoms_envs = self._get_atom_envs(mol)
         shinglings = self._get_atom_pair_shingles(mol, atoms_envs)
 
-        folded = np.zeros(self.fp_size, dtype=np.uint32 if self.counts else np.uint8)
+        folded = np.zeros(self.fp_size, dtype=np.uint32 if self.count else np.uint8)
         for shingling in shinglings:
             hashed = struct.unpack("<I", sha256(shingling).digest()[:4])[0]
-            if self.counts:
+            if self.count:
                 folded[hashed % self.fp_size] += 1
             else:
                 folded[hashed % self.fp_size] = 1
