@@ -68,6 +68,31 @@ def load_sider(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_sider
+    >>> dataset = load_sider()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['C(CNCCNCCNCCN)N', ..., 'CCC(=O)C(CC(C)N(C)C)(C1=CC=CC=C1)C2=CC=CC=C2'], array([[1, 1, 0, ..., 1, 1, 0],
+       [0, 1, 0, ..., 0, 1, 0],
+       [0, 1, 0, ..., 0, 1, 0],
+       ...,
+       [1, 1, 0, ..., 1, 1, 1],
+       [0, 1, 0, ..., 1, 1, 1],
+       [1, 1, 0, ..., 1, 1, 1]]))
+
+
+    >>> dataset = load_sider(as_frame=True)
+    >>> dataset.head() # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+                                                      SMILES  ...  Injury, poisoning and procedural complications
+    0                                    C(CNCCNCCNCCN)N  ...                                               0
+    1  CC(C)(C)C1=CC(=C(C=C1NC(=O)C2=CNC3=CC=CC=C3C2=...  ...                                               0
+    2  CC[C@]12CC(=C)[C@H]3[C@H]([C@@H]1CC[C@]2(C#C)O...  ...                                               0
+    3    CCC12CC(=C)C3C(C1CC[C@]2(C#C)O)CCC4=CC(=O)CCC34  ...                                               1
+    4             C1C(C2=CC=CC=C2N(C3=CC=CC=C31)C(=O)N)O  ...                                               0
+    ...
+
     """
     df = fetch_dataset(
         data_dir,

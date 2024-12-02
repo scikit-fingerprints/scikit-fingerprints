@@ -69,6 +69,33 @@ def load_tox21(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_tox21
+    >>> dataset = load_tox21()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['CCOc1ccc2nc(S(N)(=O)=O)sc2c1', ..., 'COc1ccc2c(c1OC)CN1CCc3cc4c(cc3C1C2)OCO4'], \
+array([[ 0.,  0.,  1., ...,  0.,  0.,  0.],
+           [ 0.,  0.,  0., ..., nan,  0.,  0.],
+           [nan, nan, nan, ...,  0., nan, nan],
+           ...,
+           [ 1.,  1.,  0., ...,  0.,  0.,  0.],
+           [ 1.,  1.,  0., ...,  0.,  1.,  1.],
+           [ 0.,  0., nan, ...,  0.,  1.,  0.]]))
+
+
+
+    >>> dataset = load_tox21(as_frame=True)
+    >>> dataset.head() # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+                                                  SMILES  NR-AR  ...  SR-MMP  SR-p53
+    0                       CCOc1ccc2nc(S(N)(=O)=O)sc2c1    0.0  ...     0.0     0.0
+    1                          CCN1C(=O)NC(c2ccccc2)C1=O    0.0  ...     0.0     0.0
+    2  CC[C@]1(O)CC[C@H]2[C@@H]3CCC4=CCCC[C@@H]4[C@H]...    NaN  ...     NaN     NaN
+    3                    CCCN(CC)C(CC)C(=O)Nc1c(C)cccc1C    0.0  ...     0.0     0.0
+    4                          CC(O)(P(=O)(O)O)P(=O)(O)O    0.0  ...     0.0     0.0
+    ...
+
     """
     df = fetch_dataset(
         data_dir,

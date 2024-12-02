@@ -68,6 +68,24 @@ def load_bace(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_bace
+    >>> dataset = load_bace()
+    >>> dataset  # doctest: +ELLIPSIS
+    (['O1CC[C@@H](NC(=O)[C@@H](Cc2cc3cc(ccc3nc2N)-c2ccccc2C)C)CC1(C)C', ..., 'Clc1cc2nc(n(c2cc1)CCCC(=O)NCC1CC1)N'], \
+array([1, 1, 1, ..., 0, 0, 0]))
+
+    >>> dataset = load_bace(as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                  SMILES  label
+    0  O1CC[C@@H](NC(=O)[C@@H](Cc2cc3cc(ccc3nc2N)-c2c...      1
+    1  Fc1cc(cc(F)c1)C[C@H](NC(=O)[C@@H](N1CC[C@](NC(...      1
+    2  S1(=O)(=O)N(c2cc(cc3c2n(cc3CC)CC1)C(=O)N[C@H](...      1
+    3  S1(=O)(=O)C[C@@H](Cc2cc(O[C@H](COCC)C(F)(F)F)c...      1
+    4  S1(=O)(=O)N(c2cc(cc3c2n(cc3CC)CC1)C(=O)N[C@H](...      1
+
     """
     df = fetch_dataset(
         data_dir, dataset_name="MoleculeNet_BACE", filename="bace.csv", verbose=verbose
