@@ -109,10 +109,9 @@ def butina_train_test_split(
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     n_jobs : int, default=None
-        The number of jobs to run in parallel. :meth:`transform` is parallelized
-        over the input molecules. ``None`` means 1 unless in a
-        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        The number of jobs to run in parallel for computing the clustering. ``None``
+        means 1 unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using
+        all processors. See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
     ----------
@@ -295,10 +294,9 @@ def butina_train_valid_test_split(
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     n_jobs : int, default=None
-        The number of jobs to run in parallel. :meth:`transform` is parallelized
-        over the input molecules. ``None`` means 1 unless in a
-        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        The number of jobs to run in parallel for computing the clustering. ``None``
+        means 1 unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using
+        all processors. See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
     ----------
