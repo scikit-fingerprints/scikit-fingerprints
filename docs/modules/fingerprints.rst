@@ -20,6 +20,7 @@ Fingerprints
     ElectroShapeFingerprint
     ERGFingerprint
     EStateFingerprint
+    FunctionalGroupsFingerprint
     GETAWAYFingerprint
     GhoseCrippenFingerprint
     KlekotaRothFingerprint
@@ -38,6 +39,7 @@ Fingerprints
     PubChemFingerprint
     RDFFingerprint
     RDKitFingerprint
+    RDKit2DDescriptorsFingerprint
     SECFPFingerprint
     TopologicalTorsionFingerprint
     USRFingerprint
