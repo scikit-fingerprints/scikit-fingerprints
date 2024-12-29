@@ -15,14 +15,14 @@ Testing of documentation pages, ensures that all classes are mentioned in proper
 
 
 def test_docs():
-    curr_dir = Path(__file__)
-    if os.getcwd().endswith("scikit-fingerprints"):
-        curr_dir = Path(os.getcwd())
-    elif os.getcwd().endswith("tests"):
-        curr_dir = Path(os.getcwd()).parent
+    curr_dir = os.getcwd()
+    if curr_dir.endswith("scikit-fingerprints"):
+        root_dir = Path(curr_dir)
+    elif curr_dir.endswith("tests"):
+        root_dir = Path(curr_dir).parent
     else:
         raise ValueError(f"Directory {curr_dir} not recognized")
-    docs_modules_dir = curr_dir / "docs" / "modules"
+    docs_modules_dir = root_dir / "docs" / "modules"
 
     undocumented = defaultdict(list)
     for docs_file, code_file in [
