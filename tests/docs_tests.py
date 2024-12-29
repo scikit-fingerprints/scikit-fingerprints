@@ -22,6 +22,7 @@ def test_docs():
         root_dir = Path(curr_dir).parent
     else:
         raise ValueError(f"Directory {curr_dir} not recognized")
+
     docs_modules_dir = root_dir / "docs" / "modules"
 
     undocumented = defaultdict(list)
