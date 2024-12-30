@@ -37,7 +37,6 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
 
-datasketch = "1.*"
 descriptastorus = "2.*"
 e3fp = "1.*"
 huggingface_hub = "0.*"
