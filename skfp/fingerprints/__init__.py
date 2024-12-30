@@ -33,5 +33,4 @@ from .topological_torsion import TopologicalTorsionFingerprint
 from .usr import USRFingerprint
 from .usrcat import USRCATFingerprint
 from .vsa import VSAFingerprint
-from .weiner_index import WeinerIndexFingerprint
 from .whim import WHIMFingerprint
