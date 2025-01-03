@@ -29,7 +29,7 @@ autodoc_default_options = {
 
 templates_path = ["_templates"]
 exclude_patterns = [
-    ".ipynb_checkpoints",
+    "**.ipynb_checkpoints",
     ".DS_Store",
     "_build",
     "Thumbs.db",
