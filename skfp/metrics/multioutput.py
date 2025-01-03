@@ -769,7 +769,7 @@ def multioutput_spearman_correlation(
     0.0
     >>> y_true = np.array([[1, 1], [np.nan, 2], [2, np.nan], [3, 3]])
     >>> y_pred = np.array([[1, 1], [0, 3], [3, 0], [4, 2]])
-    >>> spearman_correlation(y_true, y_pred)
+    >>> multioutput_spearman_correlation(y_true, y_pred)
     0.75
     """
     return _safe_multioutput_metric(

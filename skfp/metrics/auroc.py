@@ -1,6 +1,8 @@
+import warnings
 from typing import Union
 
 import numpy as np
+from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import roc_auc_score
 from sklearn.utils import deprecated
 from sklearn.utils._param_validation import (
@@ -78,13 +80,12 @@ def auroc_score(
     0.5
     """
 
-    try:
-        return roc_auc_score(y_true, y_score, *args, **kwargs)
-    except ValueError as e:
-        if (
-            "Only one class present in y_true" in str(e)
-            and constant_target_behavior != "raise"
-        ):
-            return constant_target_behavior  # type: ignore
-        else:
-            raise
+    with warnings.catch_warnings():
+        warnings.filterwarnings("error")
+        try:
+            return roc_auc_score(y_true, y_score, *args, **kwargs)
+        except (ValueError, UndefinedMetricWarning) as e:
+            if "one class is present" in str(e) and constant_target_behavior != "raise":
+                return constant_target_behavior  # type: ignore
+            else:
+                raise ValueError("Only one class is present in y_true")
