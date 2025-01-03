@@ -71,5 +71,8 @@ jobs:
       - name: Install the project dependencies
         run: poetry install --with doc
 
+      - name: Install Pandoc
+      - uses: r-lib/actions/setup-pandoc@v2
+
       - name: Build documentation
         run: poetry run make doctest
