@@ -1198,13 +1198,13 @@ type = ["pytest-mypy"]
 
 [[package]]
 name = "importlib-resources"
-version = "6.5.1"
+version = "6.5.2"
 description = "Read resources from Python packages"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "importlib_resources-6.5.1-py3-none-any.whl", hash = "sha256:1db285ef06f980573f0a2c33de835cf9bcbd511c320d7bb332adfc4860c1ec2c"},
-    {file = "importlib_resources-6.5.1.tar.gz", hash = "sha256:095007d90b03799a362408af71a9657657b2f147358585ba451bb4214d72c7a8"},
+    {file = "importlib_resources-6.5.2-py3-none-any.whl", hash = "sha256:789cfdc3ed28c78b67a06acb8126751ced69a3d5f79c095a98298cd8a760ccec"},
+    {file = "importlib_resources-6.5.2.tar.gz", hash = "sha256:185f87adef5bcc288449d98fb4fba07cea78bc036455dd44c5fc4a2fe78fed2c"},
 ]
 
 [package.dependencies]
