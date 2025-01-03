@@ -73,7 +73,7 @@ can be loaded directly.
 .. code-block:: python
 
     from skfp.datasets.moleculenet import load_clintox
-    from skfp.metrics import multioutput_auroc_score
+    from skfp.metrics import multioutput_auroc_score, extract_pos_proba
     from skfp.model_selection import scaffold_train_test_split
     from skfp.fingerprints import ECFPFingerprint, MACCSFingerprint
     from skfp.preprocessing import MolFromSmilesTransformer
@@ -95,6 +95,7 @@ can be loaded directly.
     pipeline.fit(smiles_train, y_train)
 
     y_pred_proba = pipeline.predict_proba(smiles_test)
+    y_pred_proba = extract_pos_proba(y_pred_proba)
     auroc = multioutput_auroc_score(y_test, y_pred_proba)
     print(f"AUROC: {auroc:.2%}")
 
