@@ -1,5 +1,3 @@
-"""Classes for computing molecular fingerprints."""
-
 from .atom_pair import AtomPairFingerprint
 from .autocorr import AutocorrFingerprint
 from .avalon import AvalonFingerprint

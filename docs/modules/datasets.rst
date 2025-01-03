@@ -2,6 +2,8 @@
 Datasets
 ========
 
+Functions for loading benchmark molecular datasets.
+
 .. toctree::
     :maxdepth: 2
 

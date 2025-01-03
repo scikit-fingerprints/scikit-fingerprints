@@ -1,6 +1,8 @@
-============
+=======
 Metrics
-============
+=======
+
+Functions for computing model quality metrics.
 
 .. automodule:: skfp.metrics
 

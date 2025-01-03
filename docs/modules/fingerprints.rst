@@ -2,6 +2,8 @@
 Fingerprints
 ============
 
+Classes for computing molecular fingerprints.
+
 .. automodule:: skfp.fingerprints
 
 =========================================================
