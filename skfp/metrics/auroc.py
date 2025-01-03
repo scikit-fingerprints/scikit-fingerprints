@@ -2,6 +2,7 @@ from typing import Union
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
+from sklearn.utils import deprecated
 from sklearn.utils._param_validation import (
     Interval,
     RealNotInt,
@@ -10,6 +11,10 @@ from sklearn.utils._param_validation import (
 )
 
 
+@deprecated(
+    "Deprecated for scikit-learn >1.6, which returns np.nan for constant targets. "
+    "Will be removed in scikit-fingerprints 1.15"
+)
 @validate_params(
     {
         "y_true": ["array-like"],

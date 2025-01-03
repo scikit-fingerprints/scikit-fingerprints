@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from typing import Callable, Union
 
 import numpy as np
@@ -12,6 +13,7 @@ from sklearn.metrics import (
     mean_squared_error,
     precision_score,
     recall_score,
+    roc_auc_score,
     root_mean_squared_error,
 )
 from sklearn.utils._param_validation import validate_params
@@ -98,8 +100,9 @@ def multioutput_auroc_score(
     use default value - see ``auroc_score`` function. As such, it can be safely used
     e.g. in cross-validation. Also supports single-task evaluation.
 
-    Any additional arguments are passed to the underlying ``auroc_score`` and ``roc_auc_score``
-    functions, see `scikit-learn documentation <sklearn>`_ for more information.
+    For scikit-learn <1.6, ``auroc_score`` function from scikit-fingerprints is used,
+    and for newer versions >=1.6 ``roc_auc_score`` from scikit-learn is used instead.
+    See `scikit-learn documentation <sklearn>`_ for more information.
 
     .. _sklearn: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html
 
@@ -133,7 +136,14 @@ def multioutput_auroc_score(
     >>> multioutput_auroc_score(y_true, y_score)
     0.5
     """
-    return _safe_multioutput_metric(auroc_score, y_true, y_score, *args, **kwargs)
+    sklearn_ver = version("scikit-learn")  # e.g. 1.6.0
+    sklearn_ver = ".".join(sklearn_ver.split(".")[:-1])  # e.g. 1.6
+    if float(sklearn_ver) < 1.6:
+        func = auroc_score
+    else:
+        func = roc_auc_score
+
+    return _safe_multioutput_metric(func, y_true, y_score, *args, **kwargs)
 
 
 @validate_params(
