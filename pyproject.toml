@@ -79,6 +79,7 @@ xenon = "*"
 optional = true
 
 [tool.poetry.group.doc.dependencies]
+ipython = "*"
 nbsphinx = "*"
 pydata-sphinx-theme = "*"
 sphinx = "*"
