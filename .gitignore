@@ -10,7 +10,7 @@ __pycache__
 *.csv
 benchmarking/**/*.npy
 
-docs/modules/generated/
+docs/**/generated/
 docs/_build/
 
 .tmp_coverage_files/
