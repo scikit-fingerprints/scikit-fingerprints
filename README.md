@@ -32,7 +32,7 @@ chemical analysis. However, existing Python libraries for computing molecular fi
 user-friendliness, and support for modern programming standards. This project aims to address these shortcomings by
 creating an efficient and accessible Python library for molecular fingerprint computation.
 
-You can find the documentation [HERE](https://scikit-fingerprints.github.io/scikit-fingerprints/)
+See [the documentation and API reference](https://scikit-fingerprints.github.io/scikit-fingerprints/) for details.
 
 Main features:
 - scikit-learn compatible
@@ -65,7 +65,7 @@ pip install git+https://github.com/scikit-fingerprints/scikit-fingerprints.git
 
 ## Quickstart
 
-Most fingerprints are based on molecular graphs (2D-based), and you can use SMILES
+Most fingerprints are based on molecular graphs (topological, 2D-based), and you can use SMILES
 input directly:
 ```python
 from skfp.fingerprints import AtomPairFingerprint
@@ -78,7 +78,7 @@ X = atom_pair_fingerprint.transform(smiles_list)
 print(X)
 ```
 
-For fingerprints using conformers (3D-based), you need to create molecules first
+For fingerprints using conformers (conformational, 3D-based), you need to create molecules first
 and compute conformers. Those fingerprints have `requires_conformers` attribute set
 to `True`.
 ```python
@@ -130,6 +130,15 @@ y_pred_proba = extract_pos_proba(y_pred_proba)
 auroc = multioutput_auroc_score(y_test, y_pred_proba)
 print(f"AUROC: {auroc:.2%}")
 ```
+
+## Examples
+
+You can find Jupyter Notebooks with examples and tutorials [in documentation](https://scikit-fingerprints.github.io/scikit-fingerprints/examples.html),
+as well as in the ["examples" directory](https://github.com/scikit-fingerprints/scikit-fingerprints/tree/master/examples).
+
+Examples and tutorials:
+1. [Introduction to scikit-fingerprints](examples/01_skfp_introduction.ipynb)
+2. [Fingerprint types](examples/02_fingerprint_types.ipynb)
 
 ## Project overview
 

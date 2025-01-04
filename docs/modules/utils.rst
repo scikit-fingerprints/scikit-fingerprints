@@ -1,6 +1,8 @@
-=============
+=====
 Utils
-=============
+=====
+
+Various utility tools that do not easily fit into other modules.
 
 .. automodule:: skfp.utils
 

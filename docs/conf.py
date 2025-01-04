@@ -1,4 +1,6 @@
 import datetime
+import os
+import shutil
 
 # -- Project information -----------------------------------------------------
 
@@ -17,6 +19,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
+    "nbsphinx",
 ]
 
 autodoc_default_options = {
@@ -26,7 +29,7 @@ autodoc_default_options = {
 
 templates_path = ["_templates"]
 exclude_patterns = [
-    ".ipynb_checkpoints",
+    "**.ipynb_checkpoints",
     ".DS_Store",
     "_build",
     "Thumbs.db",
@@ -43,7 +46,6 @@ html_theme = "pydata_sphinx_theme"
 copybutton_exclude = ".linenos, .gp, .go"
 
 html_theme_options = {
-    "header_links_before_dropdown": 2,
     "icon_links": [
         {
             "name": "GitHub",
@@ -52,3 +54,22 @@ html_theme_options = {
         },
     ],
 }
+
+# Sphinx cannot reach outside to parallel dirs, so we copy "examples" directory
+# we copy "examples" directory from project root to docs/examples
+
+
+def all_but_ipynb(dir: str, contents: list[str]) -> list[str]:
+    return [
+        c
+        for c in contents
+        if os.path.isfile(os.path.join(dir, c)) and not c.endswith(".ipynb")
+    ]
+
+
+shutil.rmtree("./examples", ignore_errors=True)
+shutil.copytree(
+    src="../examples",
+    dst="./examples",
+    ignore=all_but_ipynb,
+)

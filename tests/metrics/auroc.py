@@ -29,12 +29,12 @@ def test_auroc_score_can_raise_error():
     y_score = np.array([0.7, 0.1, 0.05])
     with pytest.raises(ValueError) as exc_info:
         auroc_score(y_true, y_score, constant_target_behavior="raise")
-    assert "Only one class present in y_true" in str(exc_info)
+    assert "Only one class is present in y_true" in str(exc_info)
 
     y_true = np.array([1, 1, 1])
     with pytest.raises(ValueError) as exc_info:
         auroc_score(y_true, y_score, constant_target_behavior="raise")
-    assert "Only one class present in y_true" in str(exc_info)
+    assert "Only one class is present in y_true" in str(exc_info)
 
 
 def test_auroc_score_y_true_constant_float():

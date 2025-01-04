@@ -1,6 +1,8 @@
-============
+=======
 Metrics
-============
+=======
+
+Functions for computing model quality metrics.
 
 .. automodule:: skfp.metrics
 
@@ -35,6 +37,7 @@ Multioutput metrics:
     multioutput_precision_score
     multioutput_recall_score
     multioutput_root_mean_squared_error
+    multioutput_spearman_correlation
 
 Virtual screening metrics:
 

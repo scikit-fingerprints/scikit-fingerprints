@@ -2,9 +2,10 @@
 Base classes
 ============
 
-.. automodule:: skfp.bases
+Base classes for other functionalities.
+Inheriting from them is useful for implementing custom functionalities.
 
-:mod: `skfp.bases`: Base classes
+.. automodule:: skfp.bases
 
 =========================================================
 

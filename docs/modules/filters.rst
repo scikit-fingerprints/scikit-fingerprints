@@ -2,6 +2,8 @@
 Molecular filters
 =================
 
+Classes for computing molecular filters.
+
 .. automodule:: skfp.filters
 
 =========================================================

@@ -1,5 +1,3 @@
-"""Classes for efficient hyperparameter optimization of fingerprint-based models."""
-
 from .hyperparam_search import (
     FingerprintEstimatorGridSearch,
     FingerprintEstimatorRandomizedSearch,

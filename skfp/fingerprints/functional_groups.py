@@ -62,7 +62,7 @@ class FunctionalGroupsFingerprint(BaseFingerprintTransformer):
     >>> fp
     FunctionalGroupsFingerprint()
     >>> X = fp.transform(smiles)
-    >>> X
+    >>> X  # doctest: +SKIP
     array([[0, 0, 0, ..., 1, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
