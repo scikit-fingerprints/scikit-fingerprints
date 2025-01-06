@@ -1,5 +1,3 @@
-"""Classes for preprocessing molecules."""
-
 from .conformer_generator import ConformerGenerator
 from .input_output import (
     MolFromAminoseqTransformer,

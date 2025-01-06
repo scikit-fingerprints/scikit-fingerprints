@@ -64,6 +64,26 @@ def load_hiv(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_hiv
+    >>> dataset = load_hiv()
+    >>> dataset  # doctest: +ELLIPSIS
+    (['CCC1=[O+][Cu-3]2([O+]=C(CC)C1)[O+]=C(CC)CC(CC)=[O+]2', ..., \
+'CCCCCC=C(c1cc(Cl)c(OC)c(-c2nc(C)no2)c1)c1cc(Cl)c(OC)c(-c2nc(C)no2)c1'], \
+array([0, 0, 0, ..., 0, 0, 0]))
+
+    >>> dataset = load_hiv(as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                      SMILES  label
+    0  CCC1=[O+][Cu-3]2([O+]=C(CC)C1)[O+]=C(CC)CC(CC)...      0
+    1  C(=Cc1ccccc1)C1=[O+][Cu-3]2([O+]=C(C=Cc3ccccc3...      0
+    2                   CC(=O)N1c2ccccc2Sc2c1ccc1ccccc21      0
+    3    Nc1ccc(C=Cc2ccc(N)cc2S(=O)(=O)O)c(S(=O)(=O)O)c1      0
+    4                             O=S(=O)(O)CCS(=O)(=O)O      0
+
+
     """
     df = fetch_dataset(
         data_dir, dataset_name="MoleculeNet_HIV", filename="hiv.csv", verbose=verbose

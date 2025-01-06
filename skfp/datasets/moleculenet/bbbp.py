@@ -67,6 +67,24 @@ def load_bbbp(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_bbbp
+    >>> dataset = load_bbbp()
+    >>> dataset  # doctest: +ELLIPSIS
+    (['[Cl].CC(C)NCC(O)COc1cccc2ccccc12', ..., '[N+](=NCC(=O)N[C@@H]([C@H](O)C1=CC=C([N+]([O-])=O)C=C1)CO)=[N-]'], \
+array([1, 1, 1, ..., 1, 1, 1]))
+
+    >>> dataset = load_bbbp(as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                  SMILES  label
+    0                   [Cl].CC(C)NCC(O)COc1cccc2ccccc12      1
+    1           C(=O)(OC(C)(C)C)CCCc1ccc(cc1)N(CCCl)CCCl      1
+    2  c12c3c(N4CCN(C)CC4)c(F)cc1c(c(C(O)=O)cn2C(C)CO...      1
+    3                   C1CCN(CC1)Cc1cccc(c1)OCCCNC(=O)C      1
+    4  Cc1onc(c2ccccc2Cl)c1C(=O)N[C@H]3[C@H]4SC(C)(C)...      1
+
     """
     df = fetch_dataset(
         data_dir, dataset_name="MoleculeNet_BBBP", filename="bbbp.csv", verbose=verbose

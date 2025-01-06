@@ -1,5 +1,3 @@
-"""Classes for distance and similarity calculations."""
-
 from .dice import (
     dice_binary_distance,
     dice_binary_similarity,

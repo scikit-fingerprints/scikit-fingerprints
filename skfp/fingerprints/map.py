@@ -1,18 +1,16 @@
-import hashlib
 import itertools
 import struct
 from collections import defaultdict
 from collections.abc import Sequence
+from hashlib import sha256
 from numbers import Integral
 from typing import Optional, Union
 
 import numpy as np
-from datasketch import MinHash
-from rdkit.Chem import MolToSmiles, PathToSubmol
-from rdkit.Chem.rdchem import Mol
+from rdkit.Chem import Mol, MolToSmiles, PathToSubmol
 from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN, GetDistanceMatrix
 from scipy.sparse import csr_array
-from sklearn.utils._param_validation import Interval, StrOptions
+from sklearn.utils._param_validation import Interval
 
 from skfp.bases import BaseFingerprintTransformer
 from skfp.utils import ensure_mols
@@ -49,10 +47,11 @@ class MAPFingerprint(BaseFingerprintTransformer):
         Number of iterations performed, i.e. maximum radius of resulting subgraphs.
         Another common notation uses diameter, therefore MAP4 has radius 2.
 
-    variant : {"raw_hashes", "bit", "count"}, default="bit"
-        Which variant to fingerprint to use. ``"raw_hashes"`` returns MinHash values.
-        ``"bit"`` folds values into binary vector, and ``"count"`` uses folding with
-        counting.
+    include_duplicated_shingles : bool, default=False
+        Whether to include duplicated shingles in the final fingerprint.
+
+    count : bool, default=False
+        Whether to return binary (bit) features, or their counts.
 
     sparse : bool, default=False
         Whether to return dense NumPy array, or sparse SciPy CSR array.
@@ -67,8 +66,10 @@ class MAPFingerprint(BaseFingerprintTransformer):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when computing fingerprints.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     Attributes
     ----------
@@ -114,18 +115,20 @@ class MAPFingerprint(BaseFingerprintTransformer):
         **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "radius": [Interval(Integral, 0, None, closed="left")],
-        "variant": [StrOptions({"bit", "count", "raw_hashes"})],
+        "include_duplicated_shingles": [bool],
+        "count": [bool],
     }
 
     def __init__(
         self,
         fp_size: int = 1024,
         radius: int = 2,
-        variant: str = "bit",
+        include_duplicated_shingles: bool = False,
+        count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
-        verbose: int = 0,
+        verbose: Union[int, dict] = 0,
         random_state: Optional[int] = 0,
     ):
         super().__init__(
@@ -138,135 +141,104 @@ class MAPFingerprint(BaseFingerprintTransformer):
         )
         self.fp_size = fp_size
         self.radius = radius
-        self.variant = variant
+        self.include_duplicated_shingles = include_duplicated_shingles
+        self.count = count
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         X = ensure_mols(X)
         X = np.stack(
-            [self._calculate_single_mol_fingerprint(mol) for mol in X], dtype=int
+            [self._calculate_single_mol_fingerprint(mol) for mol in X],
+            dtype=np.uint32 if self.count else np.uint8,
         )
-
-        if self.variant == "bit":
-            X = (X > 0).astype(np.uint8)
-        elif self.variant == "count":
-            X = X.astype(np.uint32)
 
         return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
         atoms_envs = self._get_atom_envs(mol)
-        shingles = self._get_atom_pair_shingles(mol, atoms_envs)
+        shinglings = self._get_atom_pair_shingles(mol, atoms_envs)
 
-        if self.variant == "raw_hashes":
-            encoder = MinHash(num_perm=self.fp_size, seed=self.random_state)
-            encoder.update_batch(shingles)
-            fp = encoder.digest()
-        else:
-            # bit/count folded version from original MAP4 and MHFP implementation
-            hashes = [self._get_hash(shingle) for shingle in shingles]
-            bits = [hash_val % self.fp_size for hash_val in hashes]
-            fp = np.bincount(bits, minlength=self.fp_size)
+        folded = np.zeros(self.fp_size, dtype=np.uint32 if self.count else np.uint8)
+        for shingling in shinglings:
+            hashed = struct.unpack("<I", sha256(shingling).digest()[:4])[0]
+            if self.count:
+                folded[hashed % self.fp_size] += 1
+            else:
+                folded[hashed % self.fp_size] = 1
+        return folded
 
-        return fp
+    @classmethod
+    def _find_env(cls, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
+        """Returns a smile representation of the atom environment of a given radius."""
+        atom_identifiers_within_radius: list[int] = FindAtomEnvironmentOfRadiusN(
+            mol=mol, radius=radius, rootedAtAtom=atom_identifier
+        )
+        atom_map: dict = {}
+
+        sub_molecule: Mol = PathToSubmol(
+            mol, atom_identifiers_within_radius, atomMap=atom_map
+        )
+        if atom_identifier not in atom_map:
+            return None
+
+        smiles = MolToSmiles(
+            sub_molecule,
+            rootedAtAtom=atom_map[atom_identifier],
+            # From the original implementation, which does not use isomeric SMILES.
+            isomericSmiles=False,
+        )
+        return smiles
 
     def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
         """
         For each atom get its environment, i.e. radius-hop neighborhood.
         """
-        atoms_env = defaultdict(list)
+        atoms_env: dict[int, list[Optional[str]]] = defaultdict(list)
         for atom in mol.GetAtoms():
-            idx = atom.GetIdx()
-            atom_envs = [
-                self._find_neighborhood(mol, idx, r) for r in range(1, self.radius + 1)
-            ]
-            atoms_env[idx].extend(atom_envs)
-
+            atom_identifier: int = atom.GetIdx()
+            for radius in range(1, self.radius + 1):
+                atoms_env[atom_identifier].append(
+                    MAPFingerprint._find_env(mol, atom_identifier, radius)
+                )
         return atoms_env
 
-    def _find_neighborhood(
-        self, mol: Mol, atom_idx: int, n_radius: int
-    ) -> Optional[str]:
-        """
-        Get the radius-hop neighborhood for a given atom. If there is no neighborhood
-        of a given radius, e.g. 2-hop neighborhood for [Li]F with just two atoms,
-        returns None.
-        """
-        try:
-            env = FindAtomEnvironmentOfRadiusN(mol, atom_idx, n_radius)
-        except ValueError:
-            # "bad atom index" error happens if radius is larger than possible
-            return None
-
-        atom_map: dict[int, int] = dict()
-
-        submol = PathToSubmol(mol, env, atomMap=atom_map)
-
-        if atom_idx in atom_map:
-            return MolToSmiles(
-                submol,
-                rootedAtAtom=atom_map[atom_idx],
-                canonical=True,
-                isomericSmiles=False,
-            )
-        else:
-            return None
-
-    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> list[bytes]:
+    def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> set[bytes]:
         """
         Gets a list of atom molecular shingles - circular structures around atom pairs,
         written as SMILES, separated by the bond distance between the two atoms along the
         shortest path.
         """
-        shingles = []
+        atom_pairs: set[bytes] = set()
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()
         shingle_dict: dict[str, int] = defaultdict(int)
-
-        # Iterate through all pairs of atoms and radius. Shingles are stored in format:
-        # (radius i neighborhood of atom A) | (distance between atoms A and B) | (radius i neighborhood of atom B)
-        #
-        # If we want to count the shingles, we increment their value in shingle_dict
-        # After nested for-loop, all shingles, with their respective counts, will be added to atom_pairs list.
-        for idx_1, idx_2 in itertools.combinations(range(num_atoms), 2):
-            # distance_matrix consists of floats as integers, so they need to be converted to integers first
-            dist = str(int(distance_matrix[idx_1][idx_2]))
-            env_a = atoms_envs[idx_1]
-            env_b = atoms_envs[idx_2]
+        for idx1, idx2 in itertools.combinations(range(num_atoms), 2):
+            dist = str(int(distance_matrix[idx1][idx2]))
 
             for i in range(self.radius):
-                env_a_radius = env_a[i]
-                env_b_radius = env_b[i]
+                env_a: Optional[str] = atoms_envs[idx1][i]
+                env_b: Optional[str] = atoms_envs[idx2][i]
 
-                # can be None if we couldn't get atom neighborhood of given radius
-                if not env_a_radius or not env_b_radius:
-                    continue
+                # None strings are treated as empty strings
+                if env_a is None:
+                    env_a = ""
+                if env_b is None:
+                    env_b = ""
 
-                ordered = sorted([env_a_radius, env_b_radius])
-                shingle = f"{ordered[0]}|{dist}|{ordered[1]}"
-
-                if self.variant == "count":
-                    shingle_dict[shingle] += 1
+                if len(env_a) > len(env_b):
+                    larger_env: str = env_a
+                    smaller_env: str = env_b
                 else:
-                    shingles.append(shingle)
+                    larger_env = env_b
+                    smaller_env = env_a
 
-        if self.variant == "count":
-            # shingle in format:
-            # (radius i neighborhood of atom A) | (distance between atoms A and B) | \
-            # (radius i neighborhood of atom B) | (shingle count)
-            shingle_count = [
-                f"{shingle}|{shingle_count}"
-                for shingle, shingle_count in shingle_dict.items()
-            ]
-            shingles.extend(shingle_count)
+                shingle: str = f"{smaller_env}|{dist}|{larger_env}"
 
-        # convert strings to bytes for hashing
-        shingles = [shingle.encode() for shingle in shingles]
+                if self.include_duplicated_shingles:
+                    shingle_dict[shingle] += 1
+                    shingle += f"|{shingle_dict[shingle]}"
 
-        return shingles
+                atom_pairs.add(shingle.encode("utf-8"))
 
-    def _get_hash(self, shingle: bytes) -> int:
-        hash_bytes = hashlib.sha1(shingle, usedforsecurity=False).digest()
-        hash_value = struct.unpack("<I", hash_bytes[:4])[0]
-        return hash_value
+        return atom_pairs

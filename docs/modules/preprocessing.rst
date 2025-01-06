@@ -2,6 +2,8 @@
 Preprocessing
 =============
 
+Classes for preprocessing molecules, such as input and output format parsing.
+
 .. automodule:: skfp.preprocessing
 
 =========================================================

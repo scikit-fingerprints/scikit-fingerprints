@@ -2,6 +2,8 @@
 Model selection
 ===============
 
+Tools for model selection, such as train-test splitting and hyperparameter tuning.
+
 .. automodule:: skfp.model_selection
 
 =========================================================

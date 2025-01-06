@@ -84,22 +84,28 @@ requirements (you can check it by running pre-commit on staged files).
 
 ### Documentation
 
-If you are contributing new features or changes, please update the documentation to reflect your changes. You can find
-the documentation in the `docs` directory.
+If you are contributing new features or changes, you also need to update the documentation to reflect your changes.
+Most of the changes will be covered by small changes in docstrings. However adding new functionality may require to
+change overall docs structure. You can find it in the `docs` directory.
 
-Run `make docs` in the main directory of the repository to build the documentation. This command will generate HTML
-files in the `docs/_build/html` directory.
+Run `make docs` in the main directory of the repository to build the documentation. This command will generate
+HTML files in the `docs/_build/html` directory.
 
 To view the documentation, open the `docs/_build/html/index.html` file in your browser.
 
+We care about quality of our documentation. Before merging your Pull Request, there must be no warning regarding docs.
+You can check for any with `make doctest` to check whole documentation or just `python3 -m doctest <PATH_TO_MODULE>` 
+for specific file.
+
 ### Releasing
 To release scikit-fingerprints open a GitHub release with tag named 'vA.B.C'
-where each letter stands for version number. Fill the release notes and submit the release. Then, the version will be automatically sourced from tag by GH action and released to PyPI.
+where each letter stands for version number. Fill the release notes and submit the release.
+Then, the version will be automatically sourced from tag by GH action and released to PyPI.
 
 ### Code of Conduct
 
-By participating in this project, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md). We take violations seriously and may take
-action if necessary to maintain a welcoming and respectful community.
+By participating in this project, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md). We take violations seriously
+and may take action if necessary to maintain a welcoming and respectful community.
 
 ## Licensing
 

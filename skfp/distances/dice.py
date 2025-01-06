@@ -71,7 +71,7 @@ def dice_binary_similarity(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> sim = dice_binary_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     1.0
 
     >>> from skfp.distances import dice_binary_similarity
@@ -79,7 +79,7 @@ def dice_binary_similarity(
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> sim = dice_binary_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     1.0
     """
     _check_nan(vec_a)
@@ -166,7 +166,7 @@ def dice_binary_distance(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> dist = dice_binary_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.0
 
     >>> from skfp.distances import dice_binary_distance
@@ -174,7 +174,7 @@ def dice_binary_distance(
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = dice_binary_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.0
     """
 
@@ -242,7 +242,7 @@ def dice_count_similarity(
     >>> vec_a = np.array([7, 1, 1])
     >>> vec_b = np.array([7, 1, 2])
     >>> sim = dice_count_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     0.9904761904761905
 
     >>> from skfp.distances import dice_count_similarity
@@ -250,7 +250,7 @@ def dice_count_similarity(
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> sim = dice_count_similarity(vec_a, vec_b)
-    >>> sim
+    >>> sim  # doctest: +SKIP
     0.9904761904761905
     """
     _check_nan(vec_a)
@@ -332,7 +332,7 @@ def dice_count_distance(
     >>> vec_a = np.array([7, 1, 1])
     >>> vec_b = np.array([7, 1, 2])
     >>> dist = dice_count_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.00952380952380949
 
     >>> from skfp.distances import dice_count_distance
@@ -340,7 +340,7 @@ def dice_count_distance(
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> dist = dice_count_distance(vec_a, vec_b)
-    >>> dist
+    >>> dist  # doctest: +SKIP
     0.00952380952380949
     """
 

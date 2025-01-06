@@ -71,6 +71,31 @@ def load_pcba(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_pcba
+    >>> dataset = load_pcba()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['CC(=O)N1CCC2(CC1)NC(=O)N(c1ccccc1)N2', ..., 'CCN(CC(=O)Nc1ccc(C)c(S(=O)(=O)N(C)C)c1)Cc1ccccc1'], \
+array([[ 0.,  0., nan, ..., nan, nan, nan],
+       [ 0.,  0., nan, ..., nan, nan, nan],
+       [nan,  0., nan, ..., nan, nan, nan],
+       ...,
+       [ 0.,  0.,  0., ..., nan, nan, nan],
+       [nan, nan, nan, ..., nan, nan, nan],
+       [nan, nan, nan, ..., nan, nan, nan]]))
+
+    >>> dataset = load_pcba(as_frame=True)
+    >>> dataset.head() # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+                                                  SMILES  ...  PCBA-995
+    0               CC(=O)N1CCC2(CC1)NC(=O)N(c1ccccc1)N2  ...       NaN
+    1                         N#Cc1nnn(-c2ccc(Cl)cc2)c1N  ...       NaN
+    2      COC(=O)c1ccc(NC(=O)c2ccccc2CC[N+](=O)[O-])cc1  ...       NaN
+    3            CCC1NC(=O)c2cccnc2-n2c1nc1ccc(F)cc1c2=O  ...       NaN
+    4  CC1=CC(=O)/C(=C2/C=C(C(=O)Nc3ccc(S(=O)(=O)Nc4o...  ...       NaN
+    ...
+
     """
     df = fetch_dataset(
         data_dir, dataset_name="MoleculeNet_PCBA", filename="pcba.csv", verbose=verbose

@@ -2,6 +2,8 @@
 Distances and similarities
 ==========================
 
+Functions for computing distance and similarity measures common in chemoinformatics.
+
 .. automodule:: skfp.distances
 
 =========================================================

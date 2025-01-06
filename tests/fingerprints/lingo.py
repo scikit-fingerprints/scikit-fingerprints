@@ -103,12 +103,11 @@ def _load_lingo_data_file(count: bool, sparse: bool) -> Union[np.ndarray, csr_ar
     filename = f"lingo_{count_str}_{sparse_str}.{extension}"
     loader = load_npz if sparse else np.load
 
-    curr_dir = os.getcwd()
-    if curr_dir.endswith("scikit-fingerprints"):
+    if "tests" in os.listdir():
         return loader(os.path.join("tests", "fingerprints", "data", filename))
-    elif curr_dir.endswith("tests"):
+    elif "fingerprints" in os.listdir():
         return loader(os.path.join("fingerprints", "data", filename))
-    elif curr_dir.endswith("fingerprints"):
+    elif "data" in os.listdir():
         return loader(os.path.join("data", filename))
     else:
         raise FileNotFoundError(f"File {filename} not found")

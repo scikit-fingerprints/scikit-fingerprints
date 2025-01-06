@@ -62,6 +62,30 @@ def load_clintox(
         "MoleculeNet: a benchmark for molecular machine learning"
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_clintox
+    >>> dataset = load_clintox()
+    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    (['[C@@H]1([C@@H]([C@@H]([C@H]([C@@H]([C@@H]1Cl)Cl)Cl)Cl)Cl)Cl', ..., 'S=[Se]=S'], array([[1, 0],
+       [1, 0],
+       [1, 0],
+       ...,
+       [1, 0],
+       [1, 0],
+       [1, 0]]))
+
+    >>> dataset = load_clintox(as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                      SMILES  FDA_APPROVED  CT_TOX
+    0  [C@@H]1([C@@H]([C@@H]([C@H]([C@@H]([C@@H]1Cl)C...             1       0
+    1  [C@H]([C@@H]([C@@H](C(=O)[O-])O)O)([C@H](C(=O)...             1       0
+    2  [H]/[NH+]=C(/C1=CC(=O)/C(=C\\C=c2ccc(=C([NH3+])...             1       0
+    3  [H]/[NH+]=C(\\N)/c1ccc(cc1)OCCCCCOc2ccc(cc2)/C(...             1       0
+    4                                 [N+](=O)([O-])[O-]             1       0
+
+
     """
     df = fetch_dataset(
         data_dir,
