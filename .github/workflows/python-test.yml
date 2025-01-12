@@ -46,7 +46,7 @@ jobs:
           key: ${{ matrix.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install the project dependencies
-        run: poetry install --with test
+        run: poetry sync --with test
 
       - name: Check pre-commit
         run: poetry run pre-commit run --all-files
@@ -72,7 +72,7 @@ jobs:
         uses: abatilo/actions-poetry@v3
 
       - name: Install the project dependencies
-        run: poetry install --with doc
+        run: poetry sync --with doc
 
       - name: Install Pandoc
         uses: r-lib/actions/setup-pandoc@v2

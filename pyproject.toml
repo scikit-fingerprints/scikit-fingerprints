@@ -73,6 +73,7 @@ optional = true
 black = "*"
 isort = "*"
 mypy = "*"
+pip-audit = "*"
 pre-commit = "*"
 pytest = "*"
 xenon = "*"
@@ -95,6 +96,9 @@ lightgbm = "*"
 matplotlib = "*"
 ogb = "*"
 
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
+
 [tool.poetry-version-plugin]
 source = "git-tag"
 
@@ -102,7 +106,11 @@ source = "git-tag"
 python_files = "*.py"
 
 [tool.black]
-line-length = 88
+include = "benchmarking/.*\\.py|skfp/.*\\.py|tests/.*\\.py"
+
+[tool.isort]
+profile = "black"
+skip_glob = ".poetry/**"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
