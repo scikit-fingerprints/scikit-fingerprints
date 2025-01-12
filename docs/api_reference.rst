@@ -9,6 +9,7 @@ This is the API reference (classes and functions) of scikit-fingerprints.
 
     modules/bases
     modules/datasets
+    modules/descriptors
     modules/distances
     modules/filters
     modules/fingerprints
