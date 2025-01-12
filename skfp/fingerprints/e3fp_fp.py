@@ -42,7 +42,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     - number of bound hydrogens
     - whether it is a part of a ring
 
-    This is a 3D fingerprint, and requries molecules with ``conf_id`` integer property
+    This is a 3D fingerprint, and requires molecules with ``conf_id`` integer property
     set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.
 
     Parameters

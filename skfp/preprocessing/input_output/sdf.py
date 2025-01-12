@@ -114,7 +114,7 @@ class MolToSDFTransformer(BasePreprocessor):
     ----------
     filepath : string, default="mols.sdf"
         A string with file path location to save the SDF file. Tt should be a valid
-        file path with ``.sdf`` extention.
+        file path with ``.sdf`` extension.
 
     kekulize : bool, default=True
         Whether to kekulize molecules before writing them to SDF file.

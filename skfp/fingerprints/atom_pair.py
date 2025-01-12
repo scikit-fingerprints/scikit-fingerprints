@@ -39,7 +39,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     shortest paths scales with square of heavy atom count (HAC). This can be offset
     by setting ``scale_by_hac`` to True (divide counts by HAC), or integer value greater
     than 1, which divides by HAC to the given power. Setting ``scale_by_hac=2`` makes
-    valeus independent of molecule size.
+    values independent of molecule size.
 
     Parameters
     ----------

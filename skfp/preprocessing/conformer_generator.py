@@ -96,7 +96,7 @@ class ConformerGenerator(BasePreprocessor):
         and can be used to control the progress bar.
 
     random_state : int or None, default=0
-        Controls the randomness of conformer generation. Note that in constrast to
+        Controls the randomness of conformer generation. Note that in contrast to
         most classes, here it cannot be a ``RandomState`` instance, only an integer.
 
     References
