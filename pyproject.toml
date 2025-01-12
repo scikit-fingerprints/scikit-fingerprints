@@ -103,7 +103,11 @@ source = "git-tag"
 python_files = "*.py"
 
 [tool.black]
-line-length = 88
+include = "benchmarking/.*\\.py|skfp/.*\\.py|tests/.*\\.py"
+
+[tool.isort]
+profile = "black"
+skip_glob = ".poetry/**"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
