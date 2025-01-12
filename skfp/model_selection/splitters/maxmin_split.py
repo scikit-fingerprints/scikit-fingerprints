@@ -105,7 +105,7 @@ def maxmin_train_test_split(
         <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
 
     .. [3] `Tim Dudgeon
-        "Revisting the MaxMinPicker"
+        "Revisiting the MaxMinPicker"
         <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
 
     .. [4] `Squonk - RDKit MaxMin Picker
@@ -251,7 +251,7 @@ def maxmin_train_valid_test_split(
         <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
 
     .. [3] `Tim Dudgeon
-        "Revisting the MaxMinPicker"
+        "Revisiting the MaxMinPicker"
         <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
 
     .. [4] `Squonk - RDKit MaxMin Picker
