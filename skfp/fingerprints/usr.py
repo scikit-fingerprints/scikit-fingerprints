@@ -26,7 +26,7 @@ class USRFingerprint(BaseFingerprintTransformer):
     deviation and cubic root of skewness are used to keep the same unit. This results in
     12 descriptors.
 
-    This is a 3D fingerprint, and requries molecules with ``conf_id`` integer property
+    This is a 3D fingerprint, and requires molecules with ``conf_id`` integer property
     set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.
     Furthermore, only molecules with 3 or more atoms are allowed, to allow computation
     of all three moments.

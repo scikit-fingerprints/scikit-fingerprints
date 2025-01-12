@@ -21,7 +21,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
 
     Features are based on the principal component analysis (PCA) on the centered
     cartesian coordinates of a molecule by using a weighted covariance matrix. There are
-    two grups of features, each one measuring size, shape, symmetry and density of atoms:
+    two groups of features, each one measuring size, shape, symmetry and density of atoms:
     - 11 directional, using scores of individual principal axes
     - 7 global, aggregating information about the whole molecule
 

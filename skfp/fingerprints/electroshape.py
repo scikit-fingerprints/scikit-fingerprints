@@ -29,7 +29,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     and the centroid is aggregated using the first three moments (mean, standard
     deviation, cubic root of skewness). This results in 15 features.
 
-    This is a 3D fingerprint, and requries molecules with ``conf_id`` integer property
+    This is a 3D fingerprint, and requires molecules with ``conf_id`` integer property
     set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.
     Furthermore, only molecules with 3 or more atoms are allowed, to allow computation
     of all three moments.
