@@ -22,9 +22,6 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry --python python3.9
 
-      - name: Install Poetry plugins
-        run: poetry self add poetry-version-plugin
-
       - name: Configure Poetry for PyPI
         run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
 
