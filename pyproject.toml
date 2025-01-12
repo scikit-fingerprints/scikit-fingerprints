@@ -1,5 +1,5 @@
 [project]
-name = "scikit-fingerprints"
+name = "skfp"
 version = "0.0.0"   # version is read with poetry-version-plugin on GitHub release from Git tag
 description = "Library for effective molecular fingerprints calculation"
 authors = [
