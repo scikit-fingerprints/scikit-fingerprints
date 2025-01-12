@@ -51,6 +51,9 @@ jobs:
       - name: Check pre-commit
         run: poetry run pre-commit run --all-files
 
+      - name: Validate pyproject.toml
+        run: poetry check
+
       - name: Run tests with pytest
         run: poetry run make test
 
