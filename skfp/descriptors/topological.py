@@ -11,7 +11,7 @@ def average_wiener_index(
     """
     Average Wiener Index (AW).
 
-    Calculates the Average Wiener Index [1AW]_, defined as the Wiener index divided
+    Calculates the Average Wiener Index [1]_, defined as the Wiener index divided
     by the total number of atom pairs in the molecule. This makes it independent of
     the molecule size.
 
@@ -25,7 +25,7 @@ def average_wiener_index(
 
     References
     ----------
-    .. [1AW] `Andrey A. Dobrynin, Ivan Gutman,
+    .. [1] `Andrey A. Dobrynin, Ivan Gutman,
         "The average Wiener index of hexagonal chains",
         Computers & Chemistry, Volume 23, Issue 6, 1999, Pages 571-576, ISSN 0097-8485,
         <https://www.sciencedirect.com/science/article/pii/S0097848599000352>`_
@@ -49,7 +49,7 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
     """
     Graph Distance Index (GDI).
 
-    Calculates the Graph Distance Index [1GDI]_, defined as the squared sum of all
+    Calculates the Graph Distance Index [1]_, defined as the squared sum of all
     graph distance counts in the molecular graph's distance matrix. The formula for
     calculating GDI is given as:
 
@@ -72,10 +72,10 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
     References
     ----------
-    .. [1GDI] `Konstantinova, Elena V.
-        "The discrimination ability of some topological and information
-        distance indices for graphs of unbranched hexagonal systems."
-        Journal of chemical information and computer sciences 36.1 (1996): 54-57.
+    .. [1] `Konstantinova, Elena V.
+        "The Discrimination Ability of Some Topological and Information Distance
+        Indices for Graphs of Unbranched Hexagonal Systems"
+        Journal of Chemical Information and Computer Sciences 36.1 (1996): 54-57.
         <https://pubs.acs.org/doi/10.1021/ci9502461>`_
 
     Examples
@@ -99,7 +99,7 @@ def polarity_number(
     """
     Polarity Number.
 
-    Calculates the Polarity Number [1Pol]_ [2Pol]_, defined as the total number of
+    Calculates the Polarity Number [1]_ [2]_, defined as the total number of
     unordered pairs of vertices (atoms) in a molecular graph that are separated by
     a graph distance of exactly 3. It provides information about the structural
     connectivity of a molecule.
@@ -119,15 +119,15 @@ def polarity_number(
 
     References
     ----------
-    .. [1Pol] `Liu, Muhuo, and Bolian Liu.
-        "On the Wiener polarity index."
+    .. [1] `Wiener, Harry.
+        "Structural Determination of Paraffin Boiling Points"
+        Journal of the American Chemical Society 69.1 (1947): 17-20.
+        <https://pubs.acs.org/doi/10.1021/ja01193a005>`_
+
+    .. [2] `Liu, Muhuo, and Bolian Liu.
+        "On the Wiener Polarity Index"
         MATCH Commun. Math. Comput. Chem 66.1 (2011): 293-304.
         <https://match.pmf.kg.ac.rs/electronic_versions/Match66/n1/match66n1_293-304.pdf>`_
-
-    .. [2Pol] `Imran, Muhammad, Mehar Ali Malik, and Ramsha Javed.
-        "Wiener polarity index and related molecular topological descriptors of titanium oxide nanotubes."
-        International Journal of Quantum Chemistry 121.11 (2021): e26627.
-        <https://onlinelibrary.wiley.com/doi/abs/10.1002/qua.26627>`_
 
     Examples
     --------
@@ -159,7 +159,7 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     """
     Wiener Index (W).
 
-    Calculates the Wiener Index [1W]_ [2W]_, defined as the sum of all pairwise
+    Calculates the Wiener Index [1]_ [2]_, defined as the sum of all pairwise
     distances in the molecular graph distance matrix.
 
     Parameters
@@ -172,13 +172,13 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
 
     References
     ----------
-    .. [1W] `Wiener, Harry.
-        "Structural determination of paraffin boiling points."
-        Journal of the American chemical society 69.1 (1947): 17-20.
+    .. [1] `Wiener, Harry.
+        "Structural Determination of Paraffin Boiling Points"
+        Journal of the American Chemical Society 69.1 (1947): 17-20.
         <https://pubs.acs.org/doi/10.1021/ja01193a005>`_
 
-    .. [2W] `Rouvray, Dennis H.
-        "Chapter 2-the rich legacy of half a century of the wiener index."
+    .. [2] `Rouvray, Dennis H.
+        "Chapter 2 - The Rich Legacy of Half a Century of the Wiener Index"
         Topology in Chemistry: 16-37.
         <https://www.sciencedirect.com/science/article/abs/pii/B9781898563761500068>`_
 
@@ -199,7 +199,7 @@ def zagreb_index(mol: Mol) -> int:
     """
     First Zagreb Index.
 
-    Calculates the First Zagreb Index [1Z]_, defined as the sum of the squares of the
+    Calculates the First Zagreb Index [1]_, defined as the sum of the squares of the
     degrees of all atoms in the molecule. Also known as simply the Zagreb index. It is
     a measure of molecular branching.
 
@@ -210,8 +210,8 @@ def zagreb_index(mol: Mol) -> int:
 
     References
     ----------
-    .. [1Z] `Gutman, Ivan.
-        "Degree-based topological indices."
+    .. [1] `Gutman, Ivan.
+        "Degree-Based Topological Indices"
         Croatica Chemica Acta 86.4 (2013): 352.
         <http://dx.doi.org/10.5562/cca2294>`_
 
