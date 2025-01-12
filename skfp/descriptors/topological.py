@@ -90,7 +90,7 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
         distance_matrix = GetDistanceMatrix(mol)
     distances = distance_matrix[np.triu_indices_from(distance_matrix, k=1)]
     distance_counts = Counter(distances)
-    return sum((k * f) ** 2 for k, f in distance_counts.items())
+    return int(sum((k * f) ** 2 for k, f in distance_counts.items()))
 
 
 def polarity_number(
@@ -152,7 +152,7 @@ def polarity_number(
 
         distance_matrix = distance_matrix[np.ix_(atom_indices, atom_indices)]
 
-    return (distance_matrix == 3).sum() // 2
+    return int((distance_matrix == 3).sum() // 2)
 
 
 def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
@@ -192,7 +192,7 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     """
     if distance_matrix is None:
         distance_matrix = GetDistanceMatrix(mol)
-    return np.sum(distance_matrix) // 2
+    return int(np.sum(distance_matrix) // 2)
 
 
 def zagreb_index(mol: Mol) -> int:
@@ -223,4 +223,4 @@ def zagreb_index(mol: Mol) -> int:
     >>> zagreb_index(mol)
     24
     """
-    return sum(atom.GetDegree() ** 2 for atom in mol.GetAtoms())
+    return int(sum(atom.GetDegree() ** 2 for atom in mol.GetAtoms()))
