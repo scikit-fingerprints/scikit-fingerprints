@@ -105,6 +105,8 @@ version = "0.0.0"
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"
+latest-tag = true
+tag-branch = "remotes/origin/master"
 style = "semver"
 strict = true
 
