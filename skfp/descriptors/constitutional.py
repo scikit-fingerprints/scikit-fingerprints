@@ -7,7 +7,7 @@ def atom_count(mol: Mol, atom_symbol: str) -> int:
     """
     Specific Atom Count.
 
-    Calculates the count of atoms of a specific type (e.g., "C" for carbon, "H" for hydrogen).
+    Calculates the count of atoms [1]_ of a specific type (e.g., "C" for carbon, "H" for hydrogen).
 
     Parameters
     ----------
@@ -22,7 +22,7 @@ def atom_count(mol: Mol, atom_symbol: str) -> int:
     .. [1] `Gerta, Rucker and Christoph, Ruecker.
         "Counts of All Walks as Atomic and Molecular Descriptors"
         Journal of Chemical Information and Computer Sciences 33.5 (1993): 683–695.
-        <https://doi.org/10.1021/ci00015a005>_`
+        <https://doi.org/10.1021/ci00015a005>`_
 
     Examples
     --------
@@ -40,7 +40,7 @@ def average_molecular_weight(mol: Mol) -> float:
     """
     Average Molecular Weight.
 
-    Calculates the average molecular weight of the molecule, defined as the molecular
+    Calculates the average molecular weight of the molecule [1]_, defined as the molecular
     weight divided by the number of atoms.
 
     Parameters
@@ -54,7 +54,7 @@ def average_molecular_weight(mol: Mol) -> float:
         "Exploring Molecular Descriptors and Acquisition Functions in Bayesian
         Optimization for Designing Molecules with Low Hole Reorganization Energy"
         ACS Omega 9.49 (2024): 48844–48854.
-        <https://doi.org/10.1021/acsomega.4c09124>_`
+        <https://doi.org/10.1021/acsomega.4c09124>`_
 
     Examples
     --------
@@ -76,7 +76,7 @@ def molecular_weight(mol: Mol) -> float:
     """
     Molecular Weight.
 
-    Calculates the molecular weight of the molecule.
+    Calculates the molecular weight of the molecule [1]_.
 
     Parameters
     ----------
@@ -89,7 +89,7 @@ def molecular_weight(mol: Mol) -> float:
         "Molecular Descriptors, Structure Generation,
         and Inverse QSAR/QSPR Based on SELFIES"
         ACS Omega 8.24 (2023): 21781–21786.
-        <https://doi.org/10.1021/acsomega.3c01332>_`
+        <https://doi.org/10.1021/acsomega.3c01332>`_
 
     Examples
     --------
@@ -106,7 +106,7 @@ def number_of_double_bonds(mol: Mol) -> int:
     """
     Number of Double Bonds.
 
-    Calculates the total number of double bonds in the molecule.
+    Calculates the total number of double bonds in the molecule [1]_.
 
     Parameters
     ----------
@@ -119,7 +119,7 @@ def number_of_double_bonds(mol: Mol) -> int:
         "Itroducing new reactivity descriptors: “Bond reactivity indices.”
         Comparison of the new definitions and atomic reactivity indices"
         The Journal of Chemical Physics 145 (2016): 194105.
-        <https://pubs.aip.org/aip/jcp/article-abstract/145/19/194105/932003/Introducing-new-reactivity-descriptors-Bond?redirectedFrom=fulltext>_`
+        <https://pubs.aip.org/aip/jcp/article-abstract/145/19/194105/932003/Introducing-new-reactivity-descriptors-Bond?redirectedFrom=fulltext>`_
 
     Examples
     --------
@@ -136,7 +136,7 @@ def number_of_rings(mol: Mol) -> int:
     """
     Number of Rings.
 
-    Calculates the total number of rings in the molecule.
+    Calculates the total number of rings in the molecule [1]_.
 
     Parameters
     ----------
@@ -148,7 +148,7 @@ def number_of_rings(mol: Mol) -> int:
     .. [1] `Alan H. Lipkus.
         "Exploring Chemical Rings in a Simple Topological-Descriptor Space"
         Journal of Chemical Information and Computer Sciences 41.2 (2001): 430–438.
-        <https://doi.org/10.1021/ci000144x>_`
+        <https://doi.org/10.1021/ci000144x>`_
 
     Examples
     --------
@@ -165,7 +165,7 @@ def number_of_rotatable_bonds(mol: Mol) -> int:
     """
     Number of Rotatable Bonds.
 
-    Calculates the total number of rotatable bonds in the molecule.
+    Calculates the total number of rotatable bonds in the molecule [1]_.
 
     Parameters
     ----------
@@ -177,7 +177,7 @@ def number_of_rotatable_bonds(mol: Mol) -> int:
     .. [1] `Jessica, Braun.
         "Understanding and Quantifying Molecular Flexibility: Torsion Angular Bin Strings"
         Journal of Chemical Information and Modeling 64.20 (2024): 7917–7924.
-        <https://doi.org/10.1021/acs.jcim.4c01513>_`
+        <https://doi.org/10.1021/acs.jcim.4c01513>`_
 
     Examples
     --------
@@ -194,7 +194,7 @@ def number_of_single_bonds(mol: Mol) -> int:
     """
     Number of Single Bonds.
 
-    Calculates the total number of single bonds in the molecule.
+    Calculates the total number of single bonds in the molecule [1]_.
 
     Parameters
     ----------
@@ -206,7 +206,7 @@ def number_of_single_bonds(mol: Mol) -> int:
     .. [1] `Wojciech, Grochala.
         "A focus on penetration index – a new descriptor of chemical bonding"
         Royal Society of Chemistry 14 (2023): 11597.
-        <https://pubs.rsc.org/en/content/articlepdf/2023/sc/d3sc90191b>_`
+        <https://pubs.rsc.org/en/content/articlepdf/2023/sc/d3sc90191b>`_
 
     Examples
     --------
@@ -223,7 +223,7 @@ def number_of_triple_bonds(mol: Mol) -> int:
     """
     Number of Triple Bonds.
 
-    Calculates the total number of triple bonds in the molecule.
+    Calculates the total number of triple bonds in the molecule [1]_.
 
     Parameters
     ----------
@@ -235,7 +235,7 @@ def number_of_triple_bonds(mol: Mol) -> int:
     .. [1] `Lu, T. Xu.
         "Variations in the Nature of Triple Bonds: The N2, HCN, and HC2H Series"
         The Journal of Physical Chemistry A 120.26 (2016): 4526–4533.
-        <https://pubs.acs.org/doi/10.1021/acs.jpca.6b03631>_`
+        <https://pubs.acs.org/doi/10.1021/acs.jpca.6b03631>`_
 
     Examples
     --------
@@ -252,7 +252,7 @@ def total_atom_count(mol: Mol) -> int:
     """
     Total Atom Count.
 
-    Calculates the total number of atoms in the molecule.
+    Calculates the total number of atoms in the molecule [1]_.
 
     Parameters
     ----------
@@ -264,7 +264,7 @@ def total_atom_count(mol: Mol) -> int:
     .. [1] `Gerta, Rucker and Christoph, Ruecker.
         "Counts of All Walks as Atomic and Molecular Descriptors"
         Journal of Chemical Information and Computer Sciences 33.5 (1993): 683–695.
-        <https://doi.org/10.1021/ci00015a005>_`
+        <https://doi.org/10.1021/ci00015a005>`_
 
     Examples
     --------
