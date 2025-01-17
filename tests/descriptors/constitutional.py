@@ -8,6 +8,7 @@ from skfp.descriptors import constitutional as const
 def input_mols() -> dict[str, Mol]:
     result = {}
     for name, smiles in [
+        ("oxygen", "O"),
         ("benzene", "C1=CC=CC=C1"),
         ("ethanol", "CCO"),
         ("propane", "CCC"),
@@ -21,23 +22,6 @@ def input_mols() -> dict[str, Mol]:
 
 
 @pytest.mark.parametrize(
-    "mol_name, atom_symbol, expected_value",
-    [
-        ("benzene", "C", 6),
-        ("ethanol", "C", 2),
-        ("ethanol", "O", 1),
-        ("propane", "H", 8),
-        ("hydrogen_cyanide", "N", 1),
-        ("butadiene", "H", 6),
-    ],
-)
-def test_atom_count(mol_name, atom_symbol, expected_value, input_mols):
-    mol = input_mols[mol_name]
-    result = const.atom_count(mol, atom_symbol)
-    assert result == expected_value
-
-
-@pytest.mark.parametrize(
     "mol_name, expected_value",
     [
         ("benzene", 13.019),
@@ -46,12 +30,52 @@ def test_atom_count(mol_name, atom_symbol, expected_value, input_mols):
         ("butadiene", 13.523),
         ("hydrogen_cyanide", 13.513),
         ("cyclohexane", 14.027),
+        ("oxygen", 18.015),
     ],
 )
 def test_average_molecular_weight(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.average_molecular_weight(mol)
     assert round(result, 3) == round(expected_value, 3)
+
+
+@pytest.mark.parametrize(
+    "mol_name, bond_type, expected_value",
+    [
+        ("benzene", "SINGLE", 0),
+        ("benzene", "DOUBLE", 0),
+        ("benzene", "TRIPLE", 0),
+        ("benzene", "AROMATIC", 6),
+        ("ethanol", "SINGLE", 2),
+        ("ethanol", "DOUBLE", 0),
+        ("ethanol", "TRIPLE", 0),
+        ("butadiene", "DOUBLE", 2),
+        ("hydrogen_cyanide", "TRIPLE", 1),
+        ("cyclohexane", "SINGLE", 6),
+    ],
+)
+def test_bond_type_count(mol_name, bond_type, expected_value, input_mols):
+    mol = input_mols[mol_name]
+    result = const.bond_type_count(mol, bond_type)
+    assert result == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, atom_id, expected_value",
+    [
+        ("benzene", "C", 6),
+        ("ethanol", "O", 1),
+        ("propane", "H", 8),
+        ("hydrogen_cyanide", "N", 1),
+        ("butadiene", 1, 6),
+        ("ethanol", 6, 2),
+        ("oxygen", 8, 1),
+    ],
+)
+def test_element_atom_count(mol_name, atom_id, expected_value, input_mols):
+    mol = input_mols[mol_name]
+    result = const.element_atom_count(mol, atom_id)
+    assert result == expected_value
 
 
 @pytest.mark.parametrize(
@@ -63,6 +87,7 @@ def test_average_molecular_weight(mol_name, expected_value, input_mols):
         ("butadiene", 54.092),
         ("hydrogen_cyanide", 27.026),
         ("cyclohexane", 84.162),
+        ("oxygen", 18.015),
     ],
 )
 def test_molecular_weight(mol_name, expected_value, input_mols):
@@ -74,27 +99,12 @@ def test_molecular_weight(mol_name, expected_value, input_mols):
 @pytest.mark.parametrize(
     "mol_name, expected_value",
     [
-        ("benzene", 0),
-        ("ethanol", 0),
-        ("propane", 0),
-        ("butadiene", 2),
-        ("hydrogen_cyanide", 0),
-    ],
-)
-def test_number_of_double_bonds(mol_name, expected_value, input_mols):
-    mol = input_mols[mol_name]
-    result = const.number_of_double_bonds(mol)
-    assert result == expected_value
-
-
-@pytest.mark.parametrize(
-    "mol_name, expected_value",
-    [
         ("benzene", 1),
         ("cyclohexane", 1),
         ("ethanol", 0),
         ("hydrogen_cyanide", 0),
         ("butadiene", 0),
+        ("oxygen", 0),
     ],
 )
 def test_number_of_rings(mol_name, expected_value, input_mols):
@@ -111,43 +121,12 @@ def test_number_of_rings(mol_name, expected_value, input_mols):
         ("propane", 0),
         ("hydrogen_cyanide", 0),
         ("butadiene", 1),
+        ("oxygen", 0),
     ],
 )
 def test_number_of_rotatable_bonds(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.number_of_rotatable_bonds(mol)
-    assert result == expected_value
-
-
-@pytest.mark.parametrize(
-    "mol_name, expected_value",
-    [
-        ("benzene", 0),
-        ("ethanol", 2),
-        ("propane", 2),
-        ("hydrogen_cyanide", 0),
-        ("butadiene", 1),
-    ],
-)
-def test_number_of_single_bonds(mol_name, expected_value, input_mols):
-    mol = input_mols[mol_name]
-    result = const.number_of_single_bonds(mol)
-    assert result == expected_value
-
-
-@pytest.mark.parametrize(
-    "mol_name, expected_value",
-    [
-        ("benzene", 0),
-        ("ethanol", 0),
-        ("propane", 0),
-        ("hydrogen_cyanide", 1),
-        ("butadiene", 0),
-    ],
-)
-def test_number_of_triple_bonds(mol_name, expected_value, input_mols):
-    mol = input_mols[mol_name]
-    result = const.number_of_triple_bonds(mol)
     assert result == expected_value
 
 
@@ -160,9 +139,28 @@ def test_number_of_triple_bonds(mol_name, expected_value, input_mols):
         ("butadiene", 10),
         ("hydrogen_cyanide", 3),
         ("cyclohexane", 18),
+        ("oxygen", 3),
     ],
 )
 def test_total_atom_count(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.total_atom_count(mol)
     assert result == expected_value
+
+
+@pytest.mark.parametrize(
+    "descriptor_function",
+    [
+        const.average_molecular_weight,
+        const.bond_type_count,
+        const.element_atom_count,
+        const.molecular_weight,
+        const.number_of_rings,
+        const.number_of_rotatable_bonds,
+        const.total_atom_count,
+    ],
+)
+def test_empty_molecule_raises_error(descriptor_function):
+    mol = MolFromSmiles("")
+    with pytest.raises(ValueError, match="The molecule has no atoms"):
+        descriptor_function(mol)

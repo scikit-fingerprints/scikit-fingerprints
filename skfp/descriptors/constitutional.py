@@ -1,47 +1,39 @@
+from typing import Optional, Union
+
 from rdkit.Chem import AddHs, Mol
 from rdkit.Chem.Descriptors import MolWt
 from rdkit.Chem.rdMolDescriptors import CalcNumRings, CalcNumRotatableBonds
 
 
-def atom_count(mol: Mol, atom_symbol: str) -> int:
+def validate_molecule(func):
     """
-    Specific Atom Count.
+    Decorator to validate that the molecule has at least one atom.
 
-    Calculates the count of atoms [1]_ of a specific type (e.g., "C" for carbon, "H" for hydrogen).
-
-    Parameters
-    ----------
-    mol : RDKit Mol object
-        The molecule for which the atom count is to be calculated.
-
-    atom_symbol : str
-        The symbol of the atom type to count (e.g., "H" for hydrogen, "C" for carbon).
-
-    References
-    ----------
-    .. [1] `Gerta, Rucker and Christoph, Ruecker.
-        "Counts of All Walks as Atomic and Molecular Descriptors"
-        Journal of Chemical Information and Computer Sciences 33.5 (1993): 683–695.
-        <https://doi.org/10.1021/ci00015a005>`_
-
-    Examples
-    --------
-    >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import atom_count
-    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
-    >>> atom_count(mol, "C")
-    6
+    Raises
+    ------
+    ValueError
+        If the molecule has no atoms.
     """
-    mol_with_h = AddHs(mol)
-    return sum(1 for atom in mol_with_h.GetAtoms() if atom.GetSymbol() == atom_symbol)
+
+    def wrapper(mol: Mol, *args, **kwargs):
+        if mol.GetNumAtoms() == 0:
+            raise ValueError(
+                f"The molecule has no atoms, {func.__name__} cannot be calculated."
+            )
+        return func(mol, *args, **kwargs)
+
+    return wrapper
 
 
+@validate_molecule
 def average_molecular_weight(mol: Mol) -> float:
     """
     Average Molecular Weight.
 
-    Calculates the average molecular weight of the molecule [1]_, defined as the molecular
+    Calculates the average molecular weight of the molecule, defined as the molecular
     weight divided by the number of atoms.
+
+    This is different from "average molecular weight" in the context of isotopes [1]_.
 
     Parameters
     ----------
@@ -50,11 +42,8 @@ def average_molecular_weight(mol: Mol) -> float:
 
     References
     ----------
-    .. [1] `Rinta, Kawagoe.
-        "Exploring Molecular Descriptors and Acquisition Functions in Bayesian
-        Optimization for Designing Molecules with Low Hole Reorganization Energy"
-        ACS Omega 9.49 (2024): 48844–48854.
-        <https://doi.org/10.1021/acsomega.4c09124>`_
+    .. [1] `
+        <https://chemistry.stackexchange.com/questions/150993/discrepancy-when-calulating-mol-weights-with-chemsketch-and-python-rdkit/150999#150999>`_
 
     Examples
     --------
@@ -64,19 +53,98 @@ def average_molecular_weight(mol: Mol) -> float:
     >>> average_molecular_weight(mol)
     13.019
     """
-    num_atoms = mol.GetNumAtoms()
-    if num_atoms == 0:
-        raise ValueError(
-            "The molecule has no atoms, average molecular weight cannot be calculated."
+    return MolWt(mol) / mol.GetNumAtoms()
+
+
+@validate_molecule
+def bond_type_count(mol: Mol, bond_type: Optional[str] = None) -> int:
+    """
+    Bond Type Count.
+
+    Counts the total number of bonds of a specific type in the molecule.
+
+    Parameters
+    ----------
+    mol : RDKit Mol object
+        The molecule for which the bond count is to be calculated.
+
+    bond_type : str, optional
+        The type of bond to count. Valid options are:
+        - "SINGLE"
+        - "DOUBLE"
+        - "TRIPLE"
+        - "AROMATIC"
+        If None, the function returns the total number of bonds.
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> bond_type_count(mol, "AROMATIC")
+    6
+    >>> bond_type_count(mol, "DOUBLE")
+    0
+    >>> bond_type_count(mol)  # Total bonds
+    6
+    """
+    if bond_type:
+        return sum(
+            1 for bond in mol.GetBonds() if bond.GetBondType().name == bond_type.upper()
         )
-    return MolWt(mol) / num_atoms
+    return mol.GetNumBonds()
 
 
+@validate_molecule
+def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
+    """
+    Element atom count.
+
+    Calculates the count of atoms of a specific type.
+
+    The function returns the total number of Hs (explicit and implicit) on the atom.
+
+    Parameters
+    ----------
+    mol : RDKit Mol object
+        The molecule for which the atom count is to be calculated.
+
+    atom_id : int or str
+        The atomic number of the atom type, e.g. 6 for carbon, 1 for hydrogen
+        or symbol of the atom type, e.g. "C" for carbon,  "H" for hydrogen
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> element_atom_count(mol, "C")
+    6
+    >>> element_atom_count(mol, 6)
+    6
+
+    >>> mol = MolFromSmiles("CCO")  # Ethanol
+    >>> element_atom_count(mol, "H")
+    8
+    >>> element_atom_count(mol, 1)
+    8
+    """
+    if atom_id == 1 or atom_id == "H":
+        return sum(atom.GetTotalNumHs() for atom in mol.GetAtoms())
+    else:
+        return sum(
+            1
+            for atom in mol.GetAtoms()
+            if atom.GetAtomicNum() == atom_id or atom.GetSymbol() == atom_id
+        )
+
+
+@validate_molecule
 def molecular_weight(mol: Mol) -> float:
     """
     Molecular Weight.
 
     Calculates the molecular weight of the molecule [1]_.
+
+    This is average molecular weight in terms of isotopes [2]_.
 
     Parameters
     ----------
@@ -91,6 +159,9 @@ def molecular_weight(mol: Mol) -> float:
         ACS Omega 8.24 (2023): 21781–21786.
         <https://doi.org/10.1021/acsomega.3c01332>`_
 
+    .. [2] `
+        <https://chemistry.stackexchange.com/questions/150993/discrepancy-when-calulating-mol-weights-with-chemsketch-and-python-rdkit/150999#150999>`_
+
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
@@ -102,39 +173,10 @@ def molecular_weight(mol: Mol) -> float:
     return MolWt(mol)
 
 
-def number_of_double_bonds(mol: Mol) -> int:
-    """
-    Number of Double Bonds.
-
-    Calculates the total number of double bonds in the molecule [1]_.
-
-    Parameters
-    ----------
-    mol : RDKit Mol object
-        The molecule for which the number of double bonds is to be calculated.
-
-    References
-    ----------
-    .. [1] `Jesús, Sánchez-Márquez.
-        "Itroducing new reactivity descriptors: “Bond reactivity indices.”
-        Comparison of the new definitions and atomic reactivity indices"
-        The Journal of Chemical Physics 145 (2016): 194105.
-        <https://pubs.aip.org/aip/jcp/article-abstract/145/19/194105/932003/Introducing-new-reactivity-descriptors-Bond?redirectedFrom=fulltext>`_
-
-    Examples
-    --------
-    >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import number_of_double_bonds
-    >>> mol = MolFromSmiles("C=CC=C")  # Butadiene
-    >>> number_of_double_bonds(mol)
-    2
-    """
-    return sum(1 for bond in mol.GetBonds() if bond.GetBondType().name == "DOUBLE")
-
-
+@validate_molecule
 def number_of_rings(mol: Mol) -> int:
     """
-    Number of Rings.
+    Number of rings.
 
     Calculates the total number of rings in the molecule [1]_.
 
@@ -161,23 +203,17 @@ def number_of_rings(mol: Mol) -> int:
     return CalcNumRings(mol)
 
 
+@validate_molecule
 def number_of_rotatable_bonds(mol: Mol) -> int:
     """
-    Number of Rotatable Bonds.
+    Number of rotatable bonds.
 
-    Calculates the total number of rotatable bonds in the molecule [1]_.
+    Calculates the total number of rotatable bonds in the molecule.
 
     Parameters
     ----------
     mol : RDKit Mol object
         The molecule for which the number of rotatable bonds is to be calculated.
-
-    References
-    ----------
-    .. [1] `Jessica, Braun.
-        "Understanding and Quantifying Molecular Flexibility: Torsion Angular Bin Strings"
-        Journal of Chemical Information and Modeling 64.20 (2024): 7917–7924.
-        <https://doi.org/10.1021/acs.jcim.4c01513>`_
 
     Examples
     --------
@@ -190,81 +226,19 @@ def number_of_rotatable_bonds(mol: Mol) -> int:
     return CalcNumRotatableBonds(mol)
 
 
-def number_of_single_bonds(mol: Mol) -> int:
-    """
-    Number of Single Bonds.
-
-    Calculates the total number of single bonds in the molecule [1]_.
-
-    Parameters
-    ----------
-    mol : RDKit Mol object
-        The molecule for which the number of single bonds is to be calculated.
-
-    References
-    ----------
-    .. [1] `Wojciech, Grochala.
-        "A focus on penetration index – a new descriptor of chemical bonding"
-        Royal Society of Chemistry 14 (2023): 11597.
-        <https://pubs.rsc.org/en/content/articlepdf/2023/sc/d3sc90191b>`_
-
-    Examples
-    --------
-    >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import number_of_single_bonds
-    >>> mol = MolFromSmiles("CCO")  # Ethanol
-    >>> number_of_single_bonds(mol)
-    2
-    """
-    return sum(1 for bond in mol.GetBonds() if bond.GetBondType().name == "SINGLE")
-
-
-def number_of_triple_bonds(mol: Mol) -> int:
-    """
-    Number of Triple Bonds.
-
-    Calculates the total number of triple bonds in the molecule [1]_.
-
-    Parameters
-    ----------
-    mol : RDKit Mol object
-        The molecule for which the number of triple bonds is to be calculated.
-
-    References
-    ----------
-    .. [1] `Lu, T. Xu.
-        "Variations in the Nature of Triple Bonds: The N2, HCN, and HC2H Series"
-        The Journal of Physical Chemistry A 120.26 (2016): 4526–4533.
-        <https://pubs.acs.org/doi/10.1021/acs.jpca.6b03631>`_
-
-    Examples
-    --------
-    >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import number_of_triple_bonds
-    >>> mol = MolFromSmiles("C#N")  # Hydrogen cyanide
-    >>> number_of_triple_bonds(mol)
-    1
-    """
-    return sum(1 for bond in mol.GetBonds() if bond.GetBondType().name == "TRIPLE")
-
-
+@validate_molecule
 def total_atom_count(mol: Mol) -> int:
     """
-    Total Atom Count.
+    Total atom count.
 
-    Calculates the total number of atoms in the molecule [1]_.
+    Calculates the total number of atoms in the molecule.
+
+    The function returns the total number of Hs (explicit and implicit) on the atom.
 
     Parameters
     ----------
     mol : RDKit Mol object
         The molecule for which the total atom count is to be calculated.
-
-    References
-    ----------
-    .. [1] `Gerta, Rucker and Christoph, Ruecker.
-        "Counts of All Walks as Atomic and Molecular Descriptors"
-        Journal of Chemical Information and Computer Sciences 33.5 (1993): 683–695.
-        <https://doi.org/10.1021/ci00015a005>`_
 
     Examples
     --------
