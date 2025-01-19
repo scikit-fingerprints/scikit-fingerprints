@@ -42,3 +42,9 @@ def test_klekota_roth_count_sparse_fingerprint(smiles_list):
     assert X.dtype == np.uint32
     assert X.shape == (len(smiles_list), 4860)
     assert np.all(X.data > 0)
+
+
+def test_klekota_roth_feature_names():
+    kr_fp = KlekotaRothFingerprint()
+    feature_names = kr_fp.get_feature_names_out()
+    assert len(feature_names) == kr_fp.n_features_out
