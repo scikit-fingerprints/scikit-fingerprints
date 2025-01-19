@@ -190,7 +190,7 @@ class FunctionalGroupsFingerprint(BaseFingerprintTransformer):
                 "thiazole rings",
                 "thiocyanates",
                 "thiophene rings",
-                "unbranched alkanes  of at least 4 members (excludes halogenated alkanes)",
+                "unbranched alkanes of at least 4 members (excludes halogenated alkanes)",
                 "urea groups",
             ],
             dtype=object,
