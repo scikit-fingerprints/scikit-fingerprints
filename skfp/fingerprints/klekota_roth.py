@@ -81,6 +81,8 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         verbose: Union[int, dict] = 0,
     ):
         # flake8: noqa: E501
+        # note that those patterns were released as public domain:
+        # https://github.com/cdk/cdk/blob/main/descriptor/fingerprint/src/main/java/org/openscience/cdk/fingerprint/KlekotaRothFingerprinter.java
         patterns = [
             "[!#1][CH]([!#1])[!#1]",
             "[!#1][CH]([!#1])[CH]([!#1])[!#1]",
