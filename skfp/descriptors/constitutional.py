@@ -4,25 +4,7 @@ from rdkit.Chem import AddHs, Mol
 from rdkit.Chem.Descriptors import MolWt
 from rdkit.Chem.rdMolDescriptors import CalcNumRings, CalcNumRotatableBonds
 
-
-def validate_molecule(func):
-    """
-    Decorator to validate that the molecule has at least one atom.
-
-    Raises
-    ------
-    ValueError
-        If the molecule has no atoms.
-    """
-
-    def wrapper(mol: Mol, *args, **kwargs):
-        if mol.GetNumAtoms() == 0:
-            raise ValueError(
-                f"The molecule has no atoms, {func.__name__} cannot be calculated."
-            )
-        return func(mol, *args, **kwargs)
-
-    return wrapper
+from skfp.utils.validators import validate_molecule
 
 
 @validate_molecule
@@ -61,7 +43,7 @@ def bond_type_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     """
     Bond Type Count.
 
-    Counts the total number of bonds of a specific type in the molecule.
+    Counts the total number of bonds of a specific type in the molecule [1]_.
 
     Parameters
     ----------
@@ -69,12 +51,22 @@ def bond_type_count(mol: Mol, bond_type: Optional[str] = None) -> int:
         The molecule for which the bond count is to be calculated.
 
     bond_type : str, optional
-        The type of bond to count. Valid options are:
+        Valid options are RDKit bond types [2]_:
         - "SINGLE"
         - "DOUBLE"
         - "TRIPLE"
         - "AROMATIC"
-        If None, the function returns the total number of bonds.
+        If "None", the function returns the total number of bonds.
+
+    References
+    ----------
+    .. [1] `Wojciech, Grochala.
+        "A focus on penetration index – a new descriptor of chemical bonding"
+        Royal Society of Chemistry 14 (2023): 11597.
+        <https://pubs.rsc.org/en/content/articlepdf/2023/sc/d3sc90191b>`_
+
+    .. [2] `
+        <https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.BondType>`_
 
     Examples
     --------
@@ -100,8 +92,7 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
     Element atom count.
 
     Calculates the count of atoms of a specific type.
-
-    The function returns the total number of Hs (explicit and implicit) on the atom.
+    In case of hydrogens, the total number is returned, counting both explicit and implicit ones.
 
     Parameters
     ----------
@@ -110,7 +101,7 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
 
     atom_id : int or str
         The atomic number of the atom type, e.g. 6 for carbon, 1 for hydrogen
-        or symbol of the atom type, e.g. "C" for carbon,  "H" for hydrogen
+        or symbol of the atom type, e.g. "C" for carbon,  "H" for hydrogen.
 
     Examples
     --------
@@ -138,12 +129,34 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
 
 
 @validate_molecule
+def heavy_atom_count(mol: Mol) -> int:
+    """
+    Heavy atom count.
+
+    Calculates the number of heavy atoms (non-hydrogen) in the molecule.
+
+    Parameters
+    ----------
+    mol : RDKit Mol object
+        The molecule for which the total atom count is to be calculated.
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.constitutional import heavy_atom_count
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> heavy_atom_count(mol)
+    6
+    """
+    return mol.GetNumHeavyAtoms()
+
+
+@validate_molecule
 def molecular_weight(mol: Mol) -> float:
     """
     Molecular Weight.
 
     Calculates the molecular weight of the molecule [1]_.
-
     This is average molecular weight in terms of isotopes [2]_.
 
     Parameters
@@ -232,8 +245,7 @@ def total_atom_count(mol: Mol) -> int:
     Total atom count.
 
     Calculates the total number of atoms in the molecule.
-
-    The function returns the total number of Hs (explicit and implicit) on the atom.
+    Includes hydrogens, both explicit and implicit.
 
     Parameters
     ----------

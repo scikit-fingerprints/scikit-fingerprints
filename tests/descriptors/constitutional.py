@@ -81,6 +81,24 @@ def test_element_atom_count(mol_name, atom_id, expected_value, input_mols):
 @pytest.mark.parametrize(
     "mol_name, expected_value",
     [
+        ("benzene", 6),
+        ("ethanol", 3),
+        ("propane", 3),
+        ("butadiene", 4),
+        ("hydrogen_cyanide", 2),
+        ("cyclohexane", 6),
+        ("oxygen", 1),
+    ],
+)
+def test_heavy_atom_count(mol_name, expected_value, input_mols):
+    mol = input_mols[mol_name]
+    result = const.heavy_atom_count(mol)
+    assert result == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    [
         ("benzene", 78.114),
         ("ethanol", 46.069),
         ("propane", 44.097),
@@ -154,6 +172,7 @@ def test_total_atom_count(mol_name, expected_value, input_mols):
         const.average_molecular_weight,
         const.bond_type_count,
         const.element_atom_count,
+        const.heavy_atom_count,
         const.molecular_weight,
         const.number_of_rings,
         const.number_of_rotatable_bonds,

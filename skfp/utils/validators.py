@@ -1,5 +1,6 @@
 from collections.abc import Sequence
-from typing import Any
+from functools import wraps
+from typing import Any, Callable
 
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
@@ -55,3 +56,20 @@ def require_mols_with_conf_ids(X: Sequence[Any]) -> Sequence[Mol]:
             "You can use ConformerGenerator to add them."
         )
     return X
+
+
+def validate_molecule(func: Callable) -> Callable:
+    """
+    Validator for functions operating on single molecule.
+    Ensures it is nonempty (at least 1 atom), raises ValueError otherwise.
+    """
+
+    @wraps(func)
+    def wrapper(mol: Mol, *args, **kwargs):
+        if mol.GetNumAtoms() == 0:
+            raise ValueError(
+                f"The molecule has no atoms, {func.__name__} cannot be calculated."
+            )
+        return func(mol, *args, **kwargs)
+
+    return wrapper
