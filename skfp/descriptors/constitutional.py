@@ -33,7 +33,7 @@ def average_molecular_weight(mol: Mol) -> float:
     >>> from skfp.descriptors.constitutional import average_molecular_weight
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> average_molecular_weight(mol)
-    13.019
+    13.018999999999998
     """
     return MolWt(mol) / mol.GetNumAtoms()
 
@@ -71,6 +71,7 @@ def bond_type_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.constitutional import bond_type_count
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> bond_type_count(mol, "AROMATIC")
     6
@@ -106,6 +107,7 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.constitutional import element_atom_count
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> element_atom_count(mol, "C")
     6
@@ -114,9 +116,9 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
 
     >>> mol = MolFromSmiles("CCO")  # Ethanol
     >>> element_atom_count(mol, "H")
-    8
+    6
     >>> element_atom_count(mol, 1)
-    8
+    6
     """
     if atom_id == 1 or atom_id == "H":
         return sum(atom.GetTotalNumHs() for atom in mol.GetAtoms())
@@ -181,7 +183,7 @@ def molecular_weight(mol: Mol) -> float:
     >>> from skfp.descriptors.constitutional import molecular_weight
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> molecular_weight(mol)
-    78.114
+    78.11399999999999
     """
     return MolWt(mol)
 
