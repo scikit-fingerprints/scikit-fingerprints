@@ -86,7 +86,8 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
-        patterns = self._load_patterns()
+        feature_names, patterns = self._load_patterns()
+        self._feature_names = np.asarray(feature_names, dtype=object)
         super().__init__(
             patterns=patterns,
             count=count,
@@ -95,6 +96,23 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             batch_size=batch_size,
             verbose=verbose,
         )
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+        """
+        Get fingerprint output feature names. They correspond to substructure
+        names, intended to capture with SMARTS patterns used by this fingerprint.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the Laggner feature names.
+        """
+        return self._feature_names
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
@@ -141,8 +159,9 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
 
         return csr_array(fps) if self.sparse else fps
 
-    def _load_patterns(self) -> list[str]:
+    def _load_patterns(self) -> tuple[list[str], list[str]]:
         # since Laggner file is licensed under LGPL, we keep it separately
+        feature_names = []
         patterns = []
 
         filepath = Path(__file__).parent / "data" / "SMARTS_InteLigand.txt"
@@ -150,10 +169,14 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             for line in file:
                 if line.startswith("#") or line.isspace():
                     continue
-                elif line.startswith("Urea:"):
+                elif line.startswith("Urea:"):  # this line has no space after colon
+                    name = "Urea"
                     smarts = line.removeprefix("Urea:")
                 else:
                     name, smarts = line.split()
+                    name = name.removesuffix(":")
+
+                feature_names.append(name.strip())
                 patterns.append(smarts.strip())
 
         # RDKit does not support multi-component SMARTS (with a dot), so we can't match
@@ -162,4 +185,4 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         # replace it with an empty pattern
         patterns[298] = ""
 
-        return patterns
+        return feature_names, patterns
