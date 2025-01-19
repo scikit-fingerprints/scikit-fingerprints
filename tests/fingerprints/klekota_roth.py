@@ -5,8 +5,8 @@ from skfp.fingerprints import KlekotaRothFingerprint
 
 
 def test_klekota_roth_bit_fingerprint(smiles_list):
-    fp = KlekotaRothFingerprint(n_jobs=-1)
-    X = fp.transform(smiles_list)
+    kr_fp = KlekotaRothFingerprint(n_jobs=-1)
+    X = kr_fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
     assert X.dtype == np.uint8
@@ -15,8 +15,8 @@ def test_klekota_roth_bit_fingerprint(smiles_list):
 
 
 def test_klekota_roth_count_fingerprint(smiles_list):
-    fp = KlekotaRothFingerprint(count=True, n_jobs=-1)
-    X = fp.transform(smiles_list)
+    kr_fp = KlekotaRothFingerprint(count=True, n_jobs=-1)
+    X = kr_fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
     assert X.dtype == np.uint32
@@ -25,8 +25,8 @@ def test_klekota_roth_count_fingerprint(smiles_list):
 
 
 def test_klekota_roth_bit_sparse_fingerprint(smiles_list):
-    fp = KlekotaRothFingerprint(sparse=True, n_jobs=-1)
-    X = fp.transform(smiles_list)
+    kr_fp = KlekotaRothFingerprint(sparse=True, n_jobs=-1)
+    X = kr_fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)
     assert X.dtype == np.uint8
@@ -35,8 +35,8 @@ def test_klekota_roth_bit_sparse_fingerprint(smiles_list):
 
 
 def test_klekota_roth_count_sparse_fingerprint(smiles_list):
-    fp = KlekotaRothFingerprint(sparse=True, count=True, n_jobs=-1)
-    X = fp.transform(smiles_list)
+    kr_fp = KlekotaRothFingerprint(sparse=True, count=True, n_jobs=-1)
+    X = kr_fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)
     assert X.dtype == np.uint32

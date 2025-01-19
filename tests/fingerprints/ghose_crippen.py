@@ -5,8 +5,8 @@ from skfp.fingerprints import GhoseCrippenFingerprint
 
 
 def test_ghose_crippen_bit_fingerprint(smiles_list):
-    fp = GhoseCrippenFingerprint(n_jobs=-1)
-    X = fp.transform(smiles_list)
+    gc_fp = GhoseCrippenFingerprint(n_jobs=-1)
+    X = gc_fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
     assert X.dtype == np.uint8
@@ -15,8 +15,8 @@ def test_ghose_crippen_bit_fingerprint(smiles_list):
 
 
 def test_ghose_crippen_count_fingerprint(smiles_list):
-    fp = GhoseCrippenFingerprint(count=True, n_jobs=-1)
-    X = fp.transform(smiles_list)
+    gc_fp = GhoseCrippenFingerprint(count=True, n_jobs=-1)
+    X = gc_fp.transform(smiles_list)
 
     assert isinstance(X, np.ndarray)
     assert X.dtype == np.uint32
@@ -25,8 +25,8 @@ def test_ghose_crippen_count_fingerprint(smiles_list):
 
 
 def test_ghose_crippen_bit_sparse_fingerprint(smiles_list):
-    fp = GhoseCrippenFingerprint(sparse=True, n_jobs=-1)
-    X = fp.transform(smiles_list)
+    gc_fp = GhoseCrippenFingerprint(sparse=True, n_jobs=-1)
+    X = gc_fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)
     assert X.dtype == np.uint8
@@ -35,8 +35,8 @@ def test_ghose_crippen_bit_sparse_fingerprint(smiles_list):
 
 
 def test_ghose_crippen_count_sparse_fingerprint(smiles_list):
-    fp = GhoseCrippenFingerprint(sparse=True, count=True, n_jobs=-1)
-    X = fp.transform(smiles_list)
+    gc_fp = GhoseCrippenFingerprint(sparse=True, count=True, n_jobs=-1)
+    X = gc_fp.transform(smiles_list)
 
     assert isinstance(X, csr_array)
     assert X.dtype == np.uint32
