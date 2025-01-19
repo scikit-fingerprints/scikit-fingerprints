@@ -129,6 +129,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         smiles = ensure_smiles(X)
 
         # turn off RDKit logs, since descriptastorus does not use MorganGenerator
+        # and generates a lot of warnings
         with no_rdkit_logs():
             gen = RDKit2DNormalized() if self.normalized else RDKit2D()
             X = [np.array(gen.calculateMol(mol, smi)) for mol, smi in zip(mols, smiles)]
