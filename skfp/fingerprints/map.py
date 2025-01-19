@@ -144,6 +144,27 @@ class MAPFingerprint(BaseFingerprintTransformer):
         self.include_duplicated_shingles = include_duplicated_shingles
         self.count = count
 
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute MAP fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:

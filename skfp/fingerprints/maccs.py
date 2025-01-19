@@ -105,6 +105,28 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute MACCS fingerprints. Output shape depends on ``count``
+        parameter.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.n_features_out)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:

@@ -214,12 +214,12 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
         """
-        Compute CDK substructure fingerprints.
+        Compute Ghose-Crippen substructure fingerprints.
 
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects.
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Copy the input X or not.

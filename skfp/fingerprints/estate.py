@@ -115,6 +115,27 @@ class EStateFingerprint(BaseFingerprintTransformer):
         )
         self.variant = variant
 
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute EState fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 79)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:

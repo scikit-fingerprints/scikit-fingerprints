@@ -4962,7 +4962,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects.
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Copy the input X or not.

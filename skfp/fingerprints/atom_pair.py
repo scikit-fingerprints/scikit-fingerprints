@@ -211,8 +211,8 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects. If ``use_3D``
-            is True, only Mol objects with computed conformations and with
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. If ``use_3D``
+            is True, only ``Mol`` objects with computed conformations and with
             ``conf_id`` property are allowed.
 
         copy : bool, default=False
