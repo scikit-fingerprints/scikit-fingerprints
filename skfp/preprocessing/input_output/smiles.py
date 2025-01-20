@@ -6,9 +6,12 @@ import numpy as np
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import no_rdkit_logs
-from skfp.utils.functions import get_data_from_indices
-from skfp.utils.validators import check_mols, check_strings
+from skfp.utils import (
+    get_data_from_indices,
+    no_rdkit_logs,
+    require_mols,
+    require_strings,
+)
 
 
 class MolFromSmilesTransformer(BasePreprocessor):
@@ -155,7 +158,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
 
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
         with no_rdkit_logs() if self.suppress_warnings else nullcontext():
-            check_strings(X)
+            require_strings(X)
             replacements = self.replacements if self.replacements else {}
             return [
                 MolFromSmiles(smi, sanitize=self.sanitize, replacements=replacements)
@@ -260,7 +263,7 @@ class MolToSmilesTransformer(BasePreprocessor):
         self.do_random = do_random
 
     def _transform_batch(self, X: Sequence[Mol]) -> list[str]:
-        check_mols(X)
+        require_mols(X)
         return [
             MolToSmiles(
                 mol,

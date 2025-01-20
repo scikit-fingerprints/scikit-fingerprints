@@ -302,13 +302,13 @@ class ConformerGenerator(BasePreprocessor):
 
         conf_id = embedder(mol, params=embed_params)
 
-        if conf_id == -1:
+        if mol.GetNumConformers() == 0 or conf_id == -1:
             # more tries
             embed_params.maxIterations = self.max_gen_attempts
             embed_params.useRandomCoords = True
             conf_id = embedder(mol, params=embed_params)
 
-        if conf_id == -1:
+        if mol.GetNumConformers() == 0 or conf_id == -1:
             # even more tries, turn off conditions
             embed_params.maxIterations = 10 * self.max_gen_attempts
             embed_params.enforceChirality = False
@@ -316,7 +316,7 @@ class ConformerGenerator(BasePreprocessor):
             conf_id = embedder(mol, params=embed_params)
 
         # we should not fail at this point
-        if conf_id == -1:
+        if mol.GetNumConformers() == 0 or conf_id == -1:
             smiles = MolToSmiles(RemoveHs(mol))
             fail_reason = self._print_conf_gen_failure_reason(embed_params)
             if self.errors == "raise":

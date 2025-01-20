@@ -117,33 +117,15 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         self.normalized = normalized
         self.clip_val = clip_val
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
-        from descriptastorus.descriptors.rdDescriptors import RDKit2D
-        from descriptastorus.descriptors.rdNormalizedDescriptors import (
-            RDKit2DNormalized,
-        )
-
-        mols = ensure_mols(X)
-        smiles = ensure_smiles(X)
-
-        # turn off RDKit logs, since descriptastorus does not use MorganGenerator
-        with no_rdkit_logs():
-            gen = RDKit2DNormalized() if self.normalized else RDKit2D()
-            X = [np.array(gen.calculateMol(mol, smi)) for mol, smi in zip(mols, smiles)]
-
-        # clip values to float32 range
-        X = [np.clip(x, -self.clip_val, self.clip_val) for x in X]
-
-        if self.sparse:
-            return csr_array(X, dtype=np.float32)
-        else:
-            return np.array(X, dtype=np.float32)
-
-    def get_feature_names_out(self):
+    def get_feature_names_out(self, input_features=None):
         """
-        Get fingerprint output feature names.
+        Get fingerprint output feature names. They correspond to RDKit function
+        names for computing descriptors.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -159,3 +141,49 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         names = list(zip(*gen.columns))[0]
 
         return np.asarray(names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute fingerprints consisting of all RDKit 2D descriptors.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 200)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
+    def _calculate_fingerprint(
+        self, X: Sequence[Union[str, Mol]]
+    ) -> Union[np.ndarray, csr_array]:
+        from descriptastorus.descriptors.rdDescriptors import RDKit2D
+        from descriptastorus.descriptors.rdNormalizedDescriptors import (
+            RDKit2DNormalized,
+        )
+
+        mols = ensure_mols(X)
+        smiles = ensure_smiles(X)
+
+        # turn off RDKit logs, since descriptastorus does not use MorganGenerator
+        # and generates a lot of warnings
+        with no_rdkit_logs():
+            gen = RDKit2DNormalized() if self.normalized else RDKit2D()
+            X = [np.array(gen.calculateMol(mol, smi)) for mol, smi in zip(mols, smiles)]
+
+        # clip values to float32 range
+        X = [np.clip(x, -self.clip_val, self.clip_val) for x in X]
+
+        if self.sparse:
+            return csr_array(X, dtype=np.float32)
+        else:
+            return np.array(X, dtype=np.float32)

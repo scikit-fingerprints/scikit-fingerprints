@@ -133,7 +133,7 @@ class USRFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects, with conformers generated and
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
             ``conf_id`` integer property set.
 
         copy : bool, default=False
@@ -159,7 +159,7 @@ class USRFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects, with conformers generated and
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
             ``conf_id`` integer property set.
 
         y : np.ndarray of shape (n_samples,)

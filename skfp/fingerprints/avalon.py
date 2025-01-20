@@ -112,14 +112,14 @@ class AvalonFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence of str or Mol}
-            Sequence containing SMILES strings or RDKit molecules.
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Whether to copy input data.
 
         Returns
         -------
-        X : {ndarray, sparse matrix} of shape (n_samples, self.n_features_out)
+        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
             Transformed data.
         """
         return super().transform(X, copy=copy)
