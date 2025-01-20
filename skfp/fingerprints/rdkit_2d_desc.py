@@ -117,6 +117,52 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         self.normalized = normalized
         self.clip_val = clip_val
 
+    def get_feature_names_out(self, input_features=None):  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to RDKit function
+        names for computing descriptors.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the RDKit 2D descriptors.
+        """
+        from descriptastorus.descriptors.rdDescriptors import RDKit2D
+        from descriptastorus.descriptors.rdNormalizedDescriptors import (
+            RDKit2DNormalized,
+        )
+
+        gen = RDKit2DNormalized() if self.normalized else RDKit2D()
+        feature_names = [name for name, obj in gen.columns]
+
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute fingerprints consisting of all RDKit 2D descriptors.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 200)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
@@ -141,22 +187,3 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
             return csr_array(X, dtype=np.float32)
         else:
             return np.array(X, dtype=np.float32)
-
-    def get_feature_names_out(self):
-        """
-        Get fingerprint output feature names.
-
-        Returns
-        -------
-        feature_names_out : ndarray of str objects
-            Names of the RDKit 2D descriptors.
-        """
-        from descriptastorus.descriptors.rdDescriptors import RDKit2D
-        from descriptastorus.descriptors.rdNormalizedDescriptors import (
-            RDKit2DNormalized,
-        )
-
-        gen = RDKit2DNormalized() if self.normalized else RDKit2D()
-        feature_names = [name for name, obj in gen.columns]
-
-        return np.asarray(feature_names, dtype=object)

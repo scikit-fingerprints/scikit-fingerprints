@@ -167,7 +167,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
         Returns
         -------
-        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+        X : {ndarray, sparse matrix} of shape (n_samples, 15)
             Array with fingerprints.
         """
         y = np.empty(len(X))
@@ -195,7 +195,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
         Returns
         -------
-        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+        X : {ndarray, sparse matrix} of shape (n_samples, 15)
             Array with fingerprints.
 
         y : np.ndarray of shape (n_samples,)

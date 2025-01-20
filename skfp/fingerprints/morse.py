@@ -141,6 +141,28 @@ class MORSEFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute MORSE fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
+            ``conf_id`` integer property set.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 224)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
+
     def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import CalcMORSE
 

@@ -80,6 +80,8 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
+        # note that those patterns were released as public domain:
+        # https://github.com/cdk/cdk/blob/main/descriptor/fingerprint/src/main/java/org/openscience/cdk/fingerprint/KlekotaRothFingerprinter.java
         patterns = [
             "[!#1][CH]([!#1])[!#1]",
             "[!#1][CH]([!#1])[CH]([!#1])[!#1]",
@@ -4942,6 +4944,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             "SCCS",
             "SCCS(=O)=O",
         ]
+        self._feature_names = patterns
         super().__init__(
             patterns=patterns,
             count=count,
@@ -4950,6 +4953,23 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             batch_size=batch_size,
             verbose=verbose,
         )
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They are raw SMARTS patterns
+        used as feature definitions.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the Klekota-Roth feature names.
+        """
+        return np.asarray(self._feature_names, dtype=object)
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False

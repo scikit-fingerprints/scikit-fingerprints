@@ -105,6 +105,28 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute MACCS fingerprints. Output shape depends on ``count``
+        parameter.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.n_features_out)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
@@ -122,6 +144,15 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)
 
     def _get_maccs_patterns_counts(self, mol: Mol) -> list[int]:
+        # copyright notice for SMARTS patterns for MACCS:
+        #
+        #  Copyright (C) 2002-2012 Greg Landrum and Rational Discovery LLC
+        #   This file is part of the RDKit.
+        #   The contents are covered by the terms of the BSD license
+        #   which is included in the file license.txt, found at the root
+        #   of the RDKit source tree.
+        #
+        # we include copy of that license in skfp/fingerprints/data/RDKit_license.txt
         smarts_list = [
             None,  # fragments
             None,  # atomic num >103 - idx 0
