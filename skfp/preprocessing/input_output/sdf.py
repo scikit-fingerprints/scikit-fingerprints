@@ -7,7 +7,7 @@ from rdkit.Chem import Mol, SDMolSupplier, SDWriter
 from rdkit.Chem.PropertyMol import PropertyMol
 
 from skfp.bases import BasePreprocessor
-from skfp.utils.validators import check_mols
+from skfp.utils import require_mols
 
 
 class MolFromSDFTransformer(BasePreprocessor):
@@ -159,7 +159,7 @@ class MolToSDFTransformer(BasePreprocessor):
 
     def transform(self, X: Sequence[Mol], copy: bool = False) -> None:
         self._validate_params()
-        check_mols(X)
+        require_mols(X)
 
         if copy:
             X = deepcopy(X)
