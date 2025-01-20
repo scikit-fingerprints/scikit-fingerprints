@@ -17,7 +17,7 @@ Constitutional descriptors (based on atomic composition):
     :toctree: generated/
 
     average_molecular_weight
-    bond_type_count
+    bond_count
     element_atom_count
     heavy_atom_count
     molecular_weight

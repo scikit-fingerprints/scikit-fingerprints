@@ -9,6 +9,7 @@ from skfp.utils.validators import validate_molecule
 
 @validate_molecule
 def average_molecular_weight(mol: Mol) -> float:
+    # noqa: E501
     """
     Average molecular weight.
 
@@ -146,6 +147,7 @@ def heavy_atom_count(mol: Mol) -> int:
 
 @validate_molecule
 def molecular_weight(mol: Mol) -> float:
+    # noqa: E501
     """
     Molecular weight.
 
