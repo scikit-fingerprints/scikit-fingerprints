@@ -40,7 +40,8 @@ def run_in_parallel(
     flatten_results: bool = False,
     verbose: Union[int, dict] = 0,
 ) -> list:
-    """Run a function in parallel on provided data in batches, using joblib.
+    """
+    Runs a function in parallel on provided data in batches, using joblib.
 
     Results are returned in the same order as input data. ``func`` function must take
     batch of data, e.g. list of integers, not a single integer.

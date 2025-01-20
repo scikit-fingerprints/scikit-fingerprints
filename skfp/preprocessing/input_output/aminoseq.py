@@ -7,9 +7,7 @@ from rdkit.Chem import Mol, MolFromFASTA
 from sklearn.utils._param_validation import Options
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import no_rdkit_logs
-from skfp.utils.functions import get_data_from_indices
-from skfp.utils.validators import check_strings
+from skfp.utils import get_data_from_indices, no_rdkit_logs, require_strings
 
 
 class MolFromAminoseqTransformer(BasePreprocessor):
@@ -167,7 +165,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
 
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
         with no_rdkit_logs() if self.suppress_warnings else nullcontext():
-            check_strings(X)
+            require_strings(X)
             return [
                 MolFromFASTA(fst, sanitize=self.sanitize, flavor=self.flavor)
                 for fst in X

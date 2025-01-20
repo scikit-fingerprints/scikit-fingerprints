@@ -6,9 +6,12 @@ import numpy as np
 from rdkit.Chem import Mol, MolFromInchi, MolToInchi
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import no_rdkit_logs
-from skfp.utils.functions import get_data_from_indices
-from skfp.utils.validators import check_mols, check_strings
+from skfp.utils import (
+    get_data_from_indices,
+    no_rdkit_logs,
+    require_mols,
+    require_strings,
+)
 
 
 class MolFromInchiTransformer(BasePreprocessor):
@@ -152,7 +155,7 @@ class MolFromInchiTransformer(BasePreprocessor):
 
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
         with no_rdkit_logs() if self.suppress_warnings else nullcontext():
-            check_strings(X)
+            require_strings(X)
             return [
                 MolFromInchi(
                     inchi, sanitize=self.sanitize, removeHs=self.remove_hydrogens
@@ -216,5 +219,5 @@ class MolToInchiTransformer(BasePreprocessor):
         )
 
     def _transform_batch(self, X: Sequence[Mol]) -> list[str]:
-        check_mols(X)
+        require_mols(X)
         return [MolToInchi(mol) for mol in X]
