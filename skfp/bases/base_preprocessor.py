@@ -1,9 +1,11 @@
 from abc import ABC
+from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
 from typing import Optional, Union
 
 from joblib import effective_n_jobs
+from rdkit.Chem import Mol
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils._param_validation import InvalidParameterError
 from tqdm import tqdm
@@ -35,21 +37,26 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         self.verbose = verbose
 
     def __sklearn_is_fitted__(self) -> bool:
-        return True  # molecule preprocessing transformers don't need fitting
+        """
+        Unused, kept for scikit-learn compatibility. This class assumes stateless
+        transformers and always returns True.
+        """
+        return True
 
     def fit(self, X, y=None, **fit_params):
-        """Unused, kept for Scikit-learn compatibility.
+        """
+        Unused, kept for scikit-learn compatibility.
 
         Parameters
         ----------
         X : any
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         y : any
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         **fit_params : dict
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -60,7 +67,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
 
     def fit_transform(self, X, y=None, **fit_params):
         """
-        The same as ``.transform()`` method, kept for Scikit-learn compatibility.
+        The same as ``.transform()`` method, kept for scikit-learn compatibility.
 
         Parameters
         ----------
@@ -68,10 +75,10 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
             See ``.transform()`` method.
 
         y : any
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         **fit_params : dict
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -80,7 +87,26 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         """
         return self.transform(X)
 
-    def transform(self, X, copy: bool = False):
+    def transform(self, X: Sequence[Union[str, Mol]], copy: bool = False):
+        """
+        Transform inputs. Output type depends on the inheriting class, but should
+        be a sequence with the same length as input.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. Depending on
+            the implementation in the inheriting class, it may require using ``Mol``
+            objects with computed conformations and with ``conf_id`` property set.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {sequence, array-like} of shape (n_samples, any)
+            Transformed inputs.
+        """
         self._validate_params()
 
         if copy:
@@ -108,7 +134,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         raise NotImplementedError
 
     def _validate_params(self) -> None:
-        # override Scikit-learn validation to make stacktrace nicer
+        # override scikit-learn validation to make stacktrace nicer
         try:
             super()._validate_params()
         except InvalidParameterError as e:

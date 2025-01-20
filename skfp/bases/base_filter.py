@@ -41,23 +41,27 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         self.verbose = verbose
 
     def __sklearn_is_fitted__(self) -> bool:
+        """
+        Unused, kept for scikit-learn compatibility. This class assumes stateless
+        transformers and always returns True.
+        """
         return True
 
     def fit(
         self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
     ):
-        """Unused, kept for Scikit-learn compatibility.
+        """Unused, kept for scikit-learn compatibility.
 
         Parameters
         ----------
         X : any
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         y : any
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         **fit_params : dict
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -70,7 +74,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
     ):
         """
-        The same as ``.transform()`` method, kept for Scikit-learn compatibility.
+        The same as ``.transform()`` method, kept for scikit-learn compatibility.
 
         Parameters
         ----------
@@ -81,7 +85,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
             See ``.transform()`` method.
 
         **fit_params : dict
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -100,7 +104,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects.
+            Sequence containing RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Copy the input X or not.
@@ -127,7 +131,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects.
+            Sequence containing RDKit ``Mol`` objects.
 
         y : array-like of shape (n_samples,)
             Array with labels for molecules.
@@ -188,7 +192,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         pass
 
     def _validate_params(self) -> None:
-        # override Scikit-learn validation to make stacktrace nicer
+        # override scikit-learn validation to make stacktrace nicer
         try:
             super()._validate_params()
         except InvalidParameterError as e:

@@ -10,6 +10,7 @@ from sklearn.base import BaseEstimator, _fit_context, clone
 from sklearn.model_selection import ParameterGrid
 from sklearn.model_selection._search import BaseSearchCV
 from sklearn.utils._param_validation import InvalidParameterError
+from sklearn.utils.validation import check_is_fitted
 
 from skfp.bases import BaseFingerprintTransformer
 
@@ -164,6 +165,29 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
 
     @_fit_context(prefer_skip_nested_validation=False)
     def fit(self, X: Sequence[Union[str, Mol]], y=None, **params):
+        """
+        Run fit with all sets of parameters.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. Depending on
+            the underlying fingerprint, may require using ``Mol`` objects with
+            computed conformations and with ``conf_id`` property set.
+
+        y : array-like of shape (n_samples, n_output) or (n_samples,), default=None
+            Target relative to X for classification or regression; ``None`` for
+            unsupervised learning.
+
+        **params : dict of str -> object
+            Parameters passed to the ``.fit()`` method of the underlying
+            `GridSearchCV` for tuning hyperparameters of underlying estimator.
+
+        Returns
+        -------
+        self : object
+            Instance of fitted estimator.
+        """
         self.cv_results_: list[dict] = []
         self.best_fp_: BaseFingerprintTransformer = None  # type: ignore
         self.best_fp_params_: dict = None  # type: ignore
@@ -188,7 +212,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
             fp: BaseFingerprintTransformer = clone(self.fingerprint)
             fp.set_params(**clone(fp_params, safe=False))
 
-            X_fp = fp.fit_transform(X, y, **params)
+            X_fp = fp.transform(X, y)
 
             curr_cv = clone(self.estimator_cv)
             curr_cv.fit(X_fp, y, **params)
@@ -224,14 +248,70 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
         return self
 
     def predict(self, X: Sequence[Union[str, Mol]]) -> np.ndarray:
+        """
+        Compute fingerprints and then call ``.predict()`` on the estimator
+        with the best found parameters. Only available if the underlying
+        estimator supports predict.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. Depending on
+            the underlying fingerprint, may require using ``Mol`` objects with
+            computed conformations and with ``conf_id`` property set.
+
+        Returns
+        -------
+        y_pred : ndarray of shape (n_samples,)
+            The predicted labels or values for ``X`` based on the estimator with
+            the best found parameters.
+        """
+        check_is_fitted(self)
         X_fp = self.best_fp_.transform(X)
         return self.best_estimator_cv_.predict(X_fp)
 
     def predict_proba(self, X: Sequence[Union[str, Mol]]) -> np.ndarray:
+        """
+        Compute fingerprints and then call ``.predict_proba()`` on the estimator
+        with the best found parameters. Only available if the underlying
+        estimator supports predict.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. Depending on
+            the underlying fingerprint, may require using ``Mol`` objects with
+            computed conformations and with ``conf_id`` property set.
+
+        Returns
+        -------
+        y_pred : ndarray of shape (n_samples,) or (n_samples, n_classes)
+            Predicted class probabilities for ``X`` based on the estimator with the
+            best found parameters. The order of the classes corresponds to that in
+            the fitted attribute :term:`classes_`.
+        """
+        check_is_fitted(self)
         X_fp = self.best_fp_.transform(X)
         return self.best_estimator_cv_.predict_proba(X_fp)
 
     def transform(self, X: Sequence[Union[str, Mol]]) -> Union[np.ndarray, csr_array]:
+        r"""
+        Compute fingerprints with the best found parameters. Requires
+        fitting, even if the underlying fingerprint does not.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. Depending on
+            the underlying fingerprint, may require using ``Mol`` objects with
+            computed conformations and with ``conf_id`` property set.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.best_fp\_.fp_size)
+            Array with fingerprints.
+        """
+        check_is_fitted(self)
         return self.best_fp_.transform(X)
 
     def _print_messages(self) -> bool:

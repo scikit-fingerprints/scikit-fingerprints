@@ -84,9 +84,13 @@ class BaseFingerprintTransformer(
         self.requires_conformers = requires_conformers
 
     def __sklearn_is_fitted__(self) -> bool:
-        return True  # fingerprint transformers don't need fitting
+        """
+        Unused, kept for scikit-learn compatibility. This class assumes stateless
+        transformers and always returns True.
+        """
+        return True
 
-    def set_params(self, **params):
+    def set_params(self, **params):  # noqa: D102
         super().set_params(**params)
         # for fingerprints that have both 2D and 3D versions, as indicated by use_3D
         # attribute, we need to also keep requires_conformers attribute in sync
@@ -96,18 +100,18 @@ class BaseFingerprintTransformer(
 
     def fit(self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params):
         """
-        Unused, kept for Scikit-learn compatibility.
+        Unused, kept for scikit-learn compatibility.
 
         Parameters
         ----------
         X : any
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         y : any
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         **fit_params : dict
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -120,7 +124,7 @@ class BaseFingerprintTransformer(
         self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params
     ):
         """
-        The same as ``.transform()`` method, kept for Scikit-learn compatibility.
+        The same as ``.transform()`` method, kept for scikit-learn compatibility.
 
         Parameters
         ----------
@@ -131,7 +135,7 @@ class BaseFingerprintTransformer(
             See ``.transform()`` method.
 
         **fit_params : dict
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -143,6 +147,24 @@ class BaseFingerprintTransformer(
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute fingerprints. Output shape depends on the inheriting class.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. Depending on
+            the implementation in the inheriting class, it may require using ``Mol``
+            objects with computed conformations and with ``conf_id`` property set.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, any)
+            Array with fingerprints.
+        """
         self._validate_params()
 
         if copy:
@@ -181,7 +203,7 @@ class BaseFingerprintTransformer(
         raise NotImplementedError
 
     def _validate_params(self) -> None:
-        # override Scikit-learn validation to make stacktrace nicer
+        # override scikit-learn validation to make stacktrace nicer
         try:
             super()._validate_params()
         except InvalidParameterError as e:

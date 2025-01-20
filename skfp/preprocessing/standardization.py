@@ -18,7 +18,7 @@ class MolStandardizer(BasePreprocessor):
     Performs common molecule standardization operations.
 
     Applies the following cleanup transformations to the inputs:
-    - create RDKit Mol objects, if SMILES strings are passed
+    - create RDKit ``Mol`` objects, if SMILES strings are passed
     - sanitize [1]_ (performs basic validity checks)
     - if ``largest_fragment_only``, select the largest fragment for further processing
     - remove hydrogens
@@ -42,7 +42,7 @@ class MolStandardizer(BasePreprocessor):
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized over
         the input molecules. ``None`` means 1 unless in a :obj:`joblib.parallel_backend`
-        context. ``-1`` means using all processors. See Scikit-learn documentation on
+        context. ``-1`` means using all processors. See scikit-learn documentation on
         ``n_jobs`` for more details.
 
     verbose : int, default=0

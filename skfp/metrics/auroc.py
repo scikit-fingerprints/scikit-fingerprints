@@ -42,7 +42,7 @@ def auroc_score(
 
     Wrapper around scikit-learn ``roc_auc_score`` function, which adds
     ``constant_target_behavior`` to control behavior for all-zero ``y_true`` labels.
-    Scikit-learn behavior is to throw an error, since AUROC is undefined there, but
+    scikit-learn behavior is to throw an error, since AUROC is undefined there, but
     this can easily happen for cross-validation in imbalanced problems.
 
     Parameters

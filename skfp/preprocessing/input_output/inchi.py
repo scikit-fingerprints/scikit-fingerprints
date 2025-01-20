@@ -38,7 +38,7 @@ class MolFromInchiTransformer(BasePreprocessor):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -108,7 +108,7 @@ class MolFromInchiTransformer(BasePreprocessor):
             Sequence containing InChI strings.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -135,7 +135,7 @@ class MolFromInchiTransformer(BasePreprocessor):
             Array with labels for molecules.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -176,7 +176,7 @@ class MolToInchiTransformer(BasePreprocessor):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into

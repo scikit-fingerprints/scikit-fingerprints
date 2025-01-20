@@ -62,7 +62,7 @@ class MolFromSDFTransformer(BasePreprocessor):
         self.sanitize = sanitize
         self.remove_hydrogens = remove_hydrogens
 
-    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # noqa: ARG002
+    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # type: ignore[override] # noqa: ARG002
         """
         Create RDKit ``Mol`` objects from SDF file.
 
@@ -72,7 +72,7 @@ class MolFromSDFTransformer(BasePreprocessor):
             Path to SDF file.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -158,6 +158,23 @@ class MolToSDFTransformer(BasePreprocessor):
         self.force_V3000 = force_V3000
 
     def transform(self, X: Sequence[Mol], copy: bool = False) -> None:
+        """
+        Write RDKit ``Mol`` objects to SDF file at location given by
+        ``filepath`` parameter. File is created if necessary, and overwritten
+        if it exists already.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+            None
+        """
         self._validate_params()
         require_mols(X)
 

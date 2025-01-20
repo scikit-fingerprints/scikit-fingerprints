@@ -17,7 +17,7 @@ def average_wiener_index(
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Average Wiener index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -64,7 +64,7 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Graph Distance Index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -106,7 +106,7 @@ def polarity_number(
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Polarity Number is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -164,7 +164,7 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Wiener index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -205,7 +205,7 @@ def zagreb_index(mol: Mol) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Zagreb index is to be calculated.
 
     References
