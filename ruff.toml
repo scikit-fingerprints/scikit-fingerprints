@@ -89,6 +89,7 @@ ignore = [
     "PLW0603",  # global variables in scikit-learn tests
     "PLW2901",  # overwriting variables in loops
     "PT006",    # lists in pytest.mark.parametrize
+    "PT012",    # multiple lines in pytest.raises()
     "RUF005",   # adding lists
     "S101",     # assert
     "S301",     # pickle

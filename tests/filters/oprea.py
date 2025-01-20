@@ -1,5 +1,3 @@
-# flake8: noqa E501
-
 import numpy as np
 import pytest
 

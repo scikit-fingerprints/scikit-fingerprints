@@ -212,7 +212,7 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
             fp: BaseFingerprintTransformer = clone(self.fingerprint)
             fp.set_params(**clone(fp_params, safe=False))
 
-            X_fp = fp.transform(X, y)
+            X_fp = fp.transform(X)
 
             curr_cv = clone(self.estimator_cv)
             curr_cv.fit(X_fp, y, **params)

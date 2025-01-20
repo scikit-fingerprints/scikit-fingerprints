@@ -125,8 +125,12 @@ class MordredFingerprint(BaseFingerprintTransformer):
         feature_names_out : ndarray of str objects
             Names of the Mordred feature names.
         """
-        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
-        return np.asarray([str(d) for d in calc.descriptors], dtype=object)
+        calc = Calculator(descriptors)
+        if not self.use_3D:
+            feature_names = [str(d) for d in calc.descriptors if d.require_3D is False]
+        else:
+            feature_names = [str(d) for d in calc.descriptors]
+        return np.asarray(feature_names, dtype=object)
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False

@@ -161,21 +161,21 @@ def check_estimators_pickle(
         pickled_estimator = pickle.dumps(estimator)
         unpickled_estimator = pickle.loads(pickled_estimator)
 
-    results = dict()
+    result = dict()
     for method in check_methods:
         if hasattr(estimator, method):
-            results[method] = getattr(estimator, method)(X)
+            result[method] = getattr(estimator, method)(X)
 
-    for name, raw_result in results.items():
-        unpickled_result = getattr(unpickled_estimator, name)(X)
+    for method in result:  # noqa: PLC0206
+        unpickled_result = getattr(unpickled_estimator, method)(X)
 
-        if isinstance(raw_result, list):
-            assert len(raw_result) == len(unpickled_result)
+        if isinstance(result[method], list):
+            assert len(result[method]) == len(unpickled_result)
         else:
-            assert raw_result.shape == unpickled_result.shape
+            assert result[method].shape == unpickled_result.shape
             if name not in omit_results_check:
                 assert np.allclose(
-                    raw_result, unpickled_result, atol=1e-1, equal_nan=True
+                    result[method], unpickled_result, atol=1e-1, equal_nan=True
                 )
 
 

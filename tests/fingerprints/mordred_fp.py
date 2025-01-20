@@ -62,9 +62,10 @@ def test_mordred_feature_names():
     feature_names_skfp = mordred_fp.get_feature_names_out()
 
     calc = Calculator(descriptors)
-    feature_names_mordred = [str(d) for d in calc.descriptors]
+    feature_names_mordred = [str(d) for d in calc.descriptors if d.require_3D is False]
 
-    assert feature_names_skfp == feature_names_mordred
+    print(feature_names_skfp.shape, feature_names_mordred)
+    assert np.array_equal(feature_names_skfp, feature_names_mordred)
 
 
 def test_mordred_3D_feature_names():
@@ -74,4 +75,4 @@ def test_mordred_3D_feature_names():
     calc = Calculator(descriptors, ignore_3D=False)
     feature_names_mordred = [str(d) for d in calc.descriptors]
 
-    assert feature_names_skfp == feature_names_mordred
+    assert np.array_equal(feature_names_skfp, feature_names_mordred)

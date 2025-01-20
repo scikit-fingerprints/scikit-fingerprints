@@ -219,7 +219,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
             fp: BaseFingerprintTransformer = clone(self.fingerprint)
             fp.set_params(**fp_params)
 
-            X_fp = fp.transform(X, y)
+            X_fp = fp.transform(X)
 
             curr_cv = clone(self.estimator_cv)
             curr_cv.fit(X_fp, y, **params)

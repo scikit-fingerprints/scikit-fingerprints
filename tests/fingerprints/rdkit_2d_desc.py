@@ -81,6 +81,6 @@ def test_rdkit_2d_desc_feature_names():
     feature_names_skfp = rdkit_2d_desc_fp.get_feature_names_out()
 
     gen = RDKit2DNormalized()
-    feature_names_rdkit = [name for name, obj in gen.columns]
+    feature_names_rdkit = np.asarray([name for name, obj in gen.columns])
 
-    assert feature_names_skfp == feature_names_rdkit
+    assert np.array_equal(feature_names_skfp, feature_names_rdkit)
