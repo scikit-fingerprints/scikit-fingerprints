@@ -48,6 +48,9 @@ dependencies = [
 ]
 
 [project.urls]
+"Homepage" = "https://github.com/scikit-fingerprints/scikit-fingerprints"
+"Documentation" = "https://scikit-fingerprints.github.io/scikit-fingerprints/"
+"Repository" = "https://github.com/scikit-fingerprints/scikit-fingerprints"
 "Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
 
 [tool.poetry.group.dev]
