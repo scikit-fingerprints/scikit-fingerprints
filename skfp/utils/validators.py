@@ -60,8 +60,8 @@ def require_mols_with_conf_ids(X: Sequence[Any]) -> Sequence[Mol]:
 
 def validate_molecule(func: Callable) -> Callable:
     """
-    Validator for functions operating on single molecule.
-    Ensures it is nonempty (at least 1 atom), raises ValueError otherwise.
+    Decorator for functions operating on single molecule. Ensures it is
+    nonempty (at least 1 atom), raises ValueError otherwise.
     """
 
     @wraps(func)
