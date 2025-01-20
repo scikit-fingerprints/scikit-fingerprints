@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Optional, Union
 
 import numpy as np
@@ -52,12 +53,14 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
     References
     ----------
     .. [1] `Arup K. Ghose and Gordon M. Crippen
-        "Atomic Physicochemical Parameters for Three-Dimensional Structure-Directed Quantitative Structure-Activity Relationships I. Partition Coefficients as a Measure of Hydrophobicity"
+        "Atomic Physicochemical Parameters for Three-Dimensional Structure-Directed
+        Quantitative Structure-Activity Relationships I. Partition Coefficients as a Measure of Hydrophobicity"
         Journal of Computational Chemistry 7.4 (1986): 565-577.
         <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcc.540070419>`_
 
     .. [2] `Arup K. Ghose and Gordon M. Crippen
-        "Atomic physicochemical parameters for three-dimensional-structure-directed quantitative structure-activity relationships. 2. Modeling dispersive and hydrophobic interactions"
+        "Atomic physicochemical parameters for three-dimensional-structure-directed
+        quantitative structure-activity relationships. 2. Modeling dispersive and hydrophobic interactions"
         J. Chem. Inf. Comput. Sci. 1987, 27, 1, 21–35
         <https://pubs.acs.org/doi/10.1021/ci00053a005>`_
 
@@ -87,6 +90,16 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
+        # copyright notice for SMARTS patterns for Ghose-Crippen:
+        #
+        #  Copyright (C) 2002-2012 Greg Landrum and Rational Discovery LLC
+        #   This file is part of the RDKit.
+        #   The contents are covered by the terms of the BSD license
+        #   which is included in the file license.txt, found at the root
+        #   of the RDKit source tree.
+        #
+        # we include copy of that license in skfp/fingerprints/data/RDKit_license.txt
+
         # flake8: noqa: E501
         patterns = [
             "[CH4]",
@@ -201,6 +214,8 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             "[#72,#73,#74,#75,#76,#77,#78,#79,#80]",
         ]
         # flake8: noqa
+
+        self._feature_names = patterns
         super().__init__(
             patterns=patterns,
             count=count,
@@ -210,16 +225,33 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             verbose=verbose,
         )
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+        """
+        Get fingerprint output feature names. They are raw SMARTS patterns
+        used as feature definitions.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the Ghose-Crippen feature names.
+        """
+        return np.asarray(self._feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
         """
-        Compute CDK substructure fingerprints.
+        Compute Ghose-Crippen substructure fingerprints.
 
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects.
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Copy the input X or not.

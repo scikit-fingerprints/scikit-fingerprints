@@ -87,3 +87,18 @@ def test_functional_groups_sparse_count_fingerprint(smiles_list, mols_list):
     assert X_skfp.shape == (len(smiles_list), 85)
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
+
+
+def test_functional_groups_feature_names():
+    fg_fp = FunctionalGroupsFingerprint()
+    feature_names = fg_fp.get_feature_names_out()
+    assert len(feature_names) == fg_fp.n_features_out
+
+    # compared with https://rdkit.org/docs/source/rdkit.Chem.Fragments.html
+    assert feature_names[0] == "aliphatic carboxylic acids"
+    assert feature_names[1] == "aliphatic hydroxyl groups"
+    assert (
+        feature_names[-2]
+        == "unbranched alkanes of at least 4 members (excludes halogenated alkanes)"
+    )
+    assert feature_names[-1] == "urea groups"

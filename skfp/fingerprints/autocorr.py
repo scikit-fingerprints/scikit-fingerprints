@@ -128,6 +128,30 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
         )
         self.use_3D = use_3D
 
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute Autocorrelation fingerprints. Output shape depends on ``use_3D``
+        parameter.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. If ``use_3D``
+            is True, only ``Mol`` objects with computed conformations and with
+            ``conf_id`` property are allowed.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 192) or (n_samples, 80)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:

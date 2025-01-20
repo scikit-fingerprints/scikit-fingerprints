@@ -110,6 +110,45 @@ class MordredFingerprint(BaseFingerprintTransformer):
         )
         self.use_3D = use_3D
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+        """
+        Get fingerprint output feature names. They correspond to descriptor
+        names used by Mordred descriptor calculator, used in this fingerprint.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the Mordred feature names.
+        """
+        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
+        return np.asarray([str(d) for d in calc.descriptors], dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute Mordred fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 1613) or (n_samples, 1826)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
@@ -123,16 +162,3 @@ class MordredFingerprint(BaseFingerprintTransformer):
             if self.sparse
             else np.array(X, dtype=np.float32)
         )
-
-    def get_feature_names_out(self):
-        """
-        Get fingerprint output feature names.
-
-        Returns
-        -------
-        feature_names_out : ndarray of str objects
-            Names of the Mordred descriptors.
-        """
-        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
-
-        return np.asarray([str(d) for d in calc.descriptors], dtype=object)
