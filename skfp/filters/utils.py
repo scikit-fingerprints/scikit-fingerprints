@@ -6,14 +6,14 @@ from rdkit.Chem import Atom, Mol, MolFromSmarts, rdMolDescriptors
 
 def get_num_carbon_atoms(mol: Mol) -> int:
     """
-    Calculated number of carbon atoms in a molecule.
+    Calculate the number of carbon atoms in a molecule.
     """
     return sum(atom.GetSymbol() == "C" for atom in mol.GetAtoms())
 
 
 def get_num_heavy_metals(mol: Mol) -> int:
     """
-    Calculated number of heavy metals in a molecule.
+    Calculate the number of heavy metals in a molecule.
 
     Heavy atoms are defined as metals other than ["Li", "Be", "K", "Na", "Ca", "Mg"].
     """
@@ -31,14 +31,14 @@ def get_num_heavy_metals(mol: Mol) -> int:
 
 def get_num_charged_atoms(mol: Mol) -> int:
     """
-    Calculated number of charged atoms in a molecule.
+    Calculate the number of charged atoms in a molecule.
     """
     return sum(atom.GetFormalCharge() != 0 for atom in mol.GetAtoms())
 
 
 def get_num_rigid_bonds(mol: Mol) -> int:
     """
-    Calculates number of rigid bonds in a molecule.
+    Calculate the number of rigid bonds in a molecule.
     """
     total_bonds = mol.GetNumBonds()
     rotatable_bonds = rdMolDescriptors.CalcNumRotatableBonds(mol)
@@ -47,14 +47,14 @@ def get_num_rigid_bonds(mol: Mol) -> int:
 
 def get_num_aromatic_rings(mol: Mol) -> int:
     """
-    Calculates number of aromatic rings in a molecule.
+    Calculate the number of aromatic rings in a molecule.
     """
     return sum(is_ring_aromatic(mol, ring) for ring in mol.GetRingInfo().AtomRings())
 
 
 def get_max_num_fused_aromatic_rings(mol: Mol) -> int:
     """
-    Calculates the number of rings in the largest system of fused
+    Calculate the number of rings in the largest system of fused
     aromatic rings in a molecule.
     """
     ring_info = mol.GetRingInfo()
@@ -83,18 +83,14 @@ def get_max_num_fused_aromatic_rings(mol: Mol) -> int:
 
 def is_ring_aromatic(mol: Mol, ring_atoms: Iterable[Atom]) -> bool:
     """
-    Checks whether a ring is aromatic.
+    Check whether a ring is aromatic.
     """
-    for atom_idx in ring_atoms:
-        if not mol.GetAtomWithIdx(atom_idx).GetIsAromatic():
-            return False
-
-    return True
+    return all(mol.GetAtomWithIdx(atom_idx).GetIsAromatic() for atom_idx in ring_atoms)
 
 
 def get_max_ring_size(mol: Mol) -> int:
     """
-    Calculates maximum ring size in a molecule.
+    Calculate maximum ring size in a molecule.
     """
     rings = mol.GetRingInfo().AtomRings()
     return max(len(ring) for ring in rings) if rings else 0
@@ -102,7 +98,7 @@ def get_max_ring_size(mol: Mol) -> int:
 
 def get_non_carbon_to_carbon_ratio(mol: Mol) -> float:
     """
-    Calculates ratio of non-carbon to carbon atoms.
+    Calculate ratio of non-carbon to carbon atoms.
     """
     num_carbons = get_num_carbon_atoms(mol)
     num_non_carbons = mol.GetNumAtoms() - num_carbons
@@ -111,7 +107,7 @@ def get_non_carbon_to_carbon_ratio(mol: Mol) -> float:
 
 def get_num_charged_functional_groups(mol: Mol) -> int:
     """
-    Calculates the number of charged functional groups in a molecule, i.e. having
+    Calculate the number of charged functional groups in a molecule, i.e. having
     a non-zero total charge.
 
     Since determining what is a functional group is an arguable topic with no

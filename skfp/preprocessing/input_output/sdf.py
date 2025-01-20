@@ -93,7 +93,7 @@ class MolFromSDFTransformer(BasePreprocessor):
         mols = list(supplier)
 
         if not mols:
-            warnings.warn("No molecules detected in provided SDF file")  # noqa: B028
+            warnings.warn("No molecules detected in provided SDF file")
 
         return mols
 

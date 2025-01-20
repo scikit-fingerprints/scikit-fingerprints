@@ -1,13 +1,8 @@
-from collections.abc import Sequence
-from typing import Optional, Union
+from typing import Optional
 
-import numpy as np
-import pandas as pd
 from rdkit.Chem import Mol, MolFromSmarts
-from rdkit.Chem.rdmolfiles import MolToSmiles
 
 from skfp.bases.base_filter import BaseFilter
-from skfp.utils import ensure_smiles
 
 
 class NIBRFilter(BaseFilter):

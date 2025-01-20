@@ -47,6 +47,7 @@ ignore = [
     "PLW2901",  # overwrite loop variable for readability
     "B028",  # simple warnings
     "N802",  # uppercase names for functions when readable, e.g. 3D
+    "D203"  # prefer D211, no blank line between docstring and code
 ]
 
 [lint.per-file-ignores]
@@ -83,6 +84,7 @@ ignore = [
     "INP001",   # implicit package
     "C901",     # complex code
     "NPY002",   # np.random.seed
+    "PLR0915",  # many statements
 ]
 
 # no docstrings in examples

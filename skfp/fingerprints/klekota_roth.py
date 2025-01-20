@@ -10,7 +10,7 @@ from skfp.bases import BaseSubstructureFingerprint
 
 class KlekotaRothFingerprint(BaseSubstructureFingerprint):
     """
-    Klekota-Roth Fingerprint
+    Klekota-Roth fingerprint.
 
     A substructure fingerprint based on [1]_, with implementation based on CDK [2]_.
     Tests for presence of 4860 predefined substructures which are predisposed for
