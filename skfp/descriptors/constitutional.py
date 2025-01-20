@@ -9,7 +9,6 @@ from skfp.utils.validators import validate_molecule
 
 @validate_molecule
 def average_molecular_weight(mol: Mol) -> float:
-    # noqa: E501
     """
     Average molecular weight.
 
@@ -34,7 +33,7 @@ def average_molecular_weight(mol: Mol) -> float:
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> average_molecular_weight(mol)
     13.018999999999998
-    """
+    """  # noqa: E501
     return MolWt(mol) / mol.GetNumAtoms()
 
 
@@ -147,7 +146,6 @@ def heavy_atom_count(mol: Mol) -> int:
 
 @validate_molecule
 def molecular_weight(mol: Mol) -> float:
-    # noqa: E501
     """
     Molecular weight.
 
@@ -170,7 +168,7 @@ def molecular_weight(mol: Mol) -> float:
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> molecular_weight(mol)
     78.11399999999999
-    """
+    """  # noqa: E501
     return MolWt(mol)
 
 
