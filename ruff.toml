@@ -1,0 +1,68 @@
+include = [
+    "pyproject.toml",
+    "benchmarking/**/*.ipynb",
+    "examples/**/*.py",
+    "skfp/**/*.py",
+    "tests/**/*.py"
+]
+
+[lint]
+select = ["ALL"]
+ignore = [
+    "N806",   # uppercase variables, e.g. X_train
+    "N803",  # uppercase variables, e.g. X_train
+    "FA100",  # regular Optional import
+    "D100",   # no docstrings in public modules
+    "T201",   # print() allowed
+    "D213",   # start docs on next line
+    "TRY003",  # long error messages
+    "PLR2004",  # numerical constants
+    "ANN204",  # no __init__() return type annotations
+    "FBT001",  # bool positional arguments
+    "FBT002",  # bool default positional arguments
+    "D107",  # no __init__ docstrings
+    "PLR0913",  # many arguments
+    "SLF001",  # use private members
+    "RUF012",  # mutable class attributes
+    "ANN001",  # missing type annotations
+    "ANN201",  # missing return type annotations
+    "D205",  # no blank line between summary and description
+    "RUF002",  # allow long dash in citations
+    "PD901",  # df variable for DataFrames
+    "D104",  # no package docstrings
+    "PT011",  # use ValueError
+    "E731",  # Lambda expressions
+    "EM102",  # f-strings in exception messages
+    "PGH003",  # ignore types where necessary
+    "RET504",  # assign to variable before returning
+]
+
+[lint.per-file-ignores]
+"tests/**" = [
+    "S101",  # assert
+    "S311",  # pseudo-random generation
+    "D103",  # no docstrings for tests
+    "PT006",  # lists in pytest.mark.parametrize
+    "RUF005",  # adding lists
+    "TRY004",  # AssertionError in tests, not TypeError
+    "ARG001",  # unused arguments in scikit-learn tests
+    "S301",  # pickle
+    "PERF203",  # exceptions in loops
+    "PLW2901",  # overwriting variables in loops
+    "PLW0603",  # global variables in scikit-learn tests
+    "SIM108",  # if-else instead of ternary operations for long lines
+    "D101",  # no docstrings in helper classes
+    "NPY002",  # np.random.rand
+    "PTH118",  # os.path.join()
+    "PTH110",  # os.path.join()
+    "N802",  # uppercase letters in test names, e.g. 3D
+]
+
+"skfp/**__init__.py**" = [
+    "F401",  # allow unused imports which shorten import paths
+]
+
+[lint.pycodestyle]
+# formatter will reformat lines to length 88, so we report errors only for
+# extremely long lines
+max-line-length = 200
