@@ -51,7 +51,7 @@ class NIBRFilter(BaseFilter):
     ----------
     .. [1] `Ansgar Schuffenhauer et al.
         "Evolution of Novartis’ Small Molecule Screening Deck Design"
-        J. Med. Chem. 2020, 63, 23, 14425–14447
+        J. Med. Chem. 2020, 63, 23, 14425-14447
         <https://doi.org/10.1021/acs.jmedchem.0c01332>`_
 
     .. [2] `RDKit NIBR filter definitions

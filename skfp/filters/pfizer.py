@@ -49,12 +49,12 @@ class PfizerFilter(BaseFilter):
     ----------
     .. [1] `Hughes, J. D. et al.
         "Physiochemical drug properties associated with in vivo toxicological outcomes."
-        Bioorganic & Medicinal Chemistry Letters, 18(17), 4872–4875.
+        Bioorganic & Medicinal Chemistry Letters, 18(17), 4872-4875.
         <https://doi.org/10.1016/j.bmcl.2008.07.071>`_
 
     .. [2] `Price, D. A., Blagg, J., Jones, L., Greene, N., & Wager, T.
         "Physicochemical drug properties associated with in vivo toxicological outcomes: a review."
-        Expert Opinion on Drug Metabolism & Toxicology, 5(8), 921–931.
+        Expert Opinion on Drug Metabolism & Toxicology, 5(8), 921-931.
         <https://doi.org/10.1517/17425250903042318>`_
 
     Examples

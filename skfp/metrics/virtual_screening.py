@@ -155,12 +155,12 @@ def rie_score(
 
     .. [2] `Robert P. Sheridan et al.
         "Protocols for Bridging the Peptide to Nonpeptide Gap in Topological Similarity Searches"
-        J. Chem. Inf. Comput. Sci. 2001, 41, 5, 1395–1406
+        J. Chem. Inf. Comput. Sci. 2001, 41, 5, 1395-1406
         <https://doi.org/10.1021/ci0100144>`_
 
     .. [3] `Jean-François Truchon, Christopher I. Bayly
         "Evaluating Virtual Screening Methods: Good and Bad Metrics for the “Early Recognition” Problem"
-        J. Chem. Inf. Model. 2007, 47, 2, 488–508
+        J. Chem. Inf. Model. 2007, 47, 2, 488-508
         <https://doi.org/10.1021/ci600426e>`_
 
     Returns
@@ -237,7 +237,7 @@ def bedroc_score(
 
     .. [2] `Jean-François Truchon, Christopher I. Bayly
         "Evaluating Virtual Screening Methods: Good and Bad Metrics for the “Early Recognition” Problem"
-        J. Chem. Inf. Model. 2007, 47, 2, 488–508
+        J. Chem. Inf. Model. 2007, 47, 2, 488-508
         <https://doi.org/10.1021/ci600426e>`_
 
     Returns

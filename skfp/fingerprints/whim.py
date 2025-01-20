@@ -95,7 +95,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
 
     .. [6] `Roberto Todeschini and Paola Gramatica
         "The WHIM Theory: New 3D Molecular Descriptors for QSAR in Environmental Modelling"
-        SAR and QSAR in Environmental Research, 7(1–4), 89–115
+        SAR and QSAR in Environmental Research, 7(1-4), 89-115
         <https://www.tandfonline.com/doi/abs/10.1080/10629369708039126>`_
 
     Examples

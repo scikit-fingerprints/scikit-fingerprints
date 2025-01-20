@@ -108,7 +108,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Axen, Seth D., et al.
         "A simple representation of three-dimensional molecular structure"
-        J. Med. Chem. 2017, 60, 17, 7393–7409
+        J. Med. Chem. 2017, 60, 17, 7393-7409
         <https://pubs.acs.org/doi/abs/10.1021/acs.jmedchem.7b00696>`_
 
     Examples

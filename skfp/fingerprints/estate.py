@@ -70,7 +70,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
     .. [1] `Lowell H. Hall and Lemont B. Kier
         "Electrotopological State Indices for Atom Types: A Novel Combination of Electronic,
         Topological, and Valence State Information"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
+        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039-1045
         <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
 
     .. [2] `Gregory Landrum and Rational Discovery LLC

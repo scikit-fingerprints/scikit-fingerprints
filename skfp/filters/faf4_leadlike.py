@@ -89,7 +89,7 @@ class FAF4LeadlikeFilter(BaseFilter):
     .. [2] `D. Lagorce et al.
         "FAF-Drugs4: free ADME-tox filtering computations for chemical biology and
         early stages drug discovery"
-        Bioinformatics, 33(22), 2017, 3658–3660
+        Bioinformatics, 33(22), 2017, 3658-3660
         <https://doi.org/10.1093/bioinformatics/btx491>`_
 
     .. [3] `ChemAxon documentation: Predefined Functional Groups and Named Molecule Groups

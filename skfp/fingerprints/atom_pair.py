@@ -119,13 +119,13 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     .. [1] `Raymond E. Carhart, Dennis H. Smith, and R. Venkataraghavan
         "Atom pairs as molecular features in structure-activity studies: definition
         and applications"
-        J. Chem. Inf. Comput. Sci. 1985, 25, 2, 64–73
+        J. Chem. Inf. Comput. Sci. 1985, 25, 2, 64-73
         <https://pubs.acs.org/doi/10.1021/ci00046a002>`_
 
     .. [2] `Mahendra Awale and Jean-Louis Reymond
         "Atom Pair 2D-Fingerprints Perceive 3D-Molecular Shape and Pharmacophores for
         Very Fast Virtual Screening of ZINC and GDB-17"
-        J. Chem. Inf. Model. 2014, 54, 7, 1892–1907
+        J. Chem. Inf. Model. 2014, 54, 7, 1892-1907
         <https://pubs.acs.org/doi/10.1021/ci500232g>`_
 
     .. [3] `Gregory Landrum

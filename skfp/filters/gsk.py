@@ -43,7 +43,7 @@ class GSKFilter(BaseFilter):
     ----------
     .. [1] `Glesson, M. P.
         "Generation of a Set of Simple, Interpretable ADMET Rules of Thumb"
-        J. Med. Chem. 2008, 51, 4, 817–834
+        J. Med. Chem. 2008, 51, 4, 817-834
         <https://pubs.acs.org/doi/10.1021/jm701122q>`_
 
     Examples

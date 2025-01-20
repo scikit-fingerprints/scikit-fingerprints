@@ -50,8 +50,8 @@ class RuleOfFourFilter(BaseFilter):
     References
     ----------
     .. [1] `Morelli, X., Bourgeas, R., & Roche, P.
-        "Chemical and structural lessons from recent successes in protein–protein interaction inhibition (2P2I)."
-        Current Opinion in Chemical Biology, 15(4), 475–481.
+        "Chemical and structural lessons from recent successes in protein-protein interaction inhibition (2P2I)."
+        Current Opinion in Chemical Biology, 15(4), 475-481.
         <https://doi.org/10.1016/j.cbpa.2011.05.024>`_
 
     Examples

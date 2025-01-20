@@ -73,7 +73,7 @@ class ZINCDruglikeFilter(BaseFilter):
     ----------
     .. [1] `John J. Irwin, Brian K. Shoichet
         "ZINC − A Free Database of Commercially Available Compounds for Virtual Screening"
-        J. Chem. Inf. Model. 2005, 45, 1, 177–182
+        J. Chem. Inf. Model. 2005, 45, 1, 177-182
         <https://doi.org/10.1021/ci049714+>`_
 
     .. [2] `Details of physico-chemical property filters available in FAF-Drugs4

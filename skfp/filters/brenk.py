@@ -46,7 +46,7 @@ class BrenkFilter(BaseFilter):
     ----------
     .. [1] `Ruth Brenk et al.
         "Lessons Learnt from Assembling Screening Libraries for Drug Discovery for Neglected Diseases"
-        ChemMedChem 3:435–444 (2008)
+        ChemMedChem 3:435-444 (2008)
         <https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmdc.200700139>`_
 
     .. [2] `RDKit Brenk filter definitions

@@ -63,7 +63,7 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     .. [2] `Gedeck, Peter, Bernhard Rohde, and Christian Bartels
         "QSAR − How Good Is It in Practice? Comparison of Descriptor Sets on an Unbiased
         Cross Section of Corporate Data Sets."
-        J. Chem. Inf. Model. 2006, 46, 5, 1924–1936
+        J. Chem. Inf. Model. 2006, 46, 5, 1924-1936
         <https://pubs.acs.org/doi/abs/10.1021/ci050413p>`_
 
     Examples

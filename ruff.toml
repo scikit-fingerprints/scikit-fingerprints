@@ -3,7 +3,7 @@ include = [
     "benchmarking/**/*.ipynb",
     "examples/**/*.py",
     "skfp/**/*.py",
-    "tests/**/*.py"
+    "tests/**/*.py",
 ]
 exclude = [
     "docs/**"
@@ -12,47 +12,67 @@ exclude = [
 [lint]
 select = ["ALL"]
 ignore = [
+    # groups
     "ANN",  # use mypy for annotations
-    "N806",   # uppercase variables, e.g. X_train
-    "N803",  # uppercase variables, e.g. X_train
-    "FA100",  # regular Optional import
-    "D100",   # no docstrings in public modules
-    "T201",   # print() allowed
-    "D213",   # start docs on next line
-    "TRY003",  # long error messages
-    "PLR2004",  # numerical constants
-    "FBT001",  # bool positional arguments
-    "FBT002",  # bool default positional arguments
-    "D107",  # no __init__ docstrings
-    "PLR0913",  # many arguments
-    "SLF001",  # use private members
-    "RUF012",  # mutable class attributes
-    "D205",  # no blank line between summary and description
-    "RUF002",  # allow long dash in citations
-    "PD901",  # df variable for DataFrames
+    "COM",  # turn off weird comma rules
+    "EM",   # string messages for exceptions
+    "FA",   # use typing imports
+    "FBT",  # bool arguments
+    "PTH",  # os instead of Pathlib when useful
+    "RET",  # format returns as needed for readability
+    "T20",  # printing allowed
+
+    # naming - we allow uppercase letters, e.g. X_train, use_3D
+    "N802",
+    "N803",
+    "N806",
+
+    # docstrings - we tailor rules to our own convention
+    "D100",  # no module docstrings
     "D104",  # no package docstrings
-    "PT011",  # use ValueError
-    "E731",  # Lambda expressions
-    "PGH003",  # ignore types where necessary
+    "D107",  # no __init__ docstrings
+    "D200",  # always multiline docstrings
+    "D203",  # prefer D211, no blank line between docstring and code
+    "D205",  # no blank line between summary and description
     "D212",  # start docstrings on second line
+    "D213",  # start docs on next line
     "D413",  # no empty line after last docstring section
-    "COM812",  # no trailing commas
-    "C408",  # call dict(), list(), set()
-    "D200",  # always multiline docstings
-    "EM",  # string messages for exceptions
-    "SIM108",  # if/else instead of ternary if when we need
-    "RET",  # format returns as we need for readability
-    "PTH",  # use os instead of Pathlib when we need
-    "PYI041",  # explicitly mark Union[int, float] for readability
+
+    # various other things
+    "B028",     # simple warnings
+    "C408",     # call dict(), list(), set()
+    "E731",     # Lambda expressions
+    "TRY003",   # long error messages
+    "PD901",    # df variable for DataFrames
+    "PGH003",   # ignore types where necessary
+    "PLR2004",  # numerical constants
+    "PLR0913",  # many arguments
     "PLW2901",  # overwrite loop variable for readability
-    "B028",  # simple warnings
-    "N802",  # uppercase names for functions when readable, e.g. 3D
-    "D203"  # prefer D211, no blank line between docstring and code
+    "PT011",    # use ValueError
+    "PYI041",   # explicitly mark Union[int, float] for readability
+    "RUF002",   # regular minus sign in docs
+    "RUF012",   # mutable class attributes
+    "SLF001",   # use private members
+    "SIM108",   # if/else instead of ternary if when we need
 ]
 
 [lint.per-file-ignores]
-# allow unused imports which shorten import paths
-"skfp/**__init__.py**" = ["F401"]
+"benchmarking/**.py" = [
+    "C901",     # complex code
+    "D103",     # no docstrings
+    "INP001",   # implicit package
+    "NPY002",   # np.random.seed
+    "PLR0912",  # many branches
+    "PLR0915",  # many statements
+]
+
+"examples/**" = [
+    "D103",  # no docstrings in examples
+]
+
+"skfp/**__init__.py**" = [
+    "F401",  # allow unused imports which shorten import paths
+]
 
 "skfp/bases/**.py" = [
     "ARG002",  # allow unused arguments for scikit-learn compatibility
@@ -60,35 +80,23 @@ ignore = [
 ]
 
 "tests/**" = [
-    "S101",  # assert
-    "S311",  # pseudo-random generation
-    "D103",  # no docstrings for tests
-    "PT006",  # lists in pytest.mark.parametrize
-    "RUF005",  # adding lists
-    "TRY004",  # AssertionError in tests, not TypeError
-    "ARG001",  # unused arguments in scikit-learn tests
-    "S301",  # pickle
+    "ARG001",   # unused arguments in scikit-learn tests
+    "D101",     # no docstrings in helper classes
+    "D103",     # no docstrings for tests
+    "NPY002",   # np.random.rand
     "PERF203",  # exceptions in loops
-    "PLW2901",  # overwriting variables in loops
-    "PLW0603",  # global variables in scikit-learn tests
-    "SIM108",  # if-else instead of ternary operations for long lines
-    "D101",  # no docstrings in helper classes
-    "NPY002",  # np.random.rand
     "PLR1704",  # redefine arguments as variables
-    "SIM211",  # explicit False/True for readability
+    "PLW0603",  # global variables in scikit-learn tests
+    "PLW2901",  # overwriting variables in loops
+    "PT006",    # lists in pytest.mark.parametrize
+    "RUF005",   # adding lists
+    "S101",     # assert
+    "S301",     # pickle
+    "S311",     # pseudo-random generation
+    "SIM108",   # if-else instead of ternary operations for long lines
+    "SIM211",   # explicit False/True for readability
+    "TRY004",   # AssertionError in tests, not TypeError
 ]
-
-"benchmarking/**.py" = [
-    "D103",     # no docstrings
-    "PLR0912",  # many branches
-    "INP001",   # implicit package
-    "C901",     # complex code
-    "NPY002",   # np.random.seed
-    "PLR0915",  # many statements
-]
-
-# no docstrings in examples
-"examples/**" = ["D103"]
 
 [lint.pycodestyle]
 # formatter will reformat lines to length 88, so we report errors only for

@@ -98,7 +98,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Armstrong, M.S., Morris, G.M., Finn, P.W. et al.
         "ElectroShape: fast molecular similarity calculations incorporating shape, chirality and electrostatics"
-        J Comput Aided Mol Des 24, 789–801 (2010)
+        J Comput Aided Mol Des 24, 789-801 (2010)
         <https://doi.org/10.1007/s10822-010-9374-0>`_
 
     Examples

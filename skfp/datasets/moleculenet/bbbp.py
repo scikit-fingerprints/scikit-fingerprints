@@ -60,7 +60,7 @@ def load_bbbp(
     ----------
     .. [1] `Ines Filipa Martins et al.
         "A Bayesian Approach to in Silico Blood-Brain Barrier Penetration Modeling"
-        J. Chem. Inf. Model. 2012, 52, 6, 1686–1697
+        J. Chem. Inf. Model. 2012, 52, 6, 1686-1697
         <https://pubs.acs.org/doi/10.1021/ci300124c>`_
 
     .. [2] `Zhenqin Wu et al.

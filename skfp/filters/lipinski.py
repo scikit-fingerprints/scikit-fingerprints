@@ -56,7 +56,7 @@ class LipinskiFilter(BaseFilter):
     .. [1] `Christopher A. Lipinski, Franco Lombardo, Beryl W. Dominy, Paul J. Feeney
         "Experimental and computational approaches to estimate solubility and permeability
         in drug discovery and development settings"
-        Advanced Drug Delivery Reviews, Volume 23, Issues 1–3, 15 January 1997, Pages 3-25
+        Advanced Drug Delivery Reviews, Volume 23, Issues 1-3, 15 January 1997, Pages 3-25
         <https://www.sciencedirect.com/science/article/pii/S0169409X96004231>`_
 
     Examples

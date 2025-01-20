@@ -58,7 +58,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
 
     .. [2] `Arup K. Ghose and Gordon M. Crippen
         "Atomic physicochemical parameters for three-dimensional-structure-directed quantitative structure-activity relationships. 2. Modeling dispersive and hydrophobic interactions"
-        J. Chem. Inf. Comput. Sci. 1987, 27, 1, 21–35
+        J. Chem. Inf. Comput. Sci. 1987, 27, 1, 21-35
         <https://pubs.acs.org/doi/10.1021/ci00053a005>`_
 
     .. [3] `<https://github.com/rdkit/rdkit/blob/5d034e37331c2604bf3e247b94be35b519e62216/Data/Crippen.txt>`_

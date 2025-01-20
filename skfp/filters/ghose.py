@@ -51,7 +51,7 @@ class GhoseFilter(BaseFilter):
     .. [1] `Ghose, A. K., Viswanadhan, V. N., & Wendoloski, J. J.
         "A Knowledge-Based Approach in Designing Combinatorial or Medicinal Chemistry Libraries for Drug Discovery. 1.
         A Qualitative and Quantitative Characterization of Known Drug Databases."
-        Journal of Combinatorial Chemistry, 1(1), 55–68.
+        Journal of Combinatorial Chemistry, 1(1), 55-68.
         <https://doi.org/10.1021/cc9800071>`_
 
     Examples

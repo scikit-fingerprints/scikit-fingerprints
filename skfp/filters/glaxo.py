@@ -47,7 +47,7 @@ class GlaxoFilter(BaseFilter):
     ----------
     .. [1] `Mike Hann et al.
         "Strategic Pooling of Compounds for High-Throughput Screening"
-        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 897–902
+        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 897-902
         <https://pubs.acs.org/doi/10.1021/ci990423o>`_
 
     .. [2] `RDKit Glaxo filter definitions

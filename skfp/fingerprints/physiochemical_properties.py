@@ -73,7 +73,7 @@ class PhysiochemicalPropertiesFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Simon K. Kearsley et al.
         "Chemical Similarity Using Physiochemical Property Descriptors"
-        J. Chem. Inf. Comput. Sci. 1996, 36, 1, 118–127
+        J. Chem. Inf. Comput. Sci. 1996, 36, 1, 118-127
         <https://pubs.acs.org/doi/10.1021/ci950274j>`_
 
     Examples

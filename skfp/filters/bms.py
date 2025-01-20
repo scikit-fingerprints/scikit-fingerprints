@@ -50,7 +50,7 @@ class BMSFilter(BaseFilter):
     ----------
     .. [1] `Bradley C. Pearce et al.
         "An Empirical Process for the Design of High-Throughput Screening Deck Filters"
-        J. Chem. Inf. Model. 2006, 46, 3, 1060–1068
+        J. Chem. Inf. Model. 2006, 46, 3, 1060-1068
         <https://pubs.acs.org/doi/10.1021/ci050504m>`_
 
     .. [2] `RDKit BMS filter definitions

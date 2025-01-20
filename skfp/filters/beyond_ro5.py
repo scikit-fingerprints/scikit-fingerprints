@@ -61,7 +61,7 @@ class BeyondRo5Filter(BaseFilter):
     ----------
     .. [1] `Bradley C. Doak, Jie Zheng, Doreen Dobritzsch and Jan Kihlberg
         "How Beyond Rule of 5 Drugs and Clinical Candidates Bind to Their Targets"
-        J. Med. Chem. 2016, 59, 6, 2312–2327
+        J. Med. Chem. 2016, 59, 6, 2312-2327
         <https://pubs.acs.org/doi/10.1021/acs.jmedchem.5b01286>`_
 
     .. [2] `RDKit Implementation of the TPSA Descriptor

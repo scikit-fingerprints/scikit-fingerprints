@@ -47,7 +47,7 @@ class SureChEMBLFilter(BaseFilter):
     .. [1] `Iurii Sushko et al.
         "ToxAlerts: A Web Server of Structural Alerts for Toxic Chemicals and Compounds
         with Potential Adverse Reactions"
-        J. Chem. Inf. Model. 2012, 52, 8, 2310–2316
+        J. Chem. Inf. Model. 2012, 52, 8, 2310-2316
         <https://pubs.acs.org/doi/10.1021/ci300245q>`_
 
     .. [2] `Wayback Machine - ChEMBL "Non MedChem-Friendly SMARTS"

@@ -107,7 +107,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `David Rogers and Mathew Hahn
         "Extended-Connectivity Fingerprints"
-        J. Chem. Inf. Model. 2010, 50, 5, 742–754
+        J. Chem. Inf. Model. 2010, 50, 5, 742-754
         <https://pubs.acs.org/doi/10.1021/ci100050t>`_
 
     .. [2] `Gregory Landrum

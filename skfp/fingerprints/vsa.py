@@ -74,12 +74,12 @@ class VSAFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Paul Labute
         "A widely applicable set of descriptors"
-        Journal of Molecular Graphics and Modelling, Volume 18, Issues 4–5, 2000, Pages 464-477
+        Journal of Molecular Graphics and Modelling, Volume 18, Issues 4-5, 2000, Pages 464-477
         <https://www.sciencedirect.com/science/article/pii/S1093326300000681>`_
 
     .. [2] `Scott A. Wildman and Gordon M. Crippen
         "Prediction of Physicochemical Parameters by Atomic Contributions"
-        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 868–873
+        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 868-873
         <https://pubs.acs.org/doi/10.1021/ci990307l>`_
 
     .. [3] `Johann Gasteiger and Mario Marsili
@@ -90,7 +90,7 @@ class VSAFingerprint(BaseFingerprintTransformer):
     .. [4] `Lowell H. Hall and Lemont B. Kier
         "Electrotopological State Indices for Atom Types: A Novel Combination of Electronic,
         Topological, and Valence State Information"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
+        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039-1045
         <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
 
     .. [5] `RDKit SlogP, SMR and PEOE bin values

@@ -46,7 +46,7 @@ class NIHFilter(BaseFilter):
     .. [1] `Ajit Jadhav et al.
         "Quantitative Analyses of Aggregation, Autofluorescence, and Reactivity
         Artifacts in a Screen for Inhibitors of a Thiol Protease"
-        J. Med. Chem. 2010, 53, 1, 37–51
+        J. Med. Chem. 2010, 53, 1, 37-51
         <https://pubs.acs.org/doi/10.1021/jm901070c>`_
 
     .. [2] `Richard G. Doveston et al.

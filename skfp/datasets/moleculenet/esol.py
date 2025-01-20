@@ -59,7 +59,7 @@ def load_esol(
     ----------
     .. [1] `John S. Delaney
         "ESOL: Estimating Aqueous Solubility Directly from Molecular Structure"
-        J. Chem. Inf. Comput. Sci. 2004, 44, 3, 1000–1005
+        J. Chem. Inf. Comput. Sci. 2004, 44, 3, 1000-1005
         <https://pubs.acs.org/doi/10.1021/ci034243x>`_
 
     .. [2] `Zhenqin Wu et al.

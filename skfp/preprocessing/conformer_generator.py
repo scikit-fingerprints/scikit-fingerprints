@@ -109,7 +109,7 @@ class ConformerGenerator(BasePreprocessor):
     .. [2] `Shuzhe Wang, Jagna Witek, Gregory A. Landrum, and Sereina Riniker
         "Improving Conformer Generation for Small Rings and Macrocycles Based on
         Distance Geometry and Experimental Torsional-Angle Preferences"
-        J. Chem. Inf. Model. 2020, 60, 4, 2044–2058
+        J. Chem. Inf. Model. 2020, 60, 4, 2044-2058
         <https://pubs.acs.org/doi/10.1021/acs.jcim.0c00025>`_
 
     .. [3] `Gregory A. Landrum

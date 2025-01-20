@@ -65,7 +65,7 @@ class RuleOfThreeFilter(BaseFilter):
     ----------
     .. [1] `Congreve, M., Carr, R., Murray, C., & Jhoti, H.
         "A 'Rule of Three' for fragment-based lead discovery?"
-        Drug Discovery Today, 8(19), 876–877.
+        Drug Discovery Today, 8(19), 876-877.
         <https://doi.org/10.1016/S1359-6446(03)02831-9>`_
 
     Examples

@@ -126,13 +126,13 @@ def butina_train_test_split(
     .. [1] `Darko Butina
         "Unsupervised Data Base Clustering Based on Daylight's Fingerprint and Tanimoto
         Similarity: A Fast and Automated Way To Cluster Small and Large Data Sets"
-        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747–750
+        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747-750
         <https://pubs.acs.org/doi/abs/10.1021/ci9803381>`_
 
     .. [2] `Robin Taylor
         "Simulation Analysis of Experimental Design Strategies for Screening Random
         Compounds as Potential New Drugs and Agrochemicals"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59–67
+        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59-67
         <https://pubs.acs.org/doi/10.1021/ci00023a009>`_
 
     .. [3] `Noel O'Boyle
@@ -147,7 +147,7 @@ def butina_train_test_split(
     .. [5] `W. Dong et al.
         "Efficient k-nearest neighbor graph construction for generic similarity measures"
         Proceedings of the 20th International World Wide Web Conference (WWW '11).
-        Association for Computing Machinery, New York, NY, USA, 577–586
+        Association for Computing Machinery, New York, NY, USA, 577-586
         <https://doi.org/10.1145/1963405.1963487>`_
 
     .. [6] `Leland McInnes
@@ -312,13 +312,13 @@ def butina_train_valid_test_split(
     .. [1] `Darko Butina
         "Unsupervised Data Base Clustering Based on Daylight's Fingerprint and Tanimoto
         Similarity: A Fast and Automated Way To Cluster Small and Large Data Sets"
-        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747–750
+        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747-750
         <https://pubs.acs.org/doi/abs/10.1021/ci9803381>`_
 
     .. [2] `Robin Taylor
         "Simulation Analysis of Experimental Design Strategies for Screening Random
         Compounds as Potential New Drugs and Agrochemicals"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59–67
+        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59-67
         <https://pubs.acs.org/doi/10.1021/ci00023a009>`_
 
     .. [3] `Noel O'Boyle "Taylor-Butina Clustering"
@@ -332,7 +332,7 @@ def butina_train_valid_test_split(
     .. [5] `W. Dong et al.
         "Efficient k-nearest neighbor graph construction for generic similarity measures"
         Proceedings of the 20th International World Wide Web Conference (WWW '11).
-        Association for Computing Machinery, New York, NY, USA, 577–586
+        Association for Computing Machinery, New York, NY, USA, 577-586
         <https://doi.org/10.1145/1963405.1963487>`_
 
     .. [6] `Leland McInnes

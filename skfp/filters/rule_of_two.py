@@ -50,7 +50,7 @@ class RuleOfTwoFilter(BaseFilter):
     ----------
     .. [1] `Goldberg, F. W., Kettle, J. G., Kogej, T., Perry, M. W. D., & Tomkinson, N. P.
         "Designing novel building blocks is an overlooked strategy to improve compound quality."
-        Drug Discovery Today, 20(1), 11–17.
+        Drug Discovery Today, 20(1), 11-17.
         <https://doi.org/10.1016/j.drudis.2014.09.023>`_
 
     Examples

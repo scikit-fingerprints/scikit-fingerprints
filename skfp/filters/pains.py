@@ -53,7 +53,7 @@ class PAINSFilter(BaseFilter):
     .. [1] `Jonathan B. Baell and Georgina A. Holloway
         "New Substructure Filters for Removal of Pan Assay Interference Compounds
         (PAINS) from Screening Libraries and for Their Exclusion in Bioassays"
-        J. Med. Chem. 2010, 53, 7, 2719–2740
+        J. Med. Chem. 2010, 53, 7, 2719-2740
         <https://doi.org/10.1021/jm901137j>`_
 
     .. [2] `RDKit PAINS A filter definitions
