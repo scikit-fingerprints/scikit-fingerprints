@@ -6,7 +6,6 @@ from skfp.bases.base_filter import BaseFilter
 
 
 class REOSFilter(BaseFilter):
-    # flake8: noqa E501
     """
     REOS filter.
 
@@ -49,14 +48,14 @@ class REOSFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Walters, W. P., Namchuk, M.
         "Designing screens: how to make your hits a hit"
         Nat Rev Drug Discov. 2003 Apr;2(4):259-66
         <https://pubmed.ncbi.nlm.nih.gov/12669025/>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import REOSFilter
     >>> smiles = ["CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",  "CC(=O)c1c(C(C)=O)c(C)n(CCCCn2c(C)c(C(C)=O)c(C(C)=O)c2C)c1C"]
     >>> filt = REOSFilter()

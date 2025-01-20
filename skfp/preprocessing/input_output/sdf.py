@@ -62,7 +62,7 @@ class MolFromSDFTransformer(BasePreprocessor):
         self.sanitize = sanitize
         self.remove_hydrogens = remove_hydrogens
 
-    def transform(self, X: str, copy: bool = False) -> list[Mol]:
+    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # noqa: ARG002
         """
         Create RDKit ``Mol`` objects from SDF file.
 
@@ -93,7 +93,7 @@ class MolFromSDFTransformer(BasePreprocessor):
         mols = list(supplier)
 
         if not mols:
-            warnings.warn("No molecules detected in provided SDF file")
+            warnings.warn("No molecules detected in provided SDF file")  # noqa: B028
 
         return mols
 

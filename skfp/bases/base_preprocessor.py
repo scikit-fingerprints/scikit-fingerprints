@@ -52,7 +52,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
             Unused, kept for Scikit-learn compatibility.
 
         Returns
-        --------
+        -------
         self
         """
         self._validate_params()
@@ -68,7 +68,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
             See ``.transform()`` method.
 
         y : any
-            See ``.transform()`` method.
+            Unused, kept for Scikit-learn compatibility.
 
         **fit_params : dict
             Unused, kept for Scikit-learn compatibility.

@@ -99,7 +99,7 @@ def scaffold_train_test_split(
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-test subsets of provided arrays. First two are lists of SMILES
         strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
@@ -254,7 +254,7 @@ def scaffold_train_valid_test_split(
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-valid-test subsets of provided arrays. First three are lists of
         SMILES strings or RDKit ``Mol`` objects, depending on the input type. If

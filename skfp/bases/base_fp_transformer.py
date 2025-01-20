@@ -110,7 +110,7 @@ class BaseFingerprintTransformer(
             Unused, kept for Scikit-learn compatibility.
 
         Returns
-        --------
+        -------
         self
         """
         self._validate_params()

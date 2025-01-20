@@ -23,7 +23,7 @@ class RuleOfFourFilter(BaseFilter):
     - number of rings >= 4
 
     Parameters
-    ------------
+    ----------
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
@@ -48,14 +48,14 @@ class RuleOfFourFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Morelli, X., Bourgeas, R., & Roche, P.
         "Chemical and structural lessons from recent successes in protein–protein interaction inhibition (2P2I)."
         Current Opinion in Chemical Biology, 15(4), 475–481.
         <https://doi.org/10.1016/j.cbpa.2011.05.024>`_
 
     Examples
-    ---------
+    --------
     >>> from skfp.filters import RuleOfFourFilter
     >>> smiles = ['c1ccc2oc(-c3ccc(Nc4nc(N5CCCCC5)nc(N5CCOCC5)n4)cc3)nc2c1', \
     'c1nc(N2CCOCC2)c2sc3nc(N4CCOCC4)c4c(c3c2n1)CCCC4']

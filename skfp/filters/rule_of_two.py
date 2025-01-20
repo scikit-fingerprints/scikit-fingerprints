@@ -47,14 +47,14 @@ class RuleOfTwoFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Goldberg, F. W., Kettle, J. G., Kogej, T., Perry, M. W. D., & Tomkinson, N. P.
         "Designing novel building blocks is an overlooked strategy to improve compound quality."
         Drug Discovery Today, 20(1), 11–17.
         <https://doi.org/10.1016/j.drudis.2014.09.023>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import RuleOfTwoFilter
     >>> smiles = ['C=CCc1c(C)[nH]c(N)nc1=O', 'C=CCNC(=O)c1ccncc1', 'C=CCC1C=C(C)CC(CC=C)N1']
     >>> filt = RuleOfTwoFilter()

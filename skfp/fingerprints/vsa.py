@@ -151,8 +151,8 @@ class VSAFingerprint(BaseFingerprintTransformer):
         }
         try:
             return n_features_out[variant]
-        except KeyError:
-            raise ValueError(f'Variant "{variant} not recognized"')
+        except KeyError as err:
+            raise ValueError(f'Variant "{variant} not recognized"') from err
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

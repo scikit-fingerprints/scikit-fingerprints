@@ -87,7 +87,6 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
-        # flake8: noqa: E501
         patterns = [
             "[CH4]",
             "[CH3]C",
@@ -200,7 +199,6 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             "[#39,#40,#41,#42,#43,#44,#45,#46,#47,#48]",
             "[#72,#73,#74,#75,#76,#77,#78,#79,#80]",
         ]
-        # flake8: noqa
         super().__init__(
             patterns=patterns,
             count=count,

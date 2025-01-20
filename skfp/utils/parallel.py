@@ -23,11 +23,11 @@ class ProgressParallel(Parallel):
             tqdm_settings = {}
         self._tqdm_settings: dict = tqdm_settings
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs):  # noqa: D102
         with tqdm(**self._tqdm_settings) as self._pbar:
             return Parallel.__call__(self, *args, **kwargs)
 
-    def print_progress(self) -> None:
+    def print_progress(self) -> None:  # noqa: D102
         self._pbar.n = self.n_completed_tasks
         self._pbar.refresh()
 
@@ -41,7 +41,7 @@ def run_in_parallel(
     verbose: Union[int, dict] = 0,
 ) -> list:
     """
-    Runs a function in parallel on provided data in batches, using joblib.
+    Run a function in parallel on provided data in batches, using joblib.
 
     Results are returned in the same order as input data. ``func`` function must take
     batch of data, e.g. list of integers, not a single integer.
@@ -115,8 +115,8 @@ def run_in_parallel(
         tqdm_settings["total"] = num_batches
         tqdm_settings["disable"] = verbose.get("disable", False)
     else:
-        raise ValueError(
-            f"The `verbose` argument must be int or `dict`, got {type(verbose)}"
+        raise TypeError(
+            f"The `verbose` argument must be int or dict, got {type(verbose)}"
         )
 
     if tqdm_settings["disable"]:

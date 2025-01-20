@@ -122,7 +122,6 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)
 
     def _get_maccs_patterns_counts(self, mol: Mol) -> list[int]:
-        # flake8: noqa: E501
         smarts_list = [
             None,  # fragments
             None,  # atomic num >103 - idx 0

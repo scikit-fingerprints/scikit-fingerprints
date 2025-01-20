@@ -46,7 +46,7 @@ class PfizerFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Hughes, J. D. et al.
         "Physiochemical drug properties associated with in vivo toxicological outcomes."
         Bioorganic & Medicinal Chemistry Letters, 18(17), 4872–4875.
@@ -58,7 +58,7 @@ class PfizerFilter(BaseFilter):
         <https://doi.org/10.1517/17425250903042318>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import PfizerFilter
     >>> smiles = ["CS(=O)(=O)NCc1nnc(SCc2ccccc2C(F)(F)F)o1", "COC(=O)c1ccccc1NC(=O)CSc1nc(O)c(-c2ccccc2)c(=O)[nH]1",\
     "Cc1ccccc1-n1c(Cc2cccs2)n[nH]c1=S"]

@@ -46,7 +46,7 @@ def average_wiener_index(
 
 
 def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
-    """
+    r"""
     Graph Distance Index (GDI).
 
     Calculates the Graph Distance Index [1]_, defined as the squared sum of all
@@ -55,7 +55,7 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
     .. math::
 
-        GDI = \\sum_{k=1}^{D} \\left(k \\cdot f_k\\right)^2
+        GDI = \sum_{k=1}^{D} \left(k \cdot f_k\right)^2
 
     where:
 

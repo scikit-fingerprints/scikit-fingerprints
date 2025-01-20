@@ -49,7 +49,7 @@ class TiceInsecticidesFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Tice, C.M.,
         "Selecting the right compounds for screening:
         does Lipinski's Rule of 5 for pharmaceuticals apply to agrochemicals?"
@@ -57,7 +57,7 @@ class TiceInsecticidesFilter(BaseFilter):
         <https://doi.org/10.1002/1526-4998(200101)57:1\<3::AID-PS269\>3.0.CO;2-6>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import TiceInsecticidesFilter
     >>> smiles = ["O=C(CC1COc2ccccc2O1)NCCc1ccccc1", "O=C(Nc1cccc(Cl)c1)N1CCCC1", "CNc1nc(N)c([N+](=O)[O-])c(NCCO)n1"]
     >>> filt = TiceInsecticidesFilter()

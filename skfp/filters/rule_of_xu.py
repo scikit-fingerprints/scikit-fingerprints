@@ -45,14 +45,14 @@ class RuleOfXuFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Xu, J., Stevenson, J.
         "Drug-like Index: A New Approach To Measure Drug-like Compounds and Their Diversity."
         J Chem Inf Comput Sci. 2000 Sep-Oct;40(5):1177-87
         <https://pubmed.ncbi.nlm.nih.gov/11045811/>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import RuleOfXuFilter
     >>> smiles = ["CCO", "CC(=O)CC(C1=CC=CC=C1)C2=C(C3=CC=CC=C3OC2=O)O"]
     >>> filt = RuleOfXuFilter()

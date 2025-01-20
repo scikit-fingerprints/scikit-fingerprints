@@ -80,7 +80,6 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
-        # flake8: noqa: E501
         patterns = [
             "[!#1][CH]([!#1])[!#1]",
             "[!#1][CH]([!#1])[CH]([!#1])[!#1]",
@@ -4943,7 +4942,6 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             "SCCS",
             "SCCS(=O)=O",
         ]
-        # flake8: noqa
         super().__init__(
             patterns=patterns,
             count=count,

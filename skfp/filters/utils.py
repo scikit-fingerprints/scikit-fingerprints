@@ -142,7 +142,6 @@ def get_num_charged_functional_groups(mol: Mol) -> int:
 @functools.cache
 def _get_functional_groups_smarts_patterns() -> list[Mol]:
     # using cached function compiles SMARTS patterns only once, on first usage
-    # flake8: noqa: E501
     fragment_smarts = [
         "[O&X2:2][C&X4&!$(CO~[!#6]):1][O&X2:3]",  # acetal
         "[C&X3:1](=[O&X1:2])[F,Cl,Br,I:3]",  # acid halide
@@ -258,6 +257,5 @@ def _get_functional_groups_smarts_patterns() -> list[Mol]:
         "[N&X3:2][C&X3:1](=[O&X1:3])[N&X3:2]",  # urea
         "[C&X3&H2:1]=[C&X3&H1:1]",  # vinyl
     ]
-    # flake8: noqa
     fragment_smarts = [MolFromSmarts(smarts) for smarts in fragment_smarts]
     return fragment_smarts

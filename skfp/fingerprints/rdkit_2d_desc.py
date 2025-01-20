@@ -157,6 +157,6 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         )
 
         gen = RDKit2DNormalized() if self.normalized else RDKit2D()
-        names = list(zip(*gen.columns))[0]
+        feature_names = [name for name, obj in gen.columns]
 
-        return np.asarray(names, dtype=object)
+        return np.asarray(feature_names, dtype=object)

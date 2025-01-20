@@ -115,7 +115,7 @@ def butina_train_test_split(
         See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-test subsets of provided arrays. First two are lists of SMILES
         strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
@@ -301,7 +301,7 @@ def butina_train_valid_test_split(
         See Scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-valid-test subsets of provided arrays. First three are lists of
         SMILES strings or RDKit ``Mol`` objects, depending on the input type. If
@@ -423,11 +423,12 @@ def _create_clusters(
     else:
         try:
             from pynndescent import NNDescent
-        except ImportError:
-            raise ImportError(
-                "PyNNDescent not detected, which is needed for approximate Butina split. "
-                "You can install it with: pip install pynndescent"
+        except ImportError as err:
+            msg = (
+                "PyNNDescent not detected, which is needed for approximate"
+                "Butina split. You can install it with: pip install pynndescent"
             )
+            raise ImportError(msg) from err
 
         index = NNDescent(
             fps_centroids,

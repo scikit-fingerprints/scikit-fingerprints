@@ -76,12 +76,12 @@ class ValenceDiscoveryFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
 
     References
-    -----------
+    ----------
     .. [1] `MedChem documentation - rule_of_generative_design
         <https://medchem-docs.datamol.io/stable/api/medchem.rules.html#medchem.rules.basic_rules.rule_of_generative_design>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import ValenceDiscoveryFilter
     >>> smiles = ["C", "ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1"]
     >>> filt = ValenceDiscoveryFilter()

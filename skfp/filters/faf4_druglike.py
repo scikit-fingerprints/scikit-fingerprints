@@ -81,7 +81,7 @@ class FAF4DruglikeFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
 
     References
-    -----------
+    ----------
     .. [1] `Details of physico-chemical property filters available in FAF-Drugs4
         <https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html>`_
 
@@ -95,7 +95,7 @@ class FAF4DruglikeFilter(BaseFilter):
         <https://docs.chemaxon.com/display/docs/attachments/attachments_1829721_1_functionalgroups.cxsmi>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import FAF4DruglikeFilter
     >>> smiles = ["C", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = FAF4DruglikeFilter()

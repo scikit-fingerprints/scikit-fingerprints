@@ -6,7 +6,6 @@ from skfp.bases.base_filter import BaseFilter
 
 
 class GSKFilter(BaseFilter):
-    # flake8: noqa E501
     """
     GSK rule (4/400) filter.
 
@@ -41,14 +40,14 @@ class GSKFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
 
     References
-    -----------
+    ----------
     .. [1] `Glesson, M. P.
         "Generation of a Set of Simple, Interpretable ADMET Rules of Thumb"
         J. Med. Chem. 2008, 51, 4, 817–834
         <https://pubs.acs.org/doi/10.1021/jm701122q>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import GSKFilter
     >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "O=C(O)c1ccccc1c2ccc(cc2)Cn3c4cc(cc(c4nc3CCC)C)c5nc6ccccc6n5C"]
     >>> filt = GSKFilter()

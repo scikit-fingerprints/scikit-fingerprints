@@ -117,7 +117,6 @@ class NIBRFilter(BaseFilter):
 
     def _load_filters(self) -> list[tuple[str, int, bool]]:
         # SMARTS, minimal count, exclude (otherwise flag)
-        # flake8: noqa: E501
         filters = [
             ("S=S", 1, True),
             ("P~P", 1, True),
@@ -1001,7 +1000,6 @@ class NIBRFilter(BaseFilter):
                 False,
             ),
         ]
-        # flake8: noqa
         filters = [
             (MolFromSmarts(smarts), min_count, exclude)
             for smarts, min_count, exclude in filters

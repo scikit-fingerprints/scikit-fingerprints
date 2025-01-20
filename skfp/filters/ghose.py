@@ -47,7 +47,7 @@ class GhoseFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Ghose, A. K., Viswanadhan, V. N., & Wendoloski, J. J.
         "A Knowledge-Based Approach in Designing Combinatorial or Medicinal Chemistry Libraries for Drug Discovery. 1.
         A Qualitative and Quantitative Characterization of Known Drug Databases."
@@ -55,7 +55,7 @@ class GhoseFilter(BaseFilter):
         <https://doi.org/10.1021/cc9800071>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import GhoseFilter
     >>> smiles = ["CC(=O)C1=C(O)C(=O)N(CCc2c[nH]c3ccccc23)C1c1ccc(C)cc1", "CC(=O)c1c(C)n(CC2CCCO2)c2ccc(O)cc12",\
     "CC(=O)c1c(C(C)=O)c(C)n(CCCCn2c(C)c(C(C)=O)c(C(C)=O)c2C)c1C"]

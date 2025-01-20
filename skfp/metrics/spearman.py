@@ -75,7 +75,6 @@ def spearman_correlation(
     >>> spearman_correlation(y_true, y_pred)  # doctest: +SKIP
     -1.0
     """
-
     y_type, y_true, y_pred, multioutput = _check_reg_targets(
         y_true, y_pred, multioutput=None
     )

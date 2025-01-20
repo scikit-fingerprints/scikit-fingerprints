@@ -1,12 +1,11 @@
 from typing import Union
 
-from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
+from rdkit.Chem import Mol, rdMolDescriptors
 
 from skfp.bases.base_filter import BaseFilter
 
 
 class OpreaFilter(BaseFilter):
-    # flake8: noqa E501
     """
     Oprea filter.
 
@@ -44,14 +43,14 @@ class OpreaFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
 
     References
-    -----------
+    ----------
     .. [1] `Oprea T. I.
         "Property distribution of drug-related chemical databases"
         J Comput Aided Mol Des. 2000 Mar;14(3):251-64
         <https://pubmed.ncbi.nlm.nih.gov/10756480/>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import OpreaFilter
     >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = OpreaFilter()

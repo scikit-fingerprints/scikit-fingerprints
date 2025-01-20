@@ -5,6 +5,9 @@ include = [
     "skfp/**/*.py",
     "tests/**/*.py"
 ]
+exclude = [
+    "docs/**"
+]
 
 [lint]
 select = ["ALL"]
@@ -31,16 +34,30 @@ ignore = [
     "PT011",  # use ValueError
     "E731",  # Lambda expressions
     "PGH003",  # ignore types where necessary
-    "RET504",  # assign to variable before returning
     "D212",  # start docstrings on second line
     "D413",  # no empty line after last docstring section
     "COM812",  # no trailing commas
     "C408",  # call dict(), list(), set()
     "D200",  # always multiline docstings
     "EM",  # string messages for exceptions
+    "SIM108",  # if/else instead of ternary if when we need
+    "RET",  # format returns as we need for readability
+    "PTH",  # use os instead of Pathlib when we need
+    "PYI041",  # explicitly mark Union[int, float] for readability
+    "PLW2901",  # overwrite loop variable for readability
+    "B028",  # simple warnings
+    "N802",  # uppercase names for functions when readable, e.g. 3D
 ]
 
 [lint.per-file-ignores]
+# allow unused imports which shorten import paths
+"skfp/**__init__.py**" = ["F401"]
+
+"skfp/bases/**.py" = [
+    "ARG002",  # allow unused arguments for scikit-learn compatibility
+    "D401",    # non-imperative descriptions
+]
+
 "tests/**" = [
     "S101",  # assert
     "S311",  # pseudo-random generation
@@ -56,15 +73,20 @@ ignore = [
     "SIM108",  # if-else instead of ternary operations for long lines
     "D101",  # no docstrings in helper classes
     "NPY002",  # np.random.rand
-    "N802",  # uppercase letters in test names, e.g. 3D
     "PLR1704",  # redefine arguments as variables
     "SIM211",  # explicit False/True for readability
-    "PTH",  # use os instead of pathlib where necessary
 ]
 
-"skfp/**__init__.py**" = [
-    "F401",  # allow unused imports which shorten import paths
+"benchmarking/**.py" = [
+    "D103",     # no docstrings
+    "PLR0912",  # many branches
+    "INP001",   # implicit package
+    "C901",     # complex code
+    "NPY002",   # np.random.seed
 ]
+
+# no docstrings in examples
+"examples/**" = ["D103"]
 
 [lint.pycodestyle]
 # formatter will reformat lines to length 88, so we report errors only for
