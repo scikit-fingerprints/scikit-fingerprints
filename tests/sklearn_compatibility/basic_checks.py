@@ -137,7 +137,9 @@ def check_fit_score_takes_y(name: str, estimator_orig: BaseFingerprintTransforme
 
 
 def check_estimators_pickle(
-    name: str, estimator_orig: BaseFingerprintTransformer, readonly_memmap: bool = False
+    name: str,
+    estimator_orig: BaseFingerprintTransformer,
+    readonly_memmap: bool = False,
 ):
     """
     Test that we can pickle all estimators.
@@ -159,21 +161,21 @@ def check_estimators_pickle(
         pickled_estimator = pickle.dumps(estimator)
         unpickled_estimator = pickle.loads(pickled_estimator)
 
-    result = dict()
+    results = dict()
     for method in check_methods:
         if hasattr(estimator, method):
-            result[method] = getattr(estimator, method)(X)
+            results[method] = getattr(estimator, method)(X)
 
-    for method in result:
-        unpickled_result = getattr(unpickled_estimator, method)(X)
+    for name, raw_result in results.items():
+        unpickled_result = getattr(unpickled_estimator, name)(X)
 
-        if isinstance(result[method], list):
-            assert len(result[method]) == len(unpickled_result)
+        if isinstance(raw_result, list):
+            assert len(raw_result) == len(unpickled_result)
         else:
-            assert result[method].shape == unpickled_result.shape
+            assert raw_result.shape == unpickled_result.shape
             if name not in omit_results_check:
                 assert np.allclose(
-                    result[method], unpickled_result, atol=1e-1, equal_nan=True
+                    raw_result, unpickled_result, atol=1e-1, equal_nan=True
                 )
 
 

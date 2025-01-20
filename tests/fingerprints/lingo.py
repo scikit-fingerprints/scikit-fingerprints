@@ -105,9 +105,9 @@ def _load_lingo_data_file(count: bool, sparse: bool) -> Union[np.ndarray, csr_ar
 
     if "tests" in os.listdir():
         return loader(os.path.join("tests", "fingerprints", "data", filename))
-    elif "fingerprints" in os.listdir():
+    if "fingerprints" in os.listdir():
         return loader(os.path.join("fingerprints", "data", filename))
-    elif "data" in os.listdir():
+    if "data" in os.listdir():
         return loader(os.path.join("data", filename))
-    else:
-        raise FileNotFoundError(f"File {filename} not found")
+
+    raise FileNotFoundError(f"File {filename} not found")

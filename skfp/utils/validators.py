@@ -35,14 +35,14 @@ def check_strings(X: Sequence[Any]) -> None:
     for idx, x in enumerate(X):
         if not isinstance(x, str):
             raise ValueError(
-                f"Passed values must be strings, got" f"type {type(x)} at index {idx}"
+                f"Passed values must be strings, gottype {type(x)} at index {idx}"
             )
 
 
 def check_mols(X: Sequence[Any]) -> None:
     for idx, x in enumerate(X):
         if not isinstance(x, (Mol, PropertyMol)):
-            raise ValueError(
+            raise TypeError(
                 f"Passed values must be RDKit Mol objects, got type {type(x)} at index {idx}"
             )
 

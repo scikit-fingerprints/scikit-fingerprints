@@ -9,6 +9,7 @@ include = [
 [lint]
 select = ["ALL"]
 ignore = [
+    "ANN",  # use mypy for annotations
     "N806",   # uppercase variables, e.g. X_train
     "N803",  # uppercase variables, e.g. X_train
     "FA100",  # regular Optional import
@@ -17,24 +18,26 @@ ignore = [
     "D213",   # start docs on next line
     "TRY003",  # long error messages
     "PLR2004",  # numerical constants
-    "ANN204",  # no __init__() return type annotations
     "FBT001",  # bool positional arguments
     "FBT002",  # bool default positional arguments
     "D107",  # no __init__ docstrings
     "PLR0913",  # many arguments
     "SLF001",  # use private members
     "RUF012",  # mutable class attributes
-    "ANN001",  # missing type annotations
-    "ANN201",  # missing return type annotations
     "D205",  # no blank line between summary and description
     "RUF002",  # allow long dash in citations
     "PD901",  # df variable for DataFrames
     "D104",  # no package docstrings
     "PT011",  # use ValueError
     "E731",  # Lambda expressions
-    "EM102",  # f-strings in exception messages
     "PGH003",  # ignore types where necessary
     "RET504",  # assign to variable before returning
+    "D212",  # start docstrings on second line
+    "D413",  # no empty line after last docstring section
+    "COM812",  # no trailing commas
+    "C408",  # call dict(), list(), set()
+    "D200",  # always multiline docstings
+    "EM",  # string messages for exceptions
 ]
 
 [lint.per-file-ignores]
@@ -53,9 +56,10 @@ ignore = [
     "SIM108",  # if-else instead of ternary operations for long lines
     "D101",  # no docstrings in helper classes
     "NPY002",  # np.random.rand
-    "PTH118",  # os.path.join()
-    "PTH110",  # os.path.join()
     "N802",  # uppercase letters in test names, e.g. 3D
+    "PLR1704",  # redefine arguments as variables
+    "SIM211",  # explicit False/True for readability
+    "PTH",  # use os instead of pathlib where necessary
 ]
 
 "skfp/**__init__.py**" = [
