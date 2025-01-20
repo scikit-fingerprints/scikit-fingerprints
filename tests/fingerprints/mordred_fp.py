@@ -59,7 +59,7 @@ def test_mordred_3D_sparse_fingerprint(smallest_smiles_list, smallest_mols_list)
 
 def test_mordred_feature_names():
     mordred_transformer = MordredFingerprint()
-    calc = Calculator(descriptors)
+    calc = Calculator(descriptors, ignore_3D=True)
     feature_names = mordred_transformer.get_feature_names_out()
     assert np.array_equal(feature_names, list(str(d) for d in calc.descriptors))
 
