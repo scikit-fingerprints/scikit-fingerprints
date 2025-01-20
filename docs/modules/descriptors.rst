@@ -10,19 +10,7 @@ Modules for computing molecular descriptors.
 
 .. py:currentmodule:: skfp.descriptors
 
-Topological descriptors (based on graph topology/structure):
-
-.. autosummary::
-    :nosignatures:
-    :toctree: generated/
-
-    average_wiener_index
-    graph_distance_index
-    polarity_number
-    wiener_index
-    zagreb_index
-
-Constitutional descriptors:
+Constitutional descriptors (based on atomic composition):
 
 .. autosummary::
     :nosignatures:
@@ -36,3 +24,15 @@ Constitutional descriptors:
     number_of_rings
     number_of_rotatable_bonds
     total_atom_count
+
+Topological descriptors (based on graph topology/structure):
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    average_wiener_index
+    graph_distance_index
+    polarity_number
+    wiener_index
+    zagreb_index

@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from rdkit.Chem import AddHs, Mol
+from rdkit.Chem import Mol
 from rdkit.Chem.Descriptors import MolWt
 from rdkit.Chem.rdMolDescriptors import CalcNumRings, CalcNumRotatableBonds
 
@@ -10,7 +10,7 @@ from skfp.utils.validators import validate_molecule
 @validate_molecule
 def average_molecular_weight(mol: Mol) -> float:
     """
-    Average Molecular Weight.
+    Average molecular weight.
 
     Calculates the average molecular weight of the molecule, defined as the molecular
     weight divided by the number of atoms.
@@ -24,8 +24,7 @@ def average_molecular_weight(mol: Mol) -> float:
 
     References
     ----------
-    .. [1] `
-        <https://chemistry.stackexchange.com/questions/150993/discrepancy-when-calulating-mol-weights-with-chemsketch-and-python-rdkit/150999#150999>`_
+    .. [1] `<https://chemistry.stackexchange.com/questions/150993/discrepancy-when-calulating-mol-weights-with-chemsketch-and-python-rdkit/150999#150999>`_
 
     Examples
     --------
@@ -39,11 +38,12 @@ def average_molecular_weight(mol: Mol) -> float:
 
 
 @validate_molecule
-def bond_type_count(mol: Mol, bond_type: Optional[str] = None) -> int:
+def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     """
-    Bond Type Count.
+    Bond count.
 
-    Counts the total number of bonds of a specific type in the molecule [1]_.
+    Counts the total number of bonds. If a specific bond type is specified,
+    returns count of only that type.
 
     Parameters
     ----------
@@ -51,34 +51,25 @@ def bond_type_count(mol: Mol, bond_type: Optional[str] = None) -> int:
         The molecule for which the bond count is to be calculated.
 
     bond_type : str, optional
-        Valid options are RDKit bond types [2]_:
-        - "SINGLE"
-        - "DOUBLE"
-        - "TRIPLE"
-        - "AROMATIC"
-        If "None", the function returns the total number of bonds.
+        If ``None``, returns the total number of bonds. Otherwise, the valid
+        options are RDKit bond types [1]_, e.g. "SINGLE", "DOUBLE", "TRIPLE",
+        "AROMATIC".
 
     References
     ----------
-    .. [1] `Wojciech, Grochala.
-        "A focus on penetration index – a new descriptor of chemical bonding"
-        Royal Society of Chemistry 14 (2023): 11597.
-        <https://pubs.rsc.org/en/content/articlepdf/2023/sc/d3sc90191b>`_
-
-    .. [2] `
-        <https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.BondType>`_
+    .. [1] `<https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.BondType>`_
 
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import bond_type_count
+    >>> from skfp.descriptors.constitutional import bond_count
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
-    >>> bond_type_count(mol, "AROMATIC")
+    >>> bond_count(mol)
     6
-    >>> bond_type_count(mol, "DOUBLE")
+    >>> bond_count(mol, "AROMATIC")
+    6
+    >>> bond_count(mol, "DOUBLE")
     0
-    >>> bond_type_count(mol)  # Total bonds
-    6
     """
     if bond_type:
         return sum(
@@ -92,8 +83,8 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
     """
     Element atom count.
 
-    Calculates the count of atoms of a specific type.
-    In case of hydrogens, the total number is returned, counting both explicit and implicit ones.
+    Calculates the count of atoms of a specific type. In case of hydrogens,
+    the total number is returned, counting both explicit and implicit ones.
 
     Parameters
     ----------
@@ -135,7 +126,7 @@ def heavy_atom_count(mol: Mol) -> int:
     """
     Heavy atom count.
 
-    Calculates the number of heavy atoms (non-hydrogen) in the molecule.
+    Calculates the number of heavy atoms (non-hydrogens) in the molecule.
 
     Parameters
     ----------
@@ -156,10 +147,10 @@ def heavy_atom_count(mol: Mol) -> int:
 @validate_molecule
 def molecular_weight(mol: Mol) -> float:
     """
-    Molecular Weight.
+    Molecular weight.
 
-    Calculates the molecular weight of the molecule [1]_.
-    This is average molecular weight in terms of isotopes [2]_.
+    Calculates the molecular weight of the molecule. This is average
+    molecular weight in terms of isotopes [1]_.
 
     Parameters
     ----------
@@ -168,14 +159,7 @@ def molecular_weight(mol: Mol) -> float:
 
     References
     ----------
-    .. [1] `Hiromasa, Kaneko.
-        "Molecular Descriptors, Structure Generation,
-        and Inverse QSAR/QSPR Based on SELFIES"
-        ACS Omega 8.24 (2023): 21781–21786.
-        <https://doi.org/10.1021/acsomega.3c01332>`_
-
-    .. [2] `
-        <https://chemistry.stackexchange.com/questions/150993/discrepancy-when-calulating-mol-weights-with-chemsketch-and-python-rdkit/150999#150999>`_
+    .. [1] `<https://chemistry.stackexchange.com/questions/150993/discrepancy-when-calulating-mol-weights-with-chemsketch-and-python-rdkit/150999#150999>`_
 
     Examples
     --------
@@ -193,19 +177,12 @@ def number_of_rings(mol: Mol) -> int:
     """
     Number of rings.
 
-    Calculates the total number of rings in the molecule [1]_.
+    Calculates the total number of rings in the molecule.
 
     Parameters
     ----------
     mol : RDKit Mol object
         The molecule for which the number of rings is to be calculated.
-
-    References
-    ----------
-    .. [1] `Alan H. Lipkus.
-        "Exploring Chemical Rings in a Simple Topological-Descriptor Space"
-        Journal of Chemical Information and Computer Sciences 41.2 (2001): 430–438.
-        <https://doi.org/10.1021/ci000144x>`_
 
     Examples
     --------
@@ -246,8 +223,8 @@ def total_atom_count(mol: Mol) -> int:
     """
     Total atom count.
 
-    Calculates the total number of atoms in the molecule.
-    Includes hydrogens, both explicit and implicit.
+    Calculates the total number of atoms in the molecule. Includes hydrogens,
+    both explicit and implicit.
 
     Parameters
     ----------
@@ -262,5 +239,4 @@ def total_atom_count(mol: Mol) -> int:
     >>> total_atom_count(mol)
     12
     """
-    mol_with_h = AddHs(mol)
-    return mol_with_h.GetNumAtoms()
+    return mol.GetNumAtoms(onlyExplicit=False)

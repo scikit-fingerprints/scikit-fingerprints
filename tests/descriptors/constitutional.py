@@ -46,17 +46,23 @@ def test_average_molecular_weight(mol_name, expected_value, input_mols):
         ("benzene", "DOUBLE", 0),
         ("benzene", "TRIPLE", 0),
         ("benzene", "AROMATIC", 6),
+        ("benzene", None, 6),
         ("ethanol", "SINGLE", 2),
         ("ethanol", "DOUBLE", 0),
         ("ethanol", "TRIPLE", 0),
+        ("ethanol", None, 2),
+        ("butadiene", "SINGLE", 1),
         ("butadiene", "DOUBLE", 2),
+        ("butadiene", None, 3),
         ("hydrogen_cyanide", "TRIPLE", 1),
+        ("hydrogen_cyanide", None, 1),
         ("cyclohexane", "SINGLE", 6),
+        ("cyclohexane", None, 6),
     ],
 )
-def test_bond_type_count(mol_name, bond_type, expected_value, input_mols):
+def test_bond_count(mol_name, bond_type, expected_value, input_mols):
     mol = input_mols[mol_name]
-    result = const.bond_type_count(mol, bond_type)
+    result = const.bond_count(mol, bond_type)
     assert result == expected_value
 
 
@@ -170,7 +176,7 @@ def test_total_atom_count(mol_name, expected_value, input_mols):
     "descriptor_function",
     [
         const.average_molecular_weight,
-        const.bond_type_count,
+        const.bond_count,
         const.element_atom_count,
         const.heavy_atom_count,
         const.molecular_weight,
