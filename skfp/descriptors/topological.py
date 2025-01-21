@@ -17,7 +17,7 @@ def average_wiener_index(
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Average Wiener index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -46,7 +46,7 @@ def average_wiener_index(
 
 
 def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
-    """
+    r"""
     Graph Distance Index (GDI).
 
     Calculates the Graph Distance Index [1]_, defined as the squared sum of all
@@ -55,7 +55,7 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
     .. math::
 
-        GDI = \\sum_{k=1}^{D} \\left(k \\cdot f_k\\right)^2
+        GDI = \sum_{k=1}^{D} \left(k \cdot f_k\right)^2
 
     where:
 
@@ -64,7 +64,7 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Graph Distance Index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -106,14 +106,14 @@ def polarity_number(
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Polarity Number is to be calculated.
 
     distance_matrix : np.ndarray, optional
         Precomputed distance matrix. If not provided, it will be calculated using RDKit.
 
     carbon_only : bool, default=False
-        Whether to consider only carbon-carbon distances. If `True`, the distance
+        Whether to consider only carbon-carbon distances. If True, the distance
         matrix will be filtered to include only rows and columns corresponding to
         carbon atoms.
 
@@ -164,7 +164,7 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Wiener index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -205,7 +205,7 @@ def zagreb_index(mol: Mol) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Zagreb index is to be calculated.
 
     References

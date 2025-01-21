@@ -603,7 +603,12 @@ def multioutput_precision_score(
     0.0
     """
     return _safe_multioutput_metric(
-        precision_score, y_true, y_pred, zero_division=0.0, *args, **kwargs
+        precision_score,
+        y_true,
+        y_pred,
+        *args,
+        zero_division=0.0,
+        **kwargs,
     )
 
 
@@ -789,27 +794,8 @@ def _safe_multioutput_metric(
     if not isinstance(y_pred, np.ndarray):
         y_pred = np.array(y_pred)
 
-    # make sure both arrays are 2D and have the same shape
-
-    if y_true.shape != y_pred.shape:
-        raise ValueError(
-            f"Both true labels and predictions must have the same shape, got: "
-            f"true labels {y_true.ndim}, predictions {y_pred.shape}"
-        )
-
-    if y_true.ndim == 1:
-        y_true = y_true.reshape(-1, 1)
-    elif y_true.ndim > 2:
-        raise ValueError(
-            f"True labels must have 1 or 2 dimensions, got shape {y_true.shape}"
-        )
-
-    if y_pred.ndim == 1:
-        y_pred = y_pred.reshape(-1, 1)
-    elif y_pred.ndim > 2:
-        raise ValueError(
-            f"Predictions must have 1 or 2 dimensions, got shape {y_true.shape}"
-        )
+    # make sure both arrays are 2D NumPy arrays with the same shape
+    y_true, y_pred = _ensure_proper_shapes(y_true, y_pred)
 
     values = []
     for i in range(y_true.shape[1]):
@@ -835,3 +821,29 @@ def _safe_multioutput_metric(
         )
 
     return float(np.mean(values))
+
+
+def _ensure_proper_shapes(
+    y_true: np.ndarray, y_pred: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    if y_true.shape != y_pred.shape:
+        raise ValueError(
+            f"Both true labels and predictions must have the same shape, got: "
+            f"true labels {y_true.ndim}, predictions {y_pred.shape}"
+        )
+
+    if y_true.ndim == 1:
+        y_true = y_true.reshape(-1, 1)
+    elif y_true.ndim > 2:
+        raise ValueError(
+            f"True labels must have 1 or 2 dimensions, got shape {y_true.shape}"
+        )
+
+    if y_pred.ndim == 1:
+        y_pred = y_pred.reshape(-1, 1)
+    elif y_pred.ndim > 2:
+        raise ValueError(
+            f"Predictions must have 1 or 2 dimensions, got shape {y_true.shape}"
+        )
+
+    return y_true, y_pred

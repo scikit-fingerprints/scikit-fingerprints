@@ -32,7 +32,7 @@ class RuleOfVeberFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -44,14 +44,14 @@ class RuleOfVeberFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Veber, D.F, Johnson S. R., Cheng H., Smith B. R., Ward K. W. , Kopple K. D.
         "Molecular Properties That Influence the Oral Bioavailability of Drug Candidates."
         J Med Chem. 2002 Jun 6;45(12):2615-23.
         <https://pubmed.ncbi.nlm.nih.gov/12036371/>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import RuleOfVeberFilter
     >>> smiles = ["CC=O", "CC(C)[C@@H](CC1=CC(=C(C=C1)OC)OCCCOC)C[C@@H]([C@H](C[C@@H](C(C)C)C(=O)NCC(C)(C)C(=O)N)O)N"]
     >>> filt = RuleOfVeberFilter()

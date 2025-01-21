@@ -59,11 +59,11 @@ html_theme_options = {
 # we copy "examples" directory from project root to docs/examples
 
 
-def all_but_ipynb(dir: str, contents: list[str]) -> list[str]:
+def all_but_ipynb(directory: str, contents: list[str]) -> list[str]:
     return [
         c
         for c in contents
-        if os.path.isfile(os.path.join(dir, c)) and not c.endswith(".ipynb")
+        if os.path.isfile(os.path.join(directory, c)) and not c.endswith(".ipynb")
     ]
 
 

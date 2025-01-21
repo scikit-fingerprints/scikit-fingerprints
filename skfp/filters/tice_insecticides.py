@@ -37,7 +37,7 @@ class TiceInsecticidesFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -49,7 +49,7 @@ class TiceInsecticidesFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Tice, C.M.,
         "Selecting the right compounds for screening:
         does Lipinski's Rule of 5 for pharmaceuticals apply to agrochemicals?"
@@ -57,7 +57,7 @@ class TiceInsecticidesFilter(BaseFilter):
         <https://doi.org/10.1002/1526-4998(200101)57:1\<3::AID-PS269\>3.0.CO;2-6>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import TiceInsecticidesFilter
     >>> smiles = ["O=C(CC1COc2ccccc2O1)NCCc1ccccc1", "O=C(Nc1cccc(Cl)c1)N1CCCC1", "CNc1nc(N)c([N+](=O)[O-])c(NCCO)n1"]
     >>> filt = TiceInsecticidesFilter()

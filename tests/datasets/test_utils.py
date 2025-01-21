@@ -110,7 +110,8 @@ def assert_valid_dataframe(
     assert "SMILES" in df.columns
 
     df_smiles = df["SMILES"].tolist()
-    df_y = df.drop(columns=["SMILES", "aminoseq"], errors="ignore").values
+    df_y = df.drop(columns=["SMILES", "aminoseq"], errors="ignore")
+    df_y = df_y.to_numpy()
     if num_tasks == 1:
         df_y = df_y.ravel()
 

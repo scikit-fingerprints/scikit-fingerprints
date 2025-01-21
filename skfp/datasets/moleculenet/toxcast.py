@@ -64,7 +64,7 @@ def load_toxcast(
     ----------
     .. [1] `Ann M. Richard et al.
         "ToxCast Chemical Landscape: Paving the Road to 21st Century Toxicology"
-        Chem. Res. Toxicol. 2016, 29, 8, 1225–1251
+        Chem. Res. Toxicol. 2016, 29, 8, 1225-1251
         <https://pubs.acs.org/doi/10.1021/acs.chemrestox.6b00135>`_
 
     .. [2] `Zhenqin Wu et al.

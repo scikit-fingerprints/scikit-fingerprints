@@ -19,7 +19,7 @@ from .utils import _check_nan
 def dice_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
-    """
+    r"""
     Dice similarity for vectors of binary values.
 
     Computes the Dice similarity [1]_ [2]_ [3]_ for binary data between two input arrays
@@ -27,7 +27,7 @@ def dice_binary_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = \\frac{2 |vec_a \\cap vec_b|}{|vec_a| + |vec_b|}
+        sim(vec_a, vec_b) = \frac{2 |vec_a \cap vec_b|}{|vec_a| + |vec_b|}
 
     The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 1.
@@ -41,7 +41,7 @@ def dice_binary_similarity(
         Second binary input array or sparse matrix.
 
     Returns
-    ----------
+    -------
     similarity : float
         Dice similarity between ``vec_a`` and ``vec_b``.
 
@@ -65,7 +65,7 @@ def dice_binary_similarity(
 
 
     Examples
-    ----------
+    --------
     >>> from skfp.distances import dice_binary_similarity
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
@@ -137,7 +137,7 @@ def dice_binary_distance(
         Second binary input array or sparse matrix.
 
     Returns
-    ----------
+    -------
     distance : float
         Dice distance between ``vec_a`` and ``vec_b``.
 
@@ -160,7 +160,7 @@ def dice_binary_distance(
         <https://doi.org/10.1021/ci300261r>
 
     Examples
-    ----------
+    --------
     >>> from skfp.distances import dice_binary_distance
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
@@ -177,7 +177,6 @@ def dice_binary_distance(
     >>> dist  # doctest: +SKIP
     0.0
     """
-
     return 1 - dice_binary_similarity(vec_a, vec_b)
 
 
@@ -191,7 +190,7 @@ def dice_binary_distance(
 def dice_count_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
-    """
+    r"""
     Dice similarity for vectors of count values.
 
     Computes the Dice similarity [1]_ [2]_ [3]_ for count data between two input arrays
@@ -199,7 +198,7 @@ def dice_count_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = \\frac{2 \\cdot vec_a \\cdot vec_b}{\\|vec_a\\|^2 + \\|vec_b\\|^2}
+        sim(vec_a, vec_b) = \frac{2 \cdot vec_a \cdot vec_b}{\|vec_a\|^2 + \|vec_b\|^2}
 
     The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 1.
@@ -343,7 +342,6 @@ def dice_count_distance(
     >>> dist  # doctest: +SKIP
     0.00952380952380949
     """
-
     return 1 - dice_count_similarity(vec_a, vec_b)
 
 

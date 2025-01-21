@@ -36,7 +36,7 @@ class AvalonFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -63,7 +63,7 @@ class AvalonFingerprint(BaseFingerprintTransformer):
     .. [2] `Gedeck, Peter, Bernhard Rohde, and Christian Bartels
         "QSAR − How Good Is It in Practice? Comparison of Descriptor Sets on an Unbiased
         Cross Section of Corporate Data Sets."
-        J. Chem. Inf. Model. 2006, 46, 5, 1924–1936
+        J. Chem. Inf. Model. 2006, 46, 5, 1924-1936
         <https://pubs.acs.org/doi/abs/10.1021/ci050413p>`_
 
     Examples

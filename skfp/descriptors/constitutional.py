@@ -33,7 +33,7 @@ def average_molecular_weight(mol: Mol) -> float:
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> average_molecular_weight(mol)
     13.018999999999998
-    """  # noqa: E501
+    """
     return MolWt(mol) / mol.GetNumAtoms()
 
 
@@ -111,7 +111,7 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
     >>> element_atom_count(mol, 1)
     6
     """
-    if atom_id == 1 or atom_id == "H":
+    if atom_id in (1, "H"):
         return sum(atom.GetTotalNumHs() for atom in mol.GetAtoms())
     else:
         return sum(
@@ -168,7 +168,7 @@ def molecular_weight(mol: Mol) -> float:
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> molecular_weight(mol)
     78.11399999999999
-    """  # noqa: E501
+    """
     return MolWt(mol)
 
 

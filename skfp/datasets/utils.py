@@ -109,7 +109,7 @@ def get_mol_strings_and_labels(
     # make sure we remove both columns if present
     df = df.drop(columns=["SMILES", "aminoseq"], errors="ignore")
 
-    labels = df.values
+    labels = df.to_numpy()
     if labels.shape[1] == 1:
         labels = labels.ravel()
 

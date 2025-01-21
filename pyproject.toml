@@ -48,21 +48,22 @@ dependencies = [
 ]
 
 [project.urls]
+"Homepage" = "https://github.com/scikit-fingerprints/scikit-fingerprints"
+"Documentation" = "https://scikit-fingerprints.github.io/scikit-fingerprints/"
+"Repository" = "https://github.com/scikit-fingerprints/scikit-fingerprints"
 "Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
 
 [tool.poetry.group.dev]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "*"
 coverage = "*"
-flake8 = "*"
-isort = "*"
 jupyter = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
+ruff = "*"
 setuptools = "*"  # to avoid PyCharm errors
 xenon = "*"
 
@@ -70,12 +71,11 @@ xenon = "*"
 optional = true
 
 [tool.poetry.group.test.dependencies]
-black = "*"
-isort = "*"
 mypy = "*"
 pip-audit = "*"
 pre-commit = "*"
 pytest = "*"
+ruff = "*"
 xenon = "*"
 
 [tool.poetry.group.doc]
@@ -104,13 +104,6 @@ source = "git-tag"
 
 [tool.pytest.ini_options]
 python_files = "*.py"
-
-[tool.black]
-include = "benchmarking/.*\\.py|skfp/.*\\.py|tests/.*\\.py"
-
-[tool.isort]
-profile = "black"
-skip_glob = ".poetry/**"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

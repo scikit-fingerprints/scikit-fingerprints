@@ -170,8 +170,8 @@ def test_mol_weight_min_max_thresholds(
 
 
 def test_mol_weight_wrong_min_max_thresholds(smiles_list):
+    filt = MolecularWeightFilter(min_weight=1000, max_weight=100)
     with pytest.raises(InvalidParameterError) as exc_info:
-        filt = MolecularWeightFilter(min_weight=1000, max_weight=100)
         filt.transform(smiles_list)
 
     expected_msg = (

@@ -50,7 +50,7 @@ class RuleOfThreeFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -62,14 +62,14 @@ class RuleOfThreeFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Congreve, M., Carr, R., Murray, C., & Jhoti, H.
         "A 'Rule of Three' for fragment-based lead discovery?"
-        Drug Discovery Today, 8(19), 876–877.
+        Drug Discovery Today, 8(19), 876-877.
         <https://doi.org/10.1016/S1359-6446(03)02831-9>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import RuleOfThreeFilter
     >>> smiles = ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
     >>> filt = RuleOfThreeFilter()

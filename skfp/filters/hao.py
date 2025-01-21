@@ -40,7 +40,7 @@ class HaoFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -52,14 +52,14 @@ class HaoFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Hao, G., Dong, Q. and Yang, G.,
         "A Comparative Study on the Constitutive Properties of Marketed Pesticides."
         Mol. Inf., 30: 614-622.
         <https://doi.org/10.1002/minf.201100020>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import HaoFilter
     >>> smiles = ["CN(C)c1ccc(C=Cc2cc[n+](C)c3ccccc23)cc1","c1cnc2c(c1)ccc1cccnc12",\
     "Cn1c(SSc2ccc(-c3cccnc3)n2C)ccc1-c1cccnc1"]

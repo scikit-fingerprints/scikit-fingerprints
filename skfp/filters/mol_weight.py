@@ -13,7 +13,7 @@ class MolecularWeightFilter(BaseFilter):
     Molecular weight filter.
 
     Filters out molecules with mass in Daltons outside the given range. Provided
-    `min_weight` and `max_weight` are inclusive on both sides.
+    ``min_weight`` and ``max_weight`` are inclusive on both sides.
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ class MolecularWeightFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into

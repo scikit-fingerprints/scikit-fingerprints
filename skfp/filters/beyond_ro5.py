@@ -46,7 +46,7 @@ class BeyondRo5Filter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -61,7 +61,7 @@ class BeyondRo5Filter(BaseFilter):
     ----------
     .. [1] `Bradley C. Doak, Jie Zheng, Doreen Dobritzsch and Jan Kihlberg
         "How Beyond Rule of 5 Drugs and Clinical Candidates Bind to Their Targets"
-        J. Med. Chem. 2016, 59, 6, 2312–2327
+        J. Med. Chem. 2016, 59, 6, 2312-2327
         <https://pubs.acs.org/doi/10.1021/acs.jmedchem.5b01286>`_
 
     .. [2] `RDKit Implementation of the TPSA Descriptor
