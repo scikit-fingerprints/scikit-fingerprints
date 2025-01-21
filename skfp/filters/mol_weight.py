@@ -13,7 +13,7 @@ class MolecularWeightFilter(BaseFilter):
     Molecular weight filter.
 
     Filters out molecules with mass in Daltons outside the given range. Provided
-    `min_weight` and `max_weight` are inclusive on both sides.
+    ``min_weight`` and ``max_weight`` are inclusive on both sides.
 
     Parameters
     ----------

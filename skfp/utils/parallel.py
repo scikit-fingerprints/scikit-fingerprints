@@ -116,7 +116,7 @@ def run_in_parallel(
         tqdm_settings["disable"] = verbose.get("disable", False)
     else:
         raise TypeError(
-            f"The `verbose` argument must be int or dict, got {type(verbose)}"
+            f"The verbose argument must be int or dict, got {type(verbose)}"
         )
 
     if tqdm_settings["disable"]:
