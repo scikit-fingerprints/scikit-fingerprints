@@ -97,6 +97,9 @@ class MolFromSDFTransformer(BasePreprocessor):
 
         return mols
 
+    def _transform_batch(self, X):
+        pass  # unused
+
 
 class MolToSDFTransformer(BasePreprocessor):
     """
@@ -193,3 +196,6 @@ class MolToSDFTransformer(BasePreprocessor):
                     writer.write(mol)
 
             writer.flush()
+
+    def _transform_batch(self, X):
+        pass  # unused
