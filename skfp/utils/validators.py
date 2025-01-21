@@ -1,5 +1,6 @@
+import functools
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, Callable
 
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
@@ -77,3 +78,20 @@ def require_strings(X: Sequence[Any]) -> None:
             raise TypeError(
                 f"Passed values must be strings, got type {type(x)} at index {idx}"
             )
+
+
+def validate_molecule(func: Callable) -> Callable:
+    """
+    Decorator for functions operating on single molecule. Ensures it is
+    nonempty (at least 1 atom), raises ValueError otherwise.
+    """
+
+    @functools.wraps(func)
+    def wrapper(mol: Mol, *args, **kwargs):
+        if mol.GetNumAtoms() == 0:
+            raise ValueError(
+                f"The molecule has no atoms, {func.__name__} cannot be calculated."
+            )
+        return func(mol, *args, **kwargs)
+
+    return wrapper
