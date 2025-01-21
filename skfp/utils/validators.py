@@ -84,7 +84,7 @@ def validate_molecule(func: Callable) -> Callable:
     """
     Decorator for functions operating on single molecule. Ensures it is
     nonempty (at least 1 atom), raises ValueError otherwise.
-    """
+    """  # noqa: D401
 
     @functools.wraps(func)
     def wrapper(mol: Mol, *args, **kwargs):

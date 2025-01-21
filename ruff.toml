@@ -79,6 +79,10 @@ ignore = [
     "D401",    # non-imperative descriptions
 ]
 
+"skfp/descriptors/**.py" = [
+    "D401",    # non-imperative descriptions
+]
+
 "tests/**" = [
     "ARG001",   # unused arguments in scikit-learn tests
     "D101",     # no docstrings in helper classes
