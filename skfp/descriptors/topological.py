@@ -113,7 +113,7 @@ def polarity_number(
         Precomputed distance matrix. If not provided, it will be calculated using RDKit.
 
     carbon_only : bool, default=False
-        Whether to consider only carbon-carbon distances. If `True`, the distance
+        Whether to consider only carbon-carbon distances. If True, the distance
         matrix will be filtered to include only rows and columns corresponding to
         carbon atoms.
 
