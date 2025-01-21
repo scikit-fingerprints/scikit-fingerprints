@@ -15,7 +15,48 @@ from skfp.utils import ensure_mols, run_in_parallel
 
 
 class BaseFilter(ABC, BaseEstimator, TransformerMixin):
-    """Base class for molecular filters."""
+    """
+    Base class for molecular filters.
+
+    Filters take a list of molecules and check which ones fulfill the conditions
+    specified. It can be used to create both common types of filters:
+
+    - "pass" filters, where molecules have to fit into a given range of properties,
+      e.g. Lipinski Rule of 5
+    - "reject" filters, where molecules cannot contain certain properties like
+      toxic functional groups, e.g. PAINS filters
+
+    This class is not meant to be used directly. If you want to create custom
+    filters, inherit from this class and override the ``._apply_mol_filter()``
+    method. It gets a single molecule and outputs a boolean, whether it passes
+    the filter or not. Note that for "reject" filters it should return True if
+    molecule should be kept, i.e. does not contain any undesirable property.
+
+    Parameters
+    ----------
+    allow_one_violation : bool, default=False
+        Whether to allow violating one of the rules for a molecule. This makes the
+        filter less restrictive.
+
+    return_indicators : bool, default=False
+        Whether to return a binary vector with indicators which molecules pass the
+        filter, instead of list of molecules.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform_x_y` and
+        :meth:`transform` are parallelized over the input molecules. ``None`` means 1
+        unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    verbose : int or dict, default=0
+        Controls the verbosity when filtering molecules.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
+    """
 
     # parameters common for all filters
     _parameter_constraints: dict = {
@@ -28,7 +69,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        allow_one_violation: bool = True,
+        allow_one_violation: bool = False,
         return_indicators: bool = False,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,

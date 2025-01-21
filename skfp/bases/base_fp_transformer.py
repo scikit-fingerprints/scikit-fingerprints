@@ -43,7 +43,47 @@ cannot be pickled, throwing TypeError: cannot pickle 'Boost.Python.function' obj
 class BaseFingerprintTransformer(
     ABC, BaseEstimator, TransformerMixin, ClassNamePrefixFeaturesOutMixin
 ):
-    """Base class for fingerprint transformers."""
+    """
+    Base class for fingerprints.
+
+    Computes feature vectors - molecular fingerprints - from input molecules.
+
+    This class is not meant to be used directly. If you want to use custom
+    fingerprints, inherit from this class and implement the ``._calculate_fingerprint()``
+    method. It operates on a minibatch of molecules for efficiency.
+
+    For hashing (folding) fingerprints, the ``._hash_fingerprint_bits()`` may also be
+    useful.
+
+    Parameters
+    ----------
+    n_features_out : int
+        Number of output features.
+
+    requires_conformers : bool = False
+        Whether the fingerprint requires 3D conformations as inputs.
+
+    count : bool, default=False
+        Whether to return binary (bit) features, or their counts.
+
+    sparse : bool, default=False
+        Whether to return dense NumPy array, or sparse SciPy CSR array.
+
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    verbose : int or dict, default=0
+        Controls the verbosity when computing fingerprints.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
+    """
 
     # parameters common for all fingerprints
     _parameter_constraints: dict = {

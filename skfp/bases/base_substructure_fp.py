@@ -14,9 +14,10 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
     """
     Base class for substructure fingerprints.
 
-    The implementation uses RDKit. Fingerprint tests for presence of provided
-    molecular patterns. Number of features in fingerprint is equal to the number
-    of patterns it was constructed from.
+    The implementation uses RDKit. Substructure fingerprint checks for presence
+    (or number, depending on ``count`` parameter) of provided molecular patterns.
+    Number of features in fingerprint is equal to the number of patterns it was
+    constructed from.
 
     This class is not meant to be used directly. If you want to use custom SMARTS
     patterns, inherit from this class and pass the ``patterns`` parameter to the
@@ -105,29 +106,6 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
                 compiled_patterns.append(pattern_mol)
 
         return compiled_patterns
-
-    def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
-        """
-        Compute substructure fingerprints.
-
-        Parameters
-        ----------
-        X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit ``Mol`` objects. If ``use_3D``
-             is True, only ``Mol`` objects with computed conformations and with
-             ``conf_id`` property are allowed.
-
-        copy : bool, default=False
-            Copy the input X or not.
-
-        Returns
-        -------
-        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
-            Array with fingerprints.
-        """
-        return super().transform(X, copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

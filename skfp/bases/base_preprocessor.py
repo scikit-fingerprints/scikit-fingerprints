@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
@@ -14,7 +14,33 @@ from skfp.utils import run_in_parallel
 
 
 class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
-    """Base class for molecule preprocessing classes."""
+    """
+    Base class for preprocessing molecules.
+
+    This is a generic class for various preprocessing operations. It is not meant
+    to be used directly. If you want to create custom preprocessing steps, inherit
+    from this class and override the ``._transform_batch()`` method. It gets a
+    minibatch of molecules and outputs the preprocessed results, depending on the
+    implementation, e.g. molecules, vectors, or boolean indicators.
+
+    Parameters
+    ----------
+    n_jobs : int, default=None
+        The number of jobs to run in parallel. :meth:`transform` is parallelized
+        over the input molecules. ``None`` means 1 unless in a
+        :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
+        See scikit-learn documentation on ``n_jobs`` for more details.
+
+    batch_size : int, default=None
+        Number of inputs processed in each batch. ``None`` divides input data into
+        equal-sized parts, as many as ``n_jobs``.
+
+    suppress_warnings: bool, default=False
+        Whether to suppress warnings and errors during processing operations.
+
+    verbose : int, default=0
+        Controls the verbosity when processing molecules.
+    """
 
     # parameters common for all fingerprints
     _parameter_constraints: dict = {
@@ -130,6 +156,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
 
         return results
 
+    @abstractmethod
     def _transform_batch(self, X):
         raise NotImplementedError
 
