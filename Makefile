@@ -16,11 +16,11 @@ doctest: docs ## Run documentation tests
 
 test: ## Run tests
 	poetry run ruff check
-	poetry run pytest tests
+	poetry run pytest -n auto tests
 
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files
-	poetry run pytest --cov=skfp tests
+	poetry run pytest -n auto --cov=skfp tests
 	-rm -rf .tmp_coverage_files
 
 help:
