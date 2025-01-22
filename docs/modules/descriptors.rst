@@ -18,7 +18,6 @@ Burden descriptors:
 
     burden_descriptors
 
-
 Constitutional descriptors (based on atomic composition):
 
 .. autosummary::

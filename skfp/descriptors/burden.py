@@ -9,9 +9,9 @@ from skfp.utils.validators import validate_molecule
 @validate_molecule
 def burden_descriptors(mol: Mol) -> list[float]:
     """
-    Burden Descriptors (BCUT).
+    Burden descriptors (BCUT).
 
-    Computes the BCUT descriptors based on the eigenvalues of the Burden adjacency matrix
+    Computes the BCUT descriptors [1]_ based on the eigenvalues of the Burden adjacency matrix
     weighted by different atomic properties.
 
     The function returns 8 values corresponding to:
@@ -27,10 +27,10 @@ def burden_descriptors(mol: Mol) -> list[float]:
 
     References
     ----------
-    .. [1] ` Marrs, Frank W.
-            "Chemical Descriptors for a Large-Scale Study on Drop-Weight Impact Sensitivity of High Explosives"
-            Journal of Chemical Information and Modeling 63.3 (2023): 753–769.
-            <https://pubs.acs.org/doi/10.1021/acs.jcim.2c01154>`_
+    .. [1] `Marrs, Frank W.
+        "Chemical Descriptors for a Large-Scale Study on Drop-Weight Impact Sensitivity of High Explosives"
+        Journal of Chemical Information and Modeling 63.3 (2023): 753–769.
+        <https://pubs.acs.org/doi/10.1021/acs.jcim.2c01154>`_
 
     Examples
     --------
@@ -38,6 +38,6 @@ def burden_descriptors(mol: Mol) -> list[float]:
     >>> from skfp.descriptors.burden import burden_descriptors
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> burden_descriptors(mol)
-    [13.647, 10.379, 1.574, -1.694, 1.794, -1.474, 4.986, 1.718]
+    [13.646993161855445, 10.379006838144555, 1.5737245910733615, -1.6942617326375462, 1.794093161855452, -1.4738931618554547, 4.985993161855452, 1.718006838144549]
     """
     return BCUT2D(mol)

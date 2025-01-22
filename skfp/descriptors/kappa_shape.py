@@ -1,5 +1,3 @@
-from typing import List
-
 from rdkit.Chem import Mol
 from rdkit.Chem.GraphDescriptors import Kappa1, Kappa2, Kappa3
 
@@ -9,7 +7,9 @@ from skfp.utils.validators import validate_molecule
 @validate_molecule
 def kappa_shape_indices(mol: Mol) -> list[float]:
     """
-    Compute the first, second, and third kappa shape indices.
+    Kappa shape indices.
+
+    Compute the first, second, and third kappa shape indices [1]_.
 
     Parameters
     ----------
@@ -29,6 +29,6 @@ def kappa_shape_indices(mol: Mol) -> list[float]:
     >>> from skfp.descriptors.kappa_shape import kappa_shape_indices
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa_shape_indices(mol)
-    [3.412, 1.606, 0.582]
+    [3.4115708812260532, 1.6057694396735218, 0.5823992601400448]
     """
     return [Kappa1(mol), Kappa2(mol), Kappa3(mol)]
