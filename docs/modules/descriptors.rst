@@ -10,6 +10,15 @@ Modules for computing molecular descriptors.
 
 .. py:currentmodule:: skfp.descriptors
 
+Burden descriptors:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    burden_descriptors
+
+
 Constitutional descriptors (based on atomic composition):
 
 .. autosummary::
@@ -24,6 +33,14 @@ Constitutional descriptors (based on atomic composition):
     number_of_rings
     number_of_rotatable_bonds
     total_atom_count
+
+Kappa descriptors:
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    kappa_shape_indices
 
 Topological descriptors (based on graph topology/structure):
 
