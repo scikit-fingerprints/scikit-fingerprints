@@ -62,6 +62,7 @@ jupyter = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
+pytest-xdist = "*"
 pytest-cov = "*"
 ruff = "*"
 setuptools = "*"  # to avoid PyCharm errors
