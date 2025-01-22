@@ -75,6 +75,52 @@ def test_average_wiener_index(mol_name, expected_value, input_mols):
 @pytest.mark.parametrize(
     "mol_name, expected_value",
     {
+        "ethane": 1.0,
+        "ethanol": 1.633,
+        "carbon_dioxide": 3.266,
+        "benzene": 3.0,
+        "acetic_acid": 2.803,
+        "pyridine": 3.0,
+        "isobutane": 2.324,
+        "pyrimidine": 2.591,
+    }.items(),
+)
+def test_balaban_j_index(mol_name, expected_value, input_mols):
+    mol, distance_matrix = input_mols[mol_name]
+
+    result = top.balaban_j_index(mol)
+    result_no_dist_matrix = top.balaban_j_index(mol)
+
+    assert round(result, 3) == expected_value
+    assert round(result_no_dist_matrix, 3) == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
+        "ethane": 1,
+        "ethanol": 2,
+        "carbon_dioxide": 2,
+        "benzene": 3,
+        "acetic_acid": 2,
+        "pyridine": 3,
+        "isobutane": 2,
+        "pyrimidine": 4,
+    }.items(),
+)
+def test_diameter(mol_name, expected_value, input_mols):
+    mol, distance_matrix = input_mols[mol_name]
+
+    result = top.diameter(mol, distance_matrix)
+    result_no_dist_matrix = top.diameter(mol)
+
+    assert result == expected_value
+    assert result_no_dist_matrix == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
         "ethane": 1,
         "ethanol": 8,
         "carbon_dioxide": 8,
@@ -98,6 +144,52 @@ def test_graph_distance_index(mol_name, expected_value, input_mols):
 @pytest.mark.parametrize(
     "mol_name, expected_value",
     {
+        "ethane": 0.0,
+        "ethanol": 1.0,
+        "carbon_dioxide": 1.0,
+        "benzene": 0.0,
+        "acetic_acid": 1.0,
+        "pyridine": 0.0,
+        "isobutane": 1.0,
+        "pyrimidine": 1.0,
+    }.items(),
+)
+def test_petitjean_index(mol_name, expected_value, input_mols):
+    mol, distance_matrix = input_mols[mol_name]
+
+    result = top.petitjean_index(mol)
+    result_no_dist_matrix = top.petitjean_index(mol)
+
+    assert round(result, 3) == expected_value
+    assert result_no_dist_matrix == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
+        "ethane": 1,
+        "ethanol": 1,
+        "carbon_dioxide": 1,
+        "benzene": 3,
+        "acetic_acid": 1,
+        "pyridine": 3,
+        "isobutane": 1,
+        "pyrimidine": 2,
+    }.items(),
+)
+def test_radius(mol_name, expected_value, input_mols):
+    mol, distance_matrix = input_mols[mol_name]
+
+    result = top.radius(mol, distance_matrix)
+    result_no_dist_matrix = top.radius(mol)
+
+    assert result == expected_value
+    assert result_no_dist_matrix == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
         "ethane": 2,
         "ethanol": 6,
         "carbon_dioxide": 6,
@@ -108,9 +200,28 @@ def test_graph_distance_index(mol_name, expected_value, input_mols):
         "pyrimidine": 42,
     }.items(),
 )
-def test_zagreb_index(mol_name, expected_value, input_mols):
+def test_zagreb_index_m1(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
-    result = top.zagreb_index(mol)
+    result = top.zagreb_index_m1(mol)
+    assert result == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
+        "ethane": 1,
+        "ethanol": 4,
+        "carbon_dioxide": 4,
+        "benzene": 24,
+        "acetic_acid": 9,
+        "pyridine": 24,
+        "isobutane": 9,
+        "pyrimidine": 49,
+    }.items(),
+)
+def test_zagreb_index_m2(mol_name, expected_value, input_mols):
+    mol, _ = input_mols[mol_name]
+    result = top.zagreb_index_m2(mol)
     assert result == expected_value
 
 
