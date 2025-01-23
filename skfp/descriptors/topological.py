@@ -5,7 +5,10 @@ import numpy as np
 from rdkit.Chem import GetDistanceMatrix, Mol
 from rdkit.Chem.GraphDescriptors import BalabanJ
 
+from skfp.utils.validators import require_atoms
 
+
+@require_atoms(min_atoms=2)
 def average_wiener_index(
     mol: Mol, distance_matrix: Optional[np.ndarray] = None
 ) -> float:
@@ -18,7 +21,7 @@ def average_wiener_index(
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Average Wiener index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -47,27 +50,27 @@ def average_wiener_index(
 
 
 def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
-    """
+    r"""
     Balaban's J Index.
 
-    Calculates the Balaban’s J index [1]_ [2]_, defined as a measure of molecular
+    Calculates the Balaban’s J index [1]_, defined as a measure of molecular
     connectivity with an emphasis on cyclic structures. The formula for calculating
     Balaban's J Index is given as:
 
     .. math::
 
-        J = \\frac{M}{μ + 1} \\cdot \\frac{Σ_{ij} (d_{ij})^{-1}}{n},
+        J = \frac{M}{μ + 1} \cdot \frac{Σ_{ij} (d_{ij})^{-1}}{n},
 
     where:
 
-    - :math:`M` is the number of edges in the molecular graph,
-    - :math:`μ` is the cyclomatic number (number of independent cycles),
-    - :math:`d_{ij}` is the distance between atoms :math:`i` and :math:`j`,
-    - :math:`n` is the number of atoms in the molecule.
+    - :math:`M` is the number of bonds
+    - :math:`μ` is the cyclomatic number (number of independent cycles)
+    - :math:`d_{ij}` is the distance between atoms :math:`i` and :math:`j`
+    - :math:`n` is the number of atoms in the molecule
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Balaban's J index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -77,10 +80,8 @@ def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     ----------
     .. [1] `Balaban, Alexandru T.
         "Highly discriminating distance-based topological index."
-        Chemical physics letters 89.5 (1982): 399-404.
-        <https://www.sciencedirect.com/science/article/abs/pii/0009261482800092>`_
-
-    .. [2] `<https://www.rdkit.org/docs/source/rdkit.Chem.GraphDescriptors.html>`_
+        Chemical Physics Letters 89.5 (1982): 399-404.
+        <https://doi.org/10.1016/0009-2614(82)80009-2>`_
 
     Examples
     --------
@@ -97,22 +98,11 @@ def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     """
     Diameter.
 
-    Calculates the diameter [1]_, defined as the maximum eccentricity among all atoms
-    in the molecular graph. The eccentricity of an atom is the greatest shortest
-    path distance to any other atom. It is given as:
-
-    .. math::
-
-        D = \\max_i(η_i)
-
-    where:
-
-    - :math:`η_i = \\max_j(d_{ij})` is the eccentricity of the :math:`i^{th}` atom.
-    - :math:`d_{ij}` is the shortest path distance between atoms :math:`i` and :math:`j`.
+    Calculates the diameter [1]_, defined as the maximum length of the shortest path.
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the diameter is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -120,11 +110,11 @@ def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
 
     References
     ----------
-    .. [1] `Petitjean, Michel.
+    .. [1] `Petitjean, Michel
         "Applications of the radius-diameter diagram to the classification
         of topological and geometrical shapes of chemical compounds."
-        Journal of chemical information and computer sciences 32.4 (1992): 331-337.
-        <https://pubs.acs.org/doi/pdf/10.1021/ci00008a012?casa_token=NU1BjSvRFPQAAAAA:T9Z6IR5eWCl7xO8MLury1EEXu04nGFIzHe9kaNOoY9vfiJZ9Ud2KlV_voQeGSwdMxSGmfNld9_b4ZQ>`_
+        Journal of Chemical Information and Computer Sciences 32.4 (1992): 331-337.
+        <https://doi.org/10.1021/ci00008a012>`_
 
     Examples
     --------
@@ -143,7 +133,7 @@ def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
 
 
 def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
-    """
+    r"""
     Graph Distance Index (GDI).
 
     Calculates the Graph Distance Index [1]_, defined as the squared sum of all
@@ -152,16 +142,16 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
     .. math::
 
-        GDI = \\sum_{k=1}^{D} \\left(k \\cdot f_k\\right)^2
+        GDI = \sum_{k=1}^{D} \left(k \cdot f_k\right)^2
 
     where:
 
-    - :math:`D` is the topological diameter of the graph (the largest graph distance).
-    - :math:`f_k` is the total number of distances in the graph equal to :math:`k`.
+    - :math:`D` is the topological diameter of the graph (the largest graph distance)
+    - :math:`f_k` is the total number of distances in the graph equal to :math:`k`
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Graph Distance Index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -191,18 +181,24 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
 
 def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
-    """
+    r"""
     Petitjean Index.
 
     Calculates the Petitjean Index [1]_, defined as a measure of molecular shape based on graph
     topology. It is derived from two fundamental properties of molecular graphs: radius (R) and
-    diameter (D). The radius is the smallest maximum distance from any atom to all others, while
-    the diameter is the largest possible shortest path between any two atoms in the graph. The
-    index quantifies the deviation of a molecular structure from a perfectly symmetric shape.
+    diameter (D). The formula for calculating the Petitjean Index is given as:
+
+    .. math::
+        I_2 = \frac{D - R}{R}
+
+    where:
+
+    - :math:D is the graph diameter
+    - :math:R is the graph radius
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Petitjean index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -210,11 +206,11 @@ def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
 
     References
     ----------
-    .. [1] `Petitjean, Michel.
+    .. [1] `Petitjean, Michel
         "Applications of the radius-diameter diagram to the classification
         of topological and geometrical shapes of chemical compounds."
-        Journal of chemical information and computer sciences 32.4 (1992): 331-337.
-        <https://pubs.acs.org/doi/pdf/10.1021/ci00008a012?casa_token=NU1BjSvRFPQAAAAA:T9Z6IR5eWCl7xO8MLury1EEXu04nGFIzHe9kaNOoY9vfiJZ9Ud2KlV_voQeGSwdMxSGmfNld9_b4ZQ>`_
+        Journal of Chemical Information and Computer Sciences 32.4 (1992): 331-337.
+        <https://doi.org/10.1021/ci00008a012>`_
 
     Examples
     --------
@@ -243,7 +239,7 @@ def polarity_number(
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Polarity Number is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -296,22 +292,11 @@ def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     """
     Radius.
 
-    Calculates the radius [1]_, defined as the minimum eccentricity among all atoms
-    in the molecular graph. The eccentricity of an atom is the greatest shortest path
-    distance to any other atom. It is given as:
-
-    .. math::
-
-        R = \\min_i(η_i)
-
-    where:
-
-    - :math:`η_i = \\max_j(d_{ij})` is the eccentricity of the :math:`i^{th}` atom.
-    - :math:`d_{ij}` is the shortest path distance between atoms :math:`i` and :math:`j`.
+    Calculates the radius [1]_, defined as the minimal length of the longest path between atoms.
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the radius is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -319,11 +304,11 @@ def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
 
     References
     ----------
-    .. [1] `Petitjean, Michel.
+    .. [1] `Petitjean, Michel
         "Applications of the radius-diameter diagram to the classification
         of topological and geometrical shapes of chemical compounds."
-        Journal of chemical information and computer sciences 32.4 (1992): 331-337.
-        <https://pubs.acs.org/doi/pdf/10.1021/ci00008a012?casa_token=NU1BjSvRFPQAAAAA:T9Z6IR5eWCl7xO8MLury1EEXu04nGFIzHe9kaNOoY9vfiJZ9Ud2KlV_voQeGSwdMxSGmfNld9_b4ZQ>`_
+        Journal of Chemical Information and Computer Sciences 32.4 (1992): 331-337.
+        <https://doi.org/10.1021/ci00008a012>`_
 
     Examples
     --------
@@ -350,7 +335,7 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Wiener index is to be calculated.
 
     distance_matrix : np.ndarray, optional
@@ -385,13 +370,13 @@ def zagreb_index_m1(mol: Mol) -> int:
     """
     First Zagreb Index.
 
-    Calculates the First Zagreb Index [1]_, defined as the sum of the squares of the
+    Calculates the first Zagreb index [1]_, defined as the sum of the squares of the
     degrees of all atoms in the molecule. Also known as simply the Zagreb index. It is
     a measure of molecular branching.
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Zagreb index is to be calculated.
 
     References
@@ -413,16 +398,27 @@ def zagreb_index_m1(mol: Mol) -> int:
 
 
 def zagreb_index_m2(mol: Mol) -> int:
-    """
+    r"""
     Second Zagreb Index.
 
-    Calculates the Second Zagreb Index [1]_, defined as the sum of the product of
+    Calculates the second Zagreb index [1]_, defined as the sum of the product of
     degrees of all pairs of adjacent atoms in the molecule. It provides a measure
-    related to molecular branching and the connectivity of bonds.
+    related to molecular branching and the connectivity of bonds. The formula for
+    calculating the second Zagreb index is given as:
+
+    .. math::
+
+        M_2 = \sum_{(u,v) \in E} d_u \cdot d_v
+
+    where:
+
+    - :math:`E` is the set of bonds (edges) in the molecular graph
+    - :math:`d_u` and :math:`d_v` are the degrees of the atoms :math:`u` and :math:`v`
+      connected by each bond
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Second Zagreb Index is to be calculated.
 
     References

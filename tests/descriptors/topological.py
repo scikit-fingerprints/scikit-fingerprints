@@ -18,6 +18,7 @@ def input_mols() -> dict[str, tuple[Mol, np.ndarray]]:
         ("isobutane", "C(C)(C)C"),
         ("pyrimidine", "c1cnc2ncnc12"),
         ("dinitrogen", "N#N"),
+        ("sulfur", "[S]"),
     ]:
         mol = MolFromSmiles(smiles)
         dist_matrix = GetDistanceMatrix(mol)
@@ -28,16 +29,17 @@ def input_mols() -> dict[str, tuple[Mol, np.ndarray]]:
 
 @pytest.mark.parametrize(
     "mol_name, expected_value",
-    [
-        ("ethane", 1),
-        ("ethanol", 4),
-        ("carbon_dioxide", 4),
-        ("benzene", 27),
-        ("acetic_acid", 9),
-        ("pyridine", 27),
-        ("isobutane", 9),
-        ("pyrimidine", 55),
-    ],
+    {
+        "ethane": 1,
+        "ethanol": 4,
+        "carbon_dioxide": 4,
+        "benzene": 27,
+        "acetic_acid": 9,
+        "pyridine": 27,
+        "isobutane": 9,
+        "pyrimidine": 55,
+        "sulfur": 0,
+    }.items(),
 )
 def test_wiener_index(mol_name, expected_value, input_mols):
     mol, distance_matrix = input_mols[mol_name]
@@ -51,16 +53,16 @@ def test_wiener_index(mol_name, expected_value, input_mols):
 
 @pytest.mark.parametrize(
     "mol_name, expected_value",
-    [
-        ("ethane", 1.0),
-        ("ethanol", 1.333),
-        ("carbon_dioxide", 1.333),
-        ("benzene", 1.8),
-        ("acetic_acid", 1.5),
-        ("pyridine", 1.8),
-        ("isobutane", 1.5),
-        ("pyrimidine", 1.964),
-    ],
+    {
+        "ethane": 1.0,
+        "ethanol": 1.333,
+        "carbon_dioxide": 1.333,
+        "benzene": 1.8,
+        "acetic_acid": 1.5,
+        "pyridine": 1.8,
+        "isobutane": 1.5,
+        "pyrimidine": 1.964,
+    }.items(),
 )
 def test_average_wiener_index(mol_name, expected_value, input_mols):
     mol, distance_matrix = input_mols[mol_name]
@@ -70,6 +72,15 @@ def test_average_wiener_index(mol_name, expected_value, input_mols):
 
     assert round(result, 3) == expected_value
     assert round(result_no_dist_matrix, 3) == expected_value
+
+
+def test_average_wiener_index_single_atom(input_mols):
+    mol, distance_matrix = input_mols["sulfur"]
+    with pytest.raises(
+        ValueError,
+        match="The molecule must have at least 2 atom\\(s\\), average_wiener_index cannot be calculated.",
+    ):
+        top.average_wiener_index(mol)
 
 
 @pytest.mark.parametrize(
@@ -83,6 +94,7 @@ def test_average_wiener_index(mol_name, expected_value, input_mols):
         "pyridine": 3.0,
         "isobutane": 2.324,
         "pyrimidine": 2.591,
+        "sulfur": 0,
     }.items(),
 )
 def test_balaban_j_index(mol_name, expected_value, input_mols):
@@ -106,6 +118,7 @@ def test_balaban_j_index(mol_name, expected_value, input_mols):
         "pyridine": 3,
         "isobutane": 2,
         "pyrimidine": 4,
+        "sulfur": 0,
     }.items(),
 )
 def test_diameter(mol_name, expected_value, input_mols):
@@ -129,6 +142,7 @@ def test_diameter(mol_name, expected_value, input_mols):
         "pyridine": 261,
         "isobutane": 45,
         "pyrimidine": 997,
+        "sulfur": 0,
     }.items(),
 )
 def test_graph_distance_index(mol_name, expected_value, input_mols):
@@ -152,6 +166,7 @@ def test_graph_distance_index(mol_name, expected_value, input_mols):
         "pyridine": 0.0,
         "isobutane": 1.0,
         "pyrimidine": 1.0,
+        "sulfur": 0,
     }.items(),
 )
 def test_petitjean_index(mol_name, expected_value, input_mols):
@@ -175,6 +190,7 @@ def test_petitjean_index(mol_name, expected_value, input_mols):
         "pyridine": 3,
         "isobutane": 1,
         "pyrimidine": 2,
+        "sulfur": 0,
     }.items(),
 )
 def test_radius(mol_name, expected_value, input_mols):
@@ -198,6 +214,7 @@ def test_radius(mol_name, expected_value, input_mols):
         "pyridine": 24,
         "isobutane": 12,
         "pyrimidine": 42,
+        "sulfur": 0,
     }.items(),
 )
 def test_zagreb_index_m1(mol_name, expected_value, input_mols):
@@ -217,6 +234,7 @@ def test_zagreb_index_m1(mol_name, expected_value, input_mols):
         "pyridine": 24,
         "isobutane": 9,
         "pyrimidine": 49,
+        "sulfur": 0,
     }.items(),
 )
 def test_zagreb_index_m2(mol_name, expected_value, input_mols):
@@ -236,6 +254,7 @@ def test_zagreb_index_m2(mol_name, expected_value, input_mols):
         "pyridine": 3,
         "isobutane": 0,
         "pyrimidine": 6,
+        "sulfur": 0,
     }.items(),
 )
 def test_polarity_number(mol_name, expected_value, input_mols):
@@ -272,6 +291,6 @@ def test_polarity_number_no_carbon(input_mols):
     mol, distance_matrix = input_mols["dinitrogen"]
     with pytest.raises(
         ValueError,
-        match="The molecule contains no carbon atoms",
+        match="The molecule contains no carbon atoms.",
     ):
         top.polarity_number(mol, distance_matrix=distance_matrix, carbon_only=True)
