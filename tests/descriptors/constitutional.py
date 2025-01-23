@@ -39,6 +39,15 @@ def test_average_molecular_weight(mol_name, expected_value, input_mols):
     assert round(result, 3) == round(expected_value, 3)
 
 
+def test_average_molecular_weight_empty_molecule(input_mols):
+    mol = MolFromSmiles("")
+    with pytest.raises(
+        ValueError,
+        match="The molecule must have at least 1 atom.",
+    ):
+        const.average_molecular_weight(mol)
+
+
 @pytest.mark.parametrize(
     "mol_name, bond_type, expected_value",
     [
@@ -170,22 +179,3 @@ def test_total_atom_count(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.total_atom_count(mol)
     assert result == expected_value
-
-
-@pytest.mark.parametrize(
-    "descriptor_function",
-    [
-        const.average_molecular_weight,
-        const.bond_count,
-        const.element_atom_count,
-        const.heavy_atom_count,
-        const.molecular_weight,
-        const.number_of_rings,
-        const.number_of_rotatable_bonds,
-        const.total_atom_count,
-    ],
-)
-def test_empty_molecule_raises_error(descriptor_function):
-    mol = MolFromSmiles("")
-    with pytest.raises(ValueError, match="The molecule must have at least 1 atom."):
-        descriptor_function(mol)

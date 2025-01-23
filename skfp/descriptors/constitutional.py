@@ -37,7 +37,6 @@ def average_molecular_weight(mol: Mol) -> float:
     return MolWt(mol) / mol.GetNumAtoms()
 
 
-@require_atoms()
 def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     """
     Bond count.
@@ -78,7 +77,6 @@ def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     return mol.GetNumBonds()
 
 
-@require_atoms()
 def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
     """
     Element atom count.
@@ -121,7 +119,6 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
         )
 
 
-@require_atoms()
 def heavy_atom_count(mol: Mol) -> int:
     """
     Heavy atom count.
@@ -144,7 +141,6 @@ def heavy_atom_count(mol: Mol) -> int:
     return mol.GetNumHeavyAtoms()
 
 
-@require_atoms()
 def molecular_weight(mol: Mol) -> float:
     """
     Molecular weight.
@@ -172,7 +168,6 @@ def molecular_weight(mol: Mol) -> float:
     return MolWt(mol)
 
 
-@require_atoms()
 def number_of_rings(mol: Mol) -> int:
     """
     Number of rings.
@@ -195,7 +190,6 @@ def number_of_rings(mol: Mol) -> int:
     return CalcNumRings(mol)
 
 
-@require_atoms()
 def number_of_rotatable_bonds(mol: Mol) -> int:
     """
     Number of rotatable bonds.
@@ -218,7 +212,6 @@ def number_of_rotatable_bonds(mol: Mol) -> int:
     return CalcNumRotatableBonds(mol)
 
 
-@require_atoms()
 def total_atom_count(mol: Mol) -> int:
     """
     Total atom count.
