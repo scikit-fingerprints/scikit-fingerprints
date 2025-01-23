@@ -111,8 +111,9 @@ def test_substructure_sparse_bit_fingerprint(
 def test_parameter_constraints_enabled(
     patterns_smarts_list: list[str], substructure_smiles_list: list[str]
 ):
+    fp = BaseSubstructureFingerprint(patterns_smarts_list, count=42)  # type: ignore
+
     with pytest.raises(InvalidParameterError) as error:
-        fp = BaseSubstructureFingerprint(patterns_smarts_list, count=42)  # type: ignore
         fp.transform(substructure_smiles_list)
 
     assert str(error.value).startswith(

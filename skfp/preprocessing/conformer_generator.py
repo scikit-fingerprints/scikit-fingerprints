@@ -84,7 +84,7 @@ class ConformerGenerator(BasePreprocessor):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -109,7 +109,7 @@ class ConformerGenerator(BasePreprocessor):
     .. [2] `Shuzhe Wang, Jagna Witek, Gregory A. Landrum, and Sereina Riniker
         "Improving Conformer Generation for Small Rings and Macrocycles Based on
         Distance Geometry and Experimental Torsional-Angle Preferences"
-        J. Chem. Inf. Model. 2020, 60, 4, 2044–2058
+        J. Chem. Inf. Model. 2020, 60, 4, 2044-2058
         <https://pubs.acs.org/doi/10.1021/acs.jcim.0c00025>`_
 
     .. [3] `Gregory A. Landrum

@@ -19,7 +19,7 @@ from .utils import _check_nan
 def tanimoto_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
-    """
+    r"""
     Tanimoto similarity for vectors of binary values.
 
     Computes the Tanimoto similarity [1]_ for binary data between two input arrays
@@ -27,7 +27,7 @@ def tanimoto_binary_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = \\frac{|vec_a \\cap vec_b|}{|vec_a| + |vec_b| - |vec_a \\cap vec_b|}
+        sim(vec_a, vec_b) = \frac{|vec_a \cap vec_b|}{|vec_a| + |vec_b| - |vec_a \cap vec_b|}
 
     The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 1.
@@ -41,7 +41,7 @@ def tanimoto_binary_similarity(
         Second binary input array or sparse matrix.
 
     Returns
-    ----------
+    -------
     similarity : float
         Tanimoto similarity between vec_a and vec_b.
 
@@ -53,7 +53,7 @@ def tanimoto_binary_similarity(
        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.distances import tanimoto_binary_similarity
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
@@ -130,12 +130,12 @@ def tanimoto_binary_distance(
         Second binary input array or sparse matrix.
 
     Returns
-    ----------
+    -------
     distance : float
         Tanimoto distance between ``vec_a`` and ``vec_b``.
 
     Examples
-    ----------
+    --------
     >>> from skfp.distances import tanimoto_binary_distance
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
@@ -152,7 +152,6 @@ def tanimoto_binary_distance(
     >>> dist  # doctest: +SKIP
     0.0
     """
-
     return 1 - tanimoto_binary_similarity(vec_a, vec_b)
 
 
@@ -166,7 +165,7 @@ def tanimoto_binary_distance(
 def tanimoto_count_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
-    """
+    r"""
     Tanimoto similarity for vectors of count values.
 
     Computes the Tanimoto similarity [1]_ for count data between two input arrays
@@ -174,7 +173,7 @@ def tanimoto_count_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = \\frac{vec_a \\cdot vec_b}{\\|vec_a\\|^2 + \\|vec_b\\|^2 - vec_a \\cdot vec_b}
+        sim(vec_a, vec_b) = \frac{vec_a \cdot vec_b}{\|vec_a\|^2 + \|vec_b\|^2 - vec_a \cdot vec_b}
 
     Calculated similarity falls within the range of `[0, 1]`.
     Passing all-zero vectors to this function results in similarity of 1.
@@ -191,7 +190,7 @@ def tanimoto_count_similarity(
         Second count input array or sparse matrix.
 
     Returns
-    ----------
+    -------
     similarity : float
         Tanimoto similarity between vec_a and vec_b.
 
@@ -203,7 +202,7 @@ def tanimoto_count_similarity(
        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.distances import tanimoto_count_similarity
     >>> import numpy as np
     >>> vec_a = np.array([7, 1, 1])
@@ -270,12 +269,12 @@ def tanimoto_count_distance(
         Second count input array or sparse matrix.
 
     Returns
-    ----------
+    -------
     distance : float
         Tanimoto distance between vec_a and vec_b.
 
     Examples
-    ----------
+    --------
     >>> from skfp.distances import tanimoto_count_distance
     >>> import numpy as np
     >>> vec_a = np.array([7, 1, 1])
@@ -292,7 +291,6 @@ def tanimoto_count_distance(
     >>> dist  # doctest: +SKIP
     0.018867924528301883
     """
-
     return 1 - tanimoto_count_similarity(vec_a, vec_b)
 
 

@@ -76,7 +76,7 @@ class ERGFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -104,18 +104,18 @@ class ERGFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Nikolaus Stiefl, Ian A. Watson, Knut Baumann, and Andrea Zaliani
         "ErG: 2D Pharmacophore Descriptions for Scaffold Hopping"
-        J. Chem. Inf. Model. 2006, 46, 1, 208–220
+        J. Chem. Inf. Model. 2006, 46, 1, 208-220
         <https://pubs.acs.org/doi/abs/10.1021/ci050457y>`_
 
     .. [2] `Valerie J. Gillet, Peter Willett, and John Bradshaw
         "Similarity Searching Using Reduced Graphs"
-        J. Chem. Inf. Comput. Sci. 2003, 43, 2, 338–345
+        J. Chem. Inf. Comput. Sci. 2003, 43, 2, 338-345
         <https://pubs.acs.org/doi/abs/10.1021/ci025592e>`_
 
     .. [3] `Simon K. Kearsley, Susan Sallamack, Eugene M. Fluder, Joseph D. Andose,
         Ralph T. Mosley, and Robert P. Sheridan
         "Chemical Similarity Using Physiochemical Property Descriptors"
-        J. Chem. Inf. Comput. Sci. 1996, 36, 1, 118–127
+        J. Chem. Inf. Comput. Sci. 1996, 36, 1, 118-127
         <https://pubs.acs.org/doi/abs/10.1021/ci950274j>`_
 
     .. [4] `Alberto Gobbi and Dieter Poppinger

@@ -43,7 +43,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -93,7 +93,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
         "The Coding of the Three-Dimensional Structure of Molecules by Molecular
         Transforms and Its Application to Structure-Spectra Correlations and Studies
         of Biological Activity"
-        J. Chem. Inf. Comput. Sci. 1996, 36, 2, 334–344
+        J. Chem. Inf. Comput. Sci. 1996, 36, 2, 334-344
         <https://pubs.acs.org/doi/abs/10.1021/ci950164c>`_
 
     .. [7] `Devinyak, Oleg, Dmytro Havrylyuk, and Roman Lesyk

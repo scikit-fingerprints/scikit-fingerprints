@@ -10,7 +10,7 @@ from skfp.bases import BaseSubstructureFingerprint
 
 class KlekotaRothFingerprint(BaseSubstructureFingerprint):
     """
-    Klekota-Roth Fingerprint
+    Klekota-Roth fingerprint.
 
     A substructure fingerprint based on [1]_, with implementation based on CDK [2]_.
     Tests for presence of 4860 predefined substructures which are predisposed for
@@ -28,7 +28,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -80,7 +80,6 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
-        # flake8: noqa: E501
         # note that those patterns were released as public domain:
         # https://github.com/cdk/cdk/blob/main/descriptor/fingerprint/src/main/java/org/openscience/cdk/fingerprint/KlekotaRothFingerprinter.java
         patterns = [
@@ -4945,7 +4944,6 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             "SCCS",
             "SCCS(=O)=O",
         ]
-        # flake8: noqa
         self._feature_names = patterns
         super().__init__(
             patterns=patterns,
@@ -4956,7 +4954,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             verbose=verbose,
         )
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They are raw SMARTS patterns
         used as feature definitions.

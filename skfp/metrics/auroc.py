@@ -42,7 +42,7 @@ def auroc_score(
 
     Wrapper around scikit-learn ``roc_auc_score`` function, which adds
     ``constant_target_behavior`` to control behavior for all-zero ``y_true`` labels.
-    Scikit-learn behavior is to throw an error, since AUROC is undefined there, but
+    scikit-learn behavior is to throw an error, since AUROC is undefined there, but
     this can easily happen for cross-validation in imbalanced problems.
 
     Parameters
@@ -79,13 +79,15 @@ def auroc_score(
     >>> auroc_score(y_true, y_score, constant_target_behavior=0.5)
     0.5
     """
-
     with warnings.catch_warnings():
         warnings.filterwarnings("error")
         try:
             return roc_auc_score(y_true, y_score, *args, **kwargs)
-        except (ValueError, UndefinedMetricWarning) as e:
-            if "one class is present" in str(e) and constant_target_behavior != "raise":
+        except (ValueError, UndefinedMetricWarning) as err:
+            if (
+                "one class is present" in str(err)
+                and constant_target_behavior != "raise"
+            ):
                 return constant_target_behavior  # type: ignore
             else:
-                raise ValueError("Only one class is present in y_true")
+                raise ValueError("Only one class is present in y_true") from err

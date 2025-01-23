@@ -60,7 +60,7 @@ def load_freesolv(
     .. [1] `Mobley, D.L., Guthrie, J.P.
         "FreeSolv: a database of experimental and calculated hydration free energies,
         with input files"
-        J Comput Aided Mol Des 28, 711–720 (2014)
+        J Comput Aided Mol Des 28, 711-720 (2014)
         <https://link.springer.com/article/10.1007/s10822-014-9747-x>`_
 
     .. [2] `Zhenqin Wu et al.

@@ -53,9 +53,8 @@ def test_error_nonexistent_sdf_file():
 def _get_sdf_file_path(filename: str) -> str:
     if "tests" in os.listdir():
         return os.path.join("tests", "preprocessing", "input_output", "data", filename)
-    elif "preprocessing" in os.listdir():
+    if "preprocessing" in os.listdir():
         return os.path.join("preprocessing", "input_output", "data", filename)
-    elif "input_output" in os.listdir():
+    if "input_output" in os.listdir():
         return os.path.join("input_output", "data", filename)
-    else:
-        raise FileNotFoundError(f"File {filename} not found")
+    raise FileNotFoundError(f"File {filename} not found")

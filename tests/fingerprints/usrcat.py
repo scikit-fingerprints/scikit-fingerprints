@@ -28,14 +28,14 @@ def test_usrcat_bit_fingerprint(mols_conformers_3_plus_atoms):
 
 
 def test_usrcat_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
-    y = np.arange(len(mols_conformers_3_plus_atoms))
+    labels = np.arange(len(mols_conformers_3_plus_atoms))
 
     usrcat_fp = USRCATFingerprint(n_jobs=-1)
-    X_skfp, y_skfp = usrcat_fp.transform_x_y(mols_conformers_3_plus_atoms, y)
+    X_skfp, y_skfp = usrcat_fp.transform_x_y(mols_conformers_3_plus_atoms, labels)
 
     X_rdkit = []
     y_rdkit = []
-    for mol, y in zip(mols_conformers_3_plus_atoms, y):
+    for mol, y in zip(mols_conformers_3_plus_atoms, labels):
         mol_fp = GetUSRCAT(mol, confId=mol.GetIntProp("conf_id"))
         X_rdkit.append(mol_fp)
         y_rdkit.append(y)

@@ -32,7 +32,7 @@ class GlaxoFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -47,7 +47,7 @@ class GlaxoFilter(BaseFilter):
     ----------
     .. [1] `Mike Hann et al.
         "Strategic Pooling of Compounds for High-Throughput Screening"
-        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 897–902
+        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 897-902
         <https://pubs.acs.org/doi/10.1021/ci990423o>`_
 
     .. [2] `RDKit Glaxo filter definitions

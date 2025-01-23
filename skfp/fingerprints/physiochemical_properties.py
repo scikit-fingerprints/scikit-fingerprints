@@ -50,7 +50,7 @@ class PhysiochemicalPropertiesFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -73,7 +73,7 @@ class PhysiochemicalPropertiesFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Simon K. Kearsley et al.
         "Chemical Similarity Using Physiochemical Property Descriptors"
-        J. Chem. Inf. Comput. Sci. 1996, 36, 1, 118–127
+        J. Chem. Inf. Comput. Sci. 1996, 36, 1, 118-127
         <https://pubs.acs.org/doi/10.1021/ci950274j>`_
 
     Examples

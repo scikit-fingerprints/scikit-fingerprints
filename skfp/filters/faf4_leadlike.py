@@ -72,7 +72,7 @@ class FAF4LeadlikeFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -82,21 +82,21 @@ class FAF4LeadlikeFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
 
     References
-    -----------
+    ----------
     .. [1] `Details of physico-chemical property filters available in FAF-Drugs4
         <https://fafdrugs4.rpbs.univ-paris-diderot.fr/filters.html>`_
 
     .. [2] `D. Lagorce et al.
         "FAF-Drugs4: free ADME-tox filtering computations for chemical biology and
         early stages drug discovery"
-        Bioinformatics, 33(22), 2017, 3658–3660
+        Bioinformatics, 33(22), 2017, 3658-3660
         <https://doi.org/10.1093/bioinformatics/btx491>`_
 
     .. [3] `ChemAxon documentation: Predefined Functional Groups and Named Molecule Groups
         <https://docs.chemaxon.com/display/docs/attachments/attachments_1829721_1_functionalgroups.cxsmi>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import FAF4LeadlikeFilter
     >>> smiles = ["C", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = FAF4LeadlikeFilter()

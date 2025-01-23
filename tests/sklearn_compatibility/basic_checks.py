@@ -137,7 +137,9 @@ def check_fit_score_takes_y(name: str, estimator_orig: BaseFingerprintTransforme
 
 
 def check_estimators_pickle(
-    name: str, estimator_orig: BaseFingerprintTransformer, readonly_memmap: bool = False
+    name: str,
+    estimator_orig: BaseFingerprintTransformer,
+    readonly_memmap: bool = False,
 ):
     """
     Test that we can pickle all estimators.
@@ -164,7 +166,7 @@ def check_estimators_pickle(
         if hasattr(estimator, method):
             result[method] = getattr(estimator, method)(X)
 
-    for method in result:
+    for method in result:  # noqa: PLC0206
         unpickled_result = getattr(unpickled_estimator, method)(X)
 
         if isinstance(result[method], list):

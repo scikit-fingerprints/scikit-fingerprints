@@ -35,7 +35,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -110,7 +110,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
         )
         self.use_3D = use_3D
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to descriptor
         names used by Mordred descriptor calculator, used in this fingerprint.
@@ -125,8 +125,12 @@ class MordredFingerprint(BaseFingerprintTransformer):
         feature_names_out : ndarray of str objects
             Names of the Mordred feature names.
         """
-        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
-        return np.asarray([str(d) for d in calc.descriptors], dtype=object)
+        calc = Calculator(descriptors)
+        if not self.use_3D:
+            feature_names = [str(d) for d in calc.descriptors if d.require_3D is False]
+        else:
+            feature_names = [str(d) for d in calc.descriptors]
+        return np.asarray(feature_names, dtype=object)
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
