@@ -187,5 +187,5 @@ def test_total_atom_count(mol_name, expected_value, input_mols):
 )
 def test_empty_molecule_raises_error(descriptor_function):
     mol = MolFromSmiles("")
-    with pytest.raises(ValueError, match=f"The molecule must have at least 1 atom."):
+    with pytest.raises(ValueError, match="The molecule must have at least 1 atom."):
         descriptor_function(mol)
