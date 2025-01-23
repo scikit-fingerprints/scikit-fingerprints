@@ -88,7 +88,7 @@ def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     >>> from skfp.descriptors.topological import balaban_j_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> balaban_j_index(mol)
-    3.0
+    3.000000000000001
     """
     return BalabanJ(mol=mol, dMat=distance_matrix)
 
@@ -122,15 +122,15 @@ def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     ----------
     .. [1] `Petitjean, Michel.
         "Applications of the radius-diameter diagram to the classification
-         of topological and geometrical shapes of chemical compounds."
+        of topological and geometrical shapes of chemical compounds."
         Journal of chemical information and computer sciences 32.4 (1992): 331-337.
         <https://pubs.acs.org/doi/pdf/10.1021/ci00008a012?casa_token=NU1BjSvRFPQAAAAA:T9Z6IR5eWCl7xO8MLury1EEXu04nGFIzHe9kaNOoY9vfiJZ9Ud2KlV_voQeGSwdMxSGmfNld9_b4ZQ>`_
 
     Examples
     --------
-    >>> from rdkit import Chem
+    >>> from rdkit.Chem import MolFromSmiles
     >>> from skfp.descriptors.topological import diameter
-    >>> mol = Chem.MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> diameter(mol)
     3
     """
@@ -196,23 +196,9 @@ def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
 
     Calculates the Petitjean Index [1]_, defined as a measure of molecular shape based on graph
     topology. It is derived from two fundamental properties of molecular graphs: radius (R) and
-    diameter (D). The formula for calculating the Petitjean Index is given as:
-
-    .. math::
-
-        I_2 = \frac{D - R}{R}
-
-    where:
-
-    - :math:D is the graph diameter, i.e., the longest shortest path between any two atoms.
-    - :math:R is the graph radius, i.e., the smallest eccentricity among all atoms, where eccentricity
-      :math:E(x) of an atom :math:x is the largest shortest path from :math:x to any other atom.
-
-    The index quantifies the deviation of a molecular structure from a perfectly symmetric shape.
-    Values range from **0 to 1**:
-    - **I₂ = 0** → fully symmetric graphs where D = R (e.g., benzene).
-    - **I₂ = 1** → perfectly linear structures where D = 2R.
-    - **0 < I₂ < 1** → structures between these extremes.
+    diameter (D). The radius is the smallest maximum distance from any atom to all others, while
+    the diameter is the largest possible shortest path between any two atoms in the graph. The
+    index quantifies the deviation of a molecular structure from a perfectly symmetric shape.
 
     Parameters
     ----------
@@ -226,13 +212,14 @@ def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     ----------
     .. [1] `Petitjean, Michel.
         "Applications of the radius-diameter diagram to the classification
-         of topological and geometrical shapes of chemical compounds."
+        of topological and geometrical shapes of chemical compounds."
         Journal of chemical information and computer sciences 32.4 (1992): 331-337.
         <https://pubs.acs.org/doi/pdf/10.1021/ci00008a012?casa_token=NU1BjSvRFPQAAAAA:T9Z6IR5eWCl7xO8MLury1EEXu04nGFIzHe9kaNOoY9vfiJZ9Ud2KlV_voQeGSwdMxSGmfNld9_b4ZQ>`_
 
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import petitjean_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> petitjean_index(mol)
     0.0
@@ -334,15 +321,15 @@ def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     ----------
     .. [1] `Petitjean, Michel.
         "Applications of the radius-diameter diagram to the classification
-         of topological and geometrical shapes of chemical compounds."
+        of topological and geometrical shapes of chemical compounds."
         Journal of chemical information and computer sciences 32.4 (1992): 331-337.
         <https://pubs.acs.org/doi/pdf/10.1021/ci00008a012?casa_token=NU1BjSvRFPQAAAAA:T9Z6IR5eWCl7xO8MLury1EEXu04nGFIzHe9kaNOoY9vfiJZ9Ud2KlV_voQeGSwdMxSGmfNld9_b4ZQ>`_
 
     Examples
     --------
-    >>> from rdkit import Chem
+    >>> from rdkit.Chem import MolFromSmiles
     >>> from skfp.descriptors.topological import radius
-    >>> mol = Chem.MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> radius(mol)
     3
     """
