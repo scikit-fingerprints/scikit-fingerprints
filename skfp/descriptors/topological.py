@@ -66,7 +66,7 @@ def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     - :math:`M` is the number of bonds
     - :math:`μ` is the cyclomatic number (number of independent cycles)
     - :math:`d_{ij}` is the distance between atoms :math:`i` and :math:`j`
-    - :math:`n` is the number of atoms in the molecule
+    - :math:`n` is the number of atoms
 
     Parameters
     ----------
@@ -377,7 +377,7 @@ def zagreb_index_m1(mol: Mol) -> int:
     Parameters
     ----------
     mol : RDKit ``Mol`` object
-        The molecule for which the Zagreb index is to be calculated.
+        The molecule for which the first Zagreb index is to be calculated.
 
     References
     ----------
@@ -414,12 +414,12 @@ def zagreb_index_m2(mol: Mol) -> int:
 
     - :math:`E` is the set of bonds (edges) in the molecular graph
     - :math:`d_u` and :math:`d_v` are the degrees of the atoms :math:`u` and :math:`v`
-      connected by each bond
+      connected by a bond
 
     Parameters
     ----------
     mol : RDKit ``Mol`` object
-        The molecule for which the Second Zagreb Index is to be calculated.
+        The molecule for which the second Zagreb index is to be calculated.
 
     References
     ----------
