@@ -4967,7 +4967,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of the Klekota-Roth feature names.
+            Klekota-Roth feature names.
         """
         return np.asarray(self._feature_names, dtype=object)
 

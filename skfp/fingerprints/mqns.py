@@ -133,7 +133,7 @@ class MQNsFingerprint(BaseFingerprintTransformer):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of the MQNs feature names.
+            MQNs feature names.
         """
         feature_names = [
             "C atoms",

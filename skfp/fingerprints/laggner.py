@@ -111,7 +111,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of the Laggner feature names.
+            Laggner feature names.
         """
         return self._feature_names
 

@@ -154,7 +154,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of MoRSE feature names.
+            MoRSE feature names.
         """
         feature_names = [
             f"{weighting_variant} {scattering_value}"
