@@ -4,10 +4,10 @@ from rdkit.Chem import Mol
 from rdkit.Chem.Descriptors import MolWt
 from rdkit.Chem.rdMolDescriptors import CalcNumRings, CalcNumRotatableBonds
 
-from skfp.utils.validators import validate_molecule
+from skfp.utils.validators import require_atoms
 
 
-@validate_molecule
+@require_atoms()
 def average_molecular_weight(mol: Mol) -> float:
     """
     Average molecular weight.
@@ -19,7 +19,7 @@ def average_molecular_weight(mol: Mol) -> float:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the average molecular weight is to be calculated.
 
     References
@@ -37,7 +37,6 @@ def average_molecular_weight(mol: Mol) -> float:
     return MolWt(mol) / mol.GetNumAtoms()
 
 
-@validate_molecule
 def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     """
     Bond count.
@@ -47,7 +46,7 @@ def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the bond count is to be calculated.
 
     bond_type : str, optional
@@ -78,7 +77,6 @@ def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     return mol.GetNumBonds()
 
 
-@validate_molecule
 def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
     """
     Element atom count.
@@ -88,7 +86,7 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the atom count is to be calculated.
 
     atom_id : int or str
@@ -121,7 +119,6 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
         )
 
 
-@validate_molecule
 def heavy_atom_count(mol: Mol) -> int:
     """
     Heavy atom count.
@@ -130,7 +127,7 @@ def heavy_atom_count(mol: Mol) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the total atom count is to be calculated.
 
     Examples
@@ -144,7 +141,6 @@ def heavy_atom_count(mol: Mol) -> int:
     return mol.GetNumHeavyAtoms()
 
 
-@validate_molecule
 def molecular_weight(mol: Mol) -> float:
     """
     Molecular weight.
@@ -154,7 +150,7 @@ def molecular_weight(mol: Mol) -> float:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the molecular weight is to be calculated.
 
     References
@@ -172,7 +168,6 @@ def molecular_weight(mol: Mol) -> float:
     return MolWt(mol)
 
 
-@validate_molecule
 def number_of_rings(mol: Mol) -> int:
     """
     Number of rings.
@@ -181,7 +176,7 @@ def number_of_rings(mol: Mol) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the number of rings is to be calculated.
 
     Examples
@@ -195,7 +190,6 @@ def number_of_rings(mol: Mol) -> int:
     return CalcNumRings(mol)
 
 
-@validate_molecule
 def number_of_rotatable_bonds(mol: Mol) -> int:
     """
     Number of rotatable bonds.
@@ -204,7 +198,7 @@ def number_of_rotatable_bonds(mol: Mol) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the number of rotatable bonds is to be calculated.
 
     Examples
@@ -218,7 +212,6 @@ def number_of_rotatable_bonds(mol: Mol) -> int:
     return CalcNumRotatableBonds(mol)
 
 
-@validate_molecule
 def total_atom_count(mol: Mol) -> int:
     """
     Total atom count.
@@ -228,7 +221,7 @@ def total_atom_count(mol: Mol) -> int:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the total atom count is to be calculated.
 
     Examples

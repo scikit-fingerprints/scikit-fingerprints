@@ -80,18 +80,21 @@ def require_strings(X: Sequence[Any]) -> None:
             )
 
 
-def validate_molecule(func: Callable) -> Callable:
+def require_atoms(min_atoms: int = 1) -> Callable:
     """
     Decorator for functions operating on single molecule. Ensures it is
-    nonempty (at least 1 atom), raises ValueError otherwise.
+    nonempty (by default) or has at least the specified number of atoms, raises ValueError otherwise.
     """  # noqa: D401
 
-    @functools.wraps(func)
-    def wrapper(mol: Mol, *args, **kwargs):
-        if mol.GetNumAtoms() == 0:
-            raise ValueError(
-                f"The molecule has no atoms, {func.__name__} cannot be calculated."
-            )
-        return func(mol, *args, **kwargs)
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(mol: Mol, *args, **kwargs):
+            if mol.GetNumAtoms() < min_atoms:
+                raise ValueError(
+                    f"The molecule must have at least {min_atoms} atom(s), {func.__name__} cannot be calculated."
+                )
+            return func(mol, *args, **kwargs)
 
-    return wrapper
+        return wrapper
+
+    return decorator

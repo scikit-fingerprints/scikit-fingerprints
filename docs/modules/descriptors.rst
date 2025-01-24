@@ -32,7 +32,12 @@ Topological descriptors (based on graph topology/structure):
     :toctree: generated/
 
     average_wiener_index
+    balaban_j_index
+    diameter
     graph_distance_index
+    petitjean_index
     polarity_number
+    radius
     wiener_index
-    zagreb_index
+    zagreb_index_m1
+    zagreb_index_m2

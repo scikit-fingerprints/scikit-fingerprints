@@ -3,8 +3,12 @@ from typing import Optional
 
 import numpy as np
 from rdkit.Chem import GetDistanceMatrix, Mol
+from rdkit.Chem.GraphDescriptors import BalabanJ
+
+from skfp.utils.validators import require_atoms
 
 
+@require_atoms(min_atoms=2)
 def average_wiener_index(
     mol: Mol, distance_matrix: Optional[np.ndarray] = None
 ) -> float:
@@ -45,6 +49,89 @@ def average_wiener_index(
     return (2 * wiener_idx) / (num_atoms * (num_atoms - 1))
 
 
+def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
+    r"""
+    Balaban's J Index.
+
+    Calculates the Balaban’s J index [1]_, defined as a measure of molecular
+    connectivity with an emphasis on cyclic structures. The formula for calculating
+    Balaban's J Index is given as:
+
+    .. math::
+
+        J = \frac{M}{μ + 1} \cdot \frac{Σ_{ij} (d_{ij})^{-1}}{n},
+
+    where:
+
+    - :math:`M` is the number of bonds
+    - :math:`μ` is the cyclomatic number (number of independent cycles)
+    - :math:`d_{ij}` is the distance between atoms :math:`i` and :math:`j`
+    - :math:`n` is the number of atoms
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the Balaban's J index is to be calculated.
+
+    distance_matrix : np.ndarray, optional
+        Precomputed distance matrix. If not provided, it will be calculated by RDKit.
+
+    References
+    ----------
+    .. [1] `Balaban, Alexandru T.
+        "Highly discriminating distance-based topological index."
+        Chemical Physics Letters 89.5 (1982): 399-404.
+        <https://doi.org/10.1016/0009-2614(82)80009-2>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import balaban_j_index
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> balaban_j_index(mol)
+    3.000000000000001
+    """
+    return BalabanJ(mol=mol, dMat=distance_matrix)
+
+
+def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
+    """
+    Diameter.
+
+    Calculates the diameter [1]_, defined as the maximum length of the shortest path.
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the diameter is to be calculated.
+
+    distance_matrix : np.ndarray, optional
+        Precomputed distance matrix. If not provided, it will be calculated.
+
+    References
+    ----------
+    .. [1] `Petitjean, Michel
+        "Applications of the radius-diameter diagram to the classification
+        of topological and geometrical shapes of chemical compounds."
+        Journal of Chemical Information and Computer Sciences 32.4 (1992): 331-337.
+        <https://doi.org/10.1021/ci00008a012>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import diameter
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> diameter(mol)
+    3
+    """
+    if distance_matrix is None:
+        distance_matrix = GetDistanceMatrix(mol)
+
+    eccentricities = np.max(distance_matrix, axis=1)
+
+    return int(np.max(eccentricities))
+
+
 def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     r"""
     Graph Distance Index (GDI).
@@ -59,8 +146,8 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
 
     where:
 
-    - :math:`D` is the topological diameter of the graph (the largest graph distance).
-    - :math:`f_k` is the total number of distances in the graph equal to :math:`k`.
+    - :math:`D` is the topological diameter of the graph (the largest graph distance)
+    - :math:`f_k` is the total number of distances in the graph equal to :math:`k`
 
     Parameters
     ----------
@@ -91,6 +178,52 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
     distances = distance_matrix[np.triu_indices_from(distance_matrix, k=1)]
     distance_counts = Counter(distances)
     return int(sum((k * f) ** 2 for k, f in distance_counts.items()))
+
+
+def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
+    r"""
+    Petitjean Index.
+
+    Calculates the Petitjean Index [1]_, defined as a measure of molecular shape based on graph
+    topology. It is derived from two fundamental properties of molecular graphs: radius (R) and
+    diameter (D). The formula for calculating the Petitjean Index is given as:
+
+    .. math::
+        I_2 = \frac{D - R}{R}
+
+    where:
+
+    - :math:D is the graph diameter
+    - :math:R is the graph radius
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the Petitjean index is to be calculated.
+
+    distance_matrix : np.ndarray, optional
+        Precomputed distance matrix. If not provided, it will be calculated.
+
+    References
+    ----------
+    .. [1] `Petitjean, Michel
+        "Applications of the radius-diameter diagram to the classification
+        of topological and geometrical shapes of chemical compounds."
+        Journal of Chemical Information and Computer Sciences 32.4 (1992): 331-337.
+        <https://doi.org/10.1021/ci00008a012>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import petitjean_index
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> petitjean_index(mol)
+    0.0
+    """
+    D = diameter(mol, distance_matrix)
+    R = radius(mol, distance_matrix)
+
+    return (D - R) / R if R != 0 else 0.0
 
 
 def polarity_number(
@@ -155,6 +288,44 @@ def polarity_number(
     return int((distance_matrix == 3).sum() // 2)
 
 
+def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
+    """
+    Radius.
+
+    Calculates the radius [1]_, defined as the minimal length of the longest path between atoms.
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the radius is to be calculated.
+
+    distance_matrix : np.ndarray, optional
+        Precomputed distance matrix. If not provided, it will be calculated.
+
+    References
+    ----------
+    .. [1] `Petitjean, Michel
+        "Applications of the radius-diameter diagram to the classification
+        of topological and geometrical shapes of chemical compounds."
+        Journal of Chemical Information and Computer Sciences 32.4 (1992): 331-337.
+        <https://doi.org/10.1021/ci00008a012>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import radius
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> radius(mol)
+    3
+    """
+    if distance_matrix is None:
+        distance_matrix = GetDistanceMatrix(mol)
+
+    eccentricities = np.max(distance_matrix, axis=1)
+
+    return int(np.min(eccentricities))
+
+
 def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     """
     Wiener Index (W).
@@ -195,18 +366,18 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     return int(np.sum(distance_matrix) // 2)
 
 
-def zagreb_index(mol: Mol) -> int:
+def zagreb_index_m1(mol: Mol) -> int:
     """
     First Zagreb Index.
 
-    Calculates the First Zagreb Index [1]_, defined as the sum of the squares of the
+    Calculates the first Zagreb index [1]_, defined as the sum of the squares of the
     degrees of all atoms in the molecule. Also known as simply the Zagreb index. It is
     a measure of molecular branching.
 
     Parameters
     ----------
     mol : RDKit ``Mol`` object
-        The molecule for which the Zagreb index is to be calculated.
+        The molecule for which the first Zagreb index is to be calculated.
 
     References
     ----------
@@ -218,9 +389,57 @@ def zagreb_index(mol: Mol) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import zagreb_index
+    >>> from skfp.descriptors.topological import zagreb_index_m1
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
-    >>> zagreb_index(mol)
+    >>> zagreb_index_m1(mol)
     24
     """
     return int(sum(atom.GetDegree() ** 2 for atom in mol.GetAtoms()))
+
+
+def zagreb_index_m2(mol: Mol) -> int:
+    r"""
+    Second Zagreb Index.
+
+    Calculates the second Zagreb index [1]_, defined as the sum of the product of
+    degrees of all pairs of adjacent atoms in the molecule. It provides a measure
+    related to molecular branching and the connectivity of bonds. The formula for
+    calculating the second Zagreb index is given as:
+
+    .. math::
+
+        M_2 = \sum_{(u,v) \in E} d_u \cdot d_v
+
+    where:
+
+    - :math:`E` is the set of bonds (edges) in the molecular graph
+    - :math:`d_u` and :math:`d_v` are the degrees of the atoms :math:`u` and :math:`v`
+      connected by a bond
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the second Zagreb index is to be calculated.
+
+    References
+    ----------
+    .. [1] `Gutman, Ivan.
+        "Degree-Based Topological Indices"
+        Croatica Chemica Acta 86.4 (2013): 352.
+        <http://dx.doi.org/10.5562/cca2294>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import zagreb_index_m2
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> zagreb_index_m2(mol)
+    24
+    """
+    return int(
+        sum(
+            mol.GetAtomWithIdx(bond.GetBeginAtomIdx()).GetDegree()
+            * mol.GetAtomWithIdx(bond.GetEndAtomIdx()).GetDegree()
+            for bond in mol.GetBonds()
+        )
+    )
