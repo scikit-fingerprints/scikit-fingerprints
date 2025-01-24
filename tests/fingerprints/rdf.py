@@ -28,3 +28,15 @@ def test_rdf_sparse_fingerprint(mols_conformers_list):
 
     assert np.allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
     assert X_skfp.shape == (len(mols_conformers_list), 210)
+
+
+def test_rdf_feature_names():
+    rdf_fp = RDFFingerprint()
+    feature_names = rdf_fp.get_feature_names_out()
+
+    assert len(feature_names) == rdf_fp.n_features_out
+
+    assert feature_names[0] == "unweighted 1"
+    assert feature_names[1] == "unweighted 2"
+    assert feature_names[30] == "atomic mass 1"
+    assert feature_names[-1] == "IState 30"

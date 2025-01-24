@@ -135,6 +135,36 @@ class RDFFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to 7 weighting
+        variants and 30 radii.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            RDF feature names.
+        """
+        feature_names = [
+            f"{weighting_variant} {radius}"
+            for weighting_variant in [
+                "unweighted",
+                "atomic mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+            ]
+            for radius in range(1, 31)
+        ]
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
