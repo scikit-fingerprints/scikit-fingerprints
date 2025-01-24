@@ -41,7 +41,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     ----------
     partial_charge_model : {"Gasteiger", "MMFF94", "formal", "precomputed"}, default="formal"
         Which model to use to compute atomic partial charges. Default ``"formal"``
-        computes formal charges, and is the simplest and most error-resistantone.
+        computes formal charges, and is the simplest and most error-resistant one.
         ``"precomputed"`` assumes that the inputs are RDKit ``PropertyMol`` objects
         with "charge" float property set.
 
