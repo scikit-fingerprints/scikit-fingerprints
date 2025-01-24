@@ -32,7 +32,6 @@ classifiers = [
 requires-python = ">=3.9,<3.13"
 
 dependencies = [
-    "datasketch>=1.0.0",
     "descriptastorus>=2.0.0",
     "e3fp>=1.0.0",
     "huggingface_hub>=0.0.0",
