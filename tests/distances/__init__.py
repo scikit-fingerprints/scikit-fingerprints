@@ -127,6 +127,8 @@ def test_sklearn_nearest_neighbors_compatible_binary(method, vec_a, vec_b):
 @pytest.mark.parametrize(
     "method",
     [
+        all_bit_binary_distance,
+        all_bit_count_distance,
         dice_binary_distance,
         dice_count_distance,
         tanimoto_binary_distance,

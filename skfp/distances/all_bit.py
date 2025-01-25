@@ -28,9 +28,11 @@ def all_bit_binary_similarity(
 
         sim(vec_a, vec_b) = \frac{\text{count}_a - \text{count}_\text{xor}}{\text{count}_a}
 
-    Where:
-    - \( \text{count}_a \) is the number of non-zero elements in \( \mathbf{a} \),
-    - \( \text{count}_\text{xor} \) is the number of positions where the binary values in \( \mathbf{a} \) and \( \mathbf{b} \) differ.
+
+    where:
+
+    - :math:`\text{count}_a` is the number of non-zero elements in :math:`\mathbf{a}`,
+    - :math:`\text{count}_\text{xor}` is the number of positions where the binary values in :math:`\mathbf{a}` and :math:`\mathbf{b}` differ
 
     The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 1.
@@ -171,9 +173,10 @@ def all_bit_count_similarity(
 
         sim(vec_a, vec_b) = \frac{\text{count}_a - \text{count}_\text{diff}}{\text{count}_a}
 
-    Where:
-    - \( \text{count}_a \) is the total sum of values in \( \mathbf{a} \),
-    - \( \text{count}_\text{diff} \) is the absolute difference of values at the same positions in \( \mathbf{a} \) and \( \mathbf{b} \).
+    where:
+
+    - :math:`\text{count}_a` is the number of non-zero elements in :math:`\mathbf{a}`,
+    - :math:`\text{count}_\text{diff}` is the total difference between :math:`\mathbf{a}` and :math:`\mathbf{b}` at corresponding indices.
 
     The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 1
