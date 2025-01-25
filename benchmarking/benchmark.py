@@ -3,7 +3,7 @@ import inspect
 import os
 from time import sleep, time
 
-import matplotlib
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -13,7 +13,7 @@ from ogb.graphproppred import GraphPropPredDataset
 import skfp.fingerprints as fps
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
-matplotlib.rcParams.update({"font.size": 18})
+mpl.rcParams.update({"font.size": 18})
 
 DATASET_NAME = "ogbg-molhiv"
 
@@ -25,7 +25,7 @@ N_SPLITS = 5
 N_REPEATS = 5
 MAX_CORES = cpu_count(only_physical_cores=True)
 N_CORES = [2**i for i in range(MAX_CORES.bit_length())]
-if MAX_CORES > N_CORES[-1]:
+if max(N_CORES) < MAX_CORES:
     N_CORES.append(MAX_CORES)
 PLOT_DIR = os.path.join("benchmark_times", "benchmark_times_plotted")
 SCORE_DIR = os.path.join("benchmark_times", "benchmark_times_saved")
@@ -70,7 +70,7 @@ def make_plot(
     times: np.ndarray,
     title: str = "",
     save: bool = True,
-    format="pdf",
+    file_format: str = "pdf",
 ) -> None:
     dir_name = plot_type
 
@@ -104,7 +104,7 @@ def make_plot(
 
     if save:
         os.makedirs(os.path.join(PLOT_DIR, dir_name), exist_ok=True)
-        plt.savefig(os.path.join(PLOT_DIR, dir_name, f"{title}.{format}"))
+        plt.savefig(os.path.join(PLOT_DIR, dir_name, f"{title}.{file_format}"))
     else:
         plt.show()
 
@@ -112,24 +112,24 @@ def make_plot(
 
 
 def make_combined_plot(
-    type: str,
+    plot_type: str,
     n_molecules: int,
     fingerprints: list,
     times: list,
     save: bool = True,
-    format="pdf",
+    file_format: str = "pdf",
 ) -> None:
     fig = plt.figure(figsize=(15, 10))
     ax1 = fig.add_subplot()
     fp_names = [fp.__name__.removesuffix("Fingerprint") for fp in fingerprints]
 
-    if type == "time":
+    if plot_type == "time":
         file_name = "times_of_sequential_computation"
         ax1.set_xlabel("Time of computation")
         ax1.set_title("Sequential computation time [s]")
         times_to_plot = [time[0, -1] for time in times]
         ax1.barh(fp_names, times_to_plot, color="skyblue")
-    elif type == "speedup":
+    elif plot_type == "speedup":
         file_name = f"speedup_for_{MAX_CORES}_cores"
         plt.xticks(np.arange(0, 17))
         ax1.axvline(x=1, linestyle="dashed")
@@ -137,7 +137,7 @@ def make_combined_plot(
         ax1.set_title("Speedup")
         times_to_plot = [time[0, -1] / time[-1, -1] for time in times]
         ax1.barh(fp_names, times_to_plot, color="skyblue")
-    elif type == "fps_per_second":
+    elif plot_type == "fps_per_second":
         file_name = "fingerprints_per_second_sequential"
         ax1.set_xlabel("Fingerprints per second")
         ax1.set_title("Molecules processed per second")
@@ -150,7 +150,7 @@ def make_combined_plot(
 
     if save:
         os.makedirs(PLOT_DIR, exist_ok=True)
-        plt.savefig(os.path.join(PLOT_DIR, f"{file_name}.{format}"))
+        plt.savefig(os.path.join(PLOT_DIR, f"{file_name}.{file_format}"))
     else:
         plt.show()
 
@@ -236,7 +236,7 @@ if __name__ == "__main__":
 
     for plot_type in PLOT_TYPES:
         make_combined_plot(
-            type=plot_type,
+            plot_type=plot_type,
             n_molecules=n_molecules,
             fingerprints=fingerprints,
             times=all_times,

@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from pathlib import Path
 from typing import Optional, Union
 
 import numpy as np
@@ -31,7 +30,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -61,7 +60,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
     .. [2] `Arup K. Ghose and Gordon M. Crippen
         "Atomic physicochemical parameters for three-dimensional-structure-directed
         quantitative structure-activity relationships. 2. Modeling dispersive and hydrophobic interactions"
-        J. Chem. Inf. Comput. Sci. 1987, 27, 1, 21–35
+        J. Chem. Inf. Comput. Sci. 1987, 27, 1, 21-35
         <https://pubs.acs.org/doi/10.1021/ci00053a005>`_
 
     .. [3] `<https://github.com/rdkit/rdkit/blob/5d034e37331c2604bf3e247b94be35b519e62216/Data/Crippen.txt>`_
@@ -99,8 +98,6 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         #   of the RDKit source tree.
         #
         # we include copy of that license in skfp/fingerprints/data/RDKit_license.txt
-
-        # flake8: noqa: E501
         patterns = [
             "[CH4]",
             "[CH3]C",
@@ -213,8 +210,6 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             "[#39,#40,#41,#42,#43,#44,#45,#46,#47,#48]",
             "[#72,#73,#74,#75,#76,#77,#78,#79,#80]",
         ]
-        # flake8: noqa
-
         self._feature_names = patterns
         super().__init__(
             patterns=patterns,
@@ -225,7 +220,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             verbose=verbose,
         )
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They are raw SMARTS patterns
         used as feature definitions.

@@ -112,10 +112,10 @@ def butina_train_test_split(
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-test subsets of provided arrays. First two are lists of SMILES
         strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
@@ -126,13 +126,13 @@ def butina_train_test_split(
     .. [1] `Darko Butina
         "Unsupervised Data Base Clustering Based on Daylight's Fingerprint and Tanimoto
         Similarity: A Fast and Automated Way To Cluster Small and Large Data Sets"
-        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747–750
+        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747-750
         <https://pubs.acs.org/doi/abs/10.1021/ci9803381>`_
 
     .. [2] `Robin Taylor
         "Simulation Analysis of Experimental Design Strategies for Screening Random
         Compounds as Potential New Drugs and Agrochemicals"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59–67
+        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59-67
         <https://pubs.acs.org/doi/10.1021/ci00023a009>`_
 
     .. [3] `Noel O'Boyle
@@ -147,7 +147,7 @@ def butina_train_test_split(
     .. [5] `W. Dong et al.
         "Efficient k-nearest neighbor graph construction for generic similarity measures"
         Proceedings of the 20th International World Wide Web Conference (WWW '11).
-        Association for Computing Machinery, New York, NY, USA, 577–586
+        Association for Computing Machinery, New York, NY, USA, 577-586
         <https://doi.org/10.1145/1963405.1963487>`_
 
     .. [6] `Leland McInnes
@@ -298,10 +298,10 @@ def butina_train_valid_test_split(
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-valid-test subsets of provided arrays. First three are lists of
         SMILES strings or RDKit ``Mol`` objects, depending on the input type. If
@@ -312,13 +312,13 @@ def butina_train_valid_test_split(
     .. [1] `Darko Butina
         "Unsupervised Data Base Clustering Based on Daylight's Fingerprint and Tanimoto
         Similarity: A Fast and Automated Way To Cluster Small and Large Data Sets"
-        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747–750
+        . Chem. Inf. Comput. Sci. 1999, 39, 4, 747-750
         <https://pubs.acs.org/doi/abs/10.1021/ci9803381>`_
 
     .. [2] `Robin Taylor
         "Simulation Analysis of Experimental Design Strategies for Screening Random
         Compounds as Potential New Drugs and Agrochemicals"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59–67
+        J. Chem. Inf. Comput. Sci. 1995, 35, 1, 59-67
         <https://pubs.acs.org/doi/10.1021/ci00023a009>`_
 
     .. [3] `Noel O'Boyle "Taylor-Butina Clustering"
@@ -332,7 +332,7 @@ def butina_train_valid_test_split(
     .. [5] `W. Dong et al.
         "Efficient k-nearest neighbor graph construction for generic similarity measures"
         Proceedings of the 20th International World Wide Web Conference (WWW '11).
-        Association for Computing Machinery, New York, NY, USA, 577–586
+        Association for Computing Machinery, New York, NY, USA, 577-586
         <https://doi.org/10.1145/1963405.1963487>`_
 
     .. [6] `Leland McInnes
@@ -423,11 +423,12 @@ def _create_clusters(
     else:
         try:
             from pynndescent import NNDescent
-        except ImportError:
-            raise ImportError(
-                "PyNNDescent not detected, which is needed for approximate Butina split. "
-                "You can install it with: pip install pynndescent"
+        except ImportError as err:
+            msg = (
+                "PyNNDescent not detected, which is needed for approximate"
+                "Butina split. You can install it with: pip install pynndescent"
             )
+            raise ImportError(msg) from err
 
         index = NNDescent(
             fps_centroids,

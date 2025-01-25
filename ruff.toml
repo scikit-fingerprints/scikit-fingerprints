@@ -1,0 +1,109 @@
+include = [
+    "pyproject.toml",
+    "benchmarking/**/*.ipynb",
+    "examples/**/*.py",
+    "skfp/**/*.py",
+    "tests/**/*.py",
+]
+exclude = [
+    "docs/**"
+]
+
+[lint]
+select = ["ALL"]
+ignore = [
+    # groups
+    "ANN",  # use mypy for annotations
+    "COM",  # turn off weird comma rules
+    "EM",   # string messages for exceptions
+    "FA",   # use typing imports
+    "FBT",  # bool arguments
+    "PTH",  # os instead of Pathlib when useful
+    "RET",  # format returns as needed for readability
+    "T20",  # printing allowed
+
+    # naming - we allow uppercase letters, e.g. X_train, use_3D
+    "N802",
+    "N803",
+    "N806",
+
+    # docstrings - we tailor rules to our own convention
+    "D100",  # no module docstrings
+    "D104",  # no package docstrings
+    "D107",  # no __init__ docstrings
+    "D200",  # always multiline docstrings
+    "D203",  # prefer D211, no blank line between docstring and code
+    "D205",  # no blank line between summary and description
+    "D212",  # start docstrings on second line
+    "D213",  # start docs on next line
+    "D413",  # no empty line after last docstring section
+
+    # various other things
+    "B028",     # simple warnings
+    "C408",     # call dict(), list(), set()
+    "E731",     # Lambda expressions
+    "TRY003",   # long error messages
+    "PD901",    # df variable for DataFrames
+    "PGH003",   # ignore types where necessary
+    "PLR2004",  # numerical constants
+    "PLR0913",  # many arguments
+    "PLW2901",  # overwrite loop variable for readability
+    "PT011",    # use ValueError
+    "PYI041",   # explicitly mark Union[int, float] for readability
+    "RUF002",   # regular minus sign in docs
+    "RUF012",   # mutable class attributes
+    "SLF001",   # use private members
+    "SIM108",   # if/else instead of ternary if when we need
+]
+
+[lint.per-file-ignores]
+"benchmarking/**.py" = [
+    "C901",     # complex code
+    "D103",     # no docstrings
+    "INP001",   # implicit package
+    "NPY002",   # np.random.seed
+    "PLR0912",  # many branches
+    "PLR0915",  # many statements
+]
+
+"examples/**" = [
+    "D103",  # no docstrings in examples
+]
+
+"skfp/**__init__.py**" = [
+    "F401",  # allow unused imports which shorten import paths
+]
+
+"skfp/bases/**.py" = [
+    "ARG002",  # allow unused arguments for scikit-learn compatibility
+    "D401",    # non-imperative descriptions
+]
+
+"skfp/descriptors/**.py" = [
+    "D401",    # non-imperative descriptions
+]
+
+"tests/**" = [
+    "ARG001",   # unused arguments in scikit-learn tests
+    "D101",     # no docstrings in helper classes
+    "D103",     # no docstrings for tests
+    "NPY002",   # np.random.rand
+    "PERF203",  # exceptions in loops
+    "PLR1704",  # redefine arguments as variables
+    "PLW0603",  # global variables in scikit-learn tests
+    "PLW2901",  # overwriting variables in loops
+    "PT006",    # lists in pytest.mark.parametrize
+    "PT012",    # multiple lines in pytest.raises()
+    "RUF005",   # adding lists
+    "S101",     # assert
+    "S301",     # pickle
+    "S311",     # pseudo-random generation
+    "SIM108",   # if-else instead of ternary operations for long lines
+    "SIM211",   # explicit False/True for readability
+    "TRY004",   # AssertionError in tests, not TypeError
+]
+
+[lint.pycodestyle]
+# formatter will reformat lines to length 88, so we report errors only for
+# extremely long lines
+max-line-length = 200

@@ -21,7 +21,7 @@ def load_clintox(
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    """
+    r"""
     Load and return the ClinTox dataset.
 
     The task is to predict drug approval viability, by predicting clinical trial
@@ -81,8 +81,8 @@ def load_clintox(
                                                       SMILES  FDA_APPROVED  CT_TOX
     0  [C@@H]1([C@@H]([C@@H]([C@H]([C@@H]([C@@H]1Cl)C...             1       0
     1  [C@H]([C@@H]([C@@H](C(=O)[O-])O)O)([C@H](C(=O)...             1       0
-    2  [H]/[NH+]=C(/C1=CC(=O)/C(=C\\C=c2ccc(=C([NH3+])...             1       0
-    3  [H]/[NH+]=C(\\N)/c1ccc(cc1)OCCCCCOc2ccc(cc2)/C(...             1       0
+    2  [H]/[NH+]=C(/C1=CC(=O)/C(=C\C=c2ccc(=C([NH3+])...             1       0
+    3  [H]/[NH+]=C(\N)/c1ccc(cc1)OCCCCCOc2ccc(cc2)/C(...             1       0
     4                                 [N+](=O)([O-])[O-]             1       0
 
 

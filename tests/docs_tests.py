@@ -20,7 +20,10 @@ Testing of documentation pages, ensures that all classes are mentioned in proper
 
 def test_docs():
     curr_dir = os.getcwd()
-    if curr_dir.endswith("scikit-fingerprints"):
+    curr_dir_files = os.listdir(curr_dir)
+    if curr_dir.endswith("scikit-fingerprints") or (
+        "skfp" in curr_dir_files and "tests" in curr_dir_files
+    ):
         root_dir = Path(curr_dir)
     elif curr_dir.endswith("tests"):
         root_dir = Path(curr_dir).parent
@@ -62,7 +65,7 @@ def get_root_dir() -> Path:
     curr_dir = os.getcwd()
     if curr_dir.endswith("scikit-fingerprints"):
         return Path(curr_dir)
-    elif curr_dir.endswith("tests"):
+    if curr_dir.endswith("tests"):
         return Path(curr_dir).parent
-    else:
-        raise ValueError(f"Current directory {curr_dir} not recognized")
+
+    raise ValueError(f"Current directory {curr_dir} not recognized")

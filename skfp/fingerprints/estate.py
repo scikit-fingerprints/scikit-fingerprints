@@ -46,7 +46,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -70,7 +70,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
     .. [1] `Lowell H. Hall and Lemont B. Kier
         "Electrotopological State Indices for Atom Types: A Novel Combination of Electronic,
         Topological, and Valence State Information"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
+        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039-1045
         <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
 
     .. [2] `Gregory Landrum and Rational Discovery LLC

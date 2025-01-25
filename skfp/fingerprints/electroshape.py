@@ -42,7 +42,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     partial_charge_model : {"Gasteiger", "MMFF94", "formal", "precomputed"}, default="formal"
         Which model to use to compute atomic partial charges. Default ``"formal"``
         computes formal charges, and is the simplest and most error-resistantone.
-        ``"precomputed"`` assumes that the inputs are RDKit PropertyMol objects
+        ``"precomputed"`` assumes that the inputs are RDKit ``PropertyMol`` objects
         with "charge" float property set.
 
     charge_scaling_factor : float, default=25.0
@@ -67,7 +67,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -98,7 +98,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Armstrong, M.S., Morris, G.M., Finn, P.W. et al.
         "ElectroShape: fast molecular similarity calculations incorporating shape, chirality and electrostatics"
-        J Comput Aided Mol Des 24, 789–801 (2010)
+        J Comput Aided Mol Des 24, 789-801 (2010)
         <https://doi.org/10.1007/s10822-010-9374-0>`_
 
     Examples

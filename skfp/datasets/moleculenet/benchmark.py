@@ -102,10 +102,7 @@ def load_moleculenet_benchmark(
         Chem. Sci., 2018,9, 513-530
         <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
     """
-    regression_names = ["ESOL", "FreeSolv", "Lipophilicity"]
-    clf_single_task_names = ["BACE", "BBBP", "HIV"]
-    clf_multitask_names = ["ClinTox", "MUV", "SIDER", "Tox21", "ToxCast"]
-    clf_pcba = ["PCBA"]
+    dataset_names = _subset_to_dataset_names(subset)
 
     dataset_name_to_func = {
         "ESOL": load_esol,
@@ -121,35 +118,6 @@ def load_moleculenet_benchmark(
         "ToxCast": load_toxcast,
         "PCBA": load_pcba,
     }
-
-    if subset is None:
-        dataset_names = (
-            regression_names + clf_single_task_names + clf_multitask_names + clf_pcba
-        )
-    elif subset == "regression":
-        dataset_names = regression_names
-    elif subset == "classification":
-        dataset_names = clf_single_task_names + clf_multitask_names + clf_pcba
-    elif subset == "classification_single_task":
-        dataset_names = clf_single_task_names
-    elif subset == "classification_multitask":
-        dataset_names = clf_multitask_names
-    elif subset == "classification_no_pcba":
-        dataset_names = clf_single_task_names + clf_multitask_names
-    elif isinstance(subset, (list, set, tuple)):
-        for name in subset:
-            if name not in dataset_name_to_func:
-                raise ValueError(
-                    f"Dataset name '{name}' not recognized among MoleculeNet datasets"
-                )
-        dataset_names = subset
-    else:
-        raise ValueError(
-            f'Value "{subset}" for subset not recognized, must be one of: '
-            f'"classification", "classification_single_task", '
-            f'"classification_no_pcba", "regression"; alternatively, it can'
-            f"be a list of strings with dataset names from MoleculeNet to load"
-        )
 
     dataset_functions = [dataset_name_to_func[name] for name in dataset_names]
 
@@ -258,3 +226,45 @@ def load_ogb_splits(
         return splits
     else:
         return splits["train"], splits["valid"], splits["test"]
+
+
+def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
+    # transform given subset (e.g. "regression") into list of dataset names
+    # for appropriate MoleculeNet datasets
+
+    regression_names = ["ESOL", "FreeSolv", "Lipophilicity"]
+    clf_single_task_names = ["BACE", "BBBP", "HIV"]
+    clf_multitask_names = ["ClinTox", "MUV", "SIDER", "Tox21", "ToxCast"]
+    clf_pcba = ["PCBA"]
+    all_dataset_names = (
+        regression_names + clf_single_task_names + clf_multitask_names + clf_pcba
+    )
+
+    if subset is None:
+        dataset_names = all_dataset_names
+    elif subset == "regression":
+        dataset_names = regression_names
+    elif subset == "classification":
+        dataset_names = clf_single_task_names + clf_multitask_names + clf_pcba
+    elif subset == "classification_single_task":
+        dataset_names = clf_single_task_names
+    elif subset == "classification_multitask":
+        dataset_names = clf_multitask_names
+    elif subset == "classification_no_pcba":
+        dataset_names = clf_single_task_names + clf_multitask_names
+    elif isinstance(subset, (list, set, tuple)):
+        for name in subset:
+            if name not in all_dataset_names:
+                raise ValueError(
+                    f"Dataset name '{name}' not recognized among MoleculeNet datasets"
+                )
+        dataset_names = subset
+    else:
+        raise ValueError(
+            f'Value "{subset}" for subset not recognized, must be one of: '
+            f'"classification", "classification_single_task", '
+            f'"classification_no_pcba", "regression"; alternatively, it can'
+            f"be a list of strings with dataset names from MoleculeNet to load"
+        )
+
+    return dataset_names

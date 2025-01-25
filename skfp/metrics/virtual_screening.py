@@ -21,7 +21,7 @@ def enrichment_factor(
     y_score: Union[np.ndarray, list[float]],
     fraction: float = 0.05,
 ) -> float:
-    """
+    r"""
     Enrichment factor (EF).
 
     EF at fraction ``X`` is calculated as the number of actives found by the model,
@@ -36,7 +36,7 @@ def enrichment_factor(
 
     .. math::
 
-        EF(X) = \\frac{a}{X*n}
+        EF(X) = \frac{a}{X*n}
 
     Minimal value is 0. Maximal value depends on the fraction of actives in the
     dataset, and is equal to ``1/X`` if ``X >= n/N``, and ``N/n`` otherwise. Model
@@ -109,7 +109,7 @@ def rie_score(
     y_score: Union[np.ndarray, list[float]],
     alpha: float = 20,
 ) -> float:
-    """
+    r"""
     Robust Initial Enhancement (RIE).
 
     Exponentially weighted alternative to enrichment factor (EF), aimed to fix the
@@ -122,17 +122,17 @@ def rie_score(
 
     .. math::
 
-        RIE(\\alpha) = \\frac{N}{n}
-            \\frac{\\sum_{i=1}^n e^{-\\alpha r_i / N}}
-                  {\\frac{1 - e^{-\\alpha}}{e^{\\alpha/N} - 1}}
+        RIE(\alpha) = \frac{N}{n}
+            \frac{\sum_{i=1}^n e^{-\alpha r_i / N}}
+                 {\frac{1 - e^{-\alpha}}{e^{\alpha / N} - 1}}
 
     Minimal and maximal value depend on ``n``, ``N`` and ``alpha``:
 
     .. math::
 
-        RIE_{min}(\\alpha) = \\frac{N}{n} \\frac{1 - e^{\\alpha n/N}}{1 - e^{\\alpha}}
+        RIE_{min}(\alpha) = \frac{N}{n} \frac{1 - e^{\alpha n/N}}{1 - e^{\alpha}}
 
-        RIE_{max}(\\alpha) = \\frac{N}{n} \\frac{1 - e^{-\\alpha n/N}}{1 - e^{-\\alpha}}
+        RIE_{max}(\alpha) = \frac{N}{n} \frac{1 - e^{-\alpha n/N}}{1 - e^{-\alpha}}
 
     Parameters
     ----------
@@ -155,12 +155,12 @@ def rie_score(
 
     .. [2] `Robert P. Sheridan et al.
         "Protocols for Bridging the Peptide to Nonpeptide Gap in Topological Similarity Searches"
-        J. Chem. Inf. Comput. Sci. 2001, 41, 5, 1395–1406
+        J. Chem. Inf. Comput. Sci. 2001, 41, 5, 1395-1406
         <https://doi.org/10.1021/ci0100144>`_
 
     .. [3] `Jean-François Truchon, Christopher I. Bayly
         "Evaluating Virtual Screening Methods: Good and Bad Metrics for the “Early Recognition” Problem"
-        J. Chem. Inf. Model. 2007, 47, 2, 488–508
+        J. Chem. Inf. Model. 2007, 47, 2, 488-508
         <https://doi.org/10.1021/ci600426e>`_
 
     Returns
@@ -202,7 +202,7 @@ def bedroc_score(
     y_score: Union[np.ndarray, list[float]],
     alpha: float = 20,
 ) -> float:
-    """
+    r"""
     Boltzmann-enhanced discrimination of ROC (BEDROC).
 
     A normalized alternative to Robust Initial Enhancement (RIE), scaled to have
@@ -214,7 +214,7 @@ def bedroc_score(
 
     .. math::
 
-        BEDROC(\\alpha) = \\frac{RIE(\\alpha) - RIE_{min}(\\alpha)}{RIE_{max}(\\alpha) - RIE_{min}(\\alpha)}
+        BEDROC(\alpha) = \frac{RIE(\alpha) - RIE_{min}(\alpha)}{RIE_{max}(\alpha) - RIE_{min}(\alpha)}
 
     Parameters
     ----------
@@ -237,7 +237,7 @@ def bedroc_score(
 
     .. [2] `Jean-François Truchon, Christopher I. Bayly
         "Evaluating Virtual Screening Methods: Good and Bad Metrics for the “Early Recognition” Problem"
-        J. Chem. Inf. Model. 2007, 47, 2, 488–508
+        J. Chem. Inf. Model. 2007, 47, 2, 488-508
         <https://doi.org/10.1021/ci600426e>`_
 
     Returns

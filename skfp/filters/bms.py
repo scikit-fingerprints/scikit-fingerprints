@@ -35,7 +35,7 @@ class BMSFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -50,7 +50,7 @@ class BMSFilter(BaseFilter):
     ----------
     .. [1] `Bradley C. Pearce et al.
         "An Empirical Process for the Design of High-Throughput Screening Deck Filters"
-        J. Chem. Inf. Model. 2006, 46, 3, 1060–1068
+        J. Chem. Inf. Model. 2006, 46, 3, 1060-1068
         <https://pubs.acs.org/doi/10.1021/ci050504m>`_
 
     .. [2] `RDKit BMS filter definitions

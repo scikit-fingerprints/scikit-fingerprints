@@ -66,7 +66,7 @@ class ValenceDiscoveryFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -76,12 +76,12 @@ class ValenceDiscoveryFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
 
     References
-    -----------
+    ----------
     .. [1] `MedChem documentation - rule_of_generative_design
         <https://medchem-docs.datamol.io/stable/api/medchem.rules.html#medchem.rules.basic_rules.rule_of_generative_design>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import ValenceDiscoveryFilter
     >>> smiles = ["C", "ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1"]
     >>> filt = ValenceDiscoveryFilter()

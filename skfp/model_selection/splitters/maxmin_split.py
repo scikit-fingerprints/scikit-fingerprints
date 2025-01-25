@@ -86,8 +86,11 @@ def maxmin_train_test_split(
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
+    random_state: int, default=0
+        Random generator seed that will be used for selecting initial molecules.
+
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-test subsets of provided arrays. First two are lists of SMILES
         strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
@@ -232,8 +235,11 @@ def maxmin_train_valid_test_split(
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
+    random_state: int, default=0
+        Random generator seed that will be used for selecting initial molecules.
+
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-valid-test subsets of provided arrays. First three are lists of
         SMILES strings or RDKit ``Mol`` objects, depending on the input type. If
@@ -257,7 +263,6 @@ def maxmin_train_valid_test_split(
     .. [4] `Squonk - RDKit MaxMin Picker
         <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
     """
-
     data_size = len(data)
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)

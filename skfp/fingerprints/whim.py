@@ -52,7 +52,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -95,7 +95,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
 
     .. [6] `Roberto Todeschini and Paola Gramatica
         "The WHIM Theory: New 3D Molecular Descriptors for QSAR in Environmental Modelling"
-        SAR and QSAR in Environmental Research, 7(1–4), 89–115
+        SAR and QSAR in Environmental Research, 7(1-4), 89-115
         <https://www.tandfonline.com/doi/abs/10.1080/10629369708039126>`_
 
     Examples

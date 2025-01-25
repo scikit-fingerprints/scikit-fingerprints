@@ -37,7 +37,7 @@ class PAINSFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -53,7 +53,7 @@ class PAINSFilter(BaseFilter):
     .. [1] `Jonathan B. Baell and Georgina A. Holloway
         "New Substructure Filters for Removal of Pan Assay Interference Compounds
         (PAINS) from Screening Libraries and for Their Exclusion in Bioassays"
-        J. Med. Chem. 2010, 53, 7, 2719–2740
+        J. Med. Chem. 2010, 53, 7, 2719-2740
         <https://doi.org/10.1021/jm901137j>`_
 
     .. [2] `RDKit PAINS A filter definitions

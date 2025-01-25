@@ -60,7 +60,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -191,7 +191,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
 
     @classmethod
     def _find_env(cls, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
-        """Returns a smile representation of the atom environment of a given radius."""
+        # get SMILES of atom environment at given radius
         atom_identifiers_within_radius: list[int] = FindAtomEnvironmentOfRadiusN(
             mol=mol, radius=radius, rootedAtAtom=atom_identifier
         )
@@ -225,11 +225,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
         return atoms_env
 
     def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> set[bytes]:
-        """
-        Gets a list of atom molecular shingles - circular structures around atom pairs,
-        written as SMILES, separated by the bond distance between the two atoms along the
-        shortest path.
-        """
+        # get a list of atom shingles as SMILES, i.e. circular structures
+        # around atom pairs and the length of shortest path
         atom_pairs: set[bytes] = set()
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()

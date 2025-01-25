@@ -31,7 +31,7 @@ class BrenkFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -46,7 +46,7 @@ class BrenkFilter(BaseFilter):
     ----------
     .. [1] `Ruth Brenk et al.
         "Lessons Learnt from Assembling Screening Libraries for Drug Discovery for Neglected Diseases"
-        ChemMedChem 3:435–444 (2008)
+        ChemMedChem 3:435-444 (2008)
         <https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmdc.200700139>`_
 
     .. [2] `RDKit Brenk filter definitions

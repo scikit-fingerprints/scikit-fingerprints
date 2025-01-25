@@ -14,7 +14,6 @@ from skfp.model_selection.splitters.utils import (
     validate_train_test_split_sizes,
     validate_train_valid_test_split_sizes,
 )
-from skfp.utils import ensure_mols
 from skfp.utils.functions import get_data_from_indices
 
 
@@ -47,7 +46,6 @@ def randomized_scaffold_train_test_split(
     return_indices: bool = False,
     random_state: Optional[Union[int, RandomState, Generator]] = None,
 ):
-    # flake8: noqa: E501
     """
     Split using randomized groups of Bemis-Murcko scaffolds.
 
@@ -102,7 +100,7 @@ def randomized_scaffold_train_test_split(
         shuffling the scaffolds.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-test subsets of provided arrays. First two are lists of SMILES
         strings or RDKit ``Mol`` objects, depending on the input type. If `return_indices`
@@ -128,7 +126,6 @@ def randomized_scaffold_train_test_split(
         Advances in Neural Information Processing Systems 35 (NeurIPS 2022).
         <https://proceedings.neurips.cc/paper_files/paper/2022/hash/4ec360efb3f52643ac43fda570ec0118-Abstract-Conference.html>`_
     """
-    # flake8: noqa: E501
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
     )
@@ -267,7 +264,7 @@ def randomized_scaffold_train_valid_test_split(
         shuffling the scaffolds.
 
     Returns
-    ----------
+    -------
     subsets : tuple[list, list, ...]
         Tuple with train-valid-test subsets of provided arrays. First three are lists of
         SMILES strings or RDKit ``Mol`` objects, depending on the input type. If

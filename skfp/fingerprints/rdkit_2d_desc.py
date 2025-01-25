@@ -45,7 +45,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -117,7 +117,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         self.normalized = normalized
         self.clip_val = clip_val
 
-    def get_feature_names_out(self, input_features=None):
+    def get_feature_names_out(self, input_features=None):  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to RDKit function
         names for computing descriptors.
@@ -138,9 +138,9 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         )
 
         gen = RDKit2DNormalized() if self.normalized else RDKit2D()
-        names = list(zip(*gen.columns))[0]
+        feature_names = [name for name, obj in gen.columns]
 
-        return np.asarray(names, dtype=object)
+        return np.asarray(feature_names, dtype=object)
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False

@@ -10,12 +10,17 @@ from .constitutional import (
 )
 from .topological import (
     average_wiener_index,
+    balaban_j_index,
+    diameter,
     graph_distance_index,
     hall_kier_alpha,
     kappa1_index,
     kappa2_index,
     kappa3_index,
+    petitjean_index,
     polarity_number,
+    radius,
     wiener_index,
-    zagreb_index,
+    zagreb_index_m1,
+    zagreb_index_m2,
 )

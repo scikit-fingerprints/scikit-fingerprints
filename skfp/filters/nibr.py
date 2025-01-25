@@ -1,13 +1,8 @@
-from collections.abc import Sequence
-from typing import Optional, Union
+from typing import Optional
 
-import numpy as np
-import pandas as pd
 from rdkit.Chem import Mol, MolFromSmarts
-from rdkit.Chem.rdmolfiles import MolToSmiles
 
 from skfp.bases.base_filter import BaseFilter
-from skfp.utils import ensure_smiles
 
 
 class NIBRFilter(BaseFilter):
@@ -43,7 +38,7 @@ class NIBRFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -56,7 +51,7 @@ class NIBRFilter(BaseFilter):
     ----------
     .. [1] `Ansgar Schuffenhauer et al.
         "Evolution of Novartis’ Small Molecule Screening Deck Design"
-        J. Med. Chem. 2020, 63, 23, 14425–14447
+        J. Med. Chem. 2020, 63, 23, 14425-14447
         <https://doi.org/10.1021/acs.jmedchem.0c01332>`_
 
     .. [2] `RDKit NIBR filter definitions
@@ -117,7 +112,6 @@ class NIBRFilter(BaseFilter):
 
     def _load_filters(self) -> list[tuple[str, int, bool]]:
         # SMARTS, minimal count, exclude (otherwise flag)
-        # flake8: noqa: E501
         filters = [
             ("S=S", 1, True),
             ("P~P", 1, True),
@@ -1001,7 +995,6 @@ class NIBRFilter(BaseFilter):
                 False,
             ),
         ]
-        # flake8: noqa
         filters = [
             (MolFromSmarts(smarts), min_count, exclude)
             for smarts, min_count, exclude in filters

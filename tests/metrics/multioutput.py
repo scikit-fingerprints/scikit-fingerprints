@@ -109,12 +109,7 @@ def test_multioutput_metrics_nan_present(
     # should not throw any errors
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        try:
-            multioutput_metric(y_true, y_pred)
-        except Exception as e:
-            raise ValueError(
-                f"{metric_name} raised an error with NaNs present, error:\n{str(e)}"
-            )
+        multioutput_metric(y_true, y_pred)
 
 
 @pytest.mark.parametrize(
@@ -140,13 +135,7 @@ def test_multioutput_metrics_constant_columns(
     # should not throw any errors
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        try:
-            multioutput_metric(y_true, y_pred)
-        except Exception as e:
-            raise ValueError(
-                f"{metric_name} raised an error with constant columns present, "
-                f"error:\n{str(e)}"
-            )
+        multioutput_metric(y_true, y_pred)
 
 
 @pytest.mark.parametrize(
@@ -162,13 +151,7 @@ def test_multioutput_different_shapes(
     # should not throw any errors
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        try:
-            multioutput_metric(y_true, y_pred)
-        except Exception as e:
-            raise ValueError(
-                f"{metric_name} raised an error with same y_true and y_pred shape, "
-                f"error:\n{str(e)}"
-            )
+        multioutput_metric(y_true, y_pred)
 
     y_true = np.ones(10)
     y_pred = np.zeros((10, 2))

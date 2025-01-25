@@ -55,7 +55,7 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -99,7 +99,7 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
     .. [6] `Viviana Consonni, Roberto Todeschini, and Manuela Pavan
         "Structure/Response Correlations and Similarity/Diversity Analysis by GETAWAY Descriptors.
         1. Theory of the Novel 3D Molecular Descriptors"
-        J. Chem. Inf. Comput. Sci. 2002, 42, 3, 682–692
+        J. Chem. Inf. Comput. Sci. 2002, 42, 3, 682-692
         <https://pubs.acs.org/doi/abs/10.1021/ci015504a>`_
 
     Examples
