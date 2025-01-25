@@ -37,7 +37,7 @@ def atomic_partial_charges(
     >>> from skfp.descriptors import atomic_partial_charges
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> atomic_partial_charges(mol)
-    [0. 0. 0. 0. 0. 0.]
+    array([0., 0., 0., 0., 0., 0.])
     """
     atoms = mol.GetAtoms()
 
