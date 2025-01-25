@@ -4,6 +4,7 @@ from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, RemoveAllHs
+from rdkit.Chem.rdMolDescriptors import _CalcCrippenContribs
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import StrOptions
 
@@ -20,16 +21,17 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
     This is a descriptor-based fingerprint, based on Burden descriptors, which are
     largest and smallest eigenvalues of the Burden matrix [1]_ [2]_. It is a modified
     connectivity matrix, aimed to combine topological structure with atomic properties.
-    Diagonal elements are atom descriptors, e.g. atomic number, charge, polarizability.
-    Off-diagonal elements for bonded atoms are 1/sqrt(bond order), with minimum of 0.001
-    in case of no bond between given pair of atoms.
+    Diagonal elements are atom descriptors, e.g. atomic number, charge. Off-diagonal
+    elements for bonded atoms are 1/sqrt(bond order), with minimum of 0.001 in case of
+    no bond between given pair of atoms.
 
     BCUT2D descriptors use the largest and smallest eigenvalue for 4 atomic properties:
     mass, charge, logP and molar refractivity (MR). This results in 8 features.
 
     The implementation differs slightly from RDKit [3]_, because they use Gasteiger model
     by default, and here formal charge model is used. It is simpler and more robust, since
-    Gasteiger fails for metal atoms.
+    Gasteiger fails for metal atoms. Like RDKit, we use Wildman-Crippen atomic contributions
+    model [4]_ for logP and MR.
 
     Parameters
     ----------
@@ -91,6 +93,11 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
     .. [3] `RDKit BCUT2D descriptors
         <https://www.rdkit.org/docs/source/rdkit.Chem.rdMolDescriptors.html#rdkit.Chem.rdMolDescriptors.BCUT2D>`_
 
+    .. [4] `Scott A. Wildman and Gordon M. Crippen
+        "Prediction of Physicochemical Parameters by Atomic Contributions"
+        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 868-873
+        <https://pubs.acs.org/doi/10.1021/ci990307l>`_
+
     Examples
     --------
     >>> from skfp.fingerprints import BCUT2DFingerprint
@@ -100,10 +107,14 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
     BCUT2DFingerprint()
 
     >>> fp.transform(smiles)
-    array([[0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+    array([[15.999     , 15.999     ,  0.        ,  0.        , -0.2893    ,
+            -0.2893    ,  0.8238    ,  0.8238    ],
+           [13.011     , 11.011     ,  1.        , -1.        ,  1.1441    ,
+            -0.8559    ,  3.503     ,  1.503     ],
+           [14.16196892, 11.85603108,  0.26376262, -1.26376262,  0.6264836 ,
+            -0.5301136 ,  3.43763218,  1.53036782],
+           [16.12814585, 10.96029404,  1.22521641, -1.2242736 ,  1.12869643,
+            -1.35803037,  5.43954434, -0.10561046]])
     """
 
     _parameter_constraints: dict = {
@@ -155,10 +166,10 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
             "min Burden eigenvalue mass",
             "max Burden eigenvalue charge",
             "min Burden eigenvalue charge",
-            "max Burden eivenvalue logP",
-            "min Burden eivenvalue logP",
-            "max Burden eivenvalue MR",
-            "min Burden eivenvalue MR",
+            "max Burden eigenvalue logP",
+            "min Burden eigenvalue logP",
+            "max Burden eigenvalue MR",
+            "min Burden eigenvalue MR",
         ]
         return np.asarray(feature_names, dtype=object)
 
@@ -244,8 +255,6 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
         return np.array(fps)
 
     def _get_fp(self, mol: Mol) -> np.ndarray:
-        from rdkit.Chem.rdMolDescriptors import CalcCrippenDescriptors
-
         # Burden descriptors are defined for hydrogen-depleted molecule
         mol = RemoveAllHs(mol)
 
@@ -256,7 +265,9 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
             partial_charge_model=self.partial_charge_model,
             charge_errors=self.charge_errors,
         )
-        logp_vals, mr_vals = CalcCrippenDescriptors(mol, includeHs=False)
+        atomic_logp_mr_contribs = _CalcCrippenContribs(mol)
+        logp_vals = [logp for logp, mr in atomic_logp_mr_contribs]
+        mr_vals = [mr for logp, mr in atomic_logp_mr_contribs]
 
         matrix = burden_matrix(mol)
         fp = np.empty(8, dtype=float)
@@ -278,4 +289,9 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
     @staticmethod
     def _get_max_and_min_eigenvals(arr: np.ndarray) -> tuple[float, float]:
         eigvals = np.linalg.eigvals(arr)
-        return np.max(eigvals), np.min(eigvals)
+        # since Burden matrix is symmetric, those eigenvalues should always be real
+        # NumPy sometimes prints a warning about complex number, no idea why, so we
+        # extract real part manually
+        max_eigval = np.real(np.max(eigvals))
+        min_eigval = np.real(np.min(eigvals))
+        return max_eigval, min_eigval

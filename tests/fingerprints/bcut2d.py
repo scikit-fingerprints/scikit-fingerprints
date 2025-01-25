@@ -18,7 +18,6 @@ def gasteiger_allowed_mols(mols_list):
         mol
         for mol in mols_list
         if all(atom.GetSymbol() in allowed_elements for atom in mol.GetAtoms())
-        and mol.GetNumAtoms() < 6
     ]
 
 
@@ -43,3 +42,24 @@ def test_bcut2d_fingerprint_formal(smallest_mols_list):
 
     assert np.allclose(X_skfp_parallel, X_skfp_seq)
     assert X_skfp_parallel.shape == X_skfp_seq.shape
+
+
+def test_bcut2d_ignore_errors(mols_list, gasteiger_allowed_mols):
+    bcut2d_fp = BCUT2DFingerprint(
+        partial_charge_model="Gasteiger", errors="ignore", n_jobs=-1
+    )
+    X_skfp = bcut2d_fp.transform(mols_list)
+    X_skfp_gasteiger = bcut2d_fp.transform(gasteiger_allowed_mols)
+
+    assert np.allclose(X_skfp, X_skfp_gasteiger)
+
+
+def test_bcut2d_feature_names():
+    bcut2d_fp = BCUT2DFingerprint()
+    feature_names = bcut2d_fp.get_feature_names_out()
+
+    assert len(feature_names) == bcut2d_fp.n_features_out
+
+    assert feature_names[0] == "max Burden eigenvalue mass"
+    assert feature_names[1] == "min Burden eigenvalue mass"
+    assert feature_names[-1] == "min Burden eigenvalue MR"
