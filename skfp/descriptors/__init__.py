@@ -1,4 +1,3 @@
-from .burden import burden_descriptors
 from .constitutional import (
     average_molecular_weight,
     bond_count,
@@ -9,10 +8,13 @@ from .constitutional import (
     number_of_rotatable_bonds,
     total_atom_count,
 )
-from .kappa_shape import kappa_shape_indices
 from .topological import (
     average_wiener_index,
     graph_distance_index,
+    hall_kier_alpha,
+    kappa1_index,
+    kappa2_index,
+    kappa3_index,
     polarity_number,
     wiener_index,
     zagreb_index,

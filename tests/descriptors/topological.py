@@ -99,6 +99,88 @@ def test_graph_distance_index(mol_name, expected_value, input_mols):
     "mol_name, expected_value",
     {
         "ethane": 2,
+        "ethanol": 2,
+        "carbon_dioxide": 2,
+        "benzene": 1.0,
+        "acetic_acid": 2,
+        "pyridine": 1.0,
+        "isobutane": 2.0,
+        "pyrimidine": 0,
+    }.items(),
+)
+def test_hall_kier_alpha(mol_name, expected_value, input_mols):
+    mol, _ = input_mols[mol_name]
+    result = top.hall_kier_alpha(mol)
+    assert result == expected_value
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
+        "ethane": 36.0,
+        "ethanol": 20.0,
+        "carbon_dioxide": 0.0,
+        "benzene": 0.0,
+        "acetic_acid": 37.5,
+        "pyridine": 0.0,
+        "isobutane": 16.666667,
+        "pyrimidine": 15.68,
+    }.items(),
+)
+def test_kappa1_index(mol_name, expected_value, input_mols):
+    mol, _ = input_mols[mol_name]
+    result = top.kappa1_index(mol)
+    assert round(result, 6) == round(expected_value, 6)
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
+        "ethane": 0.0,
+        "ethanol": 36.0,
+        "carbon_dioxide": 36.0,
+        "benzene": 4.167,
+        "acetic_acid": 8.889,
+        "pyridine": 4.167,
+        "isobutane": 8.889,
+        "pyrimidine": 1.75,
+    }.items(),
+)
+def test_kappa2_index(mol_name, expected_value, input_mols):
+    mol, distance_matrix = input_mols[mol_name]
+    result = top.kappa2_index(mol, distance_matrix)
+    result_no_dist_matrix = top.kappa2_index(mol)
+
+    assert round(result, 3) == round(expected_value, 3)
+    assert round(result_no_dist_matrix, 3) == round(expected_value, 3)
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
+        "ethane": 0.0,
+        "ethanol": 0.0,
+        "carbon_dioxide": 0.0,
+        "benzene": 10.666667,
+        "acetic_acid": 0.0,
+        "pyridine": 10.666667,
+        "isobutane": 0.0,
+        "pyrimidine": 4.861111,
+    }.items(),
+)
+def test_kappa3_index(mol_name, expected_value, input_mols):
+    mol, distance_matrix = input_mols[mol_name]
+    result = top.kappa3_index(mol, distance_matrix)
+    result_no_dist_matrix = top.kappa3_index(mol)
+
+    assert round(result, 6) == round(expected_value, 6)
+    assert round(result_no_dist_matrix, 6) == round(expected_value, 6)
+
+
+@pytest.mark.parametrize(
+    "mol_name, expected_value",
+    {
+        "ethane": 2,
         "ethanol": 6,
         "carbon_dioxide": 6,
         "benzene": 24,
