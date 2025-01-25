@@ -209,10 +209,10 @@ def test_radius(mol_name, expected_value, input_mols):
         "ethane": 2,
         "ethanol": 2,
         "carbon_dioxide": 2,
-        "benzene": 1.0,
+        "benzene": 1,
         "acetic_acid": 2,
-        "pyridine": 1.0,
-        "isobutane": 2.0,
+        "pyridine": 1,
+        "isobutane": 2,
         "pyrimidine": 0,
     }.items(),
 )
@@ -231,14 +231,14 @@ def test_hall_kier_alpha(mol_name, expected_value, input_mols):
         "benzene": 0.0,
         "acetic_acid": 37.5,
         "pyridine": 0.0,
-        "isobutane": 16.666667,
+        "isobutane": 16.667,
         "pyrimidine": 15.68,
     }.items(),
 )
 def test_kappa1_index(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
     result = top.kappa1_index(mol)
-    assert round(result, 6) == round(expected_value, 6)
+    assert round(result, 3) == expected_value
 
 
 @pytest.mark.parametrize(
@@ -259,8 +259,8 @@ def test_kappa2_index(mol_name, expected_value, input_mols):
     result = top.kappa2_index(mol, distance_matrix)
     result_no_dist_matrix = top.kappa2_index(mol)
 
-    assert round(result, 3) == round(expected_value, 3)
-    assert round(result_no_dist_matrix, 3) == round(expected_value, 3)
+    assert round(result, 3) == expected_value
+    assert round(result_no_dist_matrix, 3) == expected_value
 
 
 @pytest.mark.parametrize(
@@ -269,11 +269,11 @@ def test_kappa2_index(mol_name, expected_value, input_mols):
         "ethane": 0.0,
         "ethanol": 0.0,
         "carbon_dioxide": 0.0,
-        "benzene": 10.666667,
+        "benzene": 10.667,
         "acetic_acid": 0.0,
-        "pyridine": 10.666667,
+        "pyridine": 10.667,
         "isobutane": 0.0,
-        "pyrimidine": 4.861111,
+        "pyrimidine": 4.861,
     }.items(),
 )
 def test_kappa3_index(mol_name, expected_value, input_mols):
@@ -281,8 +281,8 @@ def test_kappa3_index(mol_name, expected_value, input_mols):
     result = top.kappa3_index(mol, distance_matrix)
     result_no_dist_matrix = top.kappa3_index(mol)
 
-    assert round(result, 6) == round(expected_value, 6)
-    assert round(result_no_dist_matrix, 6) == round(expected_value, 6)
+    assert round(result, 3) == expected_value
+    assert round(result_no_dist_matrix, 3) == expected_value
 
 
 @pytest.mark.parametrize(

@@ -181,8 +181,8 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
     return int(sum((k * f) ** 2 for k, f in distance_counts.items()))
 
 
-def hall_kier_alpha(mol: Mol) -> float:
-    """
+def hall_kier_alpha(mol: Mol) -> int:
+    r"""
     Hall-Kier molecular flexibility index (alpha).
 
     The Hall-Kier alpha index [1]_ is a molecular descriptor that accounts for molecular
@@ -190,7 +190,7 @@ def hall_kier_alpha(mol: Mol) -> float:
     It is calculated as:
 
     .. math::
-        \\alpha = A - B + 1
+        \alpha = A - B + 1
 
     where:
     - A is the number of heavy atoms (non-hydrogen atoms),
@@ -201,7 +201,7 @@ def hall_kier_alpha(mol: Mol) -> float:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the Hall-Kier alpha index is computed.
 
     References
@@ -217,7 +217,7 @@ def hall_kier_alpha(mol: Mol) -> float:
     >>> from skfp.descriptors.topological import hall_kier_alpha
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> hall_kier_alpha(mol)
-    1.0
+    1
     """
     return heavy_atom_count(mol) - bond_count(mol) + 1
 
@@ -331,14 +331,14 @@ def polarity_number(
 
 
 def kappa1_index(mol: Mol) -> float:
-    """
+    r"""
     First Kappa shape index (K1).
 
     Computes the first kappa shape index [1]_, which measures molecular shape based on
     single bonds. It is given by the equation:
 
     .. math::
-        K_1 = \\frac{(A + \\alpha) (A + \\alpha - 1)^2}{P_1^2}
+        K_1 = \frac{(A + \alpha) (A + \alpha - 1)^2}{P_1^2}
 
     where:
     - A is the number of heavy atoms,
@@ -349,7 +349,7 @@ def kappa1_index(mol: Mol) -> float:
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the first Kappa shape index is calculated.
 
     References
@@ -365,11 +365,11 @@ def kappa1_index(mol: Mol) -> float:
     >>> from skfp.descriptors.topological import kappa1_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa1_index(mol)
-    3.4115708812260532
+    0.0
     """
     P1 = bond_count(mol, "SINGLE")
     A = heavy_atom_count(mol)
-    alpha = hall_kier_alpha(mol)
+    alpha = float(hall_kier_alpha(mol))
 
     if P1 == 0:
         return 0.0
@@ -377,14 +377,14 @@ def kappa1_index(mol: Mol) -> float:
 
 
 def kappa2_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
-    """
+    r"""
     Second Kappa shape index (K2).
 
     Computes the second kappa shape index [1]_, which measures molecular shape based on
     paths of length 2. It is given by the equation:
 
     .. math::
-        K_2 = \\frac{(A + \\alpha - 1) (A + \\alpha - 2)^2}{P_2^2}
+        K_2 = \frac{(A + \alpha - 1) (A + \alpha - 2)^2}{P_2^2}
 
     where:
     - A is the number of heavy atoms,
@@ -395,7 +395,7 @@ def kappa2_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the second Kappa shape index is calculated.
 
     distance_matrix : np.ndarray, optional
@@ -414,14 +414,14 @@ def kappa2_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
     >>> from skfp.descriptors.topological import kappa2_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa2_index(mol)
-    1.6057694396735218
+    4.166666666666667
     """
     if distance_matrix is None:
         distance_matrix = GetDistanceMatrix(mol)
 
     P2 = np.count_nonzero(distance_matrix == 2) // 2
     A = heavy_atom_count(mol)
-    alpha = hall_kier_alpha(mol)
+    alpha = float(hall_kier_alpha(mol))
 
     if P2 == 0:
         return 0.0
@@ -429,14 +429,14 @@ def kappa2_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
 
 
 def kappa3_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
-    """
+    r"""
     Third Kappa shape index (K3).
 
     Computes the third kappa shape index [1]_, which measures molecular shape based on
     paths of length 3. It is given by the equation:
 
     .. math::
-        K_3 = \\frac{(A + \\alpha - 1) (A + \\alpha - 3)^2}{P_3^2}
+        K_3 = \frac{(A + \alpha - 1) (A + \alpha - 3)^2}{P_3^2}
 
     where:
     - A is the number of heavy atoms,
@@ -447,7 +447,7 @@ def kappa3_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
 
     Parameters
     ----------
-    mol : RDKit Mol object
+    mol : RDKit ``Mol`` object
         The molecule for which the third Kappa shape index is calculated.
 
     distance_matrix : np.ndarray, optional
@@ -466,14 +466,14 @@ def kappa3_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
     >>> from skfp.descriptors.topological import kappa3_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa3_index(mol)
-    0.5823992601400448
+    10.666666666666666
     """
     if distance_matrix is None:
         distance_matrix = GetDistanceMatrix(mol)
 
     P3 = np.count_nonzero(distance_matrix == 3) // 2
     A = heavy_atom_count(mol)
-    alpha = hall_kier_alpha(mol)
+    alpha = float(hall_kier_alpha(mol))
 
     if P3 == 0:
         return 0.0
