@@ -5,6 +5,8 @@ from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import NearestNeighbors
 
 from skfp.distances import (
+    all_bit_binary_distance,
+    all_bit_count_distance,
     dice_binary_distance,
     dice_count_distance,
     tanimoto_binary_distance,
@@ -45,6 +47,8 @@ def test_check_nan_wrong_type():
             csr_array([[0, 1, 0, 1]]),
             csr_array([[0, 1, 1, 0]]),
         ),
+        (all_bit_binary_distance, np.array([0, 1, 0, 1]), np.array([0, 1, 1, 0])),
+        (all_bit_binary_distance, csr_array([[0, 1, 0, 1]]), csr_array([[0, 1, 1, 0]])),
     ],
 )
 def test_sklearn_pairwise_compatible_binary(method, vec_a, vec_b):
@@ -65,6 +69,8 @@ def test_sklearn_pairwise_compatible_binary(method, vec_a, vec_b):
         (dice_count_distance, csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
         (tanimoto_count_distance, np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
         (tanimoto_count_distance, csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
+        (all_bit_count_distance, np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
+        (all_bit_count_distance, csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
     ],
 )
 def test_sklearn_pairwise_compatible_count(method, vec_a, vec_b):

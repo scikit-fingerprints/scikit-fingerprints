@@ -1,3 +1,9 @@
+from .all_bit import (
+    all_bit_binary_distance,
+    all_bit_binary_similarity,
+    all_bit_count_distance,
+    all_bit_count_similarity,
+)
 from .dice import (
     dice_binary_distance,
     dice_binary_similarity,
