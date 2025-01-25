@@ -235,7 +235,10 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     def _get_fp(self, mol: Mol) -> np.ndarray:
         conf_id = mol.GetIntProp("conf_id")
         coords = mol.GetConformer(conf_id).GetPositions()
-        charges = atomic_partial_charges(mol) * self.charge_scaling_factor
+        charges = atomic_partial_charges(
+            mol, self.partial_charge_model, self.charge_errors
+        )
+        charges *= self.charge_scaling_factor
         descriptors = np.column_stack((coords, charges))
         centroid_dists = self._get_centroid_distances(descriptors, charges)
 

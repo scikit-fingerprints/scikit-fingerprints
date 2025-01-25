@@ -141,9 +141,12 @@ def burden_matrix(mol: Mol, descriptors: Optional[np.ndarray] = None) -> np.ndar
     --------
     >>> from rdkit.Chem import MolFromSmiles
     >>> from skfp.descriptors import burden_matrix
-    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> mol = MolFromSmiles("C=1=C=C=C1")  # cyclobutadiyne
     >>> burden_matrix(mol)
-
+    array([[0.001     , 0.70710678, 0.001     , 0.70710678],
+           [0.70710678, 0.001     , 0.70710678, 0.001     ],
+           [0.001     , 0.70710678, 0.001     , 0.70710678],
+           [0.70710678, 0.001     , 0.70710678, 0.001     ]])
     """
     num_atoms = mol.GetNumAtoms()
 

@@ -11,6 +11,7 @@ Modules for computing molecular descriptors.
 .. py:currentmodule:: skfp.descriptors
 
 Charge descriptors (based on atomic electric charges):
+
 .. autosummary::
     :nosignatures:
     :toctree: generated/

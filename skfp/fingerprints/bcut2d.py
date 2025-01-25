@@ -261,9 +261,7 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
         # atomic descriptors: mass, partial charge, logP, molar refractivity
         masses = [atom.GetMass() for atom in mol.GetAtoms()]
         charges = atomic_partial_charges(
-            mol,
-            partial_charge_model=self.partial_charge_model,
-            charge_errors=self.charge_errors,
+            mol, self.partial_charge_model, self.charge_errors
         )
         atomic_logp_mr_contribs = _CalcCrippenContribs(mol)
         logp_vals = [logp for logp, mr in atomic_logp_mr_contribs]
