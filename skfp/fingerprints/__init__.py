@@ -1,6 +1,7 @@
 from .atom_pair import AtomPairFingerprint
 from .autocorr import AutocorrFingerprint
 from .avalon import AvalonFingerprint
+from .bcut2d import BCUT2DFingerprint
 from .e3fp_fp import E3FPFingerprint
 from .ecfp import ECFPFingerprint
 from .electroshape import ElectroShapeFingerprint

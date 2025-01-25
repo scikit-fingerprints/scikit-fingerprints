@@ -10,6 +10,13 @@ Modules for computing molecular descriptors.
 
 .. py:currentmodule:: skfp.descriptors
 
+Charge descriptors (based on atomic electric charges):
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    atomic_partial_charges
+
 Constitutional descriptors (based on atomic composition):
 
 .. autosummary::
@@ -33,6 +40,7 @@ Topological descriptors (based on graph topology/structure):
 
     average_wiener_index
     balaban_j_index
+    burden_matrix
     diameter
     graph_distance_index
     petitjean_index

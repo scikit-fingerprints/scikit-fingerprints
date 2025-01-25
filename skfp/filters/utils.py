@@ -15,7 +15,7 @@ def get_num_heavy_metals(mol: Mol) -> int:
     """
     Calculate the number of heavy metals in a molecule.
 
-    Heavy atoms are defined as metals other than ["Li", "Be", "K", "Na", "Ca", "Mg"].
+    Heavy metals are defined as metals other than ["Li", "Be", "K", "Na", "Ca", "Mg"].
     """
     # non-metals and non-heavy metals
     # fmt: off

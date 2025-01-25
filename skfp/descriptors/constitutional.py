@@ -29,7 +29,7 @@ def average_molecular_weight(mol: Mol) -> float:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import average_molecular_weight
+    >>> from skfp.descriptors import average_molecular_weight
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> average_molecular_weight(mol)
     13.018999999999998
@@ -61,7 +61,7 @@ def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import bond_count
+    >>> from skfp.descriptors import bond_count
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> bond_count(mol)
     6
@@ -96,7 +96,7 @@ def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import element_atom_count
+    >>> from skfp.descriptors import element_atom_count
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> element_atom_count(mol, "C")
     6
@@ -133,7 +133,7 @@ def heavy_atom_count(mol: Mol) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import heavy_atom_count
+    >>> from skfp.descriptors import heavy_atom_count
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> heavy_atom_count(mol)
     6
@@ -160,7 +160,7 @@ def molecular_weight(mol: Mol) -> float:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import molecular_weight
+    >>> from skfp.descriptors import molecular_weight
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> molecular_weight(mol)
     78.11399999999999
@@ -182,7 +182,7 @@ def number_of_rings(mol: Mol) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import number_of_rings
+    >>> from skfp.descriptors import number_of_rings
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> number_of_rings(mol)
     1
@@ -204,7 +204,7 @@ def number_of_rotatable_bonds(mol: Mol) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import number_of_rotatable_bonds
+    >>> from skfp.descriptors import number_of_rotatable_bonds
     >>> mol = MolFromSmiles("C=CC=C")  # Butadiene
     >>> number_of_rotatable_bonds(mol)
     1
@@ -227,7 +227,7 @@ def total_atom_count(mol: Mol) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.constitutional import total_atom_count
+    >>> from skfp.descriptors import total_atom_count
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> total_atom_count(mol)
     12
