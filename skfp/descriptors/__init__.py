@@ -1,3 +1,4 @@
+from .charge import atomic_partial_charges
 from .constitutional import (
     average_molecular_weight,
     bond_count,
@@ -11,6 +12,7 @@ from .constitutional import (
 from .topological import (
     average_wiener_index,
     balaban_j_index,
+    burden_matrix,
     diameter,
     graph_distance_index,
     petitjean_index,

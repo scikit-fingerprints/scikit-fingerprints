@@ -17,6 +17,7 @@ Classes for computing molecular fingerprints.
     AtomPairFingerprint
     AutocorrFingerprint
     AvalonFingerprint
+    BCUT2DFingerprint
     E3FPFingerprint
     ECFPFingerprint
     ElectroShapeFingerprint

@@ -1,9 +1,8 @@
 from typing import Optional, Union
 
 from rdkit.Chem import Mol
-from rdkit.Chem.Crippen import MolLogP, MolMR
 from rdkit.Chem.Descriptors import MolWt
-from rdkit.Chem.rdMolDescriptors import CalcNumAtoms
+from rdkit.Chem.rdMolDescriptors import CalcCrippenDescriptors, CalcNumAtoms
 
 from skfp.bases.base_filter import BaseFilter
 
@@ -19,7 +18,7 @@ class GhoseFilter(BaseFilter):
         - 160 <= molecular weight <= 400
         - -0.4 <= logP <= 5.6
         - 20 <= number of atoms <= 70
-        - 40 <= refractivity <= 130
+        - 40 <= molar refractivity <= 130
 
     Parameters
     ----------
@@ -84,11 +83,12 @@ class GhoseFilter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
+        logp, mr = CalcCrippenDescriptors(mol)
         rules = [
             160 <= MolWt(mol) <= 400,
-            40 <= MolMR(mol) <= 130,
+            40 <= mr <= 130,
             20 <= CalcNumAtoms(mol) <= 70,
-            -0.4 <= MolLogP(mol) <= 5.6,
+            -0.4 <= logp <= 5.6,
         ]
         passed_rules = sum(rules)
 
