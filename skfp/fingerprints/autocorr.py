@@ -128,6 +128,60 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
         )
         self.use_3D = use_3D
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names.
+
+        They differ depending on ``use_3D`` parameter:
+        - 2D: features correspond to 4 autocorrelation functions, 6 atomic descriptors
+          and 8 distance buckets
+        - 3D: features correspond to 8 atomic descriptors and 10 distance buckets
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Autocorrelation feature names.
+        """
+        if not self.use_3D:
+            autocorr_funcs = ["Moreau-Broto", "Centered Moreau-Broto", "Moran", "Geary"]
+            descriptors = [
+                "mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+            ]
+            feature_names = [
+                f"{autocorr_func} {descriptor} distance {distance}"
+                for autocorr_func in autocorr_funcs
+                for descriptor in descriptors
+                for distance in range(8)
+            ]
+        else:
+            descriptors = [
+                "unweighted",
+                "mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+                "covalent radius",
+            ]
+            feature_names = [
+                f"Moreau-Broto {descriptor} distance {distance}"
+                for descriptor in descriptors
+                for distance in range(10)
+            ]
+
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
