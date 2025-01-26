@@ -3,9 +3,8 @@ from typing import Optional
 
 import numpy as np
 from rdkit.Chem import GetDistanceMatrix, Mol
-from rdkit.Chem.GraphDescriptors import BalabanJ
+from rdkit.Chem.GraphDescriptors import BalabanJ, HallKierAlpha, Kappa1, Kappa2, Kappa3
 
-from skfp.descriptors.constitutional import bond_count, heavy_atom_count
 from skfp.utils.validators import require_atoms
 
 
@@ -181,23 +180,19 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
     return int(sum((k * f) ** 2 for k, f in distance_counts.items()))
 
 
-def hall_kier_alpha(mol: Mol) -> int:
+def hall_kier_alpha(mol: Mol) -> float:
     r"""
-    Hall-Kier molecular flexibility index (alpha).
+    Hall-Kier alpha index.
 
-    The Hall-Kier alpha index [1]_ is a molecular descriptor that accounts for molecular
-    flexibility based on the number of heavy atoms and the number of bonds in a molecule.
-    It is calculated as:
+    Computes the Hall-Kier alpha index [1]_, which is a measure of molecular flexibility.
+    It is given by the equation:
 
     .. math::
-        \alpha = A - B + 1
+        \\alpha = \\frac{r}{r(Csp^3)} - 1
 
     where:
-    - A is the number of heavy atoms (non-hydrogen atoms),
-    - B is the number of bonds in the molecule.
-
-    A higher alpha value suggests a more flexible structure, while a lower value
-    indicates a more rigid molecular framework.
+    - r is the covalent radius of the atom,
+    - r(Csp³) is the covalent radius of a sp³ hybridized carbon.
 
     Parameters
     ----------
@@ -206,10 +201,10 @@ def hall_kier_alpha(mol: Mol) -> int:
 
     References
     ----------
-    .. [1] `Milan, Randić
-        "Novel Shape Descriptors for Molecular Graphs"
-        Journal of Chemical Information and Computer Sciences 41.3 (2001):  607–613.
-        <https://pubs.acs.org/doi/10.1021/ci0001031>`_
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
 
     Examples
     --------
@@ -217,9 +212,9 @@ def hall_kier_alpha(mol: Mol) -> int:
     >>> from skfp.descriptors.topological import hall_kier_alpha
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> hall_kier_alpha(mol)
-    1
+    -0.78
     """
-    return heavy_atom_count(mol) - bond_count(mol) + 1
+    return HallKierAlpha(mol)
 
 
 def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
@@ -354,10 +349,10 @@ def kappa1_index(mol: Mol) -> float:
 
     References
     ----------
-    .. [1] `Milan, Randić
-        "Novel Shape Descriptors for Molecular Graphs"
-        Journal of Chemical Information and Computer Sciences 41.3 (2001):  607–613.
-        <https://pubs.acs.org/doi/10.1021/ci0001031>`_
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
 
     Examples
     --------
@@ -365,18 +360,13 @@ def kappa1_index(mol: Mol) -> float:
     >>> from skfp.descriptors.topological import kappa1_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa1_index(mol)
-    0.0
+    3.4115708812260532
     """
-    P1 = bond_count(mol, "SINGLE")
-    A = heavy_atom_count(mol)
-    alpha = float(hall_kier_alpha(mol))
 
-    if P1 == 0:
-        return 0.0
-    return ((A + alpha) * (A + alpha - 1) ** 2) / (P1**2)
+    return Kappa1(mol)
 
 
-def kappa2_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
+def kappa2_index(mol: Mol) -> float:
     r"""
     Second Kappa shape index (K2).
 
@@ -398,15 +388,12 @@ def kappa2_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
     mol : RDKit ``Mol`` object
         The molecule for which the second Kappa shape index is calculated.
 
-    distance_matrix : np.ndarray, optional
-        Precomputed distance matrix to optimize performance.
-
     References
     ----------
-    .. [1] `Milan, Randić
-        "Novel Shape Descriptors for Molecular Graphs"
-        Journal of Chemical Information and Computer Sciences 41.3 (2001):  607–613.
-        <https://pubs.acs.org/doi/10.1021/ci0001031>`_
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
 
     Examples
     --------
@@ -414,21 +401,13 @@ def kappa2_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
     >>> from skfp.descriptors.topological import kappa2_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa2_index(mol)
-    4.166666666666667
+    1.6057694396735218
     """
-    if distance_matrix is None:
-        distance_matrix = GetDistanceMatrix(mol)
 
-    P2 = np.count_nonzero(distance_matrix == 2) // 2
-    A = heavy_atom_count(mol)
-    alpha = float(hall_kier_alpha(mol))
-
-    if P2 == 0:
-        return 0.0
-    return ((A + alpha - 1) * (A + alpha - 2) ** 2) / (P2**2)
+    return Kappa2(mol)
 
 
-def kappa3_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
+def kappa3_index(mol: Mol) -> float:
     r"""
     Third Kappa shape index (K3).
 
@@ -450,15 +429,12 @@ def kappa3_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
     mol : RDKit ``Mol`` object
         The molecule for which the third Kappa shape index is calculated.
 
-    distance_matrix : np.ndarray, optional
-        Precomputed distance matrix to optimize performance.
-
     References
     ----------
-    .. [1] `Milan, Randić
-        "Novel Shape Descriptors for Molecular Graphs"
-        Journal of Chemical Information and Computer Sciences 41.3 (2001):  607–613.
-        <https://pubs.acs.org/doi/10.1021/ci0001031>`_
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
 
     Examples
     --------
@@ -466,18 +442,10 @@ def kappa3_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> floa
     >>> from skfp.descriptors.topological import kappa3_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa3_index(mol)
-    10.666666666666666
+    0.5823992601400448
     """
-    if distance_matrix is None:
-        distance_matrix = GetDistanceMatrix(mol)
 
-    P3 = np.count_nonzero(distance_matrix == 3) // 2
-    A = heavy_atom_count(mol)
-    alpha = float(hall_kier_alpha(mol))
-
-    if P3 == 0:
-        return 0.0
-    return ((A + alpha - 1) * (A + alpha - 3) ** 2) / (P3**2)
+    return Kappa3(mol)
 
 
 def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
