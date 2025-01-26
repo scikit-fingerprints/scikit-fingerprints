@@ -133,6 +133,7 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
         Get fingerprint output feature names.
 
         They differ depending on ``use_3D`` parameter:
+
         - 2D: features correspond to 4 autocorrelation functions, 6 atomic descriptors
           and 8 distance buckets
         - 3D: features correspond to 8 atomic descriptors and 10 distance buckets
