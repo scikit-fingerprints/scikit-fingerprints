@@ -191,8 +191,9 @@ def hall_kier_alpha(mol: Mol) -> float:
         \\alpha = \\frac{r}{r(Csp^3)} - 1
 
     where:
-    - r is the covalent radius of the atom,
-    - r(Csp³) is the covalent radius of a sp³ hybridized carbon.
+
+    - r is the covalent radius of the atom
+    - r(Csp3) is the covalent radius of a sp³ hybridized carbon
 
     Parameters
     ----------
@@ -336,9 +337,10 @@ def kappa1_index(mol: Mol) -> float:
         K_1 = \frac{(A + \alpha) (A + \alpha - 1)^2}{P_1^2}
 
     where:
-    - A is the number of heavy atoms,
-    - α is the Hall-Kier alpha index,
-    - P1 is the number of single bonds.
+
+    - A is the number of heavy atoms
+    - α is the Hall-Kier alpha index
+    - P1 is the number of single bonds
 
     This index provides insight into the molecular shape and branching properties.
 
@@ -362,7 +364,6 @@ def kappa1_index(mol: Mol) -> float:
     >>> kappa1_index(mol)
     3.4115708812260532
     """
-
     return Kappa1(mol)
 
 
@@ -377,9 +378,10 @@ def kappa2_index(mol: Mol) -> float:
         K_2 = \frac{(A + \alpha - 1) (A + \alpha - 2)^2}{P_2^2}
 
     where:
-    - A is the number of heavy atoms,
-    - α is the Hall-Kier alpha index,
-    - P2 is the number of paths of length 2.
+
+    - A is the number of heavy atoms
+    - α is the Hall-Kier alpha index
+    - P2 is the number of paths of length 2
 
     This index captures molecular branching and shape characteristics.
 
@@ -403,7 +405,6 @@ def kappa2_index(mol: Mol) -> float:
     >>> kappa2_index(mol)
     1.6057694396735218
     """
-
     return Kappa2(mol)
 
 
@@ -418,6 +419,7 @@ def kappa3_index(mol: Mol) -> float:
         K_3 = \frac{(A + \alpha - 1) (A + \alpha - 3)^2}{P_3^2}
 
     where:
+
     - A is the number of heavy atoms,
     - α is the Hall-Kier alpha index,
     - P3 is the number of paths of length 3.
@@ -444,7 +446,6 @@ def kappa3_index(mol: Mol) -> float:
     >>> kappa3_index(mol)
     0.5823992601400448
     """
-
     return Kappa3(mol)
 
 
