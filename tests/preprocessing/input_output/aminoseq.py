@@ -69,7 +69,6 @@ def test_from_invalid_fasta(fasta_list):
 
     mol_from_aminoseq = MolFromAminoseqTransformer(valid_only=True)
     mols_list_2 = mol_from_aminoseq.transform(fasta_list + invalid_fasta_list)
-    print(mols_list_2)
 
     assert len(mols_list) == len(fasta_list) + len(invalid_fasta_list)
     assert len(mols_list_2) == len(fasta_list)

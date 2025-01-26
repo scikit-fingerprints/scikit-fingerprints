@@ -141,6 +141,36 @@ class MORSEFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to 7 weighting
+        variants and 32 scattering values.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            MoRSE feature names.
+        """
+        feature_names = [
+            f"{weighting_variant} {scattering_value}"
+            for weighting_variant in [
+                "unweighted",
+                "atomic mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+            ]
+            for scattering_value in range(32)
+        ]
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:

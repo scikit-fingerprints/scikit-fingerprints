@@ -115,6 +115,26 @@ class EStateFingerprint(BaseFingerprintTransformer):
         )
         self.variant = variant
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to SMARTS patterns
+        defining atom types. See the original paper [1]_ for details.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            EState feature names.
+        """
+        from rdkit.Chem.EState.AtomTypes import _rawD
+
+        feature_names = [smarts for name, smarts in _rawD]
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:

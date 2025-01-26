@@ -130,7 +130,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of the MACCS feature names.
+            MACCS feature names.
         """
         if not self.count:
             # https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/MACCSkeys.py

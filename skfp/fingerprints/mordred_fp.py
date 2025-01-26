@@ -123,7 +123,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of the Mordred feature names.
+            Mordred feature names.
         """
         calc = Calculator(descriptors)
         if not self.use_3D:

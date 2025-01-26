@@ -154,6 +154,70 @@ class VSAFingerprint(BaseFingerprintTransformer):
         except KeyError as err:
             raise ValueError(f'Variant "{variant} not recognized"') from err
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to histogram
+        bins for descriptors.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            VSA feature names.
+        """
+        from rdkit.Chem.EState.EState_VSA import estateBins as EState_bins
+        from rdkit.Chem.MolSurf import (
+            chgBins as PEOE_bins,
+        )
+        from rdkit.Chem.MolSurf import (
+            logpBins as SlogP_bins,
+        )
+        from rdkit.Chem.MolSurf import (
+            mrBins as SMR_bins,
+        )
+
+        group_feature_names = {}
+        for group_name, bins in [
+            ("SlogP", SlogP_bins),
+            ("SMR", SMR_bins),
+            ("PEOE", PEOE_bins),
+            ("EState", EState_bins),
+        ]:
+            less_than_name = f"{group_name} < {bins[0]}"
+            greater_than_name = f"{group_name} >= {bins[-1]}"
+            # e.g. "0.1<SlogP<0.2"
+            bin_names = [
+                f"{bins[i]} <= {group_name} < {bins[i + 1]}"
+                for i in range(len(bins) - 1)
+            ]
+            group_feature_names[group_name] = [
+                less_than_name,
+                *bin_names,
+                greater_than_name,
+            ]
+
+        if self.variant in group_feature_names:
+            feature_names = group_feature_names[self.variant]
+        elif self.variant == "all_original":
+            feature_names = (
+                group_feature_names["SlogP"]
+                + group_feature_names["SMR"]
+                + group_feature_names["PEOE"]
+            )
+        else:  # "all"
+            feature_names = (
+                group_feature_names["SlogP"]
+                + group_feature_names["SMR"]
+                + group_feature_names["PEOE"]
+                + group_feature_names["EState"]
+            )
+
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
