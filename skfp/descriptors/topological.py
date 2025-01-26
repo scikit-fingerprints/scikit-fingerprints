@@ -185,15 +185,15 @@ def hall_kier_alpha(mol: Mol) -> float:
     Hall-Kier alpha index.
 
     Computes the Hall-Kier alpha index [1]_, which is a measure of molecular flexibility.
-    It is given by the equation:
+    It is calculated by summing atomic contributions alpha:
 
     .. math::
-        \\alpha = \\frac{r}{r(Csp^3)} - 1
+        \alpha = \frac{r}{r(Csp^3)} - 1
 
     where:
 
     - r is the covalent radius of the atom
-    - r(Csp3) is the covalent radius of a sp³ hybridized carbon
+    - r(Csp3) is the covalent radius of a sp3 hybridized carbon
 
     Parameters
     ----------
