@@ -18,6 +18,7 @@ Distances
 
     dice_binary_distance
     dice_count_distance
+    rand_binary_distance
     tanimoto_binary_distance
     tanimoto_count_distance
 
@@ -29,5 +30,6 @@ Similarities
 
     dice_binary_similarity
     dice_count_similarity
+    rand_binary_similarity
     tanimoto_binary_similarity
     tanimoto_count_similarity

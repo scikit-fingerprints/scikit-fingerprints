@@ -47,21 +47,21 @@ def dice_binary_similarity(
 
     References
     ----------
-    .. [1] Dice, Lee R.
+    .. [1] `Dice, Lee R.
         "Measures of the amount of ecologic association between species."
         Ecology 26.3 (1945): 297-302.
-        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>
+        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>`_
 
-    .. [2] Brusco M., Cradit J. D., Steinley D.
+    .. [2] `Brusco M., Cradit J. D., Steinley D.
         "A comparison of 71 binary similarity coefficients: The effect of base rates."
         PloS one 16.4 (2021): e0247751.
-        <https://doi.org/10.1371/journal.pone.0247751>
+        <https://doi.org/10.1371/journal.pone.0247751>`_
 
-    .. [3] Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
+    .. [3] `Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
         "Similarity Coefficients for Binary Chemoinformatics Data: Overview and
         Extended Comparison Using Simulated and Real Data Sets."
         Journal of Chemical Information and Modeling 52.11 (2012): 2884-2901.
-        <https://doi.org/10.1021/ci300261r>
+        <https://doi.org/10.1021/ci300261r>`_
 
 
     Examples
@@ -143,21 +143,21 @@ def dice_binary_distance(
 
     References
     ----------
-    .. [1] Dice, Lee R.
+    .. [1] `Dice, Lee R.
         "Measures of the amount of ecologic association between species."
         Ecology 26.3 (1945): 297-302.
-        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>
+        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>`_
 
-    .. [2] Brusco M., Cradit J. D., Steinley D.
+    .. [2] `Brusco M., Cradit J. D., Steinley D.
         "A comparison of 71 binary similarity coefficients: The effect of base rates."
         PloS one 16.4 (2021): e0247751.
-        <https://doi.org/10.1371/journal.pone.0247751>
+        <https://doi.org/10.1371/journal.pone.0247751>`_
 
-    .. [3] Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
+    .. [3] `Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
         "Similarity Coefficients for Binary Chemoinformatics Data: Overview and
         Extended Comparison Using Simulated and Real Data Sets."
         Journal of Chemical Information and Modeling 52.11 (2012): 2884-2901.
-        <https://doi.org/10.1021/ci300261r>
+        <https://doi.org/10.1021/ci300261r>`_
 
     Examples
     --------
@@ -218,21 +218,21 @@ def dice_count_similarity(
 
     References
     ----------
-    .. [1] Dice, Lee R.
+    .. [1] `Dice, Lee R.
         "Measures of the amount of ecologic association between species."
         Ecology 26.3 (1945): 297-302.
-        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>
+        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>`_
 
-    .. [2] Brusco M., Cradit J. D., Steinley D.
+    .. [2] `Brusco M., Cradit J. D., Steinley D.
         "A comparison of 71 binary similarity coefficients: The effect of base rates."
         PloS one 16.4 (2021): e0247751.
-        <https://doi.org/10.1371/journal.pone.0247751>
+        <https://doi.org/10.1371/journal.pone.0247751>`_
 
-    .. [3] Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
+    .. [3] `Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
         "Similarity Coefficients for Binary Chemoinformatics Data: Overview and
         Extended Comparison Using Simulated and Real Data Sets."
         Journal of Chemical Information and Modeling 52.11 (2012): 2884-2901.
-        <https://doi.org/10.1021/ci300261r>
+        <https://doi.org/10.1021/ci300261r>`_
 
     Examples
     --------
@@ -308,21 +308,21 @@ def dice_count_distance(
 
     References
     ----------
-    .. [1] Dice, Lee R.
+    .. [1] `Dice, Lee R.
         "Measures of the amount of ecologic association between species."
         Ecology 26.3 (1945): 297-302.
-        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>
+        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>`_
 
-    .. [2] Brusco M., Cradit J. D., Steinley D.
+    .. [2] `Brusco M., Cradit J. D., Steinley D.
         "A comparison of 71 binary similarity coefficients: The effect of base rates."
         PloS one 16.4 (2021): e0247751.
-        <https://doi.org/10.1371/journal.pone.0247751>
+        <https://doi.org/10.1371/journal.pone.0247751>`_
 
-    .. [3] Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
+    .. [3] `Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
         "Similarity Coefficients for Binary Chemoinformatics Data: Overview and
         Extended Comparison Using Simulated and Real Data Sets."
         Journal of Chemical Information and Modeling 52.11 (2012): 2884-2901.
-        <https://doi.org/10.1021/ci300261r>
+        <https://doi.org/10.1021/ci300261r>`_
 
     Examples
     --------

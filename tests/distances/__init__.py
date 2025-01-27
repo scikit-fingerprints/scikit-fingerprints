@@ -7,6 +7,7 @@ from sklearn.neighbors import NearestNeighbors
 from skfp.distances import (
     dice_binary_distance,
     dice_count_distance,
+    rand_binary_distance,
     tanimoto_binary_distance,
     tanimoto_count_distance,
 )
@@ -39,6 +40,8 @@ def test_check_nan_wrong_type():
     [
         (dice_binary_distance, np.array([0, 1, 0, 1]), np.array([0, 1, 1, 0])),
         (dice_binary_distance, csr_array([[0, 1, 0, 1]]), csr_array([[0, 1, 1, 0]])),
+        (rand_binary_distance, np.array([0, 1, 0, 1]), np.array([0, 1, 1, 0])),
+        (rand_binary_distance, csr_array([[0, 1, 0, 1]]), csr_array([[0, 1, 1, 0]])),
         (tanimoto_binary_distance, np.array([0, 1, 0, 1]), np.array([0, 1, 1, 0])),
         (
             tanimoto_binary_distance,
@@ -87,6 +90,8 @@ def test_sklearn_pairwise_compatible_count(method, vec_a, vec_b):
         (dice_binary_distance, csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
         (dice_count_distance, np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
         (dice_count_distance, csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
+        (rand_binary_distance, np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
+        (rand_binary_distance, csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
         (tanimoto_binary_distance, np.array([0, 1, 0, 1]), np.array([0, 1, 1, 0])),
         (
             tanimoto_binary_distance,
@@ -123,6 +128,7 @@ def test_sklearn_nearest_neighbors_compatible_binary(method, vec_a, vec_b):
     [
         dice_binary_distance,
         dice_count_distance,
+        rand_binary_distance,
         tanimoto_binary_distance,
         tanimoto_count_distance,
     ],
