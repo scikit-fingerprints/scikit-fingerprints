@@ -3,7 +3,7 @@ from typing import Optional
 
 import numpy as np
 from rdkit.Chem import GetDistanceMatrix, Mol
-from rdkit.Chem.GraphDescriptors import BalabanJ
+from rdkit.Chem.GraphDescriptors import BalabanJ, HallKierAlpha, Kappa1, Kappa2, Kappa3
 
 from skfp.utils.validators import require_atoms
 
@@ -180,6 +180,44 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
     return int(sum((k * f) ** 2 for k, f in distance_counts.items()))
 
 
+def hall_kier_alpha(mol: Mol) -> float:
+    r"""
+    Hall-Kier alpha index.
+
+    Computes the Hall-Kier alpha index [1]_, which is a measure of molecular flexibility.
+    It is calculated by summing atomic contributions alpha:
+
+    .. math::
+        \alpha = \frac{r}{r(Csp^3)} - 1
+
+    where:
+
+    - r is the covalent radius of the atom
+    - r(Csp3) is the covalent radius of a sp3 hybridized carbon
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the Hall-Kier alpha index is computed.
+
+    References
+    ----------
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import hall_kier_alpha
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> hall_kier_alpha(mol)
+    -0.78
+    """
+    return HallKierAlpha(mol)
+
+
 def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
     r"""
     Petitjean Index.
@@ -286,6 +324,129 @@ def polarity_number(
         distance_matrix = distance_matrix[np.ix_(atom_indices, atom_indices)]
 
     return int((distance_matrix == 3).sum() // 2)
+
+
+def kappa1_index(mol: Mol) -> float:
+    r"""
+    First Kappa shape index (K1).
+
+    Computes the first kappa shape index [1]_, which measures molecular shape based on
+    single bonds. It is given by the equation:
+
+    .. math::
+        K_1 = \frac{(A + \alpha) (A + \alpha - 1)^2}{P_1^2}
+
+    where:
+
+    - A is the number of heavy atoms
+    - α is the Hall-Kier alpha index
+    - P1 is the number of single bonds
+
+    This index provides insight into the molecular shape and branching properties.
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the first Kappa shape index is calculated.
+
+    References
+    ----------
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import kappa1_index
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> kappa1_index(mol)
+    3.4115708812260532
+    """
+    return Kappa1(mol)
+
+
+def kappa2_index(mol: Mol) -> float:
+    r"""
+    Second Kappa shape index (K2).
+
+    Computes the second kappa shape index [1]_, which measures molecular shape based on
+    paths of length 2. It is given by the equation:
+
+    .. math::
+        K_2 = \frac{(A + \alpha - 1) (A + \alpha - 2)^2}{P_2^2}
+
+    where:
+
+    - A is the number of heavy atoms
+    - α is the Hall-Kier alpha index
+    - P2 is the number of paths of length 2
+
+    This index captures molecular branching and shape characteristics.
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the second Kappa shape index is calculated.
+
+    References
+    ----------
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import kappa2_index
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> kappa2_index(mol)
+    1.6057694396735218
+    """
+    return Kappa2(mol)
+
+
+def kappa3_index(mol: Mol) -> float:
+    r"""
+    Third Kappa shape index (K3).
+
+    Computes the third kappa shape index [1]_, which measures molecular shape based on
+    paths of length 3. It is given by the equation:
+
+    .. math::
+        K_3 = \frac{(A + \alpha - 1) (A + \alpha - 3)^2}{P_3^2}
+
+    where:
+
+    - A is the number of heavy atoms,
+    - α is the Hall-Kier alpha index,
+    - P3 is the number of paths of length 3.
+
+    This index helps characterize the overall shape and structural complexity of molecules.
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the third Kappa shape index is calculated.
+
+    References
+    ----------
+    .. [1] `Lowell H. Hall, Lemont B. Kier
+        "The Molecular Connectivity Chi Indexes and Kappa Shape Indexes in Structure-Property Modeling"
+        Reviews in Computational Chemistry vol 2 (1991): 367-422.
+        <https://doi.org/10.1002/9780470125793.ch9>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors.topological import kappa3_index
+    >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
+    >>> kappa3_index(mol)
+    0.5823992601400448
+    """
+    return Kappa3(mol)
 
 
 def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:

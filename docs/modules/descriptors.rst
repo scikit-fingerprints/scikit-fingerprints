@@ -10,6 +10,7 @@ Modules for computing molecular descriptors.
 
 .. py:currentmodule:: skfp.descriptors
 
+
 Constitutional descriptors (based on atomic composition):
 
 .. autosummary::
@@ -25,6 +26,7 @@ Constitutional descriptors (based on atomic composition):
     number_of_rotatable_bonds
     total_atom_count
 
+
 Topological descriptors (based on graph topology/structure):
 
 .. autosummary::
@@ -35,6 +37,10 @@ Topological descriptors (based on graph topology/structure):
     balaban_j_index
     diameter
     graph_distance_index
+    hall_kier_alpha
+    kappa1_index
+    kappa2_index
+    kappa3_index
     petitjean_index
     polarity_number
     radius
