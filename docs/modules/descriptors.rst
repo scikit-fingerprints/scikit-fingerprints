@@ -44,6 +44,10 @@ Topological descriptors (based on graph topology/structure):
     burden_matrix
     diameter
     graph_distance_index
+    hall_kier_alpha
+    kappa1_index
+    kappa2_index
+    kappa3_index
     petitjean_index
     polarity_number
     radius
