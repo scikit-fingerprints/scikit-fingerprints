@@ -35,8 +35,6 @@ def test_erg_bit_fingerprint(smiles_list):
     X_rdkit = np.array([GetErGFingerprint(mol, fuzzIncrement=0) for mol in mols_list])
     X_rdkit = (X_rdkit > 0).astype(np.uint8)
 
-    print(X_skfp.shape, X_rdkit.shape)
-
     assert np.array_equal(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(smiles_list), 315)
     assert X_skfp.dtype == np.uint8

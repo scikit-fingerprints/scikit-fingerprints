@@ -233,7 +233,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of the Ghose-Crippen feature names.
+            Ghose-Crippen feature names.
         """
         return np.asarray(self._feature_names, dtype=object)
 

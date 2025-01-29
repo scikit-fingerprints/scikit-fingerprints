@@ -130,7 +130,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         Returns
         -------
         feature_names_out : ndarray of str objects
-            Names of the RDKit 2D descriptors.
+            RDKit 2D descriptor names.
         """
         from descriptastorus.descriptors.rdDescriptors import RDKit2D
         from descriptastorus.descriptors.rdNormalizedDescriptors import (
