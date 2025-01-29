@@ -28,8 +28,7 @@ def rand_binary_similarity(
 
         sim(vec_a, vec_b) = |vec_a \cap vec_b| / n
 
-    where:
-    - :math:`n` is the length of vec_a.
+    where `n` is the length of `vec_a`.
 
     The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 0.
