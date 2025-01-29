@@ -35,7 +35,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -110,6 +110,49 @@ class MordredFingerprint(BaseFingerprintTransformer):
         )
         self.use_3D = use_3D
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to descriptor
+        names used by Mordred descriptor calculator, used in this fingerprint.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Mordred feature names.
+        """
+        calc = Calculator(descriptors)
+        if not self.use_3D:
+            feature_names = [str(d) for d in calc.descriptors if d.require_3D is False]
+        else:
+            feature_names = [str(d) for d in calc.descriptors]
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute Mordred fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 1613) or (n_samples, 1826)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
@@ -123,16 +166,3 @@ class MordredFingerprint(BaseFingerprintTransformer):
             if self.sparse
             else np.array(X, dtype=np.float32)
         )
-
-    def get_feature_names_out(self):
-        """
-        Get fingerprint output feature names.
-
-        Returns
-        -------
-        feature_names_out : ndarray of str objects
-            Names of the Mordred descriptors.
-        """
-        calc = Calculator(descriptors, ignore_3D=not self.use_3D)
-
-        return np.asarray([str(d) for d in calc.descriptors], dtype=object)

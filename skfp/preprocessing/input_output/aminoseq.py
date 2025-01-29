@@ -7,9 +7,7 @@ from rdkit.Chem import Mol, MolFromFASTA
 from sklearn.utils._param_validation import Options
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import no_rdkit_logs
-from skfp.utils.functions import get_data_from_indices
-from skfp.utils.validators import check_strings
+from skfp.utils import get_data_from_indices, no_rdkit_logs, require_strings
 
 
 class MolFromAminoseqTransformer(BasePreprocessor):
@@ -36,7 +34,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -116,7 +114,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
             Sequence containing amino-acid sequence strings.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -143,7 +141,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
             Array with labels for molecules.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -167,7 +165,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
 
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
         with no_rdkit_logs() if self.suppress_warnings else nullcontext():
-            check_strings(X)
+            require_strings(X)
             return [
                 MolFromFASTA(fst, sanitize=self.sanitize, flavor=self.flavor)
                 for fst in X

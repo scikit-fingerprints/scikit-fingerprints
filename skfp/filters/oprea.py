@@ -1,12 +1,11 @@
 from typing import Union
 
-from rdkit.Chem import Crippen, Mol, rdMolDescriptors, rdmolops
+from rdkit.Chem import Mol, rdMolDescriptors
 
 from skfp.bases.base_filter import BaseFilter
 
 
 class OpreaFilter(BaseFilter):
-    # flake8: noqa E501
     """
     Oprea filter.
 
@@ -34,7 +33,7 @@ class OpreaFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -44,14 +43,14 @@ class OpreaFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
 
     References
-    -----------
+    ----------
     .. [1] `Oprea T. I.
         "Property distribution of drug-related chemical databases"
         J Comput Aided Mol Des. 2000 Mar;14(3):251-64
         <https://pubmed.ncbi.nlm.nih.gov/10756480/>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import OpreaFilter
     >>> smiles = ["C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", "CC(=O)Nc1ccc(O)cc1"]
     >>> filt = OpreaFilter()

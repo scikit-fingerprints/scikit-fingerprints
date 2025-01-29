@@ -50,7 +50,7 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -127,6 +127,85 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
         self.use_3D = use_3D
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names.
+
+        They differ depending on ``use_3D`` parameter:
+
+        - 2D: features correspond to 4 autocorrelation functions, 6 atomic descriptors
+          and 8 distance buckets
+        - 3D: features correspond to 8 atomic descriptors and 10 distance buckets
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Autocorrelation feature names.
+        """
+        if not self.use_3D:
+            autocorr_funcs = ["Moreau-Broto", "Centered Moreau-Broto", "Moran", "Geary"]
+            descriptors = [
+                "mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+            ]
+            feature_names = [
+                f"{autocorr_func} {descriptor} distance {distance}"
+                for autocorr_func in autocorr_funcs
+                for descriptor in descriptors
+                for distance in range(8)
+            ]
+        else:
+            descriptors = [
+                "unweighted",
+                "mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+                "covalent radius",
+            ]
+            feature_names = [
+                f"Moreau-Broto {descriptor} distance {distance}"
+                for descriptor in descriptors
+                for distance in range(10)
+            ]
+
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute Autocorrelation fingerprints. Output shape depends on ``use_3D``
+        parameter.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. If ``use_3D``
+            is True, only ``Mol`` objects with computed conformations and with
+            ``conf_id`` property are allowed.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 192) or (n_samples, 80)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

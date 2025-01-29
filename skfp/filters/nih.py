@@ -30,7 +30,7 @@ class NIHFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -46,7 +46,7 @@ class NIHFilter(BaseFilter):
     .. [1] `Ajit Jadhav et al.
         "Quantitative Analyses of Aggregation, Autofluorescence, and Reactivity
         Artifacts in a Screen for Inhibitors of a Thiol Protease"
-        J. Med. Chem. 2010, 53, 1, 37–51
+        J. Med. Chem. 2010, 53, 1, 37-51
         <https://pubs.acs.org/doi/10.1021/jm901070c>`_
 
     .. [2] `Richard G. Doveston et al.

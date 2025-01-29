@@ -3,10 +3,14 @@ import os
 from collections import defaultdict
 from pathlib import Path
 
+import skfp.descriptors
 import skfp.distances
 import skfp.filters
 import skfp.fingerprints
 import skfp.metrics
+import skfp.model_selection
+import skfp.preprocessing
+import skfp.utils
 
 """
 Testing of documentation pages, ensures that all classes are mentioned in proper
@@ -16,7 +20,10 @@ Testing of documentation pages, ensures that all classes are mentioned in proper
 
 def test_docs():
     curr_dir = os.getcwd()
-    if curr_dir.endswith("scikit-fingerprints"):
+    curr_dir_files = os.listdir(curr_dir)
+    if curr_dir.endswith("scikit-fingerprints") or (
+        "skfp" in curr_dir_files and "tests" in curr_dir_files
+    ):
         root_dir = Path(curr_dir)
     elif curr_dir.endswith("tests"):
         root_dir = Path(curr_dir).parent
@@ -27,10 +34,14 @@ def test_docs():
 
     undocumented = defaultdict(list)
     for docs_file, code_file in [
+        ("descriptors.rst", skfp.descriptors),
         ("distances.rst", skfp.distances),
         ("filters.rst", skfp.filters),
         ("fingerprints.rst", skfp.fingerprints),
         ("metrics.rst", skfp.metrics),
+        ("model_selection.rst", skfp.model_selection),
+        ("preprocessing.rst", skfp.preprocessing),
+        ("utils.rst", skfp.utils),
     ]:
         with open(docs_modules_dir / docs_file) as file:
             docs = file.read()
@@ -54,7 +65,7 @@ def get_root_dir() -> Path:
     curr_dir = os.getcwd()
     if curr_dir.endswith("scikit-fingerprints"):
         return Path(curr_dir)
-    elif curr_dir.endswith("tests"):
+    if curr_dir.endswith("tests"):
         return Path(curr_dir).parent
-    else:
-        raise ValueError(f"Current directory {curr_dir} not recognized")
+
+    raise ValueError(f"Current directory {curr_dir} not recognized")

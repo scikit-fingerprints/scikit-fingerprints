@@ -30,7 +30,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -52,13 +52,15 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
     References
     ----------
     .. [1] `Arup K. Ghose and Gordon M. Crippen
-        "Atomic Physicochemical Parameters for Three-Dimensional Structure-Directed Quantitative Structure-Activity Relationships I. Partition Coefficients as a Measure of Hydrophobicity"
+        "Atomic Physicochemical Parameters for Three-Dimensional Structure-Directed
+        Quantitative Structure-Activity Relationships I. Partition Coefficients as a Measure of Hydrophobicity"
         Journal of Computational Chemistry 7.4 (1986): 565-577.
         <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcc.540070419>`_
 
     .. [2] `Arup K. Ghose and Gordon M. Crippen
-        "Atomic physicochemical parameters for three-dimensional-structure-directed quantitative structure-activity relationships. 2. Modeling dispersive and hydrophobic interactions"
-        J. Chem. Inf. Comput. Sci. 1987, 27, 1, 21–35
+        "Atomic physicochemical parameters for three-dimensional-structure-directed
+        quantitative structure-activity relationships. 2. Modeling dispersive and hydrophobic interactions"
+        J. Chem. Inf. Comput. Sci. 1987, 27, 1, 21-35
         <https://pubs.acs.org/doi/10.1021/ci00053a005>`_
 
     .. [3] `<https://github.com/rdkit/rdkit/blob/5d034e37331c2604bf3e247b94be35b519e62216/Data/Crippen.txt>`_
@@ -87,7 +89,15 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
-        # flake8: noqa: E501
+        # copyright notice for SMARTS patterns for Ghose-Crippen:
+        #
+        #  Copyright (C) 2002-2012 Greg Landrum and Rational Discovery LLC
+        #   This file is part of the RDKit.
+        #   The contents are covered by the terms of the BSD license
+        #   which is included in the file license.txt, found at the root
+        #   of the RDKit source tree.
+        #
+        # we include copy of that license in skfp/fingerprints/data/RDKit_license.txt
         patterns = [
             "[CH4]",
             "[CH3]C",
@@ -200,7 +210,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             "[#39,#40,#41,#42,#43,#44,#45,#46,#47,#48]",
             "[#72,#73,#74,#75,#76,#77,#78,#79,#80]",
         ]
-        # flake8: noqa
+        self._feature_names = patterns
         super().__init__(
             patterns=patterns,
             count=count,
@@ -210,16 +220,33 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             verbose=verbose,
         )
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They are raw SMARTS patterns
+        used as feature definitions.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Ghose-Crippen feature names.
+        """
+        return np.asarray(self._feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
         """
-        Compute CDK substructure fingerprints.
+        Compute Ghose-Crippen substructure fingerprints.
 
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects.
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Copy the input X or not.

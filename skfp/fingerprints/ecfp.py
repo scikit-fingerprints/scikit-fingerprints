@@ -76,7 +76,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -107,7 +107,7 @@ class ECFPFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `David Rogers and Mathew Hahn
         "Extended-Connectivity Fingerprints"
-        J. Chem. Inf. Model. 2010, 50, 5, 742–754
+        J. Chem. Inf. Model. 2010, 50, 5, 742-754
         <https://pubs.acs.org/doi/10.1021/ci100050t>`_
 
     .. [2] `Gregory Landrum
@@ -170,6 +170,27 @@ class ECFPFingerprint(BaseFingerprintTransformer):
         self.use_bond_types = use_bond_types
         self.include_ring_membership = include_ring_membership
         self.count_simulation = count_simulation
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute ECFP fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

@@ -76,7 +76,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -108,7 +108,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Axen, Seth D., et al.
         "A simple representation of three-dimensional molecular structure"
-        J. Med. Chem. 2017, 60, 17, 7393–7409
+        J. Med. Chem. 2017, 60, 17, 7393-7409
         <https://pubs.acs.org/doi/abs/10.1021/acs.jmedchem.7b00696>`_
 
     Examples
@@ -188,7 +188,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects, with conformers generated and
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
             ``conf_id`` integer property set.
 
         copy : bool, default=False

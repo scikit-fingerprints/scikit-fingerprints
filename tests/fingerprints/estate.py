@@ -82,3 +82,13 @@ def test_estate_sparse_sum_fingerprint(smiles_list, mols_list):
     assert np.allclose(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), 79)
     assert np.issubdtype(X_skfp.dtype, np.floating)
+
+
+def test_estate_feature_names():
+    estate_fp = EStateFingerprint()
+    feature_names = estate_fp.get_feature_names_out()
+
+    assert len(feature_names) == estate_fp.n_features_out
+
+    assert feature_names[0] == "[LiD1]-*"
+    assert feature_names[-1] == "[PbD4H0](-*)(-*)(-*)-*"

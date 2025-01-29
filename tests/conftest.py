@@ -42,7 +42,7 @@ def mols_list(smiles_list) -> list[Mol]:
 @pytest.fixture(scope="session")
 def smallest_smiles_list(request: FixtureRequest) -> list[str]:
     """
-    Returns shortest SMILES, i.e. for smallest molecules, for use with
+    Return shortest SMILES, i.e. for smallest molecules, for use with
     computationally demanding fingerprints.
     """
     smiles = _load_test_data_smiles()
@@ -53,7 +53,7 @@ def smallest_smiles_list(request: FixtureRequest) -> list[str]:
 @pytest.fixture(scope="session")
 def smallest_mols_list(smallest_smiles_list) -> list[Mol]:
     """
-    Returns shortest molecules, for use with computationally demanding fingerprints.
+    Return shortest molecules, for use with computationally demanding fingerprints.
     """
     return [MolFromSmiles(smi) for smi in smallest_smiles_list]
 

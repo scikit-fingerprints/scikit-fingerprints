@@ -45,7 +45,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -117,6 +117,52 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         self.normalized = normalized
         self.clip_val = clip_val
 
+    def get_feature_names_out(self, input_features=None):  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to RDKit function
+        names for computing descriptors.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            RDKit 2D descriptor names.
+        """
+        from descriptastorus.descriptors.rdDescriptors import RDKit2D
+        from descriptastorus.descriptors.rdNormalizedDescriptors import (
+            RDKit2DNormalized,
+        )
+
+        gen = RDKit2DNormalized() if self.normalized else RDKit2D()
+        feature_names = [name for name, obj in gen.columns]
+
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute fingerprints consisting of all RDKit 2D descriptors.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 200)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
@@ -129,6 +175,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         smiles = ensure_smiles(X)
 
         # turn off RDKit logs, since descriptastorus does not use MorganGenerator
+        # and generates a lot of warnings
         with no_rdkit_logs():
             gen = RDKit2DNormalized() if self.normalized else RDKit2D()
             X = [np.array(gen.calculateMol(mol, smi)) for mol, smi in zip(mols, smiles)]
@@ -140,22 +187,3 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
             return csr_array(X, dtype=np.float32)
         else:
             return np.array(X, dtype=np.float32)
-
-    def get_feature_names_out(self):
-        """
-        Get fingerprint output feature names.
-
-        Returns
-        -------
-        feature_names_out : ndarray of str objects
-            Names of the RDKit 2D descriptors.
-        """
-        from descriptastorus.descriptors.rdDescriptors import RDKit2D
-        from descriptastorus.descriptors.rdNormalizedDescriptors import (
-            RDKit2DNormalized,
-        )
-
-        gen = RDKit2DNormalized() if self.normalized else RDKit2D()
-        names = list(zip(*gen.columns))[0]
-
-        return np.asarray(names, dtype=object)

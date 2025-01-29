@@ -1,32 +1,4 @@
 repos:
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.8.0
-    hooks:
-      - id: bandit
-        # turn off assert errors for tests
-        exclude: ^tests/
-        args:
-          - --skip
-          - B101
-          - --skip
-          - B311
-
-  - repo: https://github.com/psf/black
-    rev: 24.10.0
-    hooks:
-      - id: black
-
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
-
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: [ "--profile", "black", "--filter-files" ]
-
   - repo: local
     hooks:
       # use local mypy instead of pre-commit hook, since this way we run in venv
@@ -41,12 +13,15 @@ repos:
     rev: v2.7.3
     hooks:
       - id: pip-audit
+        args: [--vulnerability-service, "pypi", --cache-dir, ".pip_audit_cache"]
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.3
     hooks:
-      - id: pyupgrade
-        args: [ "--py39-plus" ]
+      - id: ruff  # linter
+        args: [--fix, --config, ruff.toml]
+      - id: ruff-format  # formatter
+        args: [--config, ruff.toml]
 
   # we use local Xenon instead of pre-commit hook, because:
   # - it seems to have bugs related to "ignore" and "exclude" options
@@ -56,7 +31,7 @@ repos:
     hooks:
       - id: xenon_skfp
         name: xenon_skfp
-        entry: poetry run xenon skfp --max-average=B --max-modules=B --max-absolute=C
+        entry: poetry run xenon skfp --max-average=B --max-modules=C --max-absolute=C
         language: system
         pass_filenames: false
 

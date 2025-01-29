@@ -6,9 +6,12 @@ import numpy as np
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 
 from skfp.bases import BasePreprocessor
-from skfp.utils import no_rdkit_logs
-from skfp.utils.functions import get_data_from_indices
-from skfp.utils.validators import check_mols, check_strings
+from skfp.utils import (
+    get_data_from_indices,
+    no_rdkit_logs,
+    require_mols,
+    require_strings,
+)
 
 
 class MolFromSmilesTransformer(BasePreprocessor):
@@ -35,7 +38,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -108,7 +111,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
             Sequence containing SMILES strings.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -135,7 +138,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
             Array with labels for molecules.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -155,7 +158,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
 
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
         with no_rdkit_logs() if self.suppress_warnings else nullcontext():
-            check_strings(X)
+            require_strings(X)
             replacements = self.replacements if self.replacements else {}
             return [
                 MolFromSmiles(smi, sanitize=self.sanitize, replacements=replacements)
@@ -195,7 +198,7 @@ class MolToSmilesTransformer(BasePreprocessor):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -260,7 +263,7 @@ class MolToSmilesTransformer(BasePreprocessor):
         self.do_random = do_random
 
     def _transform_batch(self, X: Sequence[Mol]) -> list[str]:
-        check_mols(X)
+        require_mols(X)
         return [
             MolToSmiles(
                 mol,

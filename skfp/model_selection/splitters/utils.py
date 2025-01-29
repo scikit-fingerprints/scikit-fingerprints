@@ -116,11 +116,8 @@ def _check_subset_size(size: Union[float, int], n_samples: int, subset: str) -> 
     if size_type not in ("i", "f"):
         raise ValueError(f"Invalid value for {subset_size_str}: {size}")
 
-    if (
-        size_type == "i"
-        and (size >= n_samples or size <= 0)
-        or size_type == "f"
-        and (size <= 0 or size >= 1)
+    if (size_type == "i" and (size >= n_samples or size <= 0)) or (
+        size_type == "f" and (size <= 0 or size >= 1)
     ):
         raise ValueError(
             f"{subset_size_str}={size} should be either positive and smaller than "

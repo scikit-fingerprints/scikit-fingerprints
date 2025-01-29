@@ -20,7 +20,7 @@ def test_maccs_count_fingerprint(smiles_list, mols_list):
     maccs_fp = MACCSFingerprint(count=True, n_jobs=-1)
     X_skfp = maccs_fp.transform(smiles_list)
 
-    assert X_skfp.shape == (len(smiles_list), 159)
+    assert X_skfp.shape == (len(smiles_list), 158)
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp >= 0)
 
@@ -40,6 +40,40 @@ def test_maccs_sparse_count_fingerprint(smiles_list, mols_list):
     maccs_fp = MACCSFingerprint(count=True, sparse=True, n_jobs=-1)
     X_skfp = maccs_fp.transform(smiles_list)
 
-    assert X_skfp.shape == (len(smiles_list), 159)
+    assert X_skfp.shape == (len(smiles_list), 158)
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data >= 0)
+
+
+def test_maccs_feature_names():
+    # we check a few selected feature names
+    maccs_fp = MACCSFingerprint()
+    feature_names = maccs_fp.get_feature_names_out()
+
+    assert len(feature_names) == maccs_fp.n_features_out
+
+    assert feature_names[0] == "ISOTOPE"
+    assert feature_names[1] == "atomic num >103"
+    assert feature_names[2] == "Group IVa,Va,VIa Rows 4-6 "
+
+    assert feature_names[-4] == "6M Ring"
+    assert feature_names[-3] == "O"
+    assert feature_names[-2] == "Ring"
+    assert feature_names[-1] == "Fragments"
+
+
+def test_maccs_count_feature_names():
+    # we check a few selected feature names
+    maccs_fp = MACCSFingerprint(count=True)
+    feature_names = maccs_fp.get_feature_names_out()
+
+    assert len(feature_names) == maccs_fp.n_features_out
+
+    assert feature_names[0] == "fragments"
+    assert feature_names[1] == "atomic num >103"
+    assert feature_names[2] == "N"
+    assert feature_names[3] == "O"
+
+    assert feature_names[-3] == "QCH2A"
+    assert feature_names[-2] == "A!CH2!A"
+    assert feature_names[-1] == "NA(A)A"

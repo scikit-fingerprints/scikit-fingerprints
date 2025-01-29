@@ -15,8 +15,7 @@ doctest: docs ## Run documentation tests
 	poetry run $(MAKE) -C docs doctest
 
 test: ## Run tests
-	poetry run black . --check --diff
-	poetry run isort . --check-only --profile black
+	poetry run ruff check
 	poetry run pytest tests
 
 test-coverage: ## Run tests and calculate test coverage

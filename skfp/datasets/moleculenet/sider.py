@@ -61,7 +61,7 @@ def load_sider(
     ----------
     .. [1] `Han Altae-Tran et al.
         "Low Data Drug Discovery with One-Shot Learning"
-        ACS Cent. Sci. 2017, 3, 4, 283–293
+        ACS Cent. Sci. 2017, 3, 4, 283-293
         <https://pubs.acs.org/doi/10.1021/acscentsci.6b00367>`_
 
     .. [2] `Zhenqin Wu et al.

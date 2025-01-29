@@ -50,7 +50,7 @@ class VSAFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -74,12 +74,12 @@ class VSAFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Paul Labute
         "A widely applicable set of descriptors"
-        Journal of Molecular Graphics and Modelling, Volume 18, Issues 4–5, 2000, Pages 464-477
+        Journal of Molecular Graphics and Modelling, Volume 18, Issues 4-5, 2000, Pages 464-477
         <https://www.sciencedirect.com/science/article/pii/S1093326300000681>`_
 
     .. [2] `Scott A. Wildman and Gordon M. Crippen
         "Prediction of Physicochemical Parameters by Atomic Contributions"
-        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 868–873
+        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 868-873
         <https://pubs.acs.org/doi/10.1021/ci990307l>`_
 
     .. [3] `Johann Gasteiger and Mario Marsili
@@ -90,7 +90,7 @@ class VSAFingerprint(BaseFingerprintTransformer):
     .. [4] `Lowell H. Hall and Lemont B. Kier
         "Electrotopological State Indices for Atom Types: A Novel Combination of Electronic,
         Topological, and Valence State Information"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
+        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039-1045
         <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
 
     .. [5] `RDKit SlogP, SMR and PEOE bin values
@@ -151,8 +151,94 @@ class VSAFingerprint(BaseFingerprintTransformer):
         }
         try:
             return n_features_out[variant]
-        except KeyError:
-            raise ValueError(f'Variant "{variant} not recognized"')
+        except KeyError as err:
+            raise ValueError(f'Variant "{variant} not recognized"') from err
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to histogram
+        bins for descriptors.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            VSA feature names.
+        """
+        from rdkit.Chem.EState.EState_VSA import estateBins as EState_bins
+        from rdkit.Chem.MolSurf import (
+            chgBins as PEOE_bins,
+        )
+        from rdkit.Chem.MolSurf import (
+            logpBins as SlogP_bins,
+        )
+        from rdkit.Chem.MolSurf import (
+            mrBins as SMR_bins,
+        )
+
+        group_feature_names = {}
+        for group_name, bins in [
+            ("SlogP", SlogP_bins),
+            ("SMR", SMR_bins),
+            ("PEOE", PEOE_bins),
+            ("EState", EState_bins),
+        ]:
+            less_than_name = f"{group_name} < {bins[0]}"
+            greater_than_name = f"{group_name} >= {bins[-1]}"
+            # e.g. "0.1<SlogP<0.2"
+            bin_names = [
+                f"{bins[i]} <= {group_name} < {bins[i + 1]}"
+                for i in range(len(bins) - 1)
+            ]
+            group_feature_names[group_name] = [
+                less_than_name,
+                *bin_names,
+                greater_than_name,
+            ]
+
+        if self.variant in group_feature_names:
+            feature_names = group_feature_names[self.variant]
+        elif self.variant == "all_original":
+            feature_names = (
+                group_feature_names["SlogP"]
+                + group_feature_names["SMR"]
+                + group_feature_names["PEOE"]
+            )
+        else:  # "all"
+            feature_names = (
+                group_feature_names["SlogP"]
+                + group_feature_names["SMR"]
+                + group_feature_names["PEOE"]
+                + group_feature_names["EState"]
+            )
+
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute VSA fingerprints. Output shape depends on ``variant``
+        parameter.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.n_features_out)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

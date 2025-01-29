@@ -86,7 +86,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -119,13 +119,13 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
     .. [1] `Raymond E. Carhart, Dennis H. Smith, and R. Venkataraghavan
         "Atom pairs as molecular features in structure-activity studies: definition
         and applications"
-        J. Chem. Inf. Comput. Sci. 1985, 25, 2, 64–73
+        J. Chem. Inf. Comput. Sci. 1985, 25, 2, 64-73
         <https://pubs.acs.org/doi/10.1021/ci00046a002>`_
 
     .. [2] `Mahendra Awale and Jean-Louis Reymond
         "Atom Pair 2D-Fingerprints Perceive 3D-Molecular Shape and Pharmacophores for
         Very Fast Virtual Screening of ZINC and GDB-17"
-        J. Chem. Inf. Model. 2014, 54, 7, 1892–1907
+        J. Chem. Inf. Model. 2014, 54, 7, 1892-1907
         <https://pubs.acs.org/doi/10.1021/ci500232g>`_
 
     .. [3] `Gregory Landrum
@@ -211,8 +211,8 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects. If ``use_3D``
-            is True, only Mol objects with computed conformations and with
+            Sequence containing SMILES strings or RDKit ``Mol`` objects. If ``use_3D``
+            is True, only ``Mol`` objects with computed conformations and with
             ``conf_id`` property are allowed.
 
         copy : bool, default=False

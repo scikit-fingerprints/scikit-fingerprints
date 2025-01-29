@@ -48,7 +48,7 @@ class RDFFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -134,6 +134,58 @@ class RDFFingerprint(BaseFingerprintTransformer):
             batch_size=batch_size,
             verbose=verbose,
         )
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to 7 weighting
+        variants and 30 radii.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            RDF feature names.
+        """
+        feature_names = [
+            f"{weighting_variant} {radius}"
+            for weighting_variant in [
+                "unweighted",
+                "atomic mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+            ]
+            for radius in range(1, 31)
+        ]
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute RDF fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
+            ``conf_id`` integer property set.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 210)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
 
     def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import CalcRDF

@@ -7,7 +7,7 @@ from rdkit.Chem import Mol, SDMolSupplier, SDWriter
 from rdkit.Chem.PropertyMol import PropertyMol
 
 from skfp.bases import BasePreprocessor
-from skfp.utils.validators import check_mols
+from skfp.utils import require_mols
 
 
 class MolFromSDFTransformer(BasePreprocessor):
@@ -62,7 +62,7 @@ class MolFromSDFTransformer(BasePreprocessor):
         self.sanitize = sanitize
         self.remove_hydrogens = remove_hydrogens
 
-    def transform(self, X: str, copy: bool = False) -> list[Mol]:
+    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # type: ignore[override] # noqa: ARG002
         """
         Create RDKit ``Mol`` objects from SDF file.
 
@@ -72,7 +72,7 @@ class MolFromSDFTransformer(BasePreprocessor):
             Path to SDF file.
 
         copy : bool, default=False
-            Unused, kept for Scikit-learn compatibility.
+            Unused, kept for scikit-learn compatibility.
 
         Returns
         -------
@@ -96,6 +96,9 @@ class MolFromSDFTransformer(BasePreprocessor):
             warnings.warn("No molecules detected in provided SDF file")
 
         return mols
+
+    def _transform_batch(self, X):
+        pass  # unused
 
 
 class MolToSDFTransformer(BasePreprocessor):
@@ -158,8 +161,25 @@ class MolToSDFTransformer(BasePreprocessor):
         self.force_V3000 = force_V3000
 
     def transform(self, X: Sequence[Mol], copy: bool = False) -> None:
+        """
+        Write RDKit ``Mol`` objects to SDF file at location given by
+        ``filepath`` parameter. File is created if necessary, and overwritten
+        if it exists already.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+            None
+        """
         self._validate_params()
-        check_mols(X)
+        require_mols(X)
 
         if copy:
             X = deepcopy(X)
@@ -176,3 +196,6 @@ class MolToSDFTransformer(BasePreprocessor):
                     writer.write(mol)
 
             writer.flush()
+
+    def _transform_batch(self, X):
+        pass  # unused

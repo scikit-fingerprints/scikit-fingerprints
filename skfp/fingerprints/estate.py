@@ -46,7 +46,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -70,7 +70,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
     .. [1] `Lowell H. Hall and Lemont B. Kier
         "Electrotopological State Indices for Atom Types: A Novel Combination of Electronic,
         Topological, and Valence State Information"
-        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039–1045
+        J. Chem. Inf. Comput. Sci. 1995, 35, 6, 1039-1045
         <https://pubs.acs.org/doi/10.1021/ci00028a014>`_
 
     .. [2] `Gregory Landrum and Rational Discovery LLC
@@ -114,6 +114,47 @@ class EStateFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
         self.variant = variant
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to SMARTS patterns
+        defining atom types. See the original paper [1]_ for details.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            EState feature names.
+        """
+        from rdkit.Chem.EState.AtomTypes import _rawD
+
+        feature_names = [smarts for name, smarts in _rawD]
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute EState fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 79)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]

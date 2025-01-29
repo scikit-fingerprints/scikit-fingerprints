@@ -11,6 +11,7 @@ from scipy.stats import moment
 from sklearn.utils._param_validation import Interval, StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
+from skfp.descriptors.charge import atomic_partial_charges
 from skfp.utils import require_mols_with_conf_ids
 
 
@@ -41,8 +42,8 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     ----------
     partial_charge_model : {"Gasteiger", "MMFF94", "formal", "precomputed"}, default="formal"
         Which model to use to compute atomic partial charges. Default ``"formal"``
-        computes formal charges, and is the simplest and most error-resistantone.
-        ``"precomputed"`` assumes that the inputs are RDKit PropertyMol objects
+        computes formal charges, and is the simplest and most error-resistant one.
+        ``"precomputed"`` assumes that the inputs are RDKit ``PropertyMol`` objects
         with "charge" float property set.
 
     charge_scaling_factor : float, default=25.0
@@ -60,14 +61,14 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         How to handle errors during fingerprint calculation. ``"raise"`` immediately
         raises any errors. ``"NaN"`` returns NaN values for molecules which resulted in
         errors. ``"ignore"`` suppresses errors and does not return anything for
-        molecules with errors. This potentially results in less output vectors than
+        molecules with errors. This potentially results in fewer output vectors than
         input molecules, and should be used with caution.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -98,7 +99,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     ----------
     .. [1] `Armstrong, M.S., Morris, G.M., Finn, P.W. et al.
         "ElectroShape: fast molecular similarity calculations incorporating shape, chirality and electrostatics"
-        J Comput Aided Mol Des 24, 789–801 (2010)
+        J Comput Aided Mol Des 24, 789-801 (2010)
         <https://doi.org/10.1007/s10822-010-9374-0>`_
 
     Examples
@@ -159,7 +160,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects, with conformers generated and
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
             ``conf_id`` integer property set.
 
         copy : bool, default=False
@@ -167,7 +168,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
         Returns
         -------
-        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+        X : {ndarray, sparse matrix} of shape (n_samples, 15)
             Array with fingerprints.
         """
         y = np.empty(len(X))
@@ -184,7 +185,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit Mol objects, with conformers generated and
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
             ``conf_id`` integer property set.
 
         y : np.ndarray of shape (n_samples,)
@@ -195,7 +196,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
         Returns
         -------
-        X : {ndarray, sparse matrix} of shape (n_samples, self.fp_size)
+        X : {ndarray, sparse matrix} of shape (n_samples, 15)
             Array with fingerprints.
 
         y : np.ndarray of shape (n_samples,)
@@ -234,7 +235,15 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     def _get_fp(self, mol: Mol) -> np.ndarray:
         conf_id = mol.GetIntProp("conf_id")
         coords = mol.GetConformer(conf_id).GetPositions()
-        charges = self._get_atomic_charges(mol) * self.charge_scaling_factor
+        charges = atomic_partial_charges(
+            mol, self.partial_charge_model, self.charge_errors
+        )
+        if self.errors == "ignore":
+            charges = charges[~np.isnan(charges)]
+        elif self.errors == "zero":
+            charges = np.nan_to_num(charges, nan=0)
+
+        charges *= self.charge_scaling_factor
         descriptors = np.column_stack((coords, charges))
         centroid_dists = self._get_centroid_distances(descriptors, charges)
 
@@ -244,38 +253,6 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
             fp.extend([np.mean(d), np.std(d), np.cbrt(moment(d, 3))])
 
         return np.array(fp)
-
-    def _get_atomic_charges(self, mol: Mol) -> np.ndarray:
-        from rdkit.Chem import MolToSmiles, rdPartialCharges
-        from rdkit.Chem.rdForceFieldHelpers import MMFFGetMoleculeProperties
-
-        atoms = mol.GetAtoms()
-
-        if self.partial_charge_model == "Gasteiger":
-            rdPartialCharges.ComputeGasteigerCharges(mol)
-            charges = [atom.GetDoubleProp("_GasteigerCharge") for atom in atoms]
-        elif self.partial_charge_model == "MMFF94":
-            values = MMFFGetMoleculeProperties(mol)
-            charges = [
-                values.GetMMFFPartialCharge(i) if values else None
-                for i in range(len(atoms))
-            ]
-        elif self.partial_charge_model == "formal":
-            charges = [atom.GetFormalCharge() for atom in atoms]
-        else:  # precomputed
-            charges = [atom.GetDoubleProp("charge") for atom in atoms]
-
-        if self.charge_errors == "raise" and any(charge is None for charge in charges):
-            smiles = MolToSmiles(mol)
-            raise ValueError(
-                f"Failed to compute at least one atom partial charge for {smiles}"
-            )
-        elif self.charge_errors == "zero":
-            charges = np.nan_to_num(np.array(charges, dtype=float), nan=0)
-        else:  # "ignore"
-            charges = [c for c in charges if c is not None]
-
-        return np.asarray(charges, dtype=float)
 
     def _get_centroid_distances(
         self, descriptors: np.ndarray, charges: np.ndarray

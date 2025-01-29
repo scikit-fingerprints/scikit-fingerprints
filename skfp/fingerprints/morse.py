@@ -43,7 +43,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -93,7 +93,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
         "The Coding of the Three-Dimensional Structure of Molecules by Molecular
         Transforms and Its Application to Structure-Spectra Correlations and Studies
         of Biological Activity"
-        J. Chem. Inf. Comput. Sci. 1996, 36, 2, 334–344
+        J. Chem. Inf. Comput. Sci. 1996, 36, 2, 334-344
         <https://pubs.acs.org/doi/abs/10.1021/ci950164c>`_
 
     .. [7] `Devinyak, Oleg, Dmytro Havrylyuk, and Roman Lesyk
@@ -140,6 +140,58 @@ class MORSEFingerprint(BaseFingerprintTransformer):
             batch_size=batch_size,
             verbose=verbose,
         )
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to 7 weighting
+        variants and 32 scattering values.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            MoRSE feature names.
+        """
+        feature_names = [
+            f"{weighting_variant} {scattering_value}"
+            for weighting_variant in [
+                "unweighted",
+                "atomic mass",
+                "van der Waals volume",
+                "electronegativity",
+                "polarizability",
+                "ion polarity",
+                "IState",
+            ]
+            for scattering_value in range(32)
+        ]
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute MORSE fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
+            ``conf_id`` integer property set.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 224)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
 
     def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import CalcMORSE

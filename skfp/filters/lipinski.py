@@ -40,7 +40,7 @@ class LipinskiFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -56,7 +56,7 @@ class LipinskiFilter(BaseFilter):
     .. [1] `Christopher A. Lipinski, Franco Lombardo, Beryl W. Dominy, Paul J. Feeney
         "Experimental and computational approaches to estimate solubility and permeability
         in drug discovery and development settings"
-        Advanced Drug Delivery Reviews, Volume 23, Issues 1–3, 15 January 1997, Pages 3-25
+        Advanced Drug Delivery Reviews, Volume 23, Issues 1-3, 15 January 1997, Pages 3-25
         <https://www.sciencedirect.com/science/article/pii/S0169409X96004231>`_
 
     Examples

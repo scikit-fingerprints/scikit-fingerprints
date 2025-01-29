@@ -61,7 +61,7 @@ def load_bace(
     .. [1] `Govindan Subramanian et al.
         "Computational Modeling of β-Secretase 1 (BACE-1) Inhibitors Using
         Ligand Based Approaches"
-        J. Chem. Inf. Model. 2016, 56, 10, 1936–1949
+        J. Chem. Inf. Model. 2016, 56, 10, 1936-1949
         <https://pubs.acs.org/doi/10.1021/acs.jcim.6b00290>`_
 
     .. [2] `Zhenqin Wu et al.

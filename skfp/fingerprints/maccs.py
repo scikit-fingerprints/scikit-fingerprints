@@ -1,3 +1,14 @@
+# copyright notice for MACCS, which is based on RDKit:
+#
+#  Copyright (C) 2002-2012 Greg Landrum and Rational Discovery LLC
+#   This file is part of the RDKit.
+#   The contents are covered by the terms of the BSD license
+#   which is included in the file license.txt, found at the root
+#   of the RDKit source tree.
+#
+# we include copy of that license in skfp/fingerprints/data/RDKit_license.txt
+# source: https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/MACCSkeys.py
+
 from collections.abc import Sequence
 from typing import Optional, Union
 
@@ -40,7 +51,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -53,9 +64,9 @@ class MACCSFingerprint(BaseFingerprintTransformer):
 
     Attributes
     ----------
-    n_features_out : int = 166 or 159.
+    n_features_out : int = 166 or 158.
         Number of output features, size of fingerprints. Equal to 166 for the bit
-        variant, and 159 for count.
+        variant, and 158 for count.
 
     requires_conformers : bool = False
         This fingerprint uses only 2D molecular graphs and does not require conformers.
@@ -95,7 +106,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
-        n_features_out = 159 if count else 166
+        n_features_out = 158 if count else 166
         super().__init__(
             n_features_out=n_features_out,
             count=count,
@@ -104,6 +115,377 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             batch_size=batch_size,
             verbose=verbose,
         )
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to substructure
+        names defined by Greg Landrum, based on publicly available MACCS Keys
+        definitions.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            MACCS feature names.
+        """
+        if not self.count:
+            # https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/MACCSkeys.py
+            feature_names = [
+                "ISOTOPE",
+                "atomic num >103",
+                "Group IVa,Va,VIa Rows 4-6 ",
+                "actinide",
+                "Group IIIB,IVB",
+                "Lanthanide",
+                "Group VB,VIB,VIIB",
+                "QAAA@1",
+                "Group VIII (Fe...)",
+                "Group IIa (Alkaline earth)",
+                "4M Ring",
+                "Group IB,IIB (Cu..)",
+                "ON(C)C",
+                "S-S",
+                "OC(O)O",
+                "QAA@1",
+                "CTC",
+                "Group IIIA (B...) ",
+                "7M Ring",
+                "Si",
+                "C=C(Q)Q",
+                "3M Ring",
+                "NC(O)O",
+                "N-O",
+                "NC(N)N",
+                "C$=C($A)$A",
+                "I",
+                "QCH2Q",
+                "P",
+                "CQ(C)(C)A",
+                "QX",
+                "CSN",
+                "NS",
+                "CH2=A",
+                "Group IA (Alkali Metal)",
+                "S Heterocycle",
+                "NC(O)N",
+                "NC(C)N",
+                "OS(O)O",
+                "S-O",
+                "CTN",
+                "F",
+                "QHAQH",
+                "OTHER",
+                "C=CN",
+                "BR",
+                "SAN",
+                "OQ(O)O",
+                "CHARGE  ",
+                "C=C(C)C",
+                "CSO",
+                "NN",
+                "QHAAAQH",
+                "QHAAQH",
+                "OSO",
+                "ON(O)C",
+                "O Heterocycle",
+                "QSQ",
+                "Snot%A%A",
+                "S=O",
+                "AS(A)A",
+                "A$!A$A",
+                "N=O",
+                "A$A!S",
+                "C%N",
+                "CC(C)(C)A",
+                "QS",
+                "QHQH",
+                "QQH",
+                "QNQ",
+                "NO",
+                "OAAO",
+                "S=A",
+                "CH3ACH3",
+                "A!N$A",
+                "C=C(A)A",
+                "NAN",
+                "C=N",
+                "NAAN",
+                "NAAAN",
+                "SA(A)A",
+                "ACH2QH",
+                "QAAAA@1",
+                "NH2",
+                "CN(C)C",
+                "CH2QCH2",
+                "X!A$A",
+                "S",
+                "OAAAO",
+                "QHAACH2A",
+                "QHAAACH2A",
+                "OC(N)C",
+                "QCH3",
+                "QN",
+                "NAAO",
+                "5 M ring",
+                "NAAAO",
+                "QAAAAA@1",
+                "C=C",
+                "ACH2N",
+                "8M Ring or larger",
+                "QO",
+                "CL",
+                "QHACH2A",
+                "A$A($A)$A",
+                "QA(Q)Q",
+                "XA(A)A",
+                "CH3AAACH2A",
+                "ACH2O",
+                "NCO",
+                "NACH2A",
+                "AA(A)(A)A",
+                "Onot%A%A",
+                "CH3CH2A",
+                "CH3ACH2A",
+                "CH3AACH2A",
+                "NAO",
+                "ACH2CH2A > 1",
+                "N=A",
+                "Heterocyclic atom > 1",
+                "N Heterocycle",
+                "AN(A)A",
+                "OCO",
+                "QQ",
+                "Aromatic Ring > 1",
+                "A!O!A",
+                "A$A!O > 1",
+                "ACH2AAACH2A",
+                "ACH2AACH2A",
+                "QQ > 1",
+                "QH > 1",
+                "OACH2A",
+                "A$A!N",
+                "X (HALOGEN)",
+                "Nnot%A%A",
+                "O=A>1 ",
+                "Heterocycle",
+                "QCH2A>1",
+                "OH",
+                "O > 3",
+                "CH3 > 2",
+                "N > 1",
+                "A$A!O",
+                "Anot%A%Anot%A",
+                "6M ring > 1",
+                "O > 2",
+                "ACH2CH2A",
+                "AQ(A)A",
+                "CH3 > 1",
+                "A!A$A!A",
+                "NH",
+                "OC(C)C",
+                "QCH2A",
+                "C=O",
+                "A!CH2!A",
+                "NA(A)A",
+                "C-O",
+                "C-N",
+                "O>1",
+                "CH3",
+                "N",
+                "Aromatic",
+                "6M Ring",
+                "O",
+                "Ring",
+                "Fragments",
+            ]
+        else:
+            feature_names = [
+                "fragments",
+                "atomic num >103",
+                "N",
+                "O",
+                "F",
+                "Si",
+                "P",
+                "S",
+                "Cl",
+                "Br",
+                "I",
+                "Aromatic",
+                "X (HALOGEN)",
+                "CHARGE",
+                "QH",
+                "OTHER",
+                "Group IA (Alkali Metal)",
+                "Group IB,IIB (Cu..)",
+                "Group IIa (Alkaline earth)",
+                "Group IIIA (B...)",
+                "Group IIIB,IVB (Sc...)",
+                "Group IVa,Va,VIa Rows 4-6",
+                "Group VB,VIB,VIIB",
+                "Group VIII (Fe...)",
+                "actinide",
+                "Lanthanide",
+                "Ring",
+                "Aromatic Ring",
+                "Heterocyclic atom",
+                "Heterocycle",
+                "S Heterocycle",
+                "O Heterocycle",
+                "N Heterocycle",
+                "3-membered ring",
+                "4-membered ring",
+                "5-membered ring",
+                "6-membered ring",
+                "7-membered ring",
+                "8-membered ring or larger",
+                "S-S",
+                "N-O",
+                "NS",
+                "S-O",
+                "NN",
+                "S=O",
+                "N=O",
+                "C%N",
+                "QS",
+                "NO",
+                "S=A",
+                "C=N",
+                "NH2",
+                "QN",
+                "C=C",
+                "QO",
+                "QX",
+                "N=A",
+                "QQ",
+                "O=A>1",
+                "OH",
+                "CH3",
+                "C;H3,H4",
+                "NH",
+                "C=O",
+                "C-O",
+                "C-N",
+                "CH3",
+                "CTC",
+                "CTN",
+                "CSO",
+                "CSN",
+                "CH2=A",
+                "C=CN",
+                "SAN",
+                "OSO",
+                "QSQ",
+                "Snot%A%A",
+                "QQH",
+                "QNQ",
+                "NAN",
+                "NCO",
+                "NAO",
+                "OCO",
+                "A!O!A",
+                "A$!A$A",
+                "A$A!S",
+                "X!A$A",
+                "A$A!O",
+                "A$A!N",
+                "Nnot%A%A",
+                "A$A!O",
+                "NC(O)N",
+                "QAAA@1",
+                "ON(C)C",
+                "OC(O)O",
+                "QAA@1",
+                "C=C(Q)Q",
+                "NC(O)O",
+                "NC(N)N",
+                "C$=C($A)$A",
+                "QCH2Q",
+                "CQ(C)(C)A",
+                "OS(O)O",
+                "QHAQH",
+                "OQ(O)O",
+                "C=C(C)C",
+                "QHAAAQH",
+                "QHAAQH",
+                "ON(O)C",
+                "AS(A)A",
+                "CC(C)(C)A",
+                "QHQH",
+                "OAAO",
+                "CH3ACH3",
+                "A!N$A",
+                "C=C(A)A",
+                "NAAN",
+                "NAAAN",
+                "SA(A)A",
+                "ACH2QH",
+                "QAAAA@1",
+                "CN(C)C",
+                "CH2QCH2",
+                "OAAAO",
+                "QHAACH2A",
+                "QHAAACH2A",
+                "OC(N)C",
+                "QCH3",
+                "NAAO",
+                "NAAAO",
+                "QAAAAA@1",
+                "ACH2N",
+                "QHACH2A",
+                "A$A($A)$A",
+                "QA(Q)Q",
+                "XA(A)A",
+                "CH3AAACH2A",
+                "ACH2O",
+                "NACH2A",
+                "AA(A)(A)A",
+                "Onot%A%A",
+                "CH3CH2A",
+                "CH3ACH2A",
+                "CH3AACH2A",
+                "ACH2CH2A",
+                "AN(A)A",
+                "ACH2AAACH2A",
+                "ACH2AACH2A",
+                "OACH2A",
+                "QCH2A",
+                "Anot%A%Anot%A",
+                "ACH2CH2A",
+                "AQ(A)A",
+                "A!A$A!A",
+                "OC(C)C",
+                "QCH2A",
+                "A!CH2!A",
+                "NA(A)A",
+            ]
+        return np.asarray(feature_names, dtype=object)
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute MACCS fingerprints. Output shape depends on ``count``
+        parameter.
+
+        Parameters
+        ----------
+        X : {sequence, array-like} of shape (n_samples,)
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Copy the input X or not.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, self.n_features_out)
+            Array with fingerprints.
+        """
+        return super().transform(X, copy)
 
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
@@ -122,10 +504,9 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)
 
     def _get_maccs_patterns_counts(self, mol: Mol) -> list[int]:
-        # flake8: noqa: E501
         smarts_list = [
             None,  # fragments
-            None,  # atomic num >103 - idx 0
+            None,  # atomic num >103
             "[#7]",  # N
             "[#8]",  # O
             "[#9]",  # F
@@ -182,7 +563,6 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             "[!#6;!#1]~[F,Cl,Br,I]",  # QX
             "[#7]=*",  # N=A
             "[!#6;!#1]~[!#6;!#1]",  # QQ
-            "[!#6;!#1]~[!#6;!#1]",  # QQ (&...)  Spec Incomplete
             "[#8]=*",  # O=A>1
             "[O;!H0]",  # OH
             "[CH3]",  # CH3 (&...) Spec Incomplete

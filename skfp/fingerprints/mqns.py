@@ -38,13 +38,14 @@ class MQNsFingerprint(BaseFingerprintTransformer):
 
     - topology counts (for H-depleted graph, 17 features):
 
-        - acyclic nodes: single, di-, tri- and tetravalent
-        - cyclic nodes: di, tri- and tetravalent
+        - acyclic nodes with degree 1, 2, 3, 4
+        - cyclic nodes with degree 2, 3, 4
         - rings with size 3, 4, ..., 9, 10 or larger
         - nodes and bonds shared by 2 or more rings
 
     RDKit implementation is used, and may differ slightly from the original one in
-    terms of polarity due to different donor and acceptor definitions.
+    terms of polarity due to different donor and acceptor definitions. Aromatic bonds
+    are divided between single and double, with remainder going to single.
 
     Note that by default this fingerprint returns count, not bit features, in order
     to follow the original paper.
@@ -61,7 +62,7 @@ class MQNsFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -120,6 +121,66 @@ class MQNsFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            MQNs feature names.
+        """
+        feature_names = [
+            "C atoms",
+            "F atoms",
+            "Cl atoms",
+            "Br atoms",
+            "I atoms",
+            "S atoms",
+            "P atoms",
+            "N acyclic atoms",
+            "N cyclic atoms",
+            "O acyclic atoms",
+            "O cyclic atoms",
+            "heavy atom count (HAC)",
+            "acyclic single bonds",
+            "acyclic double bonds",
+            "acyclic triple bonds",
+            "cyclic single bonds",
+            "cyclic double bonds",
+            "cyclic triple bonds",
+            "rotatable bonds",
+            "acceptor sites",
+            "acceptor atoms",
+            "donor sites",
+            "donor atoms",
+            "negative charges",
+            "positive charges",
+            "acyclic atoms degree 1",
+            "acyclic atoms degree 2",
+            "cyclic atoms degree 2",
+            "acyclic atoms degree 3",
+            "cyclic atoms degree 3",
+            "acyclic atoms degree 4",
+            "cyclic atoms degree 4",
+            "rings of size 3",
+            "rings of size 4",
+            "rings of size 5",
+            "rings of size 6",
+            "rings of size 7",
+            "rings of size 8",
+            "rings of size 9",
+            "rings of size >= 10",
+            "atoms in >= 2 rings",
+            "bonds in >= 2 rings",
+        ]
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
@@ -129,7 +190,7 @@ class MQNsFingerprint(BaseFingerprintTransformer):
         Parameters
         ----------
         X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing SMILES strings or RDKit Mol objects.
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Copy the input X or not.

@@ -34,7 +34,7 @@ class PfizerFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -46,19 +46,19 @@ class PfizerFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Hughes, J. D. et al.
         "Physiochemical drug properties associated with in vivo toxicological outcomes."
-        Bioorganic & Medicinal Chemistry Letters, 18(17), 4872–4875.
+        Bioorganic & Medicinal Chemistry Letters, 18(17), 4872-4875.
         <https://doi.org/10.1016/j.bmcl.2008.07.071>`_
 
     .. [2] `Price, D. A., Blagg, J., Jones, L., Greene, N., & Wager, T.
         "Physicochemical drug properties associated with in vivo toxicological outcomes: a review."
-        Expert Opinion on Drug Metabolism & Toxicology, 5(8), 921–931.
+        Expert Opinion on Drug Metabolism & Toxicology, 5(8), 921-931.
         <https://doi.org/10.1517/17425250903042318>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import PfizerFilter
     >>> smiles = ["CS(=O)(=O)NCc1nnc(SCc2ccccc2C(F)(F)F)o1", "COC(=O)c1ccccc1NC(=O)CSc1nc(O)c(-c2ccccc2)c(=O)[nH]1",\
     "Cc1ccccc1-n1c(Cc2cccs2)n[nH]c1=S"]

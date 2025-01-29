@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from inspect import getmembers, isfunction
 from typing import Optional, Union
 
 import numpy as np
@@ -30,7 +31,7 @@ class FunctionalGroupsFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -88,108 +89,148 @@ class FunctionalGroupsFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They are descriptions of RDKit
+        functional groups (fragments) - see `<https://rdkit.org/docs/source/rdkit.Chem.Fragments.html>`_
+        for details.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Names of the RDKit function groups.
+        """
+        return np.asarray(
+            [
+                "aliphatic carboxylic acids",
+                "aliphatic hydroxyl groups",
+                "aliphatic hydroxyl groups excluding tert-OH",
+                "N functional groups attached to aromatics",
+                "Aromatic carboxylic acide",
+                "aromatic nitrogens",
+                "aromatic amines",
+                "aromatic hydroxyl groups",
+                "carboxylic acids",
+                "carboxylic acids",
+                "carbonyl O",
+                "carbonyl O, excluding COOH",
+                "thiocarbonyl",
+                "C(OH)CCN-Ctert-alkyl or  C(OH)CCNcyclic",
+                "Imines",
+                "Tertiary amines",
+                "Secondary amines",
+                "Primary amines",
+                "hydroxylamine groups",
+                "XCCNR groups",
+                "tert-alicyclic amines (no heteroatoms, not quinine-like bridged N)",
+                "H-pyrrole nitrogens",
+                "thiol groups",
+                "aldehydes",
+                "alkyl carbamates (subject to hydrolysis)",
+                "alkyl halides",
+                "allylic oxidation sites excluding steroid dienone",
+                "amides",
+                "amidine groups",
+                "anilines",
+                "aryl methyl sites for hydroxylation",
+                "azide groups",
+                "azo groups",
+                "barbiturate groups",
+                "benzene rings",
+                "benzodiazepines with no additional fused rings",
+                "Bicyclic",
+                "diazo groups",
+                "dihydropyridines",
+                "epoxide rings",
+                "esters",
+                "ether oxygens (including phenoxy)",
+                "furan rings",
+                "guanidine groups",
+                "halogens",
+                "hydrazine groups",
+                "hydrazone groups",
+                "imidazole rings",
+                "imide groups",
+                "isocyanates",
+                "isothiocyanates",
+                "ketones",
+                "ketones excluding diaryl, a,b-unsat. dienones, heteroatom on Calpha",
+                "beta lactams",
+                "cyclic esters (lactones)",
+                "methoxy groups -OCH3",
+                "morpholine rings",
+                "nitriles",
+                "nitro groups",
+                "nitro benzene ring substituents",
+                "non-ortho nitro benzene ring substituents",
+                "nitroso groups, excluding NO2",
+                "oxazole rings",
+                "oxime groups",
+                "para-hydroxylation sites",
+                "phenols",
+                "phenolic OH excluding ortho intramolecular Hbond substituents",
+                "phosphoric acid groups",
+                "phosphoric ester groups",
+                "piperdine rings",
+                "piperzine rings",
+                "primary amides",
+                "primary sulfonamides",
+                "pyridine rings",
+                "quaternary nitrogens",
+                "thioether",
+                "sulfonamides",
+                "sulfone groups",
+                "terminal acetylenes",
+                "tetrazole rings",
+                "thiazole rings",
+                "thiocyanates",
+                "thiophene rings",
+                "unbranched alkanes of at least 4 members (excludes halogenated alkanes)",
+                "urea groups",
+            ],
+            dtype=object,
+        )
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute functional groups fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 85)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
+
     def _calculate_fingerprint(
         self, X: Sequence[Union[str, Mol]]
     ) -> Union[np.ndarray, csr_array]:
         X = ensure_mols(X)
 
-        X = np.array([self._get_functional_groups_counts(mol) for mol in X])
+        func_groups_functions = [
+            function
+            for name, function in getmembers(rdkit.Chem.Fragments, isfunction)
+            if name.startswith("fr_")
+        ]
+        X = np.array([[fun(mol) for fun in func_groups_functions] for mol in X])
 
         if not self.count:
             X = X > 0
 
         dtype = np.uint32 if self.count else np.uint8
         return csr_array(X, dtype=dtype) if self.sparse else X.astype(dtype)
-
-    def _get_functional_groups_counts(self, mol: Mol) -> list[int]:
-        func_groups_counts = [
-            func_group(mol)
-            for func_group in [
-                rdkit.Chem.Fragments.fr_Al_COO,
-                rdkit.Chem.Fragments.fr_Al_OH,
-                rdkit.Chem.Fragments.fr_Al_OH_noTert,
-                rdkit.Chem.Fragments.fr_ArN,
-                rdkit.Chem.Fragments.fr_Ar_COO,
-                rdkit.Chem.Fragments.fr_Ar_N,
-                rdkit.Chem.Fragments.fr_Ar_NH,
-                rdkit.Chem.Fragments.fr_Ar_OH,
-                rdkit.Chem.Fragments.fr_COO,
-                rdkit.Chem.Fragments.fr_COO2,
-                rdkit.Chem.Fragments.fr_C_O,
-                rdkit.Chem.Fragments.fr_C_O_noCOO,
-                rdkit.Chem.Fragments.fr_C_S,
-                rdkit.Chem.Fragments.fr_HOCCN,
-                rdkit.Chem.Fragments.fr_Imine,
-                rdkit.Chem.Fragments.fr_NH0,
-                rdkit.Chem.Fragments.fr_NH1,
-                rdkit.Chem.Fragments.fr_NH2,
-                rdkit.Chem.Fragments.fr_N_O,
-                rdkit.Chem.Fragments.fr_Ndealkylation1,
-                rdkit.Chem.Fragments.fr_Ndealkylation2,
-                rdkit.Chem.Fragments.fr_Nhpyrrole,
-                rdkit.Chem.Fragments.fr_SH,
-                rdkit.Chem.Fragments.fr_aldehyde,
-                rdkit.Chem.Fragments.fr_alkyl_carbamate,
-                rdkit.Chem.Fragments.fr_alkyl_halide,
-                rdkit.Chem.Fragments.fr_allylic_oxid,
-                rdkit.Chem.Fragments.fr_amide,
-                rdkit.Chem.Fragments.fr_amidine,
-                rdkit.Chem.Fragments.fr_aniline,
-                rdkit.Chem.Fragments.fr_aryl_methyl,
-                rdkit.Chem.Fragments.fr_azide,
-                rdkit.Chem.Fragments.fr_azo,
-                rdkit.Chem.Fragments.fr_barbitur,
-                rdkit.Chem.Fragments.fr_benzene,
-                rdkit.Chem.Fragments.fr_benzodiazepine,
-                rdkit.Chem.Fragments.fr_bicyclic,
-                rdkit.Chem.Fragments.fr_diazo,
-                rdkit.Chem.Fragments.fr_dihydropyridine,
-                rdkit.Chem.Fragments.fr_epoxide,
-                rdkit.Chem.Fragments.fr_ester,
-                rdkit.Chem.Fragments.fr_ether,
-                rdkit.Chem.Fragments.fr_furan,
-                rdkit.Chem.Fragments.fr_guanido,
-                rdkit.Chem.Fragments.fr_halogen,
-                rdkit.Chem.Fragments.fr_hdrzine,
-                rdkit.Chem.Fragments.fr_hdrzone,
-                rdkit.Chem.Fragments.fr_imidazole,
-                rdkit.Chem.Fragments.fr_imide,
-                rdkit.Chem.Fragments.fr_isocyan,
-                rdkit.Chem.Fragments.fr_isothiocyan,
-                rdkit.Chem.Fragments.fr_ketone,
-                rdkit.Chem.Fragments.fr_ketone_Topliss,
-                rdkit.Chem.Fragments.fr_lactam,
-                rdkit.Chem.Fragments.fr_lactone,
-                rdkit.Chem.Fragments.fr_methoxy,
-                rdkit.Chem.Fragments.fr_morpholine,
-                rdkit.Chem.Fragments.fr_nitrile,
-                rdkit.Chem.Fragments.fr_nitro,
-                rdkit.Chem.Fragments.fr_nitro_arom,
-                rdkit.Chem.Fragments.fr_nitro_arom_nonortho,
-                rdkit.Chem.Fragments.fr_nitroso,
-                rdkit.Chem.Fragments.fr_oxazole,
-                rdkit.Chem.Fragments.fr_oxime,
-                rdkit.Chem.Fragments.fr_para_hydroxylation,
-                rdkit.Chem.Fragments.fr_phenol,
-                rdkit.Chem.Fragments.fr_phenol_noOrthoHbond,
-                rdkit.Chem.Fragments.fr_phos_acid,
-                rdkit.Chem.Fragments.fr_phos_ester,
-                rdkit.Chem.Fragments.fr_piperdine,
-                rdkit.Chem.Fragments.fr_piperzine,
-                rdkit.Chem.Fragments.fr_priamide,
-                rdkit.Chem.Fragments.fr_prisulfonamd,
-                rdkit.Chem.Fragments.fr_pyridine,
-                rdkit.Chem.Fragments.fr_quatN,
-                rdkit.Chem.Fragments.fr_sulfide,
-                rdkit.Chem.Fragments.fr_sulfonamd,
-                rdkit.Chem.Fragments.fr_sulfone,
-                rdkit.Chem.Fragments.fr_term_acetylene,
-                rdkit.Chem.Fragments.fr_tetrazole,
-                rdkit.Chem.Fragments.fr_thiazole,
-                rdkit.Chem.Fragments.fr_thiocyan,
-                rdkit.Chem.Fragments.fr_thiophene,
-                rdkit.Chem.Fragments.fr_unbrch_alkane,
-                rdkit.Chem.Fragments.fr_urea,
-            ]
-        ]
-        return func_groups_counts

@@ -1,5 +1,3 @@
-# flake8: noqa E501
-
 import numpy as np
 import pytest
 
@@ -25,7 +23,8 @@ def smiles_passing_one_fail() -> list[str]:
 @pytest.fixture
 def smiles_failing_rule_of_xu() -> list[str]:
     return [
-        r"C[C@H]1/C=C/C=C(\C(=O)NC2=C(C(=C3C(=C2O)C(=C(C4=C3C(=O)[C@](O4)(O/C=C/[C@@H]([C@H]([C@H]([C@@H]([C@@H]([C@@H]([C@H]1O)C)O)C)OC(=O)C)C)OC)C)C)O)O)/C=N/N5CCN(CC5)C)/C",  # Rifampin
+        # Rifampin
+        r"C[C@H]1/C=C/C=C(\C(=O)NC2=C(C(=C3C(=C2O)C(=C(C4=C3C(=O)[C@](O4)(O/C=C/[C@@H]([C@H]([C@H]([C@@H]([C@@H]([C@@H]([C@H]1O)C)O)C)OC(=O)C)C)OC)C)C)O)O)/C=N/N5CCN(CC5)C)/C",
         "CCO",  # Ethanol
     ]
 

@@ -1,9 +1,8 @@
 from typing import Optional, Union
 
 from rdkit.Chem import Mol
-from rdkit.Chem.Crippen import MolLogP, MolMR
 from rdkit.Chem.Descriptors import MolWt
-from rdkit.Chem.rdMolDescriptors import CalcNumAtoms
+from rdkit.Chem.rdMolDescriptors import CalcCrippenDescriptors, CalcNumAtoms
 
 from skfp.bases.base_filter import BaseFilter
 
@@ -19,7 +18,7 @@ class GhoseFilter(BaseFilter):
         - 160 <= molecular weight <= 400
         - -0.4 <= logP <= 5.6
         - 20 <= number of atoms <= 70
-        - 40 <= refractivity <= 130
+        - 40 <= molar refractivity <= 130
 
     Parameters
     ----------
@@ -35,7 +34,7 @@ class GhoseFilter(BaseFilter):
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
-        processors. See Scikit-learn documentation on ``n_jobs`` for more details.
+        processors. See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -47,15 +46,15 @@ class GhoseFilter(BaseFilter):
         and can be used to control the progress bar.
 
     References
-    -----------
+    ----------
     .. [1] `Ghose, A. K., Viswanadhan, V. N., & Wendoloski, J. J.
         "A Knowledge-Based Approach in Designing Combinatorial or Medicinal Chemistry Libraries for Drug Discovery. 1.
         A Qualitative and Quantitative Characterization of Known Drug Databases."
-        Journal of Combinatorial Chemistry, 1(1), 55–68.
+        Journal of Combinatorial Chemistry, 1(1), 55-68.
         <https://doi.org/10.1021/cc9800071>`_
 
     Examples
-    ----------
+    --------
     >>> from skfp.filters import GhoseFilter
     >>> smiles = ["CC(=O)C1=C(O)C(=O)N(CCc2c[nH]c3ccccc23)C1c1ccc(C)cc1", "CC(=O)c1c(C)n(CC2CCCO2)c2ccc(O)cc12",\
     "CC(=O)c1c(C(C)=O)c(C)n(CCCCn2c(C)c(C(C)=O)c(C(C)=O)c2C)c1C"]
@@ -84,11 +83,12 @@ class GhoseFilter(BaseFilter):
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
+        logp, mr = CalcCrippenDescriptors(mol)
         rules = [
             160 <= MolWt(mol) <= 400,
-            40 <= MolMR(mol) <= 130,
+            40 <= mr <= 130,
             20 <= CalcNumAtoms(mol) <= 70,
-            -0.4 <= MolLogP(mol) <= 5.6,
+            -0.4 <= logp <= 5.6,
         ]
         passed_rules = sum(rules)
 

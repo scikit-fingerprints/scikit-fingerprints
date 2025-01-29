@@ -52,7 +52,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
         The number of jobs to run in parallel. :meth:`transform` is parallelized
         over the input molecules. ``None`` means 1 unless in a
         :obj:`joblib.parallel_backend` context. ``-1`` means using all processors.
-        See Scikit-learn documentation on ``n_jobs`` for more details.
+        See scikit-learn documentation on ``n_jobs`` for more details.
 
     batch_size : int, default=None
         Number of inputs processed in each batch. ``None`` divides input data into
@@ -95,7 +95,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
 
     .. [6] `Roberto Todeschini and Paola Gramatica
         "The WHIM Theory: New 3D Molecular Descriptors for QSAR in Environmental Modelling"
-        SAR and QSAR in Environmental Research, 7(1–4), 89–115
+        SAR and QSAR in Environmental Research, 7(1-4), 89-115
         <https://www.tandfonline.com/doi/abs/10.1080/10629369708039126>`_
 
     Examples
@@ -140,6 +140,28 @@ class WHIMFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
         self.clip_val = clip_val
+
+    def transform(
+        self, X: Sequence[Union[str, Mol]], copy: bool = False
+    ) -> Union[np.ndarray, csr_array]:
+        """
+        Compute WHIM fingerprints.
+
+        Parameters
+        ----------
+        X : {sequence of str or Mol}
+            Sequence containing RDKit ``Mol`` objects, with conformers generated and
+            ``conf_id`` integer property set.
+
+        copy : bool, default=False
+            Whether to copy input data.
+
+        Returns
+        -------
+        X : {ndarray, sparse matrix} of shape (n_samples, 114)
+            Transformed data.
+        """
+        return super().transform(X, copy=copy)
 
     def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
         from rdkit.Chem.rdMolDescriptors import CalcWHIM
