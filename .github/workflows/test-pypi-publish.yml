@@ -1,0 +1,47 @@
+name: Publish Python package to TestPyPI
+
+on:
+  release:
+    types: [ published ]
+
+  # allow running manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# allow only one concurrent deployment, but do NOT cancel in-progress runs,
+# as we want to allow these deployments to complete
+concurrency:
+  group: "TestPyPI"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # required by poetry-dynamic-versioning plugin
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: pipx install poetry --python python3.9
+
+      - name: Install Poetry poetry-dynamic-versioning plugin
+        run: pipx inject poetry "poetry-dynamic-versioning[plugin]"
+
+      - name: Configure Poetry for TestPyPI
+        run: >-
+          poetry config repositories.test-pypi https://test.pypi.org/legacy/
+          && poetry config pypi-token.test-pypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+      - name: Build and publish to TestPyPI
+        run: >-
+          poetry build
+          && poetry publish --repository=test-pypi
