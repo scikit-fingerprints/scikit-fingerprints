@@ -26,10 +26,9 @@ def atomic_partial_charges(
 
     charge_errors : {"raise", "ignore", "zero"}, default="raise"
         How to handle errors during calculation of atomic partial charges. ``"raise"``
-        immediately raises any errors. ``"NaN"`` ignores any atoms that failed the
-        computation; note that if all atoms fail, the error will be raised (use
-        ``errors`` parameter to control this). ``"zero"`` uses default value of 0 to
-        fill all problematic charges.
+        immediately raises any errors. ``"ignore"`` returns ``np.nan`` for all atoms that
+        failed the computation. ``"zero"`` uses default value of 0 to fill all problematic
+        charges.
 
     Examples
     --------
@@ -66,6 +65,8 @@ def atomic_partial_charges(
     elif charge_errors == "zero":
         charges = np.nan_to_num(np.array(charges, dtype=float), nan=0)
     else:  # "ignore"
-        charges = [c for c in charges if c is not None]
+        charges = np.nan_to_num(
+            np.array(charges, dtype=float), nan=np.nan, posinf=np.nan, neginf=np.nan
+        )
 
     return np.asarray(charges, dtype=float)

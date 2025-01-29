@@ -238,6 +238,11 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         charges = atomic_partial_charges(
             mol, self.partial_charge_model, self.charge_errors
         )
+        if self.errors == "ignore":
+            charges = charges[~np.isnan(charges)]
+        elif self.errors == "zero":
+            charges = np.nan_to_num(charges, nan=0)
+
         charges *= self.charge_scaling_factor
         descriptors = np.column_stack((coords, charges))
         centroid_dists = self._get_centroid_distances(descriptors, charges)

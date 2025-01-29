@@ -263,6 +263,11 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
         charges = atomic_partial_charges(
             mol, self.partial_charge_model, self.charge_errors
         )
+        if self.errors == "ignore":
+            charges = charges[~np.isnan(charges)]
+        elif self.errors == "zero":
+            charges = np.nan_to_num(charges, nan=0)
+
         atomic_logp_mr_contribs = _CalcCrippenContribs(mol)
         logp_vals = [logp for logp, mr in atomic_logp_mr_contribs]
         mr_vals = [mr for logp, mr in atomic_logp_mr_contribs]
