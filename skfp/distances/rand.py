@@ -21,16 +21,15 @@ def rand_binary_similarity(
     r"""
     Calculate the Rand binary similarity between two binary vectors.
 
-    Computes the Rand similarity [1]_ [2]_ (known as All-Bit similarity in RDKit [3]_) for binary data between two input arrays
+    Computes the Rand similarity [1]_ [2]_ (known as All-Bit [3]_ or Sokal-Michener) for binary data between two input arrays
     or sparse matrices using the formula:
 
     .. math::
 
-        sim(vec_a, vec_b) = \frac{\text{count}_a - \text{count}_\text{xor}}{\text{count}_a}
+        sim(vec_a, vec_b) = |vec_a \cap vec_b| / n
 
     where:
-    - :math:`\text{count}_a` is the number of non-zero elements in :math:`\mathbf{a}`,
-    - :math:`\text{count}_\text{xor}` is the number of positions where the binary values in :math:`\mathbf{a}` and :math:`\mathbf{b}` differ
+    - :math:`n` is the length of vec_a.
 
     The calculated similarity falls within the range ``[0, 1]``.
     Passing all-zero vectors to this function results in a similarity of 0.
