@@ -180,7 +180,7 @@ conduct, and the process for submitting pull requests to us.
 ## Citing
 
 If you use scikit-fingerprints in your work, please cite our main publication, 
-[available on SoftwareX (open access)](https://doi.org/10.1016/j.softx.2024.101944):
+[available on SoftwareX (open access)]([https://doi.org/10.1016/j.softx.2024.101944](https://www.sciencedirect.com/science/article/pii/S2352711024003145)):
 ```
 @article{scikit_fingerprints,
    title = {Scikit-fingerprints: Easy and efficient computation of molecular fingerprints in Python},
