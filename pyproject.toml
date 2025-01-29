@@ -1,6 +1,6 @@
 [project]
 name = "skfp"
-version = "0.0.0"   # version is read with poetry-version-plugin on GitHub release from Git tag
+dynamic = ["version"]  # version is read with poetry-dynamic-versioning on GitHub release from Git tag
 description = "Library for effective molecular fingerprints calculation"
 authors = [
     { name = "Scikit-Fingerprints Development Team", email = "scikitfingerprints@gmail.com" }
@@ -52,6 +52,9 @@ dependencies = [
 "Repository" = "https://github.com/scikit-fingerprints/scikit-fingerprints"
 "Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
 
+[tool.poetry]
+version = "0.0.0"
+
 [tool.poetry.group.dev]
 optional = true
 
@@ -78,10 +81,10 @@ pytest = "*"
 ruff = "*"
 xenon = "*"
 
-[tool.poetry.group.doc]
+[tool.poetry.group.docs]
 optional = true
 
-[tool.poetry.group.doc.dependencies]
+[tool.poetry.group.docs.dependencies]
 ipython = "*"
 nbsphinx = "*"
 pydata-sphinx-theme = "*"
@@ -96,15 +99,17 @@ lightgbm = "*"
 matplotlib = "*"
 ogb = "*"
 
-[tool.poetry.requires-plugins]
-poetry-plugin-export = ">=1.8"
-
-[tool.poetry-version-plugin]
-source = "git-tag"
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+latest-tag = true
+tag-branch = "remotes/origin/master"
+style = "semver"
+strict = true
 
 [tool.pytest.ini_options]
 python_files = "*.py"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"

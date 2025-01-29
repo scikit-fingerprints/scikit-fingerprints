@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # required by poetry-dynamic-versioning plugin
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -22,8 +24,8 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry --python python3.9
 
-      - name: Install Poetry plugins
-        run: poetry self add poetry-version-plugin
+      - name: Install Poetry poetry-dynamic-versioning plugin
+        run: pipx inject poetry "poetry-dynamic-versioning[plugin]"
 
       - name: Configure Poetry for PyPI
         run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
