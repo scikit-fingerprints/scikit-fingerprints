@@ -1,42 +1,37 @@
 from collections.abc import Sequence
 from copy import deepcopy
-from numbers import Real
 from typing import Optional, Union
 
 import numpy as np
-from numpy.linalg import norm
-from rdkit.Chem import Mol
+from rdkit.Chem import Mol, RemoveAllHs
+from rdkit.Chem.rdMolDescriptors import _CalcCrippenContribs
 from scipy.sparse import csr_array
-from scipy.stats import moment
-from sklearn.utils._param_validation import Interval, StrOptions
+from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases import BaseFingerprintTransformer
+from skfp.descriptors import burden_matrix
 from skfp.descriptors.charge import atomic_partial_charges
-from skfp.utils import require_mols_with_conf_ids
+from skfp.utils import ensure_mols
 
 
-class ElectroShapeFingerprint(BaseFingerprintTransformer):
+class BCUT2DFingerprint(BaseFingerprintTransformer):
     """
-    ElectroShape fingerprint.
+    Burden-CAS-University of Texas (BCUT2D) fingerprint.
 
-    This is a descriptor-based fingerprint, extending the USR fingerprint by
-    additionally considering atomic partial charges [1]_.
+    This is a descriptor-based fingerprint, based on Burden descriptors, which are
+    largest and smallest eigenvalues of the Burden matrix [1]_ [2]_. It is a modified
+    connectivity matrix, aimed to combine topological structure with atomic properties.
+    Diagonal elements are atom descriptors, e.g. atomic number, charge. Off-diagonal
+    elements for bonded atoms are 1/sqrt(bond order), with minimum of 0.001 in case of
+    no bond between given pair of atoms.
 
-    It first computes atomic partial charges, and then uses both conformational
-    (spatial) structure, and this electric information, to compute reference
-    points (centroids). First three are like in USR, and last two
-    additionally use partial charge in distance calculation. See the original paper
-    [1]_ for details. For each centroid, the distribution of distances between atoms
-    and the centroid is aggregated using the first three moments (mean, standard
-    deviation, cubic root of skewness). This results in 15 features.
+    BCUT2D descriptors use the largest and smallest eigenvalue for 4 atomic properties:
+    mass, charge, logP and molar refractivity (MR). This results in 8 features.
 
-    This is a 3D fingerprint, and requires molecules with ``conf_id`` integer property
-    set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.
-    Furthermore, only molecules with 3 or more atoms are allowed, to allow computation
-    of all three moments.
-
-    Typical correct values should be small, but problematic molecules may result in NaN
-    values for some descriptors. In those cases, imputation should be used.
+    The implementation differs slightly from RDKit [3]_, because they use Gasteiger model
+    by default, and here formal charge model is used. It is simpler and more robust, since
+    Gasteiger fails for metal atoms. Like RDKit, we use Wildman-Crippen atomic contributions
+    model [4]_ for logP and MR.
 
     Parameters
     ----------
@@ -45,10 +40,6 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         computes formal charges, and is the simplest and most error-resistant one.
         ``"precomputed"`` assumes that the inputs are RDKit ``PropertyMol`` objects
         with "charge" float property set.
-
-    charge_scaling_factor : float, default=25.0
-        Partial charges are multiplied by this factor to bring them to a value
-        range comparable to distances in Angstroms.
 
     charge_errors : {"raise", "ignore", "zero"}, default="raise"
         How to handle errors during calculation of atomic partial charges. ``"raise"``
@@ -81,42 +72,49 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
     Attributes
     ----------
-    n_features_out : int = 15
+    n_features_out : int = 8
         Number of output features, size of fingerprints.
 
-    requires_conformers : bool = True
-        Value is always True, as this fingerprint is 3D based. It always requires
-        molecules with conformers as inputs, with ``conf_id`` integer property set.
-
-    See Also
-    --------
-    :class:`USR` : Related fingerprint, which ElectroShape expands.
-
-    :class:`USRCAT` : Related fingerprint, which expands USR with pharmacophoric
-        atom types, instead of partial charges.
+    requires_conformers : bool = False
+        This fingerprint uses only 2D molecular graphs and does not require conformers.
 
     References
     ----------
-    .. [1] `Armstrong, M.S., Morris, G.M., Finn, P.W. et al.
-        "ElectroShape: fast molecular similarity calculations incorporating shape, chirality and electrostatics"
-        J Comput Aided Mol Des 24, 789-801 (2010)
-        <https://doi.org/10.1007/s10822-010-9374-0>`_
+    .. [1] `Frank R. Burden
+        "Molecular identification number for substructure searches"
+        J. Chem. Inf. Comput. Sci. 1989, 29, 3, 225–227
+        <https://doi.org/10.1021/ci00063a011>`_
+
+    .. [2] `R. Todeschini, V. Consonni
+        "Molecular Descriptors for Chemoinformatics"
+        Wiley‐VCH Verlag GmbH & Co. KGaA
+        <https://onlinelibrary.wiley.com/doi/book/10.1002/9783527628766>`_
+
+    .. [3] `RDKit BCUT2D descriptors
+        <https://www.rdkit.org/docs/source/rdkit.Chem.rdMolDescriptors.html#rdkit.Chem.rdMolDescriptors.BCUT2D>`_
+
+    .. [4] `Scott A. Wildman and Gordon M. Crippen
+        "Prediction of Physicochemical Parameters by Atomic Contributions"
+        J. Chem. Inf. Comput. Sci. 1999, 39, 5, 868-873
+        <https://pubs.acs.org/doi/10.1021/ci990307l>`_
 
     Examples
     --------
-    >>> from skfp.fingerprints import ElectroShapeFingerprint
-    >>> from skfp.preprocessing import MolFromSmilesTransformer, ConformerGenerator
-    >>> smiles = ["CC=O"]
-    >>> fp = ElectroShapeFingerprint()
+    >>> from skfp.fingerprints import BCUT2DFingerprint
+    >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
+    >>> fp = BCUT2DFingerprint()
     >>> fp
-    ElectroShapeFingerprint()
+    BCUT2DFingerprint()
 
-    >>> mol_from_smiles = MolFromSmilesTransformer()
-    >>> mols = mol_from_smiles.transform(smiles)
-    >>> conf_gen = ConformerGenerator()
-    >>> mols = conf_gen.transform(mols)
-    >>> fp.transform(mols)  # doctest: +SKIP
-    array([[ 4.84903774,  5.10822298, ...        ,  5.14008906,  2.75483277 ]])
+    >>> fp.transform(smiles)
+    array([[15.999     , 15.999     ,  0.        ,  0.        , -0.2893    ,
+            -0.2893    ,  0.8238    ,  0.8238    ],
+           [13.011     , 11.011     ,  1.        , -1.        ,  1.1441    ,
+            -0.8559    ,  3.503     ,  1.503     ],
+           [14.16196892, 11.85603108,  0.26376262, -1.26376262,  0.6264836 ,
+            -0.5301136 ,  3.43763218,  1.53036782],
+           [16.12814585, 10.96029404,  1.22521641, -1.2242736 ,  1.12869643,
+            -1.35803037,  5.43954434, -0.10561046]])
     """
 
     _parameter_constraints: dict = {
@@ -124,7 +122,6 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         "partial_charge_model": [
             StrOptions({"Gasteiger", "MMFF94", "formal", "precomputed"})
         ],
-        "charge_scaling_factor": [Interval(Real, 0.0, None, closed="neither")],
         "charge_errors": [StrOptions({"raise", "ignore", "zero"})],
         "errors": [StrOptions({"raise", "NaN", "ignore"})],
     }
@@ -132,7 +129,6 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
     def __init__(
         self,
         partial_charge_model: str = "formal",
-        charge_scaling_factor: float = 25.0,
         charge_errors: str = "raise",
         errors: str = "raise",
         n_jobs: Optional[int] = None,
@@ -140,22 +136,48 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         verbose: Union[int, dict] = 0,
     ):
         super().__init__(
-            n_features_out=15,
-            requires_conformers=True,
+            n_features_out=8,
+            requires_conformers=False,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
         self.partial_charge_model = partial_charge_model
-        self.charge_scaling_factor = charge_scaling_factor
         self.charge_errors = charge_errors
         self.errors = errors
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They are largest and smallest
+        eigenvalues of Burden matrix for 4 atomic properties.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            BCUT2D feature names.
+        """
+        feature_names = [
+            "max Burden eigenvalue mass",
+            "min Burden eigenvalue mass",
+            "max Burden eigenvalue charge",
+            "min Burden eigenvalue charge",
+            "max Burden eigenvalue logP",
+            "min Burden eigenvalue logP",
+            "max Burden eigenvalue MR",
+            "min Burden eigenvalue MR",
+        ]
+        return np.asarray(feature_names, dtype=object)
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
     ) -> Union[np.ndarray, csr_array]:
         """
-        Compute ElectroShape fingerprints.
+        Compute BCUT2D fingerprints.
 
         Parameters
         ----------
@@ -179,7 +201,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         self, X: Sequence[Mol], y: np.ndarray, copy: bool = False
     ) -> tuple[Union[np.ndarray, csr_array], np.ndarray]:
         """
-        Compute ElectroShape fingerprints. The returned values for X and y are
+        Compute BCUT2D fingerprints. The returned values for X and y are
         properly synchronized.
 
         Parameters
@@ -217,7 +239,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         return X, y
 
     def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
-        mols = require_mols_with_conf_ids(X)
+        mols = ensure_mols(X)
 
         if self.errors == "raise":
             fps = [self._get_fp(mol) for mol in mols]
@@ -233,8 +255,11 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         return np.array(fps)
 
     def _get_fp(self, mol: Mol) -> np.ndarray:
-        conf_id = mol.GetIntProp("conf_id")
-        coords = mol.GetConformer(conf_id).GetPositions()
+        # Burden descriptors are defined for hydrogen-depleted molecule
+        mol = RemoveAllHs(mol)
+
+        # atomic descriptors: mass, partial charge, logP, molar refractivity
+        masses = [atom.GetMass() for atom in mol.GetAtoms()]
         charges = atomic_partial_charges(
             mol, self.partial_charge_model, self.charge_errors
         )
@@ -243,51 +268,33 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         elif self.errors == "zero":
             charges = np.nan_to_num(charges, nan=0)
 
-        charges *= self.charge_scaling_factor
-        descriptors = np.column_stack((coords, charges))
-        centroid_dists = self._get_centroid_distances(descriptors, charges)
+        atomic_logp_mr_contribs = _CalcCrippenContribs(mol)
+        logp_vals = [logp for logp, mr in atomic_logp_mr_contribs]
+        mr_vals = [mr for logp, mr in atomic_logp_mr_contribs]
 
-        fp = []
-        for d in centroid_dists:
-            # three moments: mean, stddev, cubic root of skewness
-            fp.extend([np.mean(d), np.std(d), np.cbrt(moment(d, 3))])
+        matrix = burden_matrix(mol)
+        fp = np.empty(8, dtype=float)
 
-        return np.array(fp)
+        np.fill_diagonal(matrix, masses)
+        fp[0:2] = self._get_max_and_min_eigenvals(matrix)
 
-    def _get_centroid_distances(
-        self, descriptors: np.ndarray, charges: np.ndarray
-    ) -> list[np.ndarray]:
-        # geometric center
-        c1 = descriptors.mean(axis=0)
-        dists_c1 = norm(descriptors - c1, axis=1)
+        np.fill_diagonal(matrix, charges)
+        fp[2:4] = self._get_max_and_min_eigenvals(matrix)
 
-        # furthest atom from c1
-        c2 = descriptors[dists_c1.argmax()]
-        dists_c2 = norm(descriptors - c2, axis=1)
+        np.fill_diagonal(matrix, logp_vals)
+        fp[4:6] = self._get_max_and_min_eigenvals(matrix)
 
-        # furthest atom from c2
-        c3 = descriptors[dists_c2.argmax()]
-        dists_c3 = norm(descriptors - c3, axis=1)
+        np.fill_diagonal(matrix, mr_vals)
+        fp[6:8] = self._get_max_and_min_eigenvals(matrix)
 
-        # vectors between centroids
-        vec_a = c2 - c1
-        vec_b = c3 - c1
+        return fp
 
-        # scaled vector product of spatial coordinates (a_S and b_S)
-        # it distinguishes between a chiral molecule and its enantiomer
-        cross_ab = np.cross(vec_a[:3], vec_b[:3])
-        cross_ab_norm = norm(cross_ab)
-        if np.isclose(cross_ab_norm, 0):
-            vec_c = 0
-        else:
-            vec_c = (norm(vec_a) / (2 * cross_ab_norm)) * cross_ab
-
-        # geometric mean centroid moved in the direction of smallest and largest charge
-        # note that charges were already scaled before
-        c4 = np.append(c1[:3] + vec_c, np.max(charges))
-        c5 = np.append(c1[:3] + vec_c, np.min(charges))
-
-        dists_c4 = norm(descriptors - c4, axis=1)
-        dists_c5 = norm(descriptors - c5, axis=1)
-
-        return [dists_c1, dists_c2, dists_c3, dists_c4, dists_c5]
+    @staticmethod
+    def _get_max_and_min_eigenvals(arr: np.ndarray) -> tuple[float, float]:
+        eigvals = np.linalg.eigvals(arr)
+        # since Burden matrix is symmetric, those eigenvalues should always be real
+        # NumPy sometimes prints a warning about complex number, no idea why, so we
+        # extract real part manually
+        max_eigval = np.real(np.max(eigvals))
+        min_eigval = np.real(np.min(eigvals))
+        return max_eigval, min_eigval

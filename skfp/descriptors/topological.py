@@ -2,7 +2,7 @@ from collections import Counter
 from typing import Optional
 
 import numpy as np
-from rdkit.Chem import GetDistanceMatrix, Mol
+from rdkit.Chem import BondType, GetDistanceMatrix, Mol
 from rdkit.Chem.GraphDescriptors import BalabanJ, HallKierAlpha, Kappa1, Kappa2, Kappa3
 
 from skfp.utils.validators import require_atoms
@@ -37,7 +37,7 @@ def average_wiener_index(
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import average_wiener_index
+    >>> from skfp.descriptors import average_wiener_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> average_wiener_index(mol)
     1.8
@@ -86,12 +86,99 @@ def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import balaban_j_index
+    >>> from skfp.descriptors import balaban_j_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> balaban_j_index(mol)
     3.000000000000001
     """
     return BalabanJ(mol=mol, dMat=distance_matrix)
+
+
+def burden_matrix(mol: Mol, descriptors: Optional[np.ndarray] = None) -> np.ndarray:
+    """
+    Burden matrix.
+
+    Burden matrix [1]_ [2]_ is a modified connectivity matrix, aimed to combine topological
+    structure with atomic properties. Diagonal elements are atom descriptors, e.g.
+    atomic number, charge, polarizability. Off-diagonal elements for bonded atoms are
+    1/sqrt(bond order), with minimum of 0.001 in case of no bond between given pair of
+    atoms.
+
+    Burden proposed to use vector of smallest eigenvalues of this matrix as molecule
+    descriptors. They reflect the overall topology of the molecule, while also
+    incorporating the functional information via atom properties. Largest eigenvalues
+    can also be used [2]_.
+
+    If ``descriptors`` are None, default value 0.001 for non-connected atoms is used
+    on the diagonal.
+
+    We use bond orders as in RDKit, i.e. 1, 2, 3, and 1.5 for aromatic. See
+    RDKit code for details:
+    https://github.com/rdkit/rdkit/blob/master/Code/GraphMol/Descriptors/BCUT.cpp
+
+    Parameters
+    ----------
+    mol : RDKit ``Mol`` object
+        The molecule for which the Balaban's J index is to be calculated.
+
+    descriptors : np.ndarray, optional
+        Vector of atomic descriptors, with the same length as number of atoms in the
+        input molecule.
+
+    References
+    ----------
+    .. [1] `Frank R. Burden
+        "Molecular identification number for substructure searches"
+        J. Chem. Inf. Comput. Sci. 1989, 29, 3, 225–227
+        <https://doi.org/10.1021/ci00063a011>`_
+
+    .. [2] `R. Todeschini, V. Consonni
+        "Molecular Descriptors for Chemoinformatics"
+        Wiley‐VCH Verlag GmbH & Co. KGaA
+        <https://onlinelibrary.wiley.com/doi/book/10.1002/9783527628766>`_
+
+    Examples
+    --------
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> from skfp.descriptors import burden_matrix
+    >>> mol = MolFromSmiles("C=1=C=C=C1")  # cyclobutadiyne
+    >>> burden_matrix(mol)
+    array([[0.001     , 0.70710678, 0.001     , 0.70710678],
+           [0.70710678, 0.001     , 0.70710678, 0.001     ],
+           [0.001     , 0.70710678, 0.001     , 0.70710678],
+           [0.70710678, 0.001     , 0.70710678, 0.001     ]])
+    """
+    num_atoms = mol.GetNumAtoms()
+
+    if descriptors is not None and len(descriptors) != num_atoms:
+        raise ValueError(
+            f"Number of descriptors {len(descriptors)} "
+            f"does not match number of atoms {num_atoms}"
+        )
+
+    matrix = np.empty((num_atoms, num_atoms), dtype=float)
+    matrix.fill(0.001)
+
+    for bond in mol.GetBonds():
+        i = bond.GetBeginAtomIdx()
+        j = bond.GetEndAtomIdx()
+
+        if bond.GetBondType() == BondType.SINGLE:
+            value = 1.0  #  1/sqrt(1.0)
+        elif bond.GetBondType() == BondType.DOUBLE:
+            value = 0.7071067811865475  # 1/sqrt(2.0)
+        elif bond.GetBondType() == BondType.TRIPLE:
+            value = 0.5773502691896258  # 1/sqrt(3.0)
+        elif bond.GetBondType() == BondType.AROMATIC:
+            value = 0.8164965809277261  # 1/sqrt(1.5)
+        else:
+            raise ValueError(
+                "Bond order for Burden matrix must be single, double, triple or aromatic"
+            )
+
+        matrix[i, j] = matrix[j, i] = value
+
+    return matrix
 
 
 def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
@@ -119,7 +206,7 @@ def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import diameter
+    >>> from skfp.descriptors import diameter
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> diameter(mol)
     3
@@ -168,7 +255,7 @@ def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None)
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import graph_distance_index
+    >>> from skfp.descriptors import graph_distance_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> graph_distance_index(mol)
     261
@@ -210,7 +297,7 @@ def hall_kier_alpha(mol: Mol) -> float:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import hall_kier_alpha
+    >>> from skfp.descriptors import hall_kier_alpha
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> hall_kier_alpha(mol)
     -0.78
@@ -253,7 +340,7 @@ def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import petitjean_index
+    >>> from skfp.descriptors import petitjean_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> petitjean_index(mol)
     0.0
@@ -303,7 +390,7 @@ def polarity_number(
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import polarity_number
+    >>> from skfp.descriptors import polarity_number
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> polarity_number(mol)
     3
@@ -359,7 +446,7 @@ def kappa1_index(mol: Mol) -> float:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import kappa1_index
+    >>> from skfp.descriptors import kappa1_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa1_index(mol)
     3.4115708812260532
@@ -400,7 +487,7 @@ def kappa2_index(mol: Mol) -> float:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import kappa2_index
+    >>> from skfp.descriptors import kappa2_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa2_index(mol)
     1.6057694396735218
@@ -441,7 +528,7 @@ def kappa3_index(mol: Mol) -> float:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import kappa3_index
+    >>> from skfp.descriptors import kappa3_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> kappa3_index(mol)
     0.5823992601400448
@@ -474,7 +561,7 @@ def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import radius
+    >>> from skfp.descriptors import radius
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> radius(mol)
     3
@@ -517,7 +604,7 @@ def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import wiener_index
+    >>> from skfp.descriptors import wiener_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> wiener_index(mol)
     27
@@ -550,7 +637,7 @@ def zagreb_index_m1(mol: Mol) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import zagreb_index_m1
+    >>> from skfp.descriptors import zagreb_index_m1
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> zagreb_index_m1(mol)
     24
@@ -592,7 +679,7 @@ def zagreb_index_m2(mol: Mol) -> int:
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.descriptors.topological import zagreb_index_m2
+    >>> from skfp.descriptors import zagreb_index_m2
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
     >>> zagreb_index_m2(mol)
     24

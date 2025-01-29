@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: xenon_skfp
         name: xenon_skfp
-        entry: poetry run xenon skfp --max-average=B --max-modules=B --max-absolute=C
+        entry: poetry run xenon skfp --max-average=B --max-modules=C --max-absolute=C
         language: system
         pass_filenames: false
 

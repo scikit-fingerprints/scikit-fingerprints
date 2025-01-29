@@ -37,7 +37,7 @@ class USRFingerprint(BaseFingerprintTransformer):
         How to handle errors during fingerprint calculation. ``"raise"`` immediately
         raises any errors. ``"NaN"`` returns NaN values for molecules which resulted in
         errors. ``"ignore"`` suppresses errors and does not return anything for
-        molecules with errors. This potentially results in less output vectors than
+        molecules with errors. This potentially results in fewer output vectors than
         input molecules, and should be used with caution.
 
     n_jobs : int, default=None
