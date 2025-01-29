@@ -1,6 +1,6 @@
 [project]
 name = "skfp"
-dynamic = ["version"]  # version is read with poetry-version-plugin on GitHub release from Git tag
+dynamic = ["version"]  # version is read with poetry-dynamic-versioning on GitHub release from Git tag
 description = "Library for effective molecular fingerprints calculation"
 authors = [
     { name = "Scikit-Fingerprints Development Team", email = "scikitfingerprints@gmail.com" }
@@ -98,9 +98,6 @@ optional = true
 lightgbm = "*"
 matplotlib = "*"
 ogb = "*"
-
-[tool.poetry.requires-plugins]
-poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 
 [tool.poetry-dynamic-versioning]
 enable = true
