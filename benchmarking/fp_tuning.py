@@ -1,16 +1,15 @@
 import numpy as np
+import skfp.fingerprints as fps
 from ogb.graphproppred import GraphPropPredDataset
 from rdkit.Chem import Mol
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
-
-import skfp.fingerprints as fps
 from skfp.bases import BaseFingerprintTransformer
 from skfp.datasets.moleculenet import load_moleculenet_benchmark
 from skfp.preprocessing import MolFromSmilesTransformer
 from skfp.utils import no_rdkit_logs
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
 
 
 def fp_name_to_fp(fp_name: str) -> tuple[BaseFingerprintTransformer, dict]:

@@ -1,0 +1,4 @@
+extend = "../ruff.toml"
+
+[lint.mccabe]
+max-complexity = 20 # C in xenon rating

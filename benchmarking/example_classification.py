@@ -5,16 +5,15 @@ from time import time
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
+import skfp.fingerprints
 from ogb.graphproppred import GraphPropPredDataset
 from rdkit.Chem import MolFromSmiles
+from skfp.preprocessing import ConformerGenerator
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import RobustScaler
-
-import skfp.fingerprints
-from skfp.preprocessing import ConformerGenerator
 
 fingerprint_classes = [
     cls

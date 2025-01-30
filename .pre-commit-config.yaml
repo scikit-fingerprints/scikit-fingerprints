@@ -19,6 +19,5 @@ repos:
     rev: v0.9.3
     hooks:
       - id: ruff  # linter
-        args: [--fix, --config, ruff.toml]
+        args: [--fix]
       - id: ruff-format  # formatter
-        args: [--config, ruff.toml]

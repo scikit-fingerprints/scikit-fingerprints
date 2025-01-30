@@ -7,10 +7,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import skfp.fingerprints as fps
 from joblib import cpu_count
 from ogb.graphproppred import GraphPropPredDataset
-
-import skfp.fingerprints as fps
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
 mpl.rcParams.update({"font.size": 18})
