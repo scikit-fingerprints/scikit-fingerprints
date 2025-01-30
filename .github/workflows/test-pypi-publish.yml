@@ -1,0 +1,49 @@
+name: Publish Python package to TestPyPI
+
+on:
+  push:
+    branches:
+      - master
+
+  # allow running manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# allow only one concurrent deployment, but do NOT cancel in-progress runs,
+# as we want to allow these deployments to complete
+concurrency:
+  group: "TestPyPI"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: pipx install poetry --python python3.9
+
+      # set version (e.g. 1.2.3) from the latest Git tag on master branch
+      - name: Set package release version
+        # :11 changes "refs/tags/v1.2.3" to "1.2.3", where "v1.2.3" is tag string
+        # timestamp "YYYYMMDDHHMMSS" is added at the end
+        run: poetry version $(echo ${GITHUB_REF:11}).$(date +'%Y%m%d%H%M%S')"
+
+      - name: Configure Poetry for TestPyPI
+        run: >-
+          poetry config repositories.test-pypi https://test.pypi.org/legacy/
+          && poetry config pypi-token.test-pypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+      - name: Build and publish to TestPyPI
+        run: >-
+          poetry build
+          && poetry publish --repository=test-pypi
