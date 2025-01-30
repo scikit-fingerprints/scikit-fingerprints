@@ -36,7 +36,8 @@ jobs:
         # :11 changes "refs/tags/v1.2.3" to "1.2.3", where "v1.2.3" is tag string
         # timestamp "YYYYMMDDHHMMSS" is added at the end
         run: |
-          echo ${GITHUB_REF}
+          git fetch --prune --unshallow
+          echo $(git describe --tags --abbrev=0 HEAD~)
 
       - name: Install poetry
         run: pipx install poetry --python python${{ matrix.python-version }}
