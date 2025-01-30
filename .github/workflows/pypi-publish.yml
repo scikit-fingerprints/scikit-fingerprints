@@ -30,6 +30,7 @@ jobs:
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0)
           poetry version ${LATEST_TAG:1}
+        shell: bash
 
       - name: Configure Poetry for PyPI
         run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}

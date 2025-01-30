@@ -41,6 +41,7 @@ jobs:
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0)
           poetry version ${LATEST_TAG:1}.$(date +'%Y%m%d%H%M%S')
+        shell: bash
 
       - name: Configure Poetry for TestPyPI
         run: >-
