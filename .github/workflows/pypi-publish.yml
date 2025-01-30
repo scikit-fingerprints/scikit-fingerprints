@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,8 +26,11 @@ jobs:
 
       # set version (e.g. 1.2.3) from the latest Git tag on master branch
       - name: Set package release version
-        # :11 changes "refs/tags/v1.2.3" to "1.2.3", where "v1.2.3" is tag string
-        run: poetry version $(echo ${GITHUB_REF:11})
+        # :1 changes "v1.2.3" to "1.2.3", where "v1.2.3" is tag string
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          poetry version ${LATEST_TAG:1}
+        shell: bash
 
       - name: Configure Poetry for PyPI
         run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}

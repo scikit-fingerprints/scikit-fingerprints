@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,9 +36,12 @@ jobs:
 
       # set version (e.g. 1.2.3) from the latest Git tag on master branch
       - name: Set package release version
-        # :11 changes "refs/tags/v1.2.3" to "1.2.3", where "v1.2.3" is tag string
+        # :1 changes "v1.2.3" to "1.2.3", where "v1.2.3" is tag string
         # timestamp "YYYYMMDDHHMMSS" is added at the end
-        run: poetry version $(echo ${GITHUB_REF:11}).$(date +'%Y%m%d%H%M%S')
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          poetry version ${LATEST_TAG:1}.$(date +'%Y%m%d%H%M%S')
+        shell: bash
 
       - name: Configure Poetry for TestPyPI
         run: >-
