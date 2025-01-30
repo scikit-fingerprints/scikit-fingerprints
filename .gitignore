@@ -9,9 +9,12 @@ __pycache__
 *.pdf
 *.csv
 benchmarking/**/*.npy
+dist/
+
 
 docs/**/generated/
 docs/_build/
+docs/examples/
 
 .tmp_coverage_files/
 tests/preprocessing/input_output/data/mol_out.sdf

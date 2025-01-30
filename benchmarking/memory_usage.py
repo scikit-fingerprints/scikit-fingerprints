@@ -1,5 +1,4 @@
 import joblib
-
 import skfp.fingerprints as fps
 from skfp.datasets.moleculenet import load_pcba
 from skfp.preprocessing import MolFromSmilesTransformer

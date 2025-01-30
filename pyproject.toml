@@ -104,8 +104,9 @@ enable = true
 vcs = "git"
 latest-tag = true
 tag-branch = "remotes/origin/master"
-style = "semver"
+style = "pep440"
 strict = true
+format-jinja = "{% if distance == 0 %}{{ base }}{% else %}{{ base }}.{{ distance }}.{{timestamp}}{% endif %}"
 
 [tool.pytest.ini_options]
 python_files = "*.py"
