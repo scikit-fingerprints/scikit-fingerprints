@@ -45,8 +45,8 @@ documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints"
 "Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
 
 [tool.poetry]
-version = "0.0.0"
 packages = [{ include = "skfp" }]
+version = "0.0.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -93,7 +93,7 @@ matplotlib = "*"
 ogb = "*"
 
 [tool.poetry-dynamic-versioning]
-enable = false
+enable = true
 vcs = "git"
 latest-tag = true
 tag-branch = "remotes/origin/master"
