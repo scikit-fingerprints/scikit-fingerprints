@@ -58,7 +58,6 @@ ignore = [
 
 [lint.per-file-ignores]
 "benchmarking/**.py" = [
-    "C901",     # complex code
     "D103",     # no docstrings
     "INP001",   # implicit package
     "NPY002",   # np.random.seed
@@ -107,3 +106,6 @@ ignore = [
 # formatter will reformat lines to length 88, so we report errors only for
 # extremely long lines
 max-line-length = 200
+
+[lint.mccabe]
+max-complexity = 10 # B in xenon rating
