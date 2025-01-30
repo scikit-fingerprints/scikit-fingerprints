@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # required by poetry-dynamic-versioning plugin
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,8 +32,11 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry --python python3.9
 
-      - name: Install Poetry poetry-dynamic-versioning plugin
-        run: pipx inject poetry "poetry-dynamic-versioning[plugin]"
+      # set version (e.g. 1.2.3) from the latest Git tag on master branch
+      - name: Set package release version
+        # :11 changes "refs/tags/v1.2.3" to "1.2.3", where "v1.2.3" is tag string
+        # timestamp "YYYYMMDDHHMMSS" is added at the end
+        run: poetry version $(echo ${GITHUB_REF:11}).$(date +'%Y%m%d%H%M%S')"
 
       - name: Configure Poetry for TestPyPI
         run: >-

@@ -1,6 +1,6 @@
 [project]
 name = "scikit-fingerprints"
-dynamic = ["version"]  # version is read with poetry-dynamic-versioning on GitHub release from Git tag
+version = "0.0.0"  # we set version dynamically in GitHub Actions from Git tags
 description = "Library for effective molecular fingerprints calculation"
 authors = [{ name = "AGH ML & Chemoinformatics Group", email = "jadamczy@agh.edu.pl" }]
 keywords = ["molecular fingerprints", "molecular descriptors", "chemoinformatics", "chemistry", "machine learning"]
@@ -46,7 +46,6 @@ documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints"
 
 [tool.poetry]
 packages = [{ include = "skfp" }]
-version = "0.0.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -92,18 +91,9 @@ lightgbm = "*"
 matplotlib = "*"
 ogb = "*"
 
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-latest-tag = true
-tag-branch = "remotes/origin/master"
-style = "pep440"
-strict = true
-format-jinja = "{% if distance == 0 %}{{ base }}{% else %}{{ base }}.{{ distance }}.{{timestamp}}{% endif %}"
-
 [tool.pytest.ini_options]
 python_files = "*.py"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
