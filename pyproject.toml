@@ -37,7 +37,6 @@ dependencies = [
     "scipy>=1.0.0",
     "tqdm>=4.0.0",
 ]
-version = "1.13.0.10.20250130161412"
 
 [project.urls]
 homepage = "https://github.com/scikit-fingerprints/scikit-fingerprints"
