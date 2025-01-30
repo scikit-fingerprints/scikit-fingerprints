@@ -1,15 +1,10 @@
 [project]
 name = "scikit-fingerprints"
-dynamic = ["version"]  # version is read with poetry-dynamic-versioning on GitHub release from Git tag
+dynamic = []  # version is read with poetry-dynamic-versioning on GitHub release from Git tag
 description = "Library for effective molecular fingerprints calculation"
-authors = [{name = "AGH ML & Chemoinformatics Group", email = "jadamczy@agh.edu.pl"}]
-repository = "https://github.com/scikit-fingerprints/scikit-fingerprints"
-documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints/"
+authors = [{ name = "AGH ML & Chemoinformatics Group", email = "jadamczy@agh.edu.pl" }]
 keywords = ["molecular fingerprints", "molecular descriptors", "chemoinformatics", "chemistry", "machine learning"]
 license = "MIT"
-packages = [
-    { include = "skfp" }
-]
 readme = "README.md"
 classifiers = [
     "Intended Audience :: Information Technology",
@@ -42,15 +37,16 @@ dependencies = [
     "scipy>=1.0.0",
     "tqdm>=4.0.0",
 ]
+version = "1.13.0.10.20250130161412"
 
 [project.urls]
-"Homepage" = "https://github.com/scikit-fingerprints/scikit-fingerprints"
-"Documentation" = "https://scikit-fingerprints.github.io/scikit-fingerprints/"
-"Repository" = "https://github.com/scikit-fingerprints/scikit-fingerprints"
+homepage = "https://github.com/scikit-fingerprints/scikit-fingerprints"
+repository = "https://github.com/scikit-fingerprints/scikit-fingerprints"
+documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints"
 "Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
 
 [tool.poetry]
-version = "0.0.0"
+packages = [{ include = "skfp" }]
 
 [tool.poetry.group.dev]
 optional = true
@@ -97,7 +93,7 @@ matplotlib = "*"
 ogb = "*"
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 vcs = "git"
 latest-tag = true
 tag-branch = "remotes/origin/master"
