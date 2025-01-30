@@ -1,6 +1,6 @@
 [project]
 name = "scikit-fingerprints"
-dynamic = []  # version is read with poetry-dynamic-versioning on GitHub release from Git tag
+dynamic = ["version"]  # version is read with poetry-dynamic-versioning on GitHub release from Git tag
 description = "Library for effective molecular fingerprints calculation"
 authors = [{ name = "AGH ML & Chemoinformatics Group", email = "jadamczy@agh.edu.pl" }]
 keywords = ["molecular fingerprints", "molecular descriptors", "chemoinformatics", "chemistry", "machine learning"]
@@ -46,6 +46,7 @@ documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints"
 "Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
 
 [tool.poetry]
+version = "0.0.0"
 packages = [{ include = "skfp" }]
 
 [tool.poetry.group.dev]
