@@ -1,4 +1,3 @@
-import warnings
 from typing import Callable
 
 import numpy as np
@@ -90,6 +89,30 @@ def test_multioutput_metrics_single_task_equivalence(
     "metric_name, single_task_metric, multioutput_metric",
     get_all_metrics(),
 )
+def test_multioutput_metrics_valid_input(
+    metric_name, single_task_metric, multioutput_metric
+):
+    # fmt: off
+    y_true = np.array([
+        [0, 1, 1],
+        [0, 1, 0],
+        [1, 0, 0]
+    ])
+    y_pred = np.array([
+        [0, 0, 1],
+        [0, 1, 1],
+        [1, 0, 0]
+    ])
+    # fmt: on
+
+    # should not throw any errors
+    multioutput_metric(y_true, y_pred, suppress_warnings=True)
+
+
+@pytest.mark.parametrize(
+    "metric_name, single_task_metric, multioutput_metric",
+    get_all_metrics(),
+)
 def test_multioutput_metrics_nan_present(
     metric_name, single_task_metric, multioutput_metric
 ):
@@ -107,9 +130,7 @@ def test_multioutput_metrics_nan_present(
     # fmt: on
 
     # should not throw any errors
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        multioutput_metric(y_true, y_pred)
+    multioutput_metric(y_true, y_pred, suppress_warnings=True)
 
 
 @pytest.mark.parametrize(
@@ -119,6 +140,24 @@ def test_multioutput_metrics_nan_present(
 def test_multioutput_metrics_constant_columns(
     metric_name, single_task_metric, multioutput_metric
 ):
+    # fmt: off
+    y_true = np.array([
+        [0, 0, 1],
+        [0, 1, 0],
+        [0, 0, 1],
+    ])
+    y_pred = np.array([
+        [0, 0, 1],
+        [0, 0, 1],
+        [1, 0, 0]
+    ])
+    # fmt: on
+
+    # should not throw any errors
+    multioutput_metric(y_true, y_pred, suppress_warnings=True)
+
+
+def test_multioutput_spearman_correlation_constant_columns():
     # fmt: off
     y_true = np.array([
         [0, 0, 1],
@@ -132,10 +171,10 @@ def test_multioutput_metrics_constant_columns(
     ])
     # fmt: on
 
-    # should not throw any errors
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        multioutput_metric(y_true, y_pred)
+    # Spearman correlation should throw an error, since one column is always
+    # constant, and it returns NaN in those cases, resulting in 3 NaN values
+    with pytest.raises(ValueError, match="Could not compute metric.*"):
+        multioutput_spearman_correlation(y_true, y_pred, suppress_warnings=True)
 
 
 @pytest.mark.parametrize(
@@ -148,10 +187,12 @@ def test_multioutput_different_shapes(
     y_true = np.ones((10, 2))
     y_pred = np.zeros((10, 2))
 
+    # ensure we have non-constant values to avoid errors
+    y_true[0] = [0, 0]
+    y_pred[0] = [1, 1]
+
     # should not throw any errors
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        multioutput_metric(y_true, y_pred)
+    multioutput_metric(y_true, y_pred, suppress_warnings=True)
 
     y_true = np.ones(10)
     y_pred = np.zeros((10, 2))
