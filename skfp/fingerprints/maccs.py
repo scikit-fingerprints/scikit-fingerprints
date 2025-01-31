@@ -501,7 +501,10 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             X = np.array(X)[:, 1:]  # remove constant zeros column
 
         dtype = np.uint32 if self.count else np.uint8
-        return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)
+        if self.sparse:
+            return csr_array(X, dtype=dtype)
+        else:
+            return np.array(X, dtype=dtype)
 
     def _get_maccs_patterns_counts(self, mol: Mol) -> list[int]:
         smarts_list = [

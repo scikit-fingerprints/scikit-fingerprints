@@ -233,4 +233,7 @@ class FunctionalGroupsFingerprint(BaseFingerprintTransformer):
             X = X > 0
 
         dtype = np.uint32 if self.count else np.uint8
-        return csr_array(X, dtype=dtype) if self.sparse else X.astype(dtype)
+        if self.sparse:
+            return csr_array(X, dtype=dtype)
+        else:
+            return np.array(X, dtype=dtype)

@@ -255,7 +255,6 @@ class PharmacophoreFingerprint(BaseFingerprintTransformer):
             )
 
         dtype = np.uint32 if self.count else np.uint8
-
         if self.sparse:
             return csr_array(X, dtype=dtype)
         else:
