@@ -33,11 +33,11 @@ class ValenceDiscoveryFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-    - molecular weight in range ``[200, 600]``
-    - logP in range ``[-3, 6]``
+    - molecular weight in range [200, 600]
+    - logP in range [-3, 6]
     - HBA <= 12
     - HBD <= 7
-    - TPSA in range ``[40, 180]``
+    - TPSA in range [40, 180]
     - number of rotatable bonds <= 15
     - number of rigid bonds <= 30
     - number of aromatic rings <= 5
@@ -45,9 +45,9 @@ class ValenceDiscoveryFilter(BaseFilter):
     - max ring size <= 18
     - number of heavy atoms < 70
     - number of heavy metals < 1
-    - number of carbons in range ``[3, 40]``
-    - number of heteroatoms in range ``[1, 15]``
-    - total formal charge in range ``[-2, 2]``
+    - number of carbons in range [3, 40]
+    - number of heteroatoms in range [1, 15]
+    - total formal charge in range [-2, 2]
     - number of charged atoms <= 2
 
     Heavy atoms are defined as metals other than ["Li", "Be", "K", "Na", "Ca", "Mg"].

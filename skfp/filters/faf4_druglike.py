@@ -38,8 +38,8 @@ class FAF4DruglikeFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-    - molecular weight in range ``[100, 600]``
-    - logP in range ``[-3, 6]``
+    - molecular weight in range [100, 600]
+    - logP in range [-3, 6]
     - HBA <= 12
     - HBD <= 7
     - TPSA <= 180
@@ -47,11 +47,11 @@ class FAF4DruglikeFilter(BaseFilter):
     - number of rigid bonds <= 30
     - number of rings <= 6
     - max ring size <= 18
-    - number of carbons in range ``[3, 35]``
-    - number of heteroatoms in range ``[1, 15]``
-    - non-carbons to carbons ratio in range ``[0.1, 1.1]``
+    - number of carbons in range [3, 35]
+    - number of heteroatoms in range [1, 15]
+    - non-carbons to carbons ratio in range [0.1, 1.1]
     - number of charged functional groups <= 4
-    - total formal charge in range ``[-4, 4]``
+    - total formal charge in range [-4, 4]
 
     Note that the FAFDrugs4 uses ChemAxon for determining functional groups. We use
     their publicly available CXSMARTS list of functional groups [3]_. Phosphine and

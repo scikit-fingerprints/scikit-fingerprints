@@ -17,11 +17,11 @@ class TiceInsecticidesFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-        - 150 <= molecular weight <= 500
-        - 0 <= logP <= 5
-        - HBD <= 2
-        - 1 <= HBA <= 8
-        - number of rotatable bonds <= 11
+    - molecular weight in range [150, 500]
+    - logP in range [0, 5]
+    - HBD <= 2
+    - HBA in range [1, 8]
+    - number of rotatable bonds <= 11
 
     Parameters
     ----------

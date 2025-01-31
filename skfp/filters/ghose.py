@@ -15,10 +15,10 @@ class GhoseFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-        - 160 <= molecular weight <= 400
-        - -0.4 <= logP <= 5.6
-        - 20 <= number of atoms <= 70
-        - 40 <= molar refractivity <= 130
+    - molecular weight in range [160, 400]
+    - logP in range [-0.4, 5.6]
+    - number of atoms in range [20, 70]
+    - molar refractivity in range [40, 130]
 
     Parameters
     ----------

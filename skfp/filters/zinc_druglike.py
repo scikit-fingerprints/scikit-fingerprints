@@ -32,8 +32,8 @@ class ZINCDruglikeFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-    - molecular weight in range ``[60, 600]``
-    - logP in range ``[-4, 6]``
+    - molecular weight in range [60, 600]
+    - logP in range [-4, 6]
     - HBA <= 11
     - HBD <= 6
     - TPSA <= 150
@@ -41,10 +41,10 @@ class ZINCDruglikeFilter(BaseFilter):
     - number of rigid bonds <= 50
     - number of rings <= 7
     - max ring size <= 12
-    - number of carbobs >= 3
+    - number of carbons >= 3
     - non-carbons to carbons ratio <= 2.0
     - number of charged functional groups <= 4
-    - total formal charge in range ``[-4, 4]``
+    - total formal charge in range [-4, 4]
 
     Parameters
     ----------

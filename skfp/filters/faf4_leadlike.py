@@ -38,8 +38,8 @@ class FAF4LeadlikeFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-    - molecular weight in range ``[150, 400]``
-    - logP in range ``[-3, 4]``
+    - molecular weight in range [150, 400]
+    - logP in range [-3, 4]
     - HBA <= 7
     - HBD <= 4
     - TPSA <= 160
@@ -47,11 +47,11 @@ class FAF4LeadlikeFilter(BaseFilter):
     - number of rigid bonds <= 30
     - number of rings <= 4
     - max ring size <= 18
-    - number of carbons in range ``[3, 35]``
-    - number of heteroatoms in range ``[1, 15]``
-    - non-carbons to carbons ratio in range ``[0.1, 1.1]``
+    - number of carbons in range [3, 35]
+    - number of heteroatoms in range [1, 15]
+    - non-carbons to carbons ratio in range [0.1, 1.1]
     - number of charged functional groups <= 4
-    - total formal charge in range ``[-4, 4]``
+    - total formal charge in range [-4, 4]
     - number of stereocenters <= 2
 
     Note that the FAF4Drugs uses ChemAxon for determining functional groups. We use

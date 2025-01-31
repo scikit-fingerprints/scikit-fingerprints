@@ -22,6 +22,7 @@ class BeyondRo5Filter(BaseFilter):
     suitable for "difficult" targets, allowing greater flexibility.
 
     Molecule can violate at most one of the rules (conditions):
+
     - molecular weight <= 1000 daltons
     - logP in range [-2, 10]
     - HBA <= 15
