@@ -15,9 +15,9 @@ class RuleOfXuFilter(BaseFilter):
 
     - HBD <= 5
     - HBA <= 10
-    - number of rotatable bonds in range ``[2, 35]``
-    - number of rings in range ``[1, 7]``
-    - number of heavy atoms in range ``[10, 50]``
+    - number of rotatable bonds in range [2, 35]
+    - number of rings in range [1, 7]
+    - number of heavy atoms in range [10, 50]
 
     Parameters
     ----------

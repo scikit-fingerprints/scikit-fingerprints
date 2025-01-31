@@ -22,6 +22,7 @@ class BeyondRo5Filter(BaseFilter):
     suitable for "difficult" targets, allowing greater flexibility.
 
     Molecule can violate at most one of the rules (conditions):
+
     - molecular weight <= 1000 daltons
     - logP in range [-2, 10]
     - HBA <= 15
@@ -34,7 +35,7 @@ class BeyondRo5Filter(BaseFilter):
 
     Parameters
     ----------
-    allow_one_violation : bool, default=True
+    allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
 

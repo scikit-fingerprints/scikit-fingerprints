@@ -17,11 +17,11 @@ class TiceHerbicidesFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-        - 150 <= molecular weight <= 500
-        - logP <= 3.5
-        - HBD <= 3
-        - 2 <= HBA <= 12
-        - number of rotatable bonds <= 11
+    - molecular weight in range [150, 500]
+    - logP <= 3.5
+    - HBD <= 3
+    - HBA in range [2, 12]
+    - number of rotatable bonds <= 11
 
     Parameters
     ----------

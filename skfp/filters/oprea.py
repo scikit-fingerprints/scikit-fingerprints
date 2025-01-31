@@ -14,10 +14,10 @@ class OpreaFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-    - HBD in range ``[0, 2]``
-    - HBA in range ``[2, 9]``
-    - number of rotatable bonds in range ``[2, 8]``
-    - number of rings in range ``[1, 4]``
+    - HBD in range [0, 2]
+    - HBA in range [2, 9]
+    - number of rotatable bonds in range [2, 8]
+    - number of rings in range [1, 4]
 
     Parameters
     ----------

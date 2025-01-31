@@ -18,12 +18,12 @@ class HaoFilter(BaseFilter):
 
     Molecule must fulfill conditions:
 
-        - molecular weight <= 435
-        - logP <= 6
-        - HBD <= 2
-        - HBA <= 6
-        - number of rotatable bonds <= 9
-        - number of aromatic bonds <= 17
+    - molecular weight <= 435
+    - logP <= 6
+    - HBD <= 2
+    - HBA <= 6
+    - number of rotatable bonds <= 9
+    - number of aromatic bonds <= 17
 
 
     Parameters

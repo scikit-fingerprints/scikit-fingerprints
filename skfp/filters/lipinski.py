@@ -17,6 +17,7 @@ class LipinskiFilter(BaseFilter):
     Description of the rules can be found in the original publication [1]_.
 
     Molecule can violate at most one of the rules (conditions):
+
     - molecular weight <= 500 daltons
     - HBA <= 10
     - HBD <= 5
