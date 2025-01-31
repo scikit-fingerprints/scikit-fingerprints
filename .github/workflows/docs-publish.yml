@@ -37,7 +37,7 @@ jobs:
         run: pipx install poetry --python python3.9
 
       - name: Install the project dependencies
-        run: poetry sync --with doc
+        run: poetry sync --with docs
 
       - name: Install Pandoc
         uses: r-lib/actions/setup-pandoc@v2
