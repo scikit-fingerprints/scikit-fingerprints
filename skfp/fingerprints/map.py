@@ -217,41 +217,29 @@ class MAPFingerprint(BaseFingerprintTransformer):
         """
         atoms_env: dict[int, list[Optional[str]]] = defaultdict(list)
         for atom in mol.GetAtoms():
-            atom_identifier: int = atom.GetIdx()
+            atom_identifier = atom.GetIdx()
             for radius in range(1, self.radius + 1):
-                atoms_env[atom_identifier].append(
-                    MAPFingerprint._find_env(mol, atom_identifier, radius)
-                )
+                atom_env = MAPFingerprint._find_env(mol, atom_identifier, radius)
+                atoms_env[atom_identifier].append(atom_env)
         return atoms_env
 
     def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> set[bytes]:
         # get a list of atom shingles as SMILES, i.e. circular structures
         # around atom pairs and the length of shortest path
         atom_pairs: set[bytes] = set()
+
         distance_matrix = GetDistanceMatrix(mol)
         num_atoms = mol.GetNumAtoms()
         shingle_dict: dict[str, int] = defaultdict(int)
+
         for idx1, idx2 in itertools.combinations(range(num_atoms), 2):
-            dist = str(int(distance_matrix[idx1][idx2]))
+            dist = int(distance_matrix[idx1][idx2])
 
             for i in range(self.radius):
                 env_a: Optional[str] = atoms_envs[idx1][i]
                 env_b: Optional[str] = atoms_envs[idx2][i]
 
-                # None strings are treated as empty strings
-                if env_a is None:
-                    env_a = ""
-                if env_b is None:
-                    env_b = ""
-
-                if len(env_a) > len(env_b):
-                    larger_env: str = env_a
-                    smaller_env: str = env_b
-                else:
-                    larger_env = env_b
-                    smaller_env = env_a
-
-                shingle: str = f"{smaller_env}|{dist}|{larger_env}"
+                shingle = self._make_shingle(env_a, env_b, dist)
 
                 if self.include_duplicated_shingles:
                     shingle_dict[shingle] += 1
@@ -260,3 +248,18 @@ class MAPFingerprint(BaseFingerprintTransformer):
                 atom_pairs.add(shingle.encode("utf-8"))
 
         return atom_pairs
+
+    @staticmethod
+    def _make_shingle(env_a: Optional[str], env_b: Optional[str], distance: int) -> str:
+        env_a = env_a if env_a else ""
+        env_b = env_b if env_b else ""
+
+        if len(env_a) > len(env_b):
+            larger_env: str = env_a
+            smaller_env: str = env_b
+        else:
+            larger_env = env_b
+            smaller_env = env_a
+
+        shingle = f"{smaller_env}|{distance}|{larger_env}"
+        return shingle

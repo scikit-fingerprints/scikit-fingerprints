@@ -11,114 +11,108 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
-
-def fp_name_to_fp(fp_name: str) -> tuple[BaseFingerprintTransformer, dict]:
-    if fp_name == "AtomPairs":
-        fingerprint = fps.AtomPairFingerprint(n_jobs=-1)
-        fp_params_grid = {
+FP_NAME_TO_FP = {
+    "AtomPairs": (
+        fps.AtomPairFingerprint(n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "scale_by_hac": [False, True],
             "include_chirality": [False, True],
             "count": [False, True],
-        }
-    elif fp_name == "Avalon":
-        fingerprint = fps.AvalonFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "Avalon": (
+        fps.AvalonFingerprint(n_jobs=-1),
+        {
             "fp_size": [256, 512, 1024, 2048],
             "count": [False, True],
-        }
-    elif fp_name == "ECFP":
-        fingerprint = fps.ECFPFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "ECFP": (
+        fps.ECFPFingerprint(n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "radius": [2, 3],
             "include_chirality": [False, True],
             "count": [False, True],
-        }
-    elif fp_name == "ERG":
-        fingerprint = fps.ERGFingerprint(n_jobs=-1)
-        fp_params_grid = {"max_path": list(range(5, 26))}
-    elif fp_name == "EState":
-        fingerprint = fps.EStateFingerprint(n_jobs=-1)
-        fp_params_grid = {"variant": ["sum", "bit", "count"]}
-    elif fp_name == "FCFP":
-        fingerprint = fps.ECFPFingerprint(use_fcfp=True, n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "ERG": (fps.ERGFingerprint(n_jobs=-1), {"max_path": list(range(5, 26))}),
+    "EState": (fps.EStateFingerprint(n_jobs=-1), {"variant": ["sum", "bit", "count"]}),
+    "FCFP": (
+        fps.ECFPFingerprint(use_pharmacophoric_invariants=True, n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "radius": [2, 3],
             "include_chirality": [False, True],
             "count": [False, True],
-        }
-    elif fp_name == "GhoseCrippen":
-        fingerprint = fps.GhoseCrippenFingerprint(n_jobs=-1)
-        fp_params_grid = {"count": [False, True]}
-    elif fp_name == "KlekotaRoth":
-        fingerprint = fps.KlekotaRothFingerprint(n_jobs=-1)
-        fp_params_grid = {"count": [False, True]}
-    elif fp_name == "Laggner":
-        fingerprint = fps.LaggnerFingerprint(n_jobs=-1)
-        fp_params_grid = {"count": [False, True]}
-    elif fp_name == "Layered":
-        fingerprint = fps.LayeredFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "GhoseCrippen": (fps.GhoseCrippenFingerprint(n_jobs=-1), {"count": [False, True]}),
+    "KlekotaRoth": (fps.KlekotaRothFingerprint(n_jobs=-1), {"count": [False, True]}),
+    "Laggner": (fps.LaggnerFingerprint(n_jobs=-1), {"count": [False, True]}),
+    "Layered": (
+        fps.LayeredFingerprint(n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "max_path": [5, 6, 7, 8, 9],
-        }
-    elif fp_name == "Lingo":
-        fingerprint = fps.LingoFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "Lingo": (
+        fps.LingoFingerprint(n_jobs=-1),
+        {
             "substring_length": [3, 4, 5, 6],
             "count": [False, True],
-        }
-    elif fp_name == "MACCS":
-        fingerprint = fps.MACCSFingerprint(n_jobs=-1)
-        fp_params_grid = {"count": [False, True]}
-    elif fp_name == "MAP":
-        fingerprint = fps.MAPFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "MACCS": (fps.MACCSFingerprint(n_jobs=-1), {"count": [False, True]}),
+    "MAP": (
+        fps.MAPFingerprint(n_jobs=-1),
+        {
             "fp_size": [512, 1024, 2048],
             "radius": [2, 3],
             "variant": ["bit", "count"],
-        }
-    elif fp_name == "Pattern":
-        fingerprint = fps.PatternFingerprint()
-        fp_params_grid = {
+        },
+    ),
+    "Pattern": (
+        fps.PatternFingerprint(),
+        {
             "fp_size": [1024, 2048, 4096],
             "tautomers": [False, True],
-        }
-    elif fp_name == "PhysiochemicalProperties":
-        fingerprint = fps.PhysiochemicalPropertiesFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "PhysiochemicalProperties": (
+        fps.PhysiochemicalPropertiesFingerprint(n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "variant": ["BP", "BT"],
-        }
-    elif fp_name == "PubChem":
-        fingerprint = fps.PubChemFingerprint(n_jobs=-1)
-        fp_params_grid = {"count": [False, True]}
-    elif fp_name == "RDKit":
-        fingerprint = fps.RDKitFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "PubChem": (fps.PubChemFingerprint(n_jobs=-1), {"count": [False, True]}),
+    "RDKit": (
+        fps.RDKitFingerprint(n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "max_path": [5, 6, 7, 8, 9],
             "count": [False, True],
-        }
-    elif fp_name == "SECFP":
-        fingerprint = fps.SECFPFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "SECFP": (
+        fps.SECFPFingerprint(n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "radius": [2, 3, 4],
-        }
-    elif fp_name == "TopologicalTorsion":
-        fingerprint = fps.TopologicalTorsionFingerprint(n_jobs=-1)
-        fp_params_grid = {
+        },
+    ),
+    "TopologicalTorsion": (
+        fps.TopologicalTorsionFingerprint(n_jobs=-1),
+        {
             "fp_size": [1024, 2048, 4096],
             "include_chirality": [False, True],
             "count": [False, True],
-        }
-    else:
-        raise ValueError(f"Fingerprint name '{fp_name}' not recognized")
-
-    return fingerprint, fp_params_grid
+        },
+    ),
+}
 
 
 def train_and_tune_fp_classifier(
@@ -196,7 +190,7 @@ if __name__ == "__main__":
             "TopologicalTorsion",
         ]:
             print(fp_name)
-            fp, fp_params_grid = fp_name_to_fp(fp_name)
+            fp, fp_params_grid = FP_NAME_TO_FP[fp_name]
             with no_rdkit_logs():
                 auroc_default, auroc_tuned, diff = train_and_tune_fp_classifier(
                     mols_train=mols_train,

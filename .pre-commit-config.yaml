@@ -1,4 +1,10 @@
 repos:
+  - repo: https://github.com/rohaquinlop/complexipy-pre-commit
+    rev: v1.2.0
+    hooks:
+      - id: complexipy
+        args: [ "skfp/", --max-complexity, "14", --details, "low" ]
+
   - repo: local
     hooks:
       # use local mypy instead of pre-commit hook, since this way we run in venv
