@@ -43,11 +43,13 @@ Main features:
 
 ## Supported platforms
 
-|                      | `python3.9`            | `python3.10` | `python3.11` | `python3.12` |
-|----------------------|------------------------|--------------|--------------|--------------|
-| **Ubuntu - latest**  | ✅                      | ✅            | ✅            | ✅            |
-| **Windows - latest** | ✅                      | ✅            | ✅            | ✅            |
-| **macOS - latest**   | only macOS 13 or newer | ✅            | ✅            | ✅            |
+|             | `python3.10` | `python3.11` | `python3.12` | `python3.13` |
+|:-----------:|:------------:|:------------:|:------------:|:------------:|
+|  **Linux**  |       ✅      |       ✅      |       ✅      |       ✅      |
+| **Windows** |       ✅      |       ✅      |       ✅      |       ✅      |
+|  **macOS**  |       ✅      |       ✅      |       ✅      |       ✅      |
+
+Python 3.9 was supported up to scikit-fingerprints 1.13.0.
 
 ## Installation
 

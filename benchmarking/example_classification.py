@@ -5,41 +5,40 @@ from time import time
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
-import skfp.fingerprints
-from ogb.graphproppred import GraphPropPredDataset
-from rdkit.Chem import MolFromSmiles
-from skfp.preprocessing import ConformerGenerator
+import skfp.fingerprints as fps
+from skfp.datasets.moleculenet import load_moleculenet_benchmark, load_ogb_splits
+from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import RobustScaler
 
 fingerprint_classes = [
-    cls
-    for name, cls in inspect.getmembers(skfp.fingerprints, predicate=inspect.isclass)
+    cls for name, cls in inspect.getmembers(fps, predicate=inspect.isclass)
 ]
 
 descriptor_fingerprints = [
-    skfp.fingerprints.AutocorrFingerprint,
-    skfp.fingerprints.GETAWAYFingerprint,
-    skfp.fingerprints.MordredFingerprint,
-    skfp.fingerprints.MORSEFingerprint,
-    skfp.fingerprints.RDFFingerprint,
-    skfp.fingerprints.WHIMFingerprint,
+    fps.AutocorrFingerprint,
+    fps.BCUT2DFingerprint,
+    fps.ElectroShapeFingerprint,
+    fps.EStateFingerprint,
+    fps.GETAWAYFingerprint,
+    fps.MordredFingerprint,
+    fps.MORSEFingerprint,
+    fps.MQNsFingerprint,
+    fps.RDFFingerprint,
+    fps.RDKit2DDescriptorsFingerprint,
+    fps.USRFingerprint,
+    fps.USRCATFingerprint,
+    fps.VSAFingerprint,
+    fps.WHIMFingerprint,
 ]
 
 LIMIT_SIZE = None
 
 SCRIPT_PATH = os.path.abspath(__file__)
-DATASET_DIR = os.path.join(os.path.dirname(os.path.dirname(SCRIPT_PATH)), "dataset")
-
-
-dataset_params = [
-    ("ogbg-molhiv", "HIV_active"),
-    ("ogbg-molbace", "Class"),
-    ("ogbg-molbbbp", "p_np"),
-]
 
 
 classifier_parameters = [
@@ -51,104 +50,107 @@ classifier_parameters = [
     (lgb.LGBMClassifier, {"n_jobs": -1, "class_weight": "balanced", "verbose": -1}),
 ]
 
-for dataset_name, property_name in dataset_params:
-    dataset = GraphPropPredDataset(name=dataset_name, root=DATASET_DIR)
-    split_idx = dataset.get_idx_split()
-    train_idx = np.array(split_idx["train"])
-    valid_idx = np.array(split_idx["valid"])
-    test_idx = np.array(split_idx["test"])
+
+# BACE, BBBP, HIV
+for dataset_name, smiles_list, y in load_moleculenet_benchmark(
+    "classification_single_task"
+):
+    smiles_list = np.array(smiles_list)
+
+    train_idxs, valid_idxs, test_idxs = load_ogb_splits(dataset_name)
 
     if LIMIT_SIZE:
-        train_idx = train_idx[:LIMIT_SIZE]
-        valid_idx = valid_idx[:LIMIT_SIZE]
-        test_idx = test_idx[:LIMIT_SIZE]
+        train_idxs = train_idxs[:LIMIT_SIZE]
+        valid_idxs = valid_idxs[:LIMIT_SIZE]
+        test_idxs = test_idxs[:LIMIT_SIZE]
 
-    dataframe = pd.read_csv(
-        f"{DATASET_DIR}/{'_'.join(dataset_name.split('-'))}/mapping/mol.csv.gz"
-    )
+    print(f"Number of molecules: {len(smiles_list)}")
 
-    print(dataframe.columns)
+    smiles_train = smiles_list[train_idxs]
+    smiles_valid = smiles_list[valid_idxs]
+    smiles_test = smiles_list[test_idxs]
 
-    X = dataframe["smiles"]
-    y = dataframe[property_name]
+    y_train = y[train_idxs]
+    y_valid = y[valid_idxs]
+    y_test = y[test_idxs]
 
-    n_molecules = X.shape[0]
-    print("Number of molecules:", n_molecules)
-
-    X_train, y_train = X[train_idx], y[train_idx]
-    X_test, y_test = X[test_idx], y[test_idx]
-    X_valid, y_valid = X[valid_idx], y[valid_idx]
-
-    X_train_mols = [MolFromSmiles(smiles) for smiles in X_train]
-    X_valid_mols = [MolFromSmiles(smiles) for smiles in X_valid]
-    X_test_mols = [MolFromSmiles(smiles) for smiles in X_test]
+    mol_from_smiles = MolFromSmilesTransformer()
+    mols_train = mol_from_smiles.transform(smiles_train)
+    mols_valid = mol_from_smiles.transform(smiles_valid)
+    mols_test = mol_from_smiles.transform(smiles_test)
 
     conf_gen = ConformerGenerator(n_jobs=-1, errors="filter")
-    X_train_conf, y_train = conf_gen.transform_x_y(X_train_mols, np.array(y_train))
-    X_valid_conf, y_valid = conf_gen.transform_x_y(X_valid_mols, np.array(y_valid))
-    X_test_conf, y_test = conf_gen.transform_x_y(X_test_mols, np.array(y_test))
+    mols_train, y_train = conf_gen.transform_x_y(mols_train, y_train)
+    mols_valid, y_valid = conf_gen.transform_x_y(mols_valid, y_valid)
+    mols_test, y_test = conf_gen.transform_x_y(mols_test, y_test)
 
     records: list[dict] = []
 
     np.random.seed(42)
 
     for fingerprint in fingerprint_classes:
+        fp_record = {}
+
         fp_name = fingerprint.__name__
-        records.append({})
-        records[-1]["fp_name"] = fp_name
+        fp_record["fp_name"] = fp_name
         print(fp_name)
+
         start = time()
         fp_transformer = fingerprint(n_jobs=-1)
-        X_fp_train = fp_transformer.transform(X_train_conf)
-        X_fp_valid = fp_transformer.transform(X_valid_conf)
-        X_fp_test = fp_transformer.transform(X_test_conf)
-
+        X_fp_train = fp_transformer.transform(mols_train)
+        X_fp_valid = fp_transformer.transform(mols_valid)
+        X_fp_test = fp_transformer.transform(mols_test)
         end = time()
+
         execution_time = end - start
         print(f" - Time of fingerprints computing : {round(execution_time, 2)}s")
-        records[-1]["execution_time"] = execution_time
+        fp_record["execution_time"] = execution_time
 
         if fp_transformer in descriptor_fingerprints:
-            imputer = SimpleImputer(strategy="median")
-            X_fp_train = imputer.fit_transform(X_fp_train)
-            X_fp_valid = imputer.transform(X_fp_valid)
-            X_fp_test = imputer.transform(X_fp_test)
-
-            scaler = RobustScaler()
-            X_fp_train = scaler.fit_transform(X_fp_train)
-            X_fp_valid = scaler.transform(X_fp_valid)
-            X_fp_test = scaler.transform(X_fp_test)
+            preproc_pipeline = make_pipeline(
+                SimpleImputer(strategy="median"), RobustScaler()
+            )
+            X_fp_train = preproc_pipeline.fit_transform(X_fp_train)
+            X_fp_valid = preproc_pipeline.transform(X_fp_valid)
+            X_fp_test = preproc_pipeline.transform(X_fp_test)
 
         for classifier, clf_kwargs in classifier_parameters:
             clf_name = classifier.__name__
-            scores = []
             scores_valid = []
+            scores_test = []
             try:
-                for epoch in range(10):
-                    clf = classifier(random_state=epoch, **clf_kwargs)
+                for random_state in range(10):
+                    clf = classifier(random_state=random_state, **clf_kwargs)
                     clf.fit(X_fp_train, y_train)
-                    scores.append(
-                        roc_auc_score(y_test, clf.predict_proba(X_fp_test)[:, 1])
+                    auroc_valid = roc_auc_score(
+                        y_valid, clf.predict_proba(X_fp_valid)[:, 1]
                     )
-                    scores_valid.append(
-                        roc_auc_score(y_valid, clf.predict_proba(X_fp_valid)[:, 1])
+                    auroc_test = roc_auc_score(
+                        y_test, clf.predict_proba(X_fp_test)[:, 1]
                     )
+                    scores_valid.append(auroc_valid)
+                    scores_valid.append(auroc_test)
             except ValueError as e:
                 print(f" - Error: {e}")
-                records[-1][clf_name + "_error"] = str(e)
+                fp_record[f"{clf_name}_error"] = str(e)
                 continue
-            score = np.average(scores)
-            std = np.std(scores)
-            score_valid = np.average(scores_valid)
+
+            score_valid = np.mean(scores_valid)
             std_valid = np.std(scores_valid)
 
-            print(f" - - ROC AUC score for {clf_name} : {int(100 * score)}%")
-            records[-1][clf_name + "_mean"] = score
-            records[-1][clf_name + "_std"] = std
-            records[-1][clf_name + "_valid_mean"] = score_valid
-            records[-1][clf_name + "_valid_std"] = std_valid
+            score_test = np.mean(scores_test)
+            std_test = np.std(scores_test)
+
+            print(f" - - ROC AUC score for {clf_name} : {int(100 * score_test)}%")
+            fp_record[f"{clf_name}_valid_mean"] = score_valid
+            fp_record[f"{clf_name}_valid_std"] = std_valid
+            fp_record[f"{clf_name}_test_mean"] = score_test
+            fp_record[f"{clf_name}_test_std"] = std_test
+
+        records.append(fp_record)
 
     df = pd.DataFrame.from_records(records)
-    if os.path.exists("classification-scores-" + dataset_name + ".csv"):
-        os.remove("classification-scores-" + dataset_name + ".csv")
-    df.to_csv("classification-scores-" + dataset_name + ".csv")
+
+    if os.path.exists(f"classification-scores-{dataset_name}.csv"):
+        os.remove(f"classification-scores-{dataset_name}.csv")
+    df.to_csv(f"classification-scores-{dataset_name}.csv")

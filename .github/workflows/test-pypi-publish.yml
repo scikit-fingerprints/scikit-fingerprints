@@ -29,10 +29,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.10
 
       - name: Install Poetry
-        run: pipx install poetry --python python3.9
+        run: pipx install poetry --python python3.10
 
       # set version (e.g. 1.2.3) from the latest Git tag on master branch
       - name: Set package release version
