@@ -66,6 +66,7 @@ def test_laggner_feature_names():
     feature_names = laggner_fp.get_feature_names_out()
 
     assert len(feature_names) == laggner_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
 
     assert feature_names[0] == "Primary_carbon"
     assert feature_names[1] == "Secondary_carbon"

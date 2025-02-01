@@ -47,4 +47,6 @@ def test_klekota_roth_count_sparse_fingerprint(smiles_list):
 def test_klekota_roth_feature_names():
     kr_fp = KlekotaRothFingerprint()
     feature_names = kr_fp.get_feature_names_out()
+
     assert len(feature_names) == kr_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
