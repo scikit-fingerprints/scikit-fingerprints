@@ -35,6 +35,7 @@ def test_autocorr_feature_names():
     feature_names = autocorr_fp.get_feature_names_out()
 
     assert len(feature_names) == autocorr_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
 
     assert feature_names[0] == "Moreau-Broto mass distance 0"
     assert feature_names[1] == "Moreau-Broto mass distance 1"
@@ -49,6 +50,7 @@ def test_autocorr_3D_feature_names():
     feature_names = autocorr_fp.get_feature_names_out()
 
     assert len(feature_names) == autocorr_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
 
     assert feature_names[0] == "Moreau-Broto unweighted distance 0"
     assert feature_names[1] == "Moreau-Broto unweighted distance 1"

@@ -47,4 +47,6 @@ def test_ghose_crippen_count_sparse_fingerprint(smiles_list):
 def test_ghose_crippen_feature_names():
     gc_fp = GhoseCrippenFingerprint()
     feature_names = gc_fp.get_feature_names_out()
+
     assert len(feature_names) == gc_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))

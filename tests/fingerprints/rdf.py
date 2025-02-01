@@ -35,6 +35,7 @@ def test_rdf_feature_names():
     feature_names = rdf_fp.get_feature_names_out()
 
     assert len(feature_names) == rdf_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
 
     assert feature_names[0] == "unweighted 1"
     assert feature_names[1] == "unweighted 2"

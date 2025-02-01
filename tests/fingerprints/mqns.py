@@ -49,6 +49,7 @@ def test_mqns_feature_names():
     feature_names = mqn_fp.get_feature_names_out()
 
     assert len(feature_names) == mqn_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
 
     assert feature_names[0] == "C atoms"
     assert feature_names[-1] == "bonds in >= 2 rings"

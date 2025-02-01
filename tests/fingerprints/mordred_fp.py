@@ -61,6 +61,9 @@ def test_mordred_feature_names():
     mordred_fp = MordredFingerprint()
     feature_names_skfp = mordred_fp.get_feature_names_out()
 
+    assert len(feature_names_skfp) == mordred_fp.n_features_out
+    assert len(feature_names_skfp) == len(set(feature_names_skfp))
+
     calc = Calculator(descriptors)
     feature_names_mordred = [str(d) for d in calc.descriptors if d.require_3D is False]
 
@@ -70,6 +73,9 @@ def test_mordred_feature_names():
 def test_mordred_3D_feature_names():
     mordred_fp = MordredFingerprint(use_3D=True)
     feature_names_skfp = mordred_fp.get_feature_names_out()
+
+    assert len(feature_names_skfp) == mordred_fp.n_features_out
+    assert len(feature_names_skfp) == len(set(feature_names_skfp))
 
     calc = Calculator(descriptors, ignore_3D=False)
     feature_names_mordred = [str(d) for d in calc.descriptors]

@@ -59,6 +59,7 @@ def test_bcut2d_feature_names():
     feature_names = bcut2d_fp.get_feature_names_out()
 
     assert len(feature_names) == bcut2d_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
 
     assert feature_names[0] == "max Burden eigenvalue mass"
     assert feature_names[1] == "min Burden eigenvalue mass"

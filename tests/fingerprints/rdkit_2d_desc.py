@@ -80,6 +80,9 @@ def test_rdkit_2d_desc_feature_names():
     rdkit_2d_desc_fp = RDKit2DDescriptorsFingerprint()
     feature_names_skfp = rdkit_2d_desc_fp.get_feature_names_out()
 
+    assert len(feature_names_skfp) == rdkit_2d_desc_fp.n_features_out
+    assert len(feature_names_skfp) == len(set(feature_names_skfp))
+
     gen = RDKit2DNormalized()
     feature_names_rdkit = np.asarray([name for name, obj in gen.columns])
 

@@ -87,7 +87,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         verbose: Union[int, dict] = 0,
     ):
         feature_names, patterns = self._load_patterns()
-        self._feature_names = np.asarray(feature_names, dtype=object)
+        self._feature_names = self._fix_feature_names(feature_names)
         super().__init__(
             patterns=patterns,
             count=count,
@@ -96,6 +96,22 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             batch_size=batch_size,
             verbose=verbose,
         )
+
+    def _fix_feature_names(self, feature_names: list[str]) -> np.array:
+        # we modify a few names to make them all unique, since there are duplicates
+        # in originals
+        feature_names[16] = "Dialkylthioether (aliphatic O)"
+        feature_names[36] = "Dialkylthioether (aliphatic S)"
+
+        feature_names[19] = "Alkylarylthioether (aliphatic S)"
+        feature_names[37] = "Alkylarylthioether (aliphatic O)"
+
+        feature_names[108] = "Amidine (basic, not part of aromatic ring)"
+        feature_names[119] = (
+            "Amidine (not substituted by carbonyl or thiocarbonyl, not part of a ring)"
+        )
+
+        return np.asarray(feature_names, dtype=object)
 
     def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
