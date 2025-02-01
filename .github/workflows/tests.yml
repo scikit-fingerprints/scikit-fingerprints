@@ -41,7 +41,7 @@ jobs:
           key: ${{ matrix.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install the project dependencies
-        run: poetry sync --with test -vvv
+        run: poetry sync --with test
 
       - name: Check pre-commit
         run: poetry run pre-commit run --all-files
