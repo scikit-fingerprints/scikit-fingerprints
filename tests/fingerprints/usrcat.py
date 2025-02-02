@@ -27,6 +27,8 @@ def test_usrcat_bit_fingerprint(mols_conformers_3_plus_atoms):
     print("DIFF", X_skfp[x, y], X_rdkit[x, y])
     print(np.min(X_skfp), np.mean(X_skfp), np.max(X_skfp))
     print(np.min(X_rdkit), np.mean(X_rdkit), np.max(X_rdkit))
+    mask = np.abs(X_skfp - X_rdkit) >= 0.01
+    print(np.mean(X_skfp[mask]), np.mean(X_rdkit[mask]))
 
     assert np.allclose(X_skfp, X_rdkit, atol=1e-2)
     assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
