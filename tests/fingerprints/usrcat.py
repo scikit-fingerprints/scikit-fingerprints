@@ -22,6 +22,10 @@ def test_usrcat_bit_fingerprint(mols_conformers_3_plus_atoms):
         ]
     )
 
+    diffs = np.abs(X_skfp - X_rdkit)
+    x, y = np.unravel_index(diffs.argmax(), diffs.shape)
+    print("DIFF", X_skfp[x, y], X_rdkit[x, y])
+
     assert np.allclose(X_skfp, X_rdkit, atol=1e-2)
     assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
     assert np.issubdtype(X_skfp.dtype, np.floating)
@@ -42,6 +46,10 @@ def test_usrcat_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
 
     X_rdkit = np.array(X_rdkit)
     y_rdkit = np.array(y_rdkit)
+
+    diffs = np.abs(X_skfp - X_rdkit)
+    x, y = np.unravel_index(diffs.argmax(), diffs.shape)
+    print("DIFF", X_skfp[x, y], X_rdkit[x, y])
 
     assert np.allclose(X_skfp, X_rdkit, atol=1e-2)
     assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
