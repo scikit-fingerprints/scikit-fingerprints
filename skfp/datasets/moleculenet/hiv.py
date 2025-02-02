@@ -34,6 +34,14 @@ def load_hiv(
     Recommended metric            AUROC
     ==================   ==============
 
+    **Warning:** in newer RDKit vesions, 7 molecules from the original dataset are
+    not read correctly due to disallowed hypervalent states of some atoms
+    (see [release notes](https://github.com/rdkit/rdkit/releases/tag/Release_2024_09_1)).
+    This version of the HIV dataset contains manual fixes for those molecules, made
+    by cross-referencing original NCI data, PubChem substructure search, and visualization
+    with ChemAxon Marvin. In OGB scaffold split, used for benchmarking, first 2 of those
+    problematic 7 are from the test set.
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None

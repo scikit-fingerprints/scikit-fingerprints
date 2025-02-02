@@ -38,6 +38,13 @@ def load_pcba(
     Recommended metric               AUPRC, AUROC
     ==================   ========================
 
+    **Warning:** in newer RDKit vesions, 2 molecules from the original dataset are
+    not read correctly due to disallowed hypervalent states of some atoms
+    (see [release notes](https://github.com/rdkit/rdkit/releases/tag/Release_2024_09_1)).
+    This version of the PCBA dataset contains manual fixes for those molecules, removing
+    additional hydrogens, e.g. `[AlH3] -> [Al]`. In OGB scaffold split, used for
+    benchmarking, both molecules are in the training set.
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
