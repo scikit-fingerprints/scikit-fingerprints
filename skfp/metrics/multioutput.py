@@ -1,3 +1,4 @@
+import warnings
 from importlib.metadata import version
 from typing import Callable, Union
 
@@ -33,6 +34,7 @@ def multioutput_accuracy_score(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -53,6 +55,10 @@ def multioutput_accuracy_score(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -75,7 +81,14 @@ def multioutput_accuracy_score(
     >>> multioutput_accuracy_score(y_true, y_pred)
     0.5
     """
-    return _safe_multioutput_metric(accuracy_score, y_true, y_pred, *args, **kwargs)
+    return _safe_multioutput_metric(
+        accuracy_score,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
+    )
 
 
 @validate_params(
@@ -89,6 +102,7 @@ def multioutput_auroc_score(
     y_true: Union[np.ndarray, list],
     y_score: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -114,6 +128,10 @@ def multioutput_auroc_score(
     y_score : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Target scores, i.e. probability of the class with the greater label for each
         output** of the classifier.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -143,7 +161,9 @@ def multioutput_auroc_score(
     else:
         func = roc_auc_score
 
-    return _safe_multioutput_metric(func, y_true, y_score, *args, **kwargs)
+    return _safe_multioutput_metric(
+        func, y_true, y_score, *args, suppress_warnings=suppress_warnings, **kwargs
+    )
 
 
 @validate_params(
@@ -157,6 +177,7 @@ def multioutput_auprc_score(
     y_true: Union[np.ndarray, list],
     y_score: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -180,6 +201,10 @@ def multioutput_auprc_score(
         Target scores, i.e. probability of the class with the greater label for each
         output** of the classifier.
 
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
+
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
 
@@ -202,7 +227,12 @@ def multioutput_auprc_score(
     0.75
     """
     return _safe_multioutput_metric(
-        average_precision_score, y_true, y_score, *args, **kwargs
+        average_precision_score,
+        y_true,
+        y_score,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
     )
 
 
@@ -217,6 +247,7 @@ def multioutput_balanced_accuracy_score(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -237,6 +268,10 @@ def multioutput_balanced_accuracy_score(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -260,7 +295,12 @@ def multioutput_balanced_accuracy_score(
     0.5
     """
     return _safe_multioutput_metric(
-        balanced_accuracy_score, y_true, y_pred, *args, **kwargs
+        balanced_accuracy_score,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
     )
 
 
@@ -275,6 +315,7 @@ def multioutput_cohen_kappa_score(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -295,6 +336,10 @@ def multioutput_cohen_kappa_score(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -317,7 +362,14 @@ def multioutput_cohen_kappa_score(
     >>> multioutput_cohen_kappa_score(y_true, y_pred)
     0.0
     """
-    return _safe_multioutput_metric(cohen_kappa_score, y_true, y_pred, *args, **kwargs)
+    return _safe_multioutput_metric(
+        cohen_kappa_score,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
+    )
 
 
 @validate_params(
@@ -331,6 +383,7 @@ def multioutput_f1_score(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -354,6 +407,10 @@ def multioutput_f1_score(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
+
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
 
@@ -375,7 +432,9 @@ def multioutput_f1_score(
     >>> multioutput_f1_score(y_true, y_pred)
     0.0
     """
-    return _safe_multioutput_metric(f1_score, y_true, y_pred, *args, **kwargs)
+    return _safe_multioutput_metric(
+        f1_score, y_true, y_pred, *args, suppress_warnings=suppress_warnings, **kwargs
+    )
 
 
 @validate_params(
@@ -389,6 +448,7 @@ def multioutput_matthews_corr_coef(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -409,6 +469,10 @@ def multioutput_matthews_corr_coef(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -431,7 +495,14 @@ def multioutput_matthews_corr_coef(
     >>> multioutput_matthews_corr_coef(y_true, y_pred)
     0.0
     """
-    return _safe_multioutput_metric(matthews_corrcoef, y_true, y_pred, *args, **kwargs)
+    return _safe_multioutput_metric(
+        matthews_corrcoef,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
+    )
 
 
 @validate_params(
@@ -445,6 +516,7 @@ def multioutput_mean_absolute_error(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -465,6 +537,10 @@ def multioutput_mean_absolute_error(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -488,7 +564,12 @@ def multioutput_mean_absolute_error(
     0.75
     """
     return _safe_multioutput_metric(
-        mean_absolute_error, y_true, y_pred, *args, **kwargs
+        mean_absolute_error,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
     )
 
 
@@ -503,6 +584,7 @@ def multioutput_mean_squared_error(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -523,6 +605,10 @@ def multioutput_mean_squared_error(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -545,7 +631,14 @@ def multioutput_mean_squared_error(
     >>> multioutput_mean_squared_error(y_true, y_pred)
     1.041...
     """
-    return _safe_multioutput_metric(mean_squared_error, y_true, y_pred, *args, **kwargs)
+    return _safe_multioutput_metric(
+        mean_squared_error,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
+    )
 
 
 @validate_params(
@@ -559,6 +652,7 @@ def multioutput_precision_score(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -580,6 +674,10 @@ def multioutput_precision_score(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -608,6 +706,7 @@ def multioutput_precision_score(
         y_pred,
         *args,
         zero_division=0.0,
+        suppress_warnings=suppress_warnings,
         **kwargs,
     )
 
@@ -623,6 +722,7 @@ def multioutput_recall_score(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -643,6 +743,10 @@ def multioutput_recall_score(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -665,7 +769,14 @@ def multioutput_recall_score(
     >>> multioutput_recall_score(y_true, y_pred)
     0.0
     """
-    return _safe_multioutput_metric(recall_score, y_true, y_pred, *args, **kwargs)
+    return _safe_multioutput_metric(
+        recall_score,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
+    )
 
 
 @validate_params(
@@ -679,6 +790,7 @@ def multioutput_root_mean_squared_error(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -699,6 +811,10 @@ def multioutput_root_mean_squared_error(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -722,7 +838,12 @@ def multioutput_root_mean_squared_error(
     0.851...
     """
     return _safe_multioutput_metric(
-        root_mean_squared_error, y_true, y_pred, *args, **kwargs
+        root_mean_squared_error,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
     )
 
 
@@ -737,6 +858,7 @@ def multioutput_spearman_correlation(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     """
@@ -755,6 +877,10 @@ def multioutput_spearman_correlation(
 
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
+
+    suppress_warnings : boolean, default=False
+        Whether to suppress any warnings that may arise during evaluation on some
+        tasks.
 
     *args, **kwargs
         Any additional parameters for the underlying scikit-learn metric function.
@@ -778,7 +904,12 @@ def multioutput_spearman_correlation(
     0.75
     """
     return _safe_multioutput_metric(
-        spearman_correlation, y_true, y_pred, *args, **kwargs
+        spearman_correlation,
+        y_true,
+        y_pred,
+        *args,
+        suppress_warnings=suppress_warnings,
+        **kwargs,
     )
 
 
@@ -787,6 +918,7 @@ def _safe_multioutput_metric(
     y_true: Union[np.ndarray, list],
     y_pred: Union[np.ndarray, list],
     *args,
+    suppress_warnings: bool = False,
     **kwargs,
 ) -> float:
     if not isinstance(y_true, np.ndarray):
@@ -811,8 +943,13 @@ def _safe_multioutput_metric(
         y_true_i = y_true_i[non_nan_mask]
         y_pred_i = y_pred_i[non_nan_mask]
 
-        col_value = metric(y_true_i, y_pred_i, *args, **kwargs)
-        values.append(col_value)
+        with warnings.catch_warnings():
+            if suppress_warnings:
+                warnings.simplefilter("ignore")
+            col_value = metric(y_true_i, y_pred_i, *args, **kwargs)
+
+        if not (col_value is None or np.isnan(col_value)):
+            values.append(col_value)
 
     if not values:
         raise ValueError(

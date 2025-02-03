@@ -42,6 +42,7 @@ def test_morse_feature_names():
     feature_names = morse_fp.get_feature_names_out()
 
     assert len(feature_names) == morse_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
 
     assert feature_names[0] == "unweighted 0"
     assert feature_names[1] == "unweighted 1"
