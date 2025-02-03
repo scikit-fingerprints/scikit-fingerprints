@@ -33,7 +33,7 @@ def test_usrcat_bit_fingerprint(mols_conformers_3_plus_atoms):
     else:
         assert np.allclose(X_skfp, X_rdkit, atol=1e-3)
 
-    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 12)
+    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -62,7 +62,7 @@ def test_usrcat_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
     else:
         assert np.allclose(X_skfp, X_rdkit, atol=1e-3)
 
-    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 12)
+    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
     assert np.issubdtype(X_skfp.dtype, np.floating)
     assert np.array_equal(y_skfp, y_rdkit)
 
