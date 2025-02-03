@@ -42,23 +42,25 @@ We encourage you to submit pull requests (PRs) to improve our project. To do so,
 
 Prerequisites:
 
+- Git
 - Python 3.9 or higher
 - Poetry
-- Git
+- Pandoc
 
 To set up the development environment, follow these steps:
 
-1. Fork the repository on GitHub.
-2. Clone your forked repository to your local machine:
+1. Install prerequisites from above.
+2. Fork the repository on GitHub.
+3. Clone your forked repository to your local machine:
    ```bash
    git clone <repository-url>
    ```
-3. Run make to set up the development environment:
+4. Run make to set up the development environment:
    ```bash
    make setup
    ```
    This command will set up a virtual environment and install all the necessary dependencies.
-4. That's it! You're ready to start developing. For more convenience, you can run 
+5. That's it! You're ready to start developing. For more convenience, you can run 
    the following command to activate the virtual environment:
    ```bash
    poetry shell
