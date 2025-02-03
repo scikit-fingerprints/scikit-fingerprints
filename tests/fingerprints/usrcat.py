@@ -27,7 +27,7 @@ def test_usrcat_bit_fingerprint(mols_conformers_3_plus_atoms):
     # on macOS for USR and USRCAT we get slightly different results in skfp and RDKit
     # debugging for a long time didn't help, so we check just basic statistic instead
     if sys.platform == "darwin":
-        assert np.isclose(np.min(X_skfp), np.mean(X_rdkit), atol=1e-3)
+        assert np.isclose(np.min(X_skfp), np.min(X_rdkit), atol=1e-3)
         assert np.isclose(np.mean(X_skfp), np.mean(X_rdkit), atol=1e-3)
         assert np.isclose(np.max(X_skfp), np.max(X_rdkit), atol=1e-3)
     else:
@@ -56,7 +56,7 @@ def test_usrcat_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
     # on macOS for USR and USRCAT we get slightly different results in skfp and RDKit
     # debugging for a long time didn't help, so we check just basic statistic instead
     if sys.platform == "darwin":
-        assert np.isclose(np.min(X_skfp), np.mean(X_rdkit), atol=1e-3)
+        assert np.isclose(np.min(X_skfp), np.min(X_rdkit), atol=1e-3)
         assert np.isclose(np.mean(X_skfp), np.mean(X_rdkit), atol=1e-3)
         assert np.isclose(np.max(X_skfp), np.max(X_rdkit), atol=1e-3)
     else:
