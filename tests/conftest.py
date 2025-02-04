@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -8,6 +9,8 @@ from rdkit.Chem import Mol, MolFromSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
 
 from skfp.preprocessing import ConformerGenerator
+
+sys.setrecursionlimit(4000)
 
 
 @pytest.fixture(scope="session")

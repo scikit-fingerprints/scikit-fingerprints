@@ -50,7 +50,7 @@ jobs:
         run: poetry check
 
       - name: Run tests with pytest
-        run: poetry run make test
+        run: python --version && poetry run make test
 
   ci-docs:
     runs-on: ubuntu-latest
