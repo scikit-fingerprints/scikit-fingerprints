@@ -6,6 +6,10 @@ Functions for computing distance and similarity measures common in chemoinformat
 
 .. automodule:: skfp.distances
 
+=========================================================
+
+.. py:currentmodule:: skfp.distances
+
 Distances
 ---------
 
