@@ -50,7 +50,7 @@ jobs:
         run: poetry check
 
       - name: Run tests with pytest
-        run: poetry run make test
+        run: poetry run python -X faulthandler -m pytest -p no:faulthandler -s tests
 
   ci-docs:
     runs-on: ubuntu-latest
