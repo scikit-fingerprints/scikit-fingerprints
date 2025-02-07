@@ -18,10 +18,11 @@ def simpson_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     r"""
-    Calculate the Simpson binary similarity between two binary vectors.
+    Simpson similarity for vectors of binary values.
 
-    Computes the Simpson similarity [1]_ (also known as asymmetric similarity [2]_ [3]_ or overlap coefficient [4]_)
-    for binary data between two input arrays or sparse matrices using the formula:
+    Computes the Simpson similarity [1]_ (also known as asymmetric similarity [2]_ [3]_
+    or overlap coefficient [4]_) for binary data between two input arrays or sparse
+    matrices using the formula:
 
     .. math::
 
@@ -41,7 +42,7 @@ def simpson_binary_similarity(
     Returns
     -------
     similarity : float
-        simpson similarity between vec_a and vec_b.
+        Simpson similarity between vec_a and vec_b.
 
     References
     ----------
@@ -113,11 +114,11 @@ def simpson_binary_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Simpson [1]_ [2]_ [3]_ [4]_ distance for vectors of binary values.
+    Simpson distance for vectors of binary values.
 
     Computes the Simpson distance for binary data between two input arrays
-    or sparse matrices by subtracting the similarity from 1, using to
-    the formula:
+    or sparse matrices by subtracting the Simpson similarity [1]_ [2]_ [3]_ [4]_
+    from 1, using the formula:
 
     .. math::
         dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
@@ -136,7 +137,7 @@ def simpson_binary_distance(
     Returns
     -------
     distance : float
-        simpson distance between ``vec_a`` and ``vec_b``.
+        Simpson distance between ``vec_a`` and ``vec_b``.
 
     References
     ----------

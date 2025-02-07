@@ -18,10 +18,10 @@ def rand_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     r"""
-    Calculate the Rand binary similarity between two binary vectors.
+    Rand similarity for vectors of binary values.
 
-    Computes the Rand similarity [1]_ [2]_ (known as All-Bit [3]_ or Sokal-Michener) for binary data between two input arrays
-    or sparse matrices using the formula:
+    Computes the Rand similarity [1]_ [2]_ (known as All-Bit [3]_ or Sokal-Michener)
+    for binary data between two input arrays or sparse matrices, using the formula:
 
     .. math::
 
@@ -112,11 +112,11 @@ def rand_binary_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Rand [1]_ [2]_ [3]_ distance for vectors of binary values.
+    Rand distance for vectors of binary values.
 
-    Computes the Rand distance for binary data between two input arrays
-    or sparse matrices by subtracting the similarity from 1, using to
-    the formula:
+    Computes the Rand distance [1]_ [2]_ [3]_ for binary data between two
+    input arrays or sparse matrices by subtracting the similarity from 1,
+    using the formula:
 
     .. math::
         dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
