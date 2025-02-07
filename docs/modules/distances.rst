@@ -6,11 +6,8 @@ Functions for computing distance and similarity measures common in chemoinformat
 
 .. automodule:: skfp.distances
 
-=========================================================
-
-.. py:currentmodule:: skfp.distances
-
 Distances
+---------
 
 .. autosummary::
     :nosignatures:
@@ -24,6 +21,7 @@ Distances
     tanimoto_count_distance
 
 Similarities
+------------
 
 .. autosummary::
     :nosignatures:
