@@ -1,7 +1,6 @@
 from typing import Union
 
 import numpy as np
-from numba import njit
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
 
@@ -113,7 +112,7 @@ def rand_binary_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Rand distance for vectors of binary values.
+    Rand [1]_ [2]_ [3]_ distance for vectors of binary values.
 
     Computes the Rand distance for binary data between two input arrays
     or sparse matrices by subtracting the similarity from 1, using to
@@ -138,6 +137,21 @@ def rand_binary_distance(
     distance : float
         Rand distance between ``vec_a`` and ``vec_b``.
 
+    References
+    ----------
+    .. [1] `Rand, W.M.
+       "Objective criteria for the evaluation of clustering methods."
+       J. Amer. Stat. Assoc. 1971; 66: 846–850.
+       <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
+
+    .. [2] `Deza M.M., Deza E.
+       "Encyclopedia of Distances."
+       Springer, Berlin, Heidelberg, 2009.
+       <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+
+    .. [3] `RDKit documentation
+       <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+
     Examples
     --------
     >>> from skfp.distances import rand_binary_distance
@@ -159,7 +173,6 @@ def rand_binary_distance(
     return 1 - rand_binary_similarity(vec_a, vec_b)
 
 
-@njit(parallel=True)
 def _rand_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
     and_count = np.sum(vec_a & vec_b)
     len_a = len(vec_a)

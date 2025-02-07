@@ -31,10 +31,7 @@ def test_simpson_binary_against_threshold(vec_a, vec_b):
         (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]])),
     ],
 )
-def test_simpson_binary_distance_against_threshold(
-    vec_a,
-    vec_b,
-):
+def test_simpson_binary_distance_against_threshold(vec_a, vec_b):
     threshold = 0
     distance = simpson_binary_distance(vec_a, vec_b)
 
