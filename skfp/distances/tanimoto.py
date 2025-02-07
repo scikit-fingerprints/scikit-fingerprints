@@ -23,7 +23,7 @@ def tanimoto_binary_similarity(
     Tanimoto similarity for vectors of binary values.
 
     Computes the Tanimoto similarity [1]_ for binary data between two input arrays
-    or sparse matrices using the Jaccard index using formula:
+    or sparse matrices using the Jaccard index, using the formula:
 
     .. math::
 
@@ -110,9 +110,8 @@ def tanimoto_binary_distance(
     """
     Tanimoto distance for vectors of binary values.
 
-    Computes the Tanimoto distance for binary data between two input arrays
-    or sparse matrices by subtracting the similarity from 1, using to
-    the formula:
+    Computes the Tanimoto distance [1]_ for binary data between two input arrays
+    or sparse matrices by subtracting the similarity from 1, using the formula:
 
     .. math::
 
@@ -128,6 +127,13 @@ def tanimoto_binary_distance(
 
     vec_b : {ndarray, sparse matrix}
         Second binary input array or sparse matrix.
+
+    References
+    ----------
+    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
+       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+       J Cheminform, 7, 20 (2015).
+       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Returns
     -------
@@ -169,7 +175,7 @@ def tanimoto_count_similarity(
     Tanimoto similarity for vectors of count values.
 
     Computes the Tanimoto similarity [1]_ for count data between two input arrays
-    or sparse matrices using the formula:
+    or sparse matrices, using the formula:
 
     .. math::
 
@@ -249,9 +255,8 @@ def tanimoto_count_distance(
     """
     Tanimoto distance for vectors of count values.
 
-    Computes the Tanimoto distance for binary data between two input arrays
-    or sparse matrices by subtracting similarity value from 1, using to
-    the formula:
+    Computes the Tanimoto distance [1]_ for binary data between two input arrays
+    or sparse matrices by subtracting similarity value from 1, using the formula:
 
     .. math::
 
@@ -267,6 +272,13 @@ def tanimoto_count_distance(
 
     vec_b : {ndarray, sparse matrix}
         Second count input array or sparse matrix.
+
+    References
+    ----------
+    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
+       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+       J Cheminform, 7, 20 (2015).
+       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Returns
     -------

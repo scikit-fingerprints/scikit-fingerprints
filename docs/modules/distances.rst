@@ -11,6 +11,7 @@ Functions for computing distance and similarity measures common in chemoinformat
 .. py:currentmodule:: skfp.distances
 
 Distances
+---------
 
 .. autosummary::
     :nosignatures:
@@ -19,10 +20,12 @@ Distances
     dice_binary_distance
     dice_count_distance
     rand_binary_distance
+    simpson_binary_distance
     tanimoto_binary_distance
     tanimoto_count_distance
 
 Similarities
+------------
 
 .. autosummary::
     :nosignatures:
@@ -31,5 +34,6 @@ Similarities
     dice_binary_similarity
     dice_count_similarity
     rand_binary_similarity
+    simpson_binary_similarity
     tanimoto_binary_similarity
     tanimoto_count_similarity
