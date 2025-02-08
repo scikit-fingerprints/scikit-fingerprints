@@ -5,6 +5,7 @@ from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import NearestNeighbors
 
 from skfp.distances import (
+    braun_blanquet_binary_distance,
     dice_binary_distance,
     dice_count_distance,
     rand_binary_distance,
@@ -39,6 +40,16 @@ def test_check_nan_wrong_type():
 @pytest.mark.parametrize(
     "method, vec_a, vec_b",
     [
+        (
+            braun_blanquet_binary_distance,
+            np.array([0, 1, 0, 1]),
+            np.array([0, 1, 1, 0]),
+        ),
+        (
+            braun_blanquet_binary_distance,
+            csr_array([[0, 1, 0, 1]]),
+            csr_array([[0, 1, 1, 0]]),
+        ),
         (dice_binary_distance, np.array([0, 1, 0, 1]), np.array([0, 1, 1, 0])),
         (dice_binary_distance, csr_array([[0, 1, 0, 1]]), csr_array([[0, 1, 1, 0]])),
         (rand_binary_distance, np.array([0, 1, 0, 1]), np.array([0, 1, 1, 0])),
@@ -89,6 +100,16 @@ def test_sklearn_pairwise_compatible_count(method, vec_a, vec_b):
 @pytest.mark.parametrize(
     "method, vec_a, vec_b",
     [
+        (
+            braun_blanquet_binary_distance,
+            np.array([0, 1, 0, 1]),
+            np.array([0, 1, 1, 0]),
+        ),
+        (
+            braun_blanquet_binary_distance,
+            csr_array([[0, 1, 0, 1]]),
+            csr_array([[0, 1, 1, 0]]),
+        ),
         (dice_binary_distance, np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
         (dice_binary_distance, csr_array([[1, 2, 3, 4]]), csr_array([[1, 2, 3, 5]])),
         (dice_count_distance, np.array([1, 2, 3, 4]), np.array([1, 2, 3, 5])),
@@ -131,6 +152,7 @@ def test_sklearn_nearest_neighbors_compatible_binary(method, vec_a, vec_b):
 @pytest.mark.parametrize(
     "method",
     [
+        braun_blanquet_binary_distance,
         dice_binary_distance,
         dice_count_distance,
         rand_binary_distance,
