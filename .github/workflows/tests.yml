@@ -14,14 +14,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         os: [macos-latest, ubuntu-latest, windows-latest]
-        exclude:
-          - python-version: "3.9"
-            os: macos-latest
-        include:
-          - python-version: "3.9"
-            os: macos-13
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repo
@@ -47,7 +41,7 @@ jobs:
           key: ${{ matrix.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install the project dependencies
-        run: poetry sync --with test -vvv
+        run: poetry sync --with test
 
       - name: Check pre-commit
         run: poetry run pre-commit run --all-files
@@ -65,12 +59,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: "3.10"
 
       - name: Install Poetry
-        run: pipx install poetry --python python3.9
+        run: pipx install poetry --python python3.10
 
       - name: Install the project dependencies
         run: poetry sync --with docs

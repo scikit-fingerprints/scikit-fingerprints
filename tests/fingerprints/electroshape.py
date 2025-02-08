@@ -57,7 +57,7 @@ def test_electroshape_ignore_errors():
     organometallics = [
         "CCCC[Li]",
         "CC[Zn]CC",
-        "C[Al-](C)([CH3+]1)[CH3+][Al-]1(C)C",
+        "C[Al](C)C",
         "CCCC[SnH](CCCC)CCCC",
     ]
     non_metallics = [
