@@ -26,9 +26,9 @@ def simpson_binary_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = |vec_a \cap vec_b| / min(|vec_a|, |vec_b|)
+        sim(a, b) = \frac{|a \cap b|}{\min(|a|, |b|)}
 
-    The calculated similarity falls within the range ``[0, 1]``.
+    The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 0.
 
     Parameters
@@ -42,7 +42,7 @@ def simpson_binary_similarity(
     Returns
     -------
     similarity : float
-        Simpson similarity between vec_a and vec_b.
+        Simpson similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
@@ -121,9 +121,10 @@ def simpson_binary_distance(
     from 1, using the formula:
 
     .. math::
-        dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
+        dist(a, b) = 1 - sim(a, b)
 
-    The calculated distance falls within the range ``[0, 1]``.
+    See also :py:func:`simpson_binary_similarity`.
+    The calculated distance falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a distance of 0.
 
     Parameters

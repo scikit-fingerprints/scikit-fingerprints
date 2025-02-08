@@ -25,11 +25,11 @@ def rand_binary_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = |vec_a \cap vec_b| / n
+        sim(a, b) = \frac{|a \cap b|}{n}
 
-    where `n` is the length of `vec_a`.
+    where `n` is the length of vector `a`.
 
-    The calculated similarity falls within the range ``[0, 1]``.
+    The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 0.
 
     Parameters
@@ -43,7 +43,7 @@ def rand_binary_similarity(
     Returns
     -------
     similarity : float
-        Rand similarity between vec_a and vec_b.
+        Rand similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
@@ -119,9 +119,10 @@ def rand_binary_distance(
     using the formula:
 
     .. math::
-        dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
+        dist(a, b) = 1 - sim(a, b)
 
-    The calculated distance falls within the range ``[0, 1]``.
+    See also :py:func:`rand_binary_similarity`.
+    The calculated distance falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a distance of 0.
 
     Parameters
