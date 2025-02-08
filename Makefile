@@ -21,7 +21,7 @@ test: ## Run tests
 	poetry run ruff check
 	# PyTest has memory access problems on Windows, faulthandler settings fix that
 	# https://github.com/pytest-dev/pytest/issues/7634
-	poetry run python -X faulthandler -m pytest tests -p no:faulthandler
+	poetry run python -X faulthandler -X dev -m pytest tests
 
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files
