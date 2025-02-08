@@ -10,10 +10,10 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Chemistry",
@@ -21,21 +21,21 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.10,<3.14"
 
 dependencies = [
-    "descriptastorus>=2.0.0",
-    "e3fp>=1.0.0",
+    "descriptastorus>=2.0.0,<3",
+    "e3fp>=1.2.6,<2",
     "huggingface_hub>=0.0.0",
-    "joblib>=1.0.0",
-    "mordredcommunity>=2.0.0",
+    "joblib>=1.0.0,<2",
+    "mordredcommunity>=2.0.0,<3",
     "numba>=0.48.0,<1",
     "numpy>=1.20.0,<2",
     "pandas<3",
-    "rdkit<=2024.3.3",
-    "scikit-learn>=1.0.0",
-    "scipy>=1.0.0",
-    "tqdm>=4.0.0",
+    "rdkit<=2024.9.4",
+    "scikit-learn>=1.0.0,<2",
+    "scipy>=1.0.0,<2",
+    "tqdm>=4.0.0,<5",
 ]
 
 [project.urls]
@@ -89,10 +89,10 @@ optional = true
 [tool.poetry.group.eval.dependencies]
 lightgbm = "*"
 matplotlib = "*"
-ogb = "*"
 
 [tool.pytest.ini_options]
 python_files = "*.py"
+addopts = "--assert=plain"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
