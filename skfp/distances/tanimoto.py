@@ -27,9 +27,9 @@ def tanimoto_binary_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = \frac{|vec_a \cap vec_b|}{|vec_a| + |vec_b| - |vec_a \cap vec_b|}
+        sim(a, b) = \frac{|a \cap b|}{|a \cup b|} = \frac{|a \cap b|}{|a| + |b| - |a \cap b|}
 
-    The calculated similarity falls within the range ``[0, 1]``.
+    The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
@@ -115,9 +115,10 @@ def tanimoto_binary_distance(
 
     .. math::
 
-        dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
+        dist(a, b) = 1 - sim(a, b)
 
-    The calculated distance falls within the range ``[0, 1]``.
+    See also :py:func:`tanimoto_binary_similarity`.
+    The calculated distance falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a distance of 0.
 
     Parameters
@@ -179,9 +180,9 @@ def tanimoto_count_similarity(
 
     .. math::
 
-        sim(vec_a, vec_b) = \frac{vec_a \cdot vec_b}{\|vec_a\|^2 + \|vec_b\|^2 - vec_a \cdot vec_b}
+        sim(a, b) = \frac{a \cdot b}{\|a\|^2 + \|b\|^2 - a \cdot b}
 
-    Calculated similarity falls within the range of `[0, 1]`.
+    Calculated similarity falls within the range of :math:`[0, 1]`.
     Passing all-zero vectors to this function results in similarity of 1.
 
     Note that Numpy version is optimized with Numba JIT compiler, resulting in significantly faster
@@ -260,9 +261,10 @@ def tanimoto_count_distance(
 
     .. math::
 
-            dist(vec_a, vec_b) = 1 - sim(vec_a, vec_b)
+            dist(a, b) = 1 - sim(a, b)
 
-    Calculated distance falls within the range from `[0, 1]`.
+    See also :py:func:`tanimoto_count_similarity`.
+    Calculated distance falls within the range from :math:`[0, 1]`.
     Passing all-zero vectors to this function results in distance of 0.
 
     Parameters
@@ -283,7 +285,7 @@ def tanimoto_count_distance(
     Returns
     -------
     distance : float
-        Tanimoto distance between vec_a and vec_b.
+        Tanimoto distance between ``vec_a`` and ``vec_b``.
 
     Examples
     --------
