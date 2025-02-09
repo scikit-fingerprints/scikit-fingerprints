@@ -56,7 +56,7 @@ jupyter = "*"
 mypy = "*"
 pip-audit = "*"
 pre-commit = "*"
-pytest = "*"
+pytest = "7.*"
 pytest-cov = "*"
 ruff = "*"
 setuptools = "*"  # to avoid PyCharm errors
@@ -69,7 +69,7 @@ optional = true
 mypy = "*"
 pip-audit = "*"
 pre-commit = "*"
-pytest = "*"
+pytest = "7.*"
 ruff = "*"
 xenon = "*"
 
