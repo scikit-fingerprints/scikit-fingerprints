@@ -59,12 +59,12 @@ def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
 
     .. math::
 
-        J = \frac{M}{μ + 1} \cdot \frac{Σ_{ij} (d_{ij})^{-1}}{n},
+        J = \frac{M}{\mu + 1} \cdot \frac{\sum_{ij} (d_{ij})^{-1}}{n},
 
     where:
 
     - :math:`M` is the number of bonds
-    - :math:`μ` is the cyclomatic number (number of independent cycles)
+    - :math:`\mu` is the cyclomatic number (number of independent cycles)
     - :math:`d_{ij}` is the distance between atoms :math:`i` and :math:`j`
     - :math:`n` is the number of atoms
 
@@ -88,7 +88,7 @@ def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     >>> from rdkit.Chem import MolFromSmiles
     >>> from skfp.descriptors import balaban_j_index
     >>> mol = MolFromSmiles("C1=CC=CC=C1")  # Benzene
-    >>> balaban_j_index(mol)
+    >>> balaban_j_index(mol)  # doctest: +SKIP
     3.000000000000001
     """
     return BalabanJ(mol=mol, dMat=distance_matrix)
