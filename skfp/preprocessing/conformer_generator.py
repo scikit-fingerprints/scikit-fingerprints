@@ -334,6 +334,7 @@ class ConformerGenerator(BasePreprocessor):
 
     def _print_conf_gen_failure_reason(self, embed_params: ETKDGv3) -> str:
         fail_idx_to_name = {idx: name for name, idx in EmbedFailureCauses.names.items()}
+        fail_idx_to_name[11] = "EXCEEDED_TIMEOUT"  # missing from RDKit Python enum
         fail_counts = embed_params.GetFailureCounts()
         fail_names_with_counts = [
             f"{fail_idx_to_name[idx]}: {fail_counts[idx]}"
