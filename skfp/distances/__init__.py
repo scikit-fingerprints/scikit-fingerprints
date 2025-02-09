@@ -1,3 +1,7 @@
+from .braun_blanquet import (
+    braun_blanquet_binary_distance,
+    braun_blanquet_binary_similarity,
+)
 from .dice import (
     dice_binary_distance,
     dice_binary_similarity,

@@ -14,19 +14,18 @@ from .utils import _check_nan
     },
     prefer_skip_nested_validation=True,
 )
-def simpson_binary_similarity(
+def braun_blanquet_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     r"""
-    Simpson similarity for vectors of binary values.
+    Braun-Blanquet similarity for vectors of binary values.
 
-    Computes the Simpson similarity [1]_ (also known as asymmetric similarity [2]_ [3]_
-    or overlap coefficient [4]_) for binary data between two input arrays or sparse
-    matrices using the formula:
+    Computes the Braun-Blanquet similarity [1]_ [2]_ [3]_ for binary data between two
+    input arrays or sparse matrices using the formula:
 
     .. math::
 
-        sim(a, b) = \frac{|a \cap b|}{\min(|a|, |b|)}
+        sim(a, b) = \frac{|a \cap b|}{\max(|a|, |b|)}
 
     The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 0.
@@ -42,14 +41,14 @@ def simpson_binary_similarity(
     Returns
     -------
     similarity : float
-        Simpson similarity between ``vec_a`` and ``vec_b``.
+        Braun-Blanquet similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Simpson, G.G.
-       "Mammals and the nature of continents."
-       American Journal of Science, 241: 1-31 (1943).
-       <https://doi.org/10.1038/163688a0>`_
+    .. [1] `Braun-Blanquet, J.
+       "Plant sociology. The study of plant communities. First ed."
+       McGraw-Hill Book Co., Inc., New York and London, 1932.
+       <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
 
     .. [2] `Deza M.M., Deza E.
        "Encyclopedia of Distances."
@@ -59,24 +58,21 @@ def simpson_binary_similarity(
     .. [3] `RDKit documentation
        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
-    .. [4] `Overlap coefficient on Wikipedia
-       <https://en.wikipedia.org/wiki/Overlap_coefficient>`_
-
     Examples
     --------
-    >>> from skfp.distances import simpson_binary_similarity
+    >>> from skfp.distances import braun_blanquet_binary_similarity
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
-    >>> sim = simpson_binary_similarity(vec_a, vec_b)
+    >>> sim = braun_blanquet_binary_similarity(vec_a, vec_b)
     >>> sim  # doctest: +SKIP
     1.0
 
-    >>> from skfp.distances import simpson_binary_similarity
+    >>> from skfp.distances import braun_blanquet_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
-    >>> sim = simpson_binary_similarity(vec_a, vec_b)
+    >>> sim = braun_blanquet_binary_similarity(vec_a, vec_b)
     >>> sim  # doctest: +SKIP
     1.0
     """
@@ -89,12 +85,12 @@ def simpson_binary_similarity(
     if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
         vec_a_bool = vec_a.astype(bool)
         vec_b_bool = vec_b.astype(bool)
-        return _simpson_binary_scipy(vec_a_bool, vec_b_bool)
+        return _braun_blanquet_binary_scipy(vec_a_bool, vec_b_bool)
 
     elif isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         vec_a_bool = vec_a.astype(bool)
         vec_b_bool = vec_b.astype(bool)
-        return _simpson_binary_numpy(vec_a_bool, vec_b_bool)
+        return _braun_blanquet_binary_numpy(vec_a_bool, vec_b_bool)
 
     else:
         raise TypeError(
@@ -110,20 +106,20 @@ def simpson_binary_similarity(
     },
     prefer_skip_nested_validation=True,
 )
-def simpson_binary_distance(
+def braun_blanquet_binary_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Simpson distance for vectors of binary values.
+    Braun-Blanquet distance for vectors of binary values.
 
-    Computes the Simpson distance for binary data between two input arrays
-    or sparse matrices by subtracting the Simpson similarity [1]_ [2]_ [3]_ [4]_
+    Computes the Braun-Blanquet distance for binary data between two input arrays
+    or sparse matrices by subtracting the Braun-Blanquet similarity [1]_ [2]_ [3]_
     from 1, using the formula:
 
     .. math::
         dist(a, b) = 1 - sim(a, b)
 
-    See also :py:func:`simpson_binary_similarity`.
+    See also :py:func:`braun_blanquet_binary_similarity`.
     The calculated distance falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a distance of 0.
 
@@ -138,14 +134,14 @@ def simpson_binary_distance(
     Returns
     -------
     distance : float
-        Simpson distance between ``vec_a`` and ``vec_b``.
+        Braun-Blanquet distance between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Simpson, G.G.
-       "Mammals and the nature of continents."
-       American Journal of Science, 241: 1-31 (1943).
-       <https://doi.org/10.1038/163688a0>`_
+    .. [1] `Braun-Blanquet, J.
+       "Plant sociology. The study of plant communities. First ed."
+       McGraw-Hill Book Co., Inc., New York and London, 1932.
+       <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
 
     .. [2] `Deza M.M., Deza E.
        "Encyclopedia of Distances."
@@ -155,50 +151,47 @@ def simpson_binary_distance(
     .. [3] `RDKit documentation
        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
-    .. [4] `Overlap coefficient on Wikipedia
-       <https://en.wikipedia.org/wiki/Overlap_coefficient>`_
-
     Examples
     --------
-    >>> from skfp.distances import simpson_binary_distance
+    >>> from skfp.distances import braun_blanquet_binary_distance
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
-    >>> dist = simpson_binary_distance(vec_a, vec_b)
+    >>> dist = braun_blanquet_binary_distance(vec_a, vec_b)
     >>> dist  # doctest: +SKIP
     0.0
 
-    >>> from skfp.distances import simpson_binary_distance
+    >>> from skfp.distances import braun_blanquet_binary_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
-    >>> dist = simpson_binary_distance(vec_a, vec_b)
+    >>> dist = braun_blanquet_binary_distance(vec_a, vec_b)
     >>> dist  # doctest: +SKIP
     0.0
     """
-    return 1 - simpson_binary_similarity(vec_a, vec_b)
+    return 1 - braun_blanquet_binary_similarity(vec_a, vec_b)
 
 
-def _simpson_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
+def _braun_blanquet_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
     and_count = np.sum(vec_a & vec_b)
-    min_vec = min(np.sum(vec_a), np.sum(vec_b))
+    max_vec = max(np.sum(vec_a), np.sum(vec_b))
 
-    if min_vec == 0:
+    if max_vec == 0:
         return 0.0
 
-    simpson_sim = and_count / min_vec
-    return simpson_sim
+    braun_blanquet_sim = and_count / max_vec
+    return braun_blanquet_sim
 
 
-def _simpson_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
+def _braun_blanquet_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
     a_indices = vec_a.indices
     b_indices = vec_b.indices
 
     common_indices = set(a_indices).intersection(b_indices)
 
-    min_vec = min(np.sum(vec_a), np.sum(vec_b))
+    max_vec = max(np.sum(vec_a), np.sum(vec_b))
 
-    if min_vec == 0:
+    if max_vec == 0:
         return 0.0
 
     and_count = 0
@@ -208,6 +201,6 @@ def _simpson_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
 
         and_count += a_val[0] & b_val[0]
 
-    simpson_sim = and_count / min_vec
+    braun_blanquet_sim = and_count / max_vec
 
-    return simpson_sim
+    return braun_blanquet_sim

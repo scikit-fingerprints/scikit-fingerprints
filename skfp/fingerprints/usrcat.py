@@ -34,6 +34,9 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     Furthermore, only molecules with 3 or more atoms are allowed, to allow computation
     of all three moments.
 
+    **Warning:** parallel computation results in values slightly different from sequential
+    one, but is still fully deterministic.
+
     Parameters
     ----------
     errors : {"raise", "NaN", "ignore"}, default="raise"
