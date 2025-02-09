@@ -4,7 +4,7 @@ import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_nan
+from .utils import _check_finite_values
 
 
 @validate_params(
@@ -28,7 +28,7 @@ def braun_blanquet_binary_similarity(
         sim(a, b) = \frac{|a \cap b|}{\max(|a|, |b|)}
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 0.
+    Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
     ----------
@@ -65,33 +65,26 @@ def braun_blanquet_binary_similarity(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> sim = braun_blanquet_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
+    >>> sim
     1.0
 
-    >>> from skfp.distances import braun_blanquet_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
-    >>> vec_b = csr_array([[1, 0, 1]])
+    >>> vec_b = csr_array([[0, 0, 1]])
     >>> sim = braun_blanquet_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
-    1.0
+    >>> sim
+    0.5
     """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
+    _check_finite_values(vec_a)
+    _check_finite_values(vec_b)
 
     if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 0.0
+        return 1.0
 
-    if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-        return _braun_blanquet_binary_scipy(vec_a_bool, vec_b_bool)
-
-    elif isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-        return _braun_blanquet_binary_numpy(vec_a_bool, vec_b_bool)
-
+    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
+        return _braun_blanquet_binary_numpy(vec_a, vec_b)
+    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+        return _braun_blanquet_binary_scipy(vec_a, vec_b)
     else:
         raise TypeError(
             f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
@@ -158,7 +151,7 @@ def braun_blanquet_binary_distance(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> dist = braun_blanquet_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.0
 
     >>> from skfp.distances import braun_blanquet_binary_distance
@@ -166,7 +159,7 @@ def braun_blanquet_binary_distance(
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = braun_blanquet_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.0
     """
     return 1 - braun_blanquet_binary_similarity(vec_a, vec_b)
@@ -180,7 +173,7 @@ def _braun_blanquet_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
         return 0.0
 
     braun_blanquet_sim = and_count / max_vec
-    return braun_blanquet_sim
+    return float(braun_blanquet_sim)
 
 
 def _braun_blanquet_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
@@ -203,4 +196,4 @@ def _braun_blanquet_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
 
     braun_blanquet_sim = and_count / max_vec
 
-    return braun_blanquet_sim
+    return float(braun_blanquet_sim)

@@ -2,6 +2,12 @@ from .braun_blanquet import (
     braun_blanquet_binary_distance,
     braun_blanquet_binary_similarity,
 )
+from .ct4 import (
+    ct4_binary_distance,
+    ct4_binary_similarity,
+    ct4_count_distance,
+    ct4_count_similarity,
+)
 from .dice import (
     dice_binary_distance,
     dice_binary_similarity,

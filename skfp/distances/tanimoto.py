@@ -6,7 +6,7 @@ from scipy.sparse import csr_array
 from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_nan
+from .utils import _check_finite_values
 
 
 @validate_params(
@@ -22,8 +22,8 @@ def tanimoto_binary_similarity(
     r"""
     Tanimoto similarity for vectors of binary values.
 
-    Computes the Tanimoto similarity [1]_ for binary data between two input arrays
-    or sparse matrices using the Jaccard index, using the formula:
+    Computes the Tanimoto similarity [1]_ (also known as Jaccard similarity)
+    for binary data between two input arrays or sparse matrices, using the formula:
 
     .. math::
 
@@ -59,7 +59,7 @@ def tanimoto_binary_similarity(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> sim = tanimoto_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
+    >>> sim
     1.0
 
     >>> from skfp.distances import tanimoto_binary_similarity
@@ -67,34 +67,30 @@ def tanimoto_binary_similarity(
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> sim = tanimoto_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
+    >>> sim
     1.0
     """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
+    _check_finite_values(vec_a)
+    _check_finite_values(vec_b)
 
     if np.sum(vec_a) == 0 == np.sum(vec_b):
         return 1.0
 
-    if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-
-        intersection: float = vec_a_bool.multiply(vec_b_bool).sum()
-        union: float = vec_a_bool.sum() + vec_b_bool.sum() - intersection
-
-        return intersection / union
-
-    elif isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-
-        return 1 - jaccard(vec_a_bool, vec_b_bool)
+    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
+        vec_a = vec_a.astype(bool)
+        vec_b = vec_b.astype(bool)
+        sim = 1 - jaccard(vec_a, vec_b)
+    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+        intersection = vec_a.multiply(vec_b).sum()
+        union = vec_a.sum() + vec_b.sum() - intersection
+        sim = intersection / union
     else:
         raise TypeError(
             f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
             f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
         )
+
+    return float(sim)
 
 
 @validate_params(
@@ -110,8 +106,9 @@ def tanimoto_binary_distance(
     """
     Tanimoto distance for vectors of binary values.
 
-    Computes the Tanimoto distance [1]_ for binary data between two input arrays
-    or sparse matrices by subtracting the similarity from 1, using the formula:
+    Computes the Tanimoto distance [1]_ (also known as Jaccard distance)
+    for binary data between two input arrays or sparse matrices by subtracting
+    the similarity from 1, using the formula:
 
     .. math::
 
@@ -148,7 +145,7 @@ def tanimoto_binary_distance(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> dist = tanimoto_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.0
 
     >>> from skfp.distances import tanimoto_binary_distance
@@ -156,7 +153,7 @@ def tanimoto_binary_distance(
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = tanimoto_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.0
     """
     return 1 - tanimoto_binary_similarity(vec_a, vec_b)
@@ -215,7 +212,7 @@ def tanimoto_count_similarity(
     >>> vec_a = np.array([7, 1, 1])
     >>> vec_b = np.array([7, 1, 2])
     >>> sim = tanimoto_count_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
+    >>> sim
     0.9811320754716981
 
     >>> from skfp.distances import tanimoto_count_similarity
@@ -223,19 +220,19 @@ def tanimoto_count_similarity(
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> sim = tanimoto_count_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
+    >>> sim
     0.9811320754716981
     """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
+    _check_finite_values(vec_a)
+    _check_finite_values(vec_b)
 
-    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
         return 1.0
 
-    if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        return _tanimoto_count_scipy(vec_a, vec_b)
-    elif isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
+    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         return _tanimoto_count_numpy(vec_a, vec_b)
+    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+        return _tanimoto_count_scipy(vec_a, vec_b)
     else:
         raise TypeError(
             f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
@@ -294,7 +291,7 @@ def tanimoto_count_distance(
     >>> vec_a = np.array([7, 1, 1])
     >>> vec_b = np.array([7, 1, 2])
     >>> dist = tanimoto_count_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.018867924528301883
 
     >>> from skfp.distances import tanimoto_count_distance
@@ -302,7 +299,7 @@ def tanimoto_count_distance(
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> dist = tanimoto_count_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.018867924528301883
     """
     return 1 - tanimoto_count_similarity(vec_a, vec_b)
@@ -322,7 +319,7 @@ def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
         dot_aa += vec_a[i] * vec_a[i]
         dot_bb += vec_b[i] * vec_b[i]
 
-    return dot_ab / (dot_aa + dot_bb - dot_ab)
+    return float(dot_ab / (dot_aa + dot_bb - dot_ab))
 
 
 def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
@@ -330,4 +327,4 @@ def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
     dot_aa: float = vec_a.multiply(vec_a).sum()
     dot_bb: float = vec_b.multiply(vec_b).sum()
 
-    return dot_ab / (dot_aa + dot_bb - dot_ab)
+    return float(dot_ab / (dot_aa + dot_bb - dot_ab))
