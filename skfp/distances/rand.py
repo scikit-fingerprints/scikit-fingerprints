@@ -68,14 +68,14 @@ def rand_binary_similarity(
     >>> vec_b = np.array([1, 0, 1])
     >>> sim = rand_binary_similarity(vec_a, vec_b)
     >>> sim
-    1.0
+    0.6666666666666666
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> sim = rand_binary_similarity(vec_a, vec_b)
     >>> sim
-    1.0
+    0.6666666666666666
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
@@ -152,13 +152,13 @@ def rand_binary_distance(
     >>> vec_b = np.array([1, 0, 1])
     >>> dist = rand_binary_distance(vec_a, vec_b)
     >>> dist
-    0.0
+    0.33333333333333337
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = rand_binary_distance(vec_a, vec_b)
     >>> dist
-    0.0
+    0.33333333333333337
     """
     return 1 - rand_binary_similarity(vec_a, vec_b)
