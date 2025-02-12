@@ -73,17 +73,14 @@ def tanimoto_binary_similarity(
     _check_finite_values(vec_b)
     _check_valid_vectors(vec_a, vec_b)
 
-    if isinstance(vec_a, np.ndarray):
-        if np.allclose(vec_a, vec_b):
-            return 1.0
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
+        return 1.0
 
+    if isinstance(vec_a, np.ndarray):
         vec_a = vec_a.astype(bool)
         vec_b = vec_b.astype(bool)
         sim = 1 - jaccard(vec_a, vec_b)
     else:
-        if np.allclose(vec_a.data, vec_b.data):
-            return 1.0
-
         intersection = vec_a.multiply(vec_b).sum()
         union = vec_a.sum() + vec_b.sum() - intersection
         sim = intersection / union
@@ -224,15 +221,12 @@ def tanimoto_count_similarity(
     _check_finite_values(vec_b)
     _check_valid_vectors(vec_a, vec_b)
 
-    if isinstance(vec_a, np.ndarray):
-        if np.allclose(vec_a, vec_b):
-            return 1.0
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
+        return 1.0
 
+    if isinstance(vec_a, np.ndarray):
         return _tanimoto_count_numpy(vec_a, vec_b)
     else:
-        if np.allclose(vec_a.data, vec_b.data):
-            return 1.0
-
         return _tanimoto_count_scipy(vec_a, vec_b)
 
 

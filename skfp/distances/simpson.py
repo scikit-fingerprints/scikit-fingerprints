@@ -29,7 +29,7 @@ def simpson_binary_similarity(
         sim(a, b) = \frac{|a \cap b|}{\min(|a|, |b|)}
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 1.
+    If any of the vectors is all-zeros, it results in a similarity of 0.
 
     Parameters
     ----------
@@ -83,16 +83,18 @@ def simpson_binary_similarity(
     _check_finite_values(vec_b)
     _check_valid_vectors(vec_a, vec_b)
 
+    if np.sum(vec_a) == 0 or np.sum(vec_b) == 0:
+        return 0.0
+
     if isinstance(vec_a, np.ndarray):
-        if np.allclose(vec_a, vec_b):
-            return 1.0
-
-        return _simpson_binary_numpy(vec_a, vec_b)
+        num_common = np.sum(vec_a & vec_b)
     else:
-        if np.allclose(vec_a.data, vec_b.data):
-            return 1.0
+        num_common = len(set(vec_a.indices) & set(vec_b.indices))
 
-        return _simpson_binary_scipy(vec_a, vec_b)
+    min_vec = min(np.sum(vec_a), np.sum(vec_b))
+
+    braun_blanquet_sim = num_common / min_vec
+    return float(braun_blanquet_sim)
 
 
 @validate_params(
@@ -168,29 +170,3 @@ def simpson_binary_distance(
     0.0
     """
     return 1 - simpson_binary_similarity(vec_a, vec_b)
-
-
-def _simpson_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    and_count = np.sum(vec_a & vec_b)
-    min_vec = min(np.sum(vec_a), np.sum(vec_b))
-
-    simpson_sim = and_count / min_vec
-    return float(simpson_sim)
-
-
-def _simpson_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    a_indices = vec_a.indices
-    b_indices = vec_b.indices
-
-    common_indices = set(a_indices).intersection(b_indices)
-
-    and_count = 0
-    for idx in common_indices:
-        a_val = vec_a.data[vec_a.indices == idx]
-        b_val = vec_b.data[vec_b.indices == idx]
-        and_count += a_val[0] & b_val[0]
-
-    min_vec = min(np.sum(vec_a), np.sum(vec_b))
-
-    simpson_sim = and_count / min_vec
-    return float(simpson_sim)

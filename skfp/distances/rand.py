@@ -30,7 +30,7 @@ def rand_binary_similarity(
     where `n` is the length of vector `a`.
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 1.
+    Passing all-zero vectors to this function results in a similarity of 0.
 
     Parameters
     ----------
@@ -82,19 +82,13 @@ def rand_binary_similarity(
     _check_valid_vectors(vec_a, vec_b)
 
     if isinstance(vec_a, np.ndarray):
-        if np.allclose(vec_a, vec_b):
-            return 1.0
-
+        num_common = np.sum(vec_a & vec_b)
         length = len(vec_a)
-        n_equal_vals = np.sum(vec_a == vec_b)
     else:
-        if np.allclose(vec_a.data, vec_b.data):
-            return 1.0
-
+        num_common = len(set(vec_a.indices) & set(vec_b.indices))
         length = vec_a.shape[1]
-        n_equal_vals = length - (vec_a != vec_b).nnz
 
-    rand_sim = n_equal_vals / length
+    rand_sim = num_common / length
     return float(rand_sim)
 
 

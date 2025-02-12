@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
+from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
-from distances.utils import assert_similarity_and_distance_values
 from skfp.distances.dice import (
     dice_binary_distance,
     dice_binary_similarity,
@@ -32,7 +32,7 @@ def _get_count_values() -> list[tuple[list[int], list[int], str, float]]:
         ([4, 0, 0], [4, 0, 0], "==", 1.0),
         ([1, 1, 1], [1, 1, 1], "==", 1.0),
         ([3, 2, 1], [3, 2, 1], "==", 1.0),
-        ([2, 0, 0, 0], [1, 1, 1, 1], "<", 0.5),
+        ([3, 0, 0, 0], [1, 1, 1, 1], "<", 0.5),
         ([2, 3, 4, 0], [2, 3, 4, 2], ">", 0.5),
     ]
 

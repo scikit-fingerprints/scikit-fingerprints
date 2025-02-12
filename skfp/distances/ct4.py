@@ -29,14 +29,9 @@ def ct4_binary_similarity(
         sim(a, b) = \frac{\log |a \cap b|}{\log |a \cup b|}
         = \frac{\log |a \cap b|}{\log (|a| + |b| - |a \cap b|)}
 
-    It is calculated by log-transforming numerator and denominator of the
-    Tanimoto similarity (see also :py:func:`tanimoto_binary_similarity`).
-
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Identical vectors, e.g. all-zero ones, always results in a similarity of 1.
-    Otherwise, in case of  vectors with no common elements, or only a single
-    bit with value 1, which would result in wrong logarithm values, have
-    similarity of 0.
+    Vectors with 0 or 1 elements in their intersection or union (which
+    would cause numerical problems with logarithm) have similarity 0.
 
     Parameters
     ----------
@@ -91,19 +86,13 @@ def ct4_binary_similarity(
     _check_valid_vectors(vec_a, vec_b)
 
     if isinstance(vec_a, np.ndarray):
-        if np.allclose(vec_a, vec_b):
-            return 1.0
-
         intersection = np.sum(vec_a & vec_b)
         union = np.sum(vec_a | vec_b)
     else:
-        if np.allclose(vec_a.data, vec_b.data):
-            return 1.0
-
         intersection = vec_a.multiply(vec_b).sum()
         union = vec_a.sum() + vec_b.sum() - intersection
 
-    if intersection == 0 or union == 1:
+    if intersection in {0, 1} or union in {0, 1}:
         # log of 0 is -infinity, and log of 1 is 0
         return 0.0
 
@@ -133,7 +122,8 @@ def ct4_binary_distance(
 
     See also :py:func:`ct4_binary_similarity`.
     The calculated distance falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a distance of 0.
+    Vectors with 0 or 1 elements in their intersection or union (which
+    would cause numerical problems with logarithm) have distance 1.
 
     Parameters
     ----------
@@ -206,14 +196,9 @@ def ct4_count_similarity(
 
         sim(a, b) = \frac{\log (a \cdot b)}{\log (\|a\|^2 + \|b\|^2 - a \cdot b)}
 
-    It is calculated by log-transforming numerator and denominator of the
-    CT4 count similarity (see also :py:func:`ct4_count_similarity`).
-
     Calculated similarity falls within the range of :math:`[0, 1]`.
-    Identical vectors, e.g. all-zero ones, always results in a similarity of 1.
-    Otherwise, in case of  vectors with no common elements, or only a single
-    bit with value 1, which would result in wrong logarithm values, have
-    similarity of 0.
+    Vectors with 0 or 1 elements in their intersection or union (which
+    would cause numerical problems with logarithm) have similarity 0.
 
     Note that Numpy version is optimized with Numba JIT compiler, resulting in
     significantly faster performance compared to SciPy sparse arrays. First usage
@@ -272,17 +257,16 @@ def ct4_count_similarity(
     _check_valid_vectors(vec_a, vec_b)
 
     if isinstance(vec_a, np.ndarray):
-        if np.allclose(vec_a, vec_b):
-            return 1.0
-
         intersection, union = _ct4_count_numpy(vec_a, vec_b)
     else:
-        if np.allclose(vec_a.data, vec_b.data):
-            return 1.0
-
         intersection, union = _ct4_count_scipy(vec_a, vec_b)
 
-    if np.isclose(intersection, 0) or np.isclose(union, 1):
+    if (
+        np.isclose(intersection, 0)
+        or np.isclose(intersection, 1)
+        or np.isclose(union, 0)
+        or np.isclose(union, 1)
+    ):
         # log of 0 is -infinity, and log of 1 is 0
         return 0.0
 
@@ -312,9 +296,8 @@ def ct4_count_distance(
 
     See also :py:func:`ct4_count_similarity`.
     The calculated distance falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a distance of 0.
-    Vectors with 0 common elements or only 1 bit with value 1, which would
-    result in wrong logarithm values, have distance of 1.
+    Vectors with 0 or 1 elements in their intersection or union (which
+    would cause numerical problems with logarithm) have distance 1.
 
     Parameters
     ----------
