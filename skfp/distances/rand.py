@@ -4,7 +4,7 @@ import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values
+from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
@@ -30,7 +30,7 @@ def rand_binary_similarity(
     where `n` is the length of vector `a`.
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 0.
+    Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
     ----------
@@ -70,7 +70,6 @@ def rand_binary_similarity(
     >>> sim
     1.0
 
-    >>> from skfp.distances import rand_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
@@ -80,25 +79,20 @@ def rand_binary_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
-    if vec_a.shape != vec_b.shape:
-        raise ValueError(
-            f"Vectors must have same shape, got {vec_a.shape} and {vec_b.shape}"
-        )
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 0.0
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
 
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         length = len(vec_a)
         n_equal_vals = np.sum(vec_a == vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+    else:
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+
         length = vec_a.shape[1]
         n_equal_vals = length - (vec_a != vec_b).nnz
-    else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
 
     rand_sim = n_equal_vals / length
     return float(rand_sim)
@@ -166,7 +160,6 @@ def rand_binary_distance(
     >>> dist
     0.0
 
-    >>> from skfp.distances import rand_binary_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])

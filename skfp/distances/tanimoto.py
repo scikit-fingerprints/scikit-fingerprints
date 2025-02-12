@@ -6,7 +6,7 @@ from scipy.sparse import csr_array
 from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values
+from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
@@ -43,7 +43,7 @@ def tanimoto_binary_similarity(
     Returns
     -------
     similarity : float
-        Tanimoto similarity between vec_a and vec_b.
+        Tanimoto similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
@@ -62,7 +62,6 @@ def tanimoto_binary_similarity(
     >>> sim
     1.0
 
-    >>> from skfp.distances import tanimoto_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
@@ -72,23 +71,22 @@ def tanimoto_binary_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
 
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         vec_a = vec_a.astype(bool)
         vec_b = vec_b.astype(bool)
         sim = 1 - jaccard(vec_a, vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+    else:
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+
         intersection = vec_a.multiply(vec_b).sum()
         union = vec_a.sum() + vec_b.sum() - intersection
         sim = intersection / union
-    else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
 
     return float(sim)
 
@@ -148,7 +146,6 @@ def tanimoto_binary_distance(
     >>> dist
     0.0
 
-    >>> from skfp.distances import tanimoto_binary_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
@@ -182,8 +179,9 @@ def tanimoto_count_similarity(
     Calculated similarity falls within the range of :math:`[0, 1]`.
     Passing all-zero vectors to this function results in similarity of 1.
 
-    Note that Numpy version is optimized with Numba JIT compiler, resulting in significantly faster
-    performance compared to SciPy sparse arrays. First usage may be slightly slower due to Numba compilation.
+    Note that Numpy version is optimized with Numba JIT compiler, resulting
+    in significantly faster performance compared to SciPy sparse arrays. First
+    usage may be slightly slower due to Numba compilation.
 
     Parameters
     ----------
@@ -196,7 +194,7 @@ def tanimoto_count_similarity(
     Returns
     -------
     similarity : float
-        Tanimoto similarity between vec_a and vec_b.
+        Tanimoto similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
@@ -215,7 +213,6 @@ def tanimoto_count_similarity(
     >>> sim
     0.9811320754716981
 
-    >>> from skfp.distances import tanimoto_count_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
@@ -225,19 +222,18 @@ def tanimoto_count_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
 
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         return _tanimoto_count_numpy(vec_a, vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        return _tanimoto_count_scipy(vec_a, vec_b)
     else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+
+        return _tanimoto_count_scipy(vec_a, vec_b)
 
 
 @validate_params(
@@ -294,7 +290,6 @@ def tanimoto_count_distance(
     >>> dist
     0.018867924528301883
 
-    >>> from skfp.distances import tanimoto_count_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])

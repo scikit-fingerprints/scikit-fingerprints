@@ -4,7 +4,7 @@ import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values
+from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
@@ -29,7 +29,7 @@ def simpson_binary_similarity(
         sim(a, b) = \frac{|a \cap b|}{\min(|a|, |b|)}
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 0.
+    Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
     ----------
@@ -81,19 +81,18 @@ def simpson_binary_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 0.0
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
 
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         return _simpson_binary_numpy(vec_a, vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        return _simpson_binary_scipy(vec_a, vec_b)
     else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+
+        return _simpson_binary_scipy(vec_a, vec_b)
 
 
 @validate_params(

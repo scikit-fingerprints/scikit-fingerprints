@@ -6,7 +6,7 @@ from scipy.sparse import csr_array
 from scipy.spatial.distance import dice
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values
+from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
@@ -74,7 +74,6 @@ def dice_binary_similarity(
     >>> sim
     1.0
 
-    >>> from skfp.distances import dice_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
@@ -84,22 +83,21 @@ def dice_binary_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
 
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         vec_a = vec_a.astype(bool)
         vec_b = vec_b.astype(bool)
         sim = 1 - dice(vec_a, vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+    else:
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+
         intersection: float = vec_a.multiply(vec_b).sum()
         sim = 2 * intersection / (vec_a.sum() + vec_b.sum())
-    else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
 
     return float(sim)
 
@@ -253,19 +251,16 @@ def dice_count_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
-
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
         return _dice_count_numpy(vec_a, vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        return _dice_count_scipy(vec_a, vec_b)
     else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+        return _dice_count_scipy(vec_a, vec_b)
 
 
 @validate_params(
@@ -334,7 +329,6 @@ def dice_count_distance(
     >>> dist
     0.00952380952380949
 
-    >>> from skfp.distances import dice_count_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])

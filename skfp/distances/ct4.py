@@ -5,7 +5,7 @@ from numba import njit, prange
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values
+from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
@@ -33,9 +33,10 @@ def ct4_binary_similarity(
     Tanimoto similarity (see also :py:func:`tanimoto_binary_similarity`).
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 1.
-    Vectors with 0 common elements or only 1 bit with value 1, which would
-    result in wrong logarithm values, have similarity of 0.
+    Identical vectors, e.g. all-zero ones, always results in a similarity of 1.
+    Otherwise, in case of  vectors with no common elements, or only a single
+    bit with value 1, which would result in wrong logarithm values, have
+    similarity of 0.
 
     Parameters
     ----------
@@ -48,7 +49,7 @@ def ct4_binary_similarity(
     Returns
     -------
     similarity : float
-        CT4 similarity between vec_a and vec_b.
+        CT4 similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
@@ -78,7 +79,6 @@ def ct4_binary_similarity(
     >>> sim
     1.0
 
-    >>> from skfp.distances import ct4_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
@@ -88,21 +88,20 @@ def ct4_binary_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
 
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         intersection = np.sum(vec_a & vec_b)
         union = np.sum(vec_a | vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
+    else:
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+
         intersection = vec_a.multiply(vec_b).sum()
         union = vec_a.sum() + vec_b.sum() - intersection
-    else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
 
     if intersection == 0 or union == 1:
         # log of 0 is -infinity, and log of 1 is 0
@@ -177,7 +176,6 @@ def ct4_binary_distance(
     >>> dist
     0.0
 
-    >>> from skfp.distances import ct4_binary_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
@@ -212,7 +210,10 @@ def ct4_count_similarity(
     CT4 count similarity (see also :py:func:`ct4_count_similarity`).
 
     Calculated similarity falls within the range of :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in similarity of 1.
+    Identical vectors, e.g. all-zero ones, always results in a similarity of 1.
+    Otherwise, in case of  vectors with no common elements, or only a single
+    bit with value 1, which would result in wrong logarithm values, have
+    similarity of 0.
 
     Note that Numpy version is optimized with Numba JIT compiler, resulting in
     significantly faster performance compared to SciPy sparse arrays. First usage
@@ -229,7 +230,7 @@ def ct4_count_similarity(
     Returns
     -------
     similarity : float
-        CT4 similarity between vec_a and vec_b.
+        CT4 similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
@@ -259,7 +260,6 @@ def ct4_count_similarity(
     >>> sim
     0.9952023187751823
 
-    >>> from skfp.distances import ct4_count_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
@@ -269,19 +269,18 @@ def ct4_count_similarity(
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
+    _check_valid_vectors(vec_a, vec_b)
 
-    if np.sum(vec_a) == 0 and np.sum(vec_b) == 0:
-        return 1.0
+    if isinstance(vec_a, np.ndarray):
+        if np.allclose(vec_a, vec_b):
+            return 1.0
 
-    if isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
         intersection, union = _ct4_count_numpy(vec_a, vec_b)
-    elif isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        intersection, union = _ct4_count_scipy(vec_a, vec_b)
     else:
-        raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
-        )
+        if np.allclose(vec_a.data, vec_b.data):
+            return 1.0
+
+        intersection, union = _ct4_count_scipy(vec_a, vec_b)
 
     if np.isclose(intersection, 0) or np.isclose(union, 1):
         # log of 0 is -infinity, and log of 1 is 0
@@ -358,7 +357,6 @@ def ct4_count_distance(
     >>> dist
     0.004797681224817718
 
-    >>> from skfp.distances import ct4_count_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])

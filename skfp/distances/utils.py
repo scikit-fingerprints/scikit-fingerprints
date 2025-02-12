@@ -15,3 +15,22 @@ def _check_finite_values(arr: Union[np.ndarray, csr_array]) -> None:
         raise TypeError(
             f"Expected numpy.ndarray or scipy.sparse.csr_array, got {type(arr)}"
         )
+
+
+def _check_valid_vectors(
+    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+) -> None:
+    if (
+        type(vec_a) != type(vec_b)
+        or not isinstance(vec_a, (np.ndarray, csr_array))
+        or not isinstance(vec_b, (np.ndarray, csr_array))
+    ):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
+            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
+        )
+
+    if vec_a.shape != vec_b.shape:
+        raise ValueError(
+            f"Vectors must have same shape, got {vec_a.shape} and {vec_b.shape}"
+        )

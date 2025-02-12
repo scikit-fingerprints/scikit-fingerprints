@@ -36,3 +36,18 @@ def test_simpson_binary_distance_against_threshold(vec_a, vec_b):
     distance = simpson_binary_distance(vec_a, vec_b)
 
     assert np.isclose(distance, threshold, atol=1e-3)
+
+
+@pytest.mark.parametrize(
+    "vec_a, vec_b, expected_similarity",
+    [
+        (np.array([0, 0, 0]), np.array([0, 0, 0]), 1.0),
+        (np.array([1, 0, 0]), np.array([0, 1, 1]), 0.0),
+        (np.array([1, 0, 0]), np.array([0, 0, 0]), 0.0),
+        (np.array([1, 0, 0]), np.array([1, 0, 0]), 1.0),
+        (np.array([1, 1, 1]), np.array([1, 1, 1]), 1.0),
+    ],
+)
+def test_simpson_equality(vec_a, vec_b, expected_similarity):
+    similarity = simpson_binary_distance(vec_a, vec_b)
+    assert np.isclose(similarity, expected_similarity)
