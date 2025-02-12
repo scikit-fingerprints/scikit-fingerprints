@@ -3,7 +3,7 @@ import pytest
 from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
-from skfp.distances.dice import (
+from skfp.distances import (
     dice_binary_distance,
     dice_binary_similarity,
     dice_count_distance,

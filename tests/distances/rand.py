@@ -3,10 +3,7 @@ import pytest
 from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
-from skfp.distances.rand import (
-    rand_binary_distance,
-    rand_binary_similarity,
-)
+from skfp.distances import rand_binary_distance, rand_binary_similarity
 
 
 def _get_values() -> list[tuple[list[int], list[int], str, float]]:

@@ -3,7 +3,7 @@ import pytest
 from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
-from skfp.distances.braun_blanquet import (
+from skfp.distances import (
     braun_blanquet_binary_distance,
     braun_blanquet_binary_similarity,
 )

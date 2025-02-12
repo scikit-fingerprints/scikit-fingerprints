@@ -3,7 +3,7 @@ import pytest
 from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
-from skfp.distances.tanimoto import (
+from skfp.distances import (
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
     tanimoto_count_distance,
