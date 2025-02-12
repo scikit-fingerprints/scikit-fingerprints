@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
-from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
 from skfp.distances import (
     braun_blanquet_binary_distance,
     braun_blanquet_binary_similarity,
 )
+from tests.distances.utils import assert_similarity_and_distance_values
 
 
 def _get_values() -> list[tuple[list[int], list[int], str, float]]:

@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
 from skfp.distances import (
@@ -9,6 +8,7 @@ from skfp.distances import (
     ct4_count_distance,
     ct4_count_similarity,
 )
+from tests.distances.utils import assert_similarity_and_distance_values
 
 
 def _get_binary_values() -> list[tuple[list[int], list[int], str, float]]:
