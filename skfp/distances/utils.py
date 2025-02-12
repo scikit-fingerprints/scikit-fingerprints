@@ -21,7 +21,7 @@ def _check_valid_vectors(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> None:
     if (
-        type(vec_a) != type(vec_b)
+        type(vec_a) is not type(vec_b)
         or not isinstance(vec_a, (np.ndarray, csr_array))
         or not isinstance(vec_b, (np.ndarray, csr_array))
     ):

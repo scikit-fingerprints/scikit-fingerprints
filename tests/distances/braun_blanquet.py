@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
+from distances.utils import assert_similarity_and_distance_values
 from scipy.sparse import csr_array
 
-from distances.utils import assert_similarity_and_distance_values
 from skfp.distances.braun_blanquet import (
     braun_blanquet_binary_distance,
     braun_blanquet_binary_similarity,
