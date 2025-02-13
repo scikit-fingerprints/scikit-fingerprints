@@ -53,3 +53,11 @@ def test_run_in_parallel_invalid_batch_size():
         run_in_parallel(func, data, n_jobs=-1, batch_size=-1, flatten_results=True)
 
     assert "batch_size must be positive" in str(exc_info)
+
+
+def test_run_in_parallel_single_element_func():
+    func = lambda x: x + 1
+    data = list(range(100))
+    result_parallel = run_in_parallel(func, data, n_jobs=-1, single_element_func=True)
+    expected_result = list(range(1, 101))
+    assert result_parallel == expected_result
