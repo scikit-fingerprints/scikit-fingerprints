@@ -1,7 +1,6 @@
 from typing import Union
 
 import numpy as np
-from numba import njit, prange
 from scipy.sparse import csr_array
 from scipy.spatial.distance import jaccard
 from sklearn.utils._param_validation import validate_params
@@ -81,8 +80,10 @@ def tanimoto_binary_similarity(
         vec_b = vec_b.astype(bool)
         sim = 1 - jaccard(vec_a, vec_b)
     else:
-        intersection = vec_a.multiply(vec_b).sum()
-        union = vec_a.sum() + vec_b.sum() - intersection
+        vec_a_idxs = set(vec_a.indices)
+        vec_b_idxs = set(vec_b.indices)
+        intersection = len(vec_a_idxs & vec_b_idxs)
+        union = len(vec_a_idxs | vec_b_idxs)
         sim = intersection / union
 
     return float(sim)
@@ -176,10 +177,6 @@ def tanimoto_count_similarity(
     Calculated similarity falls within the range of :math:`[0, 1]`.
     Passing all-zero vectors to this function results in similarity of 1.
 
-    Note that Numpy version is optimized with Numba JIT compiler, resulting
-    in significantly faster performance compared to SciPy sparse arrays. First
-    usage may be slightly slower due to Numba compilation.
-
     Parameters
     ----------
     vec_a : {ndarray, sparse matrix}
@@ -225,9 +222,18 @@ def tanimoto_count_similarity(
         return 1.0
 
     if isinstance(vec_a, np.ndarray):
-        return _tanimoto_count_numpy(vec_a, vec_b)
+        dot_aa = np.dot(vec_a, vec_a)
+        dot_bb = np.dot(vec_b, vec_b)
+        dot_ab = np.dot(vec_a, vec_b)
     else:
-        return _tanimoto_count_scipy(vec_a, vec_b)
+        dot_ab = vec_a.multiply(vec_b).sum()
+        dot_aa = vec_a.multiply(vec_a).sum()
+        dot_bb = vec_b.multiply(vec_b).sum()
+
+    intersection = dot_ab
+    union = dot_aa + dot_bb - dot_ab
+
+    return float(intersection / union)
 
 
 @validate_params(
@@ -292,28 +298,3 @@ def tanimoto_count_distance(
     0.018867924528301883
     """
     return 1 - tanimoto_count_similarity(vec_a, vec_b)
-
-
-@njit(parallel=True)
-def _tanimoto_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    vec_a = vec_a.astype(np.float64).ravel()
-    vec_b = vec_b.astype(np.float64).ravel()
-
-    dot_ab = 0.0
-    dot_aa = 0.0
-    dot_bb = 0.0
-
-    for i in prange(vec_a.shape[0]):
-        dot_ab += vec_a[i] * vec_b[i]
-        dot_aa += vec_a[i] * vec_a[i]
-        dot_bb += vec_b[i] * vec_b[i]
-
-    return float(dot_ab / (dot_aa + dot_bb - dot_ab))
-
-
-def _tanimoto_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    dot_ab: float = vec_a.multiply(vec_b).sum()
-    dot_aa: float = vec_a.multiply(vec_a).sum()
-    dot_bb: float = vec_b.multiply(vec_b).sum()
-
-    return float(dot_ab / (dot_aa + dot_bb - dot_ab))

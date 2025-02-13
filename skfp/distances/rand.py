@@ -82,7 +82,7 @@ def rand_binary_similarity(
     _check_valid_vectors(vec_a, vec_b)
 
     if isinstance(vec_a, np.ndarray):
-        num_common = np.sum(vec_a & vec_b)
+        num_common = np.sum(np.logical_and(vec_a, vec_b))
         length = len(vec_a)
     else:
         num_common = len(set(vec_a.indices) & set(vec_b.indices))

@@ -1,7 +1,6 @@
 from typing import Union
 
 import numpy as np
-from numba import njit, prange
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
 
@@ -86,11 +85,13 @@ def ct4_binary_similarity(
     _check_valid_vectors(vec_a, vec_b)
 
     if isinstance(vec_a, np.ndarray):
-        intersection = np.sum(vec_a & vec_b)
+        intersection = np.sum(np.logical_and(vec_a, vec_b))
         union = np.sum(vec_a | vec_b)
     else:
-        intersection = vec_a.multiply(vec_b).sum()
-        union = vec_a.sum() + vec_b.sum() - intersection
+        vec_a_idxs = set(vec_a.indices)
+        vec_b_idxs = set(vec_b.indices)
+        intersection = len(vec_a_idxs & vec_b_idxs)
+        union = len(vec_a_idxs | vec_b_idxs)
 
     if intersection in {0, 1} or union in {0, 1}:
         # log of 0 is -infinity, and log of 1 is 0
@@ -200,10 +201,6 @@ def ct4_count_similarity(
     Vectors with 0 or 1 elements in their intersection or union (which
     would cause numerical problems with logarithm) have similarity 0.
 
-    Note that Numpy version is optimized with Numba JIT compiler, resulting in
-    significantly faster performance compared to SciPy sparse arrays. First usage
-    may be slightly slower due to Numba compilation.
-
     Parameters
     ----------
     vec_a : {ndarray, sparse matrix}
@@ -257,9 +254,16 @@ def ct4_count_similarity(
     _check_valid_vectors(vec_a, vec_b)
 
     if isinstance(vec_a, np.ndarray):
-        intersection, union = _ct4_count_numpy(vec_a, vec_b)
+        dot_aa = np.dot(vec_a, vec_a)
+        dot_bb = np.dot(vec_b, vec_b)
+        dot_ab = np.dot(vec_a, vec_b)
     else:
-        intersection, union = _ct4_count_scipy(vec_a, vec_b)
+        dot_ab = vec_a.multiply(vec_b).sum()
+        dot_aa = vec_a.multiply(vec_a).sum()
+        dot_bb = vec_b.multiply(vec_b).sum()
+
+    intersection = dot_ab
+    union = dot_aa + dot_bb - dot_ab
 
     if (
         np.isclose(intersection, 0)
@@ -348,34 +352,3 @@ def ct4_count_distance(
     0.004797681224817718
     """
     return 1 - ct4_count_similarity(vec_a, vec_b)
-
-
-@njit(parallel=True)
-def _ct4_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> tuple[float, float]:
-    vec_a = vec_a.astype(np.float64).ravel()
-    vec_b = vec_b.astype(np.float64).ravel()
-
-    dot_ab = 0.0
-    dot_aa = 0.0
-    dot_bb = 0.0
-
-    for i in prange(vec_a.shape[0]):
-        dot_ab += vec_a[i] * vec_b[i]
-        dot_aa += vec_a[i] * vec_a[i]
-        dot_bb += vec_b[i] * vec_b[i]
-
-    intersection = dot_ab
-    union = dot_aa + dot_bb - dot_ab
-
-    return intersection, union
-
-
-def _ct4_count_scipy(vec_a: csr_array, vec_b: csr_array) -> tuple[float, float]:
-    dot_ab: float = vec_a.multiply(vec_b).sum()
-    dot_aa: float = vec_a.multiply(vec_a).sum()
-    dot_bb: float = vec_b.multiply(vec_b).sum()
-
-    intersection = dot_ab
-    union = dot_aa + dot_bb - dot_ab
-
-    return intersection, union
