@@ -14,7 +14,14 @@ from .dice import (
     dice_count_distance,
     dice_count_similarity,
 )
-from .fraggle import fraggle_distance, fraggle_similarity
+from .fraggle import (
+    fraggle_distance,
+    fraggle_similarity,
+)
+from .harris_lahey import (
+    harris_lahey_binary_distance,
+    harris_lahey_binary_similarity,
+)
 from .rand import (
     rand_binary_distance,
     rand_binary_similarity,
