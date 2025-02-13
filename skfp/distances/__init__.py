@@ -14,6 +14,7 @@ from .dice import (
     dice_count_distance,
     dice_count_similarity,
 )
+from .fraggle import fraggle_distance, fraggle_similarity
 from .rand import (
     rand_binary_distance,
     rand_binary_similarity,
