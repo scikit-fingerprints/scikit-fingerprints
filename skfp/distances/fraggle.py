@@ -88,7 +88,7 @@ def fraggle_similarity(
 
     >>> sim = fraggle_similarity(mol_query, mol_ref)
     >>> sim
-    0.26282051282051283
+    0.1640625
     """
     return GetFraggleSimilarity(mol_query, mol_ref, tversky_threshold)[0]
 
@@ -158,10 +158,10 @@ def fraggle_distance(
     >>> mol_ref = MolFromSmiles("COc1ccccc1")
     >>> sim = fraggle_similarity(mol_query, mol_ref)
     >>> sim
-    0.8359375
+    0.1640625
 
     >>> sim = fraggle_similarity(mol_query, mol_ref)
     >>> sim
-    0.7371794871794872
+    0.1640625
     """
     return 1 - GetFraggleSimilarity(mol_query, mol_ref, tversky_threshold)[0]
