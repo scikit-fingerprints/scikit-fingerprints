@@ -83,7 +83,7 @@ def braun_blanquet_binary_similarity(
         return 1.0
 
     if isinstance(vec_a, np.ndarray):
-        num_common = np.sum(vec_a & vec_b)
+        num_common = np.sum(np.logical_and(vec_a, vec_b))
     else:
         num_common = len(set(vec_a.indices) & set(vec_b.indices))
 

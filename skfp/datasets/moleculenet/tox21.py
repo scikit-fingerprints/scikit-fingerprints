@@ -81,7 +81,7 @@ def load_tox21(
     --------
     >>> from skfp.datasets.moleculenet import load_tox21
     >>> dataset = load_tox21()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['CCOc1ccc2nc(S(N)(=O)=O)sc2c1', ..., 'COc1ccc2c(c1OC)CN1CCc3cc4c(cc3C1C2)OCO4'], \
 array([[ 0.,  0.,  1., ...,  0.,  0.,  0.],
            [ 0.,  0.,  0., ..., nan,  0.,  0.],

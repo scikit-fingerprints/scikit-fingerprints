@@ -1,7 +1,6 @@
 from typing import Union
 
 import numpy as np
-from numba import njit, prange
 from scipy.sparse import csr_array
 from scipy.spatial.distance import dice
 from sklearn.utils._param_validation import validate_params
@@ -93,7 +92,7 @@ def dice_binary_similarity(
         vec_b = vec_b.astype(bool)
         sim = 1 - dice(vec_a, vec_b)
     else:
-        intersection: float = vec_a.multiply(vec_b).sum()
+        intersection = len(set(vec_a.indices) & set(vec_b.indices))
         sim = 2 * intersection / (vec_a.sum() + vec_b.sum())
 
     return float(sim)
@@ -254,9 +253,15 @@ def dice_count_similarity(
         return 1.0
 
     if isinstance(vec_a, np.ndarray):
-        return _dice_count_numpy(vec_a, vec_b)
+        dot_aa = np.dot(vec_a, vec_a)
+        dot_bb = np.dot(vec_b, vec_b)
+        dot_ab = np.dot(vec_a, vec_b)
     else:
-        return _dice_count_scipy(vec_a, vec_b)
+        dot_ab = vec_a.multiply(vec_b).sum()
+        dot_aa = vec_a.multiply(vec_a).sum()
+        dot_bb = vec_b.multiply(vec_b).sum()
+
+    return float(2 * dot_ab / (dot_aa + dot_bb))
 
 
 @validate_params(
@@ -333,28 +338,3 @@ def dice_count_distance(
     0.00952380952380949
     """
     return 1 - dice_count_similarity(vec_a, vec_b)
-
-
-@njit(parallel=True)
-def _dice_count_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    vec_a = vec_a.astype(np.float64).ravel()
-    vec_b = vec_b.astype(np.float64).ravel()
-
-    dot_ab = 0.0
-    dot_aa = 0.0
-    dot_bb = 0.0
-
-    for i in prange(vec_a.shape[0]):
-        dot_ab += vec_a[i] * vec_b[i]
-        dot_aa += vec_a[i] * vec_a[i]
-        dot_bb += vec_b[i] * vec_b[i]
-
-    return float(2 * dot_ab / (dot_aa + dot_bb))
-
-
-def _dice_count_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    dot_ab = vec_a.multiply(vec_b).sum()
-    dot_aa = vec_a.multiply(vec_a).sum()
-    dot_bb = vec_b.multiply(vec_b).sum()
-
-    return float(2 * dot_ab / (dot_aa + dot_bb))

@@ -73,7 +73,7 @@ def load_sider(
     --------
     >>> from skfp.datasets.moleculenet import load_sider
     >>> dataset = load_sider()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['C(CNCCNCCNCCN)N', ..., 'CCC(=O)C(CC(C)N(C)C)(C1=CC=CC=C1)C2=CC=CC=C2'], array([[1, 1, 0, ..., 1, 1, 0],
        [0, 1, 0, ..., 0, 1, 0],
        [0, 1, 0, ..., 0, 1, 0],

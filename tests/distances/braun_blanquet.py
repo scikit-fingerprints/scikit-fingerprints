@@ -26,18 +26,17 @@ def test_braun_blanquet(vec_a, vec_b, comparison, value):
     vec_a = np.array(vec_a)
     vec_b = np.array(vec_b)
 
-    similarity = braun_blanquet_binary_similarity(vec_a, vec_b)
-    distance = braun_blanquet_binary_distance(vec_a, vec_b)
+    vec_a_sparse = csr_array([vec_a])
+    vec_b_sparse = csr_array([vec_b])
 
-    assert_similarity_and_distance_values(similarity, distance, comparison, value)
+    sim_dense = braun_blanquet_binary_similarity(vec_a, vec_b)
+    dist_dense = braun_blanquet_binary_distance(vec_a, vec_b)
 
+    sim_sparse = braun_blanquet_binary_similarity(vec_a_sparse, vec_b_sparse)
+    dist_sparse = braun_blanquet_binary_distance(vec_a_sparse, vec_b_sparse)
 
-@pytest.mark.parametrize("vec_a, vec_b, comparison, value", _get_values())
-def test_braun_blanquet_sparse(vec_a, vec_b, comparison, value):
-    vec_a = csr_array([vec_a])
-    vec_b = csr_array([vec_b])
+    assert_similarity_and_distance_values(sim_dense, dist_dense, comparison, value)
+    assert_similarity_and_distance_values(sim_sparse, dist_sparse, comparison, value)
 
-    similarity = braun_blanquet_binary_similarity(vec_a, vec_b)
-    distance = braun_blanquet_binary_distance(vec_a, vec_b)
-
-    assert_similarity_and_distance_values(similarity, distance, comparison, value)
+    assert np.isclose(sim_dense, sim_sparse)
+    assert np.isclose(dist_dense, dist_sparse)
