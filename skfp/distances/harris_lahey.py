@@ -112,7 +112,7 @@ def harris_lahey_binary_similarity(
         c = np.sum(~vec_a & vec_b)
         d = np.sum(~vec_a & ~vec_b)
     else:
-        length = len(vec_a)
+        length = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
 
