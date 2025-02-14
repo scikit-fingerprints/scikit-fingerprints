@@ -47,9 +47,9 @@ def tanimoto_binary_similarity(
     References
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-       J Cheminform, 7, 20 (2015).
-       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+        J Cheminform, 7, 20 (2015).
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
     --------
@@ -125,9 +125,9 @@ def tanimoto_binary_distance(
     References
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-       J Cheminform, 7, 20 (2015).
-       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+        J Cheminform, 7, 20 (2015).
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Returns
     -------
@@ -193,9 +193,9 @@ def tanimoto_count_similarity(
     References
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-       J Cheminform, 7, 20 (2015).
-       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+        J Cheminform, 7, 20 (2015).
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Examples
     --------
@@ -271,9 +271,9 @@ def tanimoto_count_distance(
     References
     ----------
     .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-       "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-       J Cheminform, 7, 20 (2015).
-       <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+        J Cheminform, 7, 20 (2015).
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     Returns
     -------

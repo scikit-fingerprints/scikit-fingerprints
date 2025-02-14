@@ -318,8 +318,8 @@ def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
 
     where:
 
-    - :math:D is the graph diameter
-    - :math:R is the graph radius
+    - :math:`D` is the graph diameter
+    - :math:`R` is the graph radius
 
     Parameters
     ----------

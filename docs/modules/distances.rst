@@ -22,6 +22,9 @@ Distances
     ct4_count_distance
     dice_binary_distance
     dice_count_distance
+    fraggle_distance
+    harris_lahey_binary_distance
+    kulczynski_binary_distance
     rand_binary_distance
     simpson_binary_distance
     tanimoto_binary_distance
@@ -39,6 +42,9 @@ Similarities
     ct4_count_similarity
     dice_binary_similarity
     dice_count_similarity
+    fraggle_similarity
+    harris_lahey_binary_similarity
+    kulczynski_binary_similarity
     rand_binary_similarity
     simpson_binary_similarity
     tanimoto_binary_similarity
