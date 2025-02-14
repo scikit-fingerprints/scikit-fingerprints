@@ -25,12 +25,11 @@ def ct4_binary_similarity(
 
     .. math::
 
-        sim(a, b) = \frac{\log |a \cap b|}{\log |a \cup b|}
-        = \frac{\log |a \cap b|}{\log (|a| + |b| - |a \cap b|)}
+        sim(a, b) = \frac{\log (1 + |a \cap b|)}{\log (1 + |a \cup b|)}
+        = \frac{\log (1 + |a \cap b|)}{\log (1 + |a| + |b| - |a \cap b|)}
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Vectors with 0 or 1 elements in their intersection or union (which
-    would cause numerical problems with logarithm) have similarity 1.
+    Passing all-zero vectors to this function results in similarity of 1.
 
     Parameters
     ----------
@@ -84,20 +83,19 @@ def ct4_binary_similarity(
     _check_finite_values(vec_b)
     _check_valid_vectors(vec_a, vec_b)
 
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
+        return 1.0
+
     if isinstance(vec_a, np.ndarray):
         intersection = np.sum(np.logical_and(vec_a, vec_b))
-        union = np.sum(vec_a | vec_b)
+        union = np.sum(np.logical_or(vec_a, vec_b))
     else:
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
         intersection = len(vec_a_idxs & vec_b_idxs)
         union = len(vec_a_idxs | vec_b_idxs)
 
-    if intersection in {0, 1} or union in {0, 1}:
-        # log of 0 is -infinity, and log of 1 is 0
-        return 1.0
-
-    return float(np.log(intersection) / np.log(union))
+    return float(np.log(1 + intersection) / np.log(1 + union))
 
 
 @validate_params(
@@ -123,8 +121,7 @@ def ct4_binary_distance(
 
     See also :py:func:`ct4_binary_similarity`.
     The calculated distance falls within the range :math:`[0, 1]`.
-    Vectors with 0 or 1 elements in their intersection or union (which
-    would cause numerical problems with logarithm) have distance 1.
+    Passing all-zero vectors to this function results in a distance of 0.
 
     Parameters
     ----------
@@ -195,11 +192,10 @@ def ct4_count_similarity(
 
     .. math::
 
-        sim(a, b) = \frac{\log (a \cdot b)}{\log (\|a\|^2 + \|b\|^2 - a \cdot b)}
+        sim(a, b) = \frac{\log (1 + a \cdot b)}{\log (1 + \|a\|^2 + \|b\|^2 - a \cdot b)}
 
-    Calculated similarity falls within the range of :math:`[0, 1]`.
-    Vectors with 0 or 1 elements in their intersection or union (which
-    would cause numerical problems with logarithm) have similarity 1.
+    The calculated similarity falls within the range :math:`[0, 1]`.
+    Passing all-zero vectors to this function results in similarity of 1.
 
     Parameters
     ----------
@@ -253,6 +249,9 @@ def ct4_count_similarity(
     _check_finite_values(vec_b)
     _check_valid_vectors(vec_a, vec_b)
 
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
+        return 1.0
+
     if isinstance(vec_a, np.ndarray):
         dot_aa = np.dot(vec_a, vec_a)
         dot_bb = np.dot(vec_b, vec_b)
@@ -262,17 +261,8 @@ def ct4_count_similarity(
         dot_aa = vec_a.multiply(vec_a).sum()
         dot_bb = vec_b.multiply(vec_b).sum()
 
-    intersection = dot_ab
-    union = dot_aa + dot_bb - dot_ab
-
-    if (
-        np.isclose(intersection, 0)
-        or np.isclose(intersection, 1)
-        or np.isclose(union, 0)
-        or np.isclose(union, 1)
-    ):
-        # log of 0 is -infinity, and log of 1 is 0
-        return 1.0
+    intersection = 1 + dot_ab
+    union = 1 + dot_aa + dot_bb - dot_ab
 
     return float(np.log(intersection) / np.log(union))
 
