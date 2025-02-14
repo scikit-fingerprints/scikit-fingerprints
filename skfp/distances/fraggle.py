@@ -67,7 +67,7 @@ def fraggle_similarity(
     .. [1] `Jameed Hussain, Gavin Harper
         "Fraggle – a new similarity searching algorithm"
         RDKit UGM 2013
-       <https://raw.github.com/rdkit/UGM_2013/master/Presentations/Hussain.Fraggle.pdf>`_
+        <https://raw.github.com/rdkit/UGM_2013/master/Presentations/Hussain.Fraggle.pdf>`_
 
     .. [2] `Gregory Landrum
         "Comparing Fraggle to other fingerprints"
@@ -141,7 +141,7 @@ def fraggle_distance(
     .. [1] `Jameed Hussain, Gavin Harper
         "Fraggle – a new similarity searching algorithm"
         RDKit UGM 2013
-       <https://raw.github.com/rdkit/UGM_2013/master/Presentations/Hussain.Fraggle.pdf>`_
+        <https://raw.github.com/rdkit/UGM_2013/master/Presentations/Hussain.Fraggle.pdf>`_
 
     .. [2] `Gregory Landrum
         "Comparing Fraggle to other fingerprints"
