@@ -236,14 +236,14 @@ def ct4_count_similarity(
     >>> vec_b = np.array([7, 1, 2])
     >>> sim = ct4_count_similarity(vec_a, vec_b)
     >>> sim
-    0.9952023187751823
+    0.9953140617275088
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> sim = ct4_count_similarity(vec_a, vec_b)
     >>> sim
-    0.9952023187751823
+    0.9953140617275088
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
@@ -332,13 +332,13 @@ def ct4_count_distance(
     >>> vec_b = np.array([7, 1, 2])
     >>> dist = ct4_count_distance(vec_a, vec_b)
     >>> dist
-    0.004797681224817718
+    0.004685938272491197
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[7, 1, 1]])
     >>> vec_b = csr_array([[7, 1, 2]])
     >>> dist = ct4_count_distance(vec_a, vec_b)
     >>> dist
-    0.004797681224817718
+    0.004685938272491197
     """
     return 1 - ct4_count_similarity(vec_a, vec_b)
