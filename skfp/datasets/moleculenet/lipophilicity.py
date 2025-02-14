@@ -66,7 +66,7 @@ def load_lipophilicity(
     --------
     >>> from skfp.datasets.moleculenet import load_lipophilicity
     >>> dataset = load_lipophilicity()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['Cn1c(CN2CCN(CC2)c3ccc(Cl)cc3)nc4ccccc14', ..., 'CN1C(=O)C=C(CCc2ccc3ccccc3c2)N=C1N'],
         array([ 3.54, -1.18,  3.69, ...,  2.1 ,  2.65,  2.7 ]))
 

@@ -30,7 +30,7 @@ def ct4_binary_similarity(
 
     The calculated similarity falls within the range :math:`[0, 1]`.
     Vectors with 0 or 1 elements in their intersection or union (which
-    would cause numerical problems with logarithm) have similarity 0.
+    would cause numerical problems with logarithm) have similarity 1.
 
     Parameters
     ----------
@@ -95,7 +95,7 @@ def ct4_binary_similarity(
 
     if intersection in {0, 1} or union in {0, 1}:
         # log of 0 is -infinity, and log of 1 is 0
-        return 0.0
+        return 1.0
 
     return float(np.log(intersection) / np.log(union))
 
@@ -199,7 +199,7 @@ def ct4_count_similarity(
 
     Calculated similarity falls within the range of :math:`[0, 1]`.
     Vectors with 0 or 1 elements in their intersection or union (which
-    would cause numerical problems with logarithm) have similarity 0.
+    would cause numerical problems with logarithm) have similarity 1.
 
     Parameters
     ----------
@@ -272,7 +272,7 @@ def ct4_count_similarity(
         or np.isclose(union, 1)
     ):
         # log of 0 is -infinity, and log of 1 is 0
-        return 0.0
+        return 1.0
 
     return float(np.log(intersection) / np.log(union))
 
