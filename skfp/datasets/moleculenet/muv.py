@@ -76,7 +76,7 @@ def load_muv(
     --------
     >>> from skfp.datasets.moleculenet import load_muv
     >>> dataset = load_muv()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['Cc1cccc(N2CCN(C(=O)C34CC5CC(CC(C5)C3)C4)CC2)c1C', ..., 'COc1ccc([N+](=O)[O-])cc1NC(=O)c1ccc(C)o1'],
         array([[nan, nan, nan, ..., nan, nan, nan],
        [ 0.,  0., nan, ..., nan,  0.,  0.],

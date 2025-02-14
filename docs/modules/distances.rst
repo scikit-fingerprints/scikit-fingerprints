@@ -18,6 +18,8 @@ Distances
     :toctree: generated/
 
     braun_blanquet_binary_distance
+    ct4_binary_distance
+    ct4_count_distance
     dice_binary_distance
     dice_count_distance
     rand_binary_distance
@@ -33,6 +35,8 @@ Similarities
     :toctree: generated/
 
     braun_blanquet_binary_similarity
+    ct4_binary_similarity
+    ct4_count_similarity
     dice_binary_similarity
     dice_count_similarity
     rand_binary_similarity

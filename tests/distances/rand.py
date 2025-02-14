@@ -2,75 +2,38 @@ import numpy as np
 import pytest
 from scipy.sparse import csr_array
 
-from skfp.distances.rand import (
-    rand_binary_distance,
-    rand_binary_similarity,
-)
+from skfp.distances import rand_binary_distance, rand_binary_similarity
+from tests.distances.utils import assert_similarity_and_distance_values
 
 
-@pytest.mark.parametrize(
-    "data_type, similarity_function, expected_similarity",
-    [
-        (np.zeros, rand_binary_similarity, 0.0),
-        (np.ones, rand_binary_similarity, 1.0),
-    ],
-)
-@pytest.mark.parametrize("matrix_type", ["numpy", "scipy"])
-def test_rand_similarity(
-    data_type, similarity_function, expected_similarity, matrix_type
-):
-    size = 5
-    if matrix_type == "numpy":
-        vec_a = data_type(size, dtype=int)
-        vec_b = data_type(size, dtype=int)
-    elif matrix_type == "scipy":
-        vec_a = csr_array(data_type((size, size), dtype=int))
-        vec_b = csr_array(data_type((size, size), dtype=int))
-
-    assert similarity_function(vec_a, vec_b) == expected_similarity
+def _get_values() -> list[tuple[list[int], list[int], str, float]]:
+    return [
+        ([1, 0, 0], [0, 1, 1], "==", 0.0),
+        ([1, 0, 0], [0, 0, 0], "==", 0.0),
+        ([0, 0, 0], [0, 0, 0], "==", 0.0),
+        ([1, 0, 0], [1, 0, 0], "==", 1 / 3),
+        ([1, 1, 1], [1, 1, 1], "==", 1.0),
+        ([1, 0, 0, 0], [1, 1, 1, 1], "<", 0.5),
+        ([1, 1, 1, 0], [1, 1, 1, 1], ">", 0.5),
+    ]
 
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, expected_comparison",
-    [
-        (np.array([1, 1, 0, 1]), np.array([1, 1, 1, 1]), ">"),
-        (np.array([1, 0, 0, 0]), np.array([1, 1, 1, 1]), "<"),
-        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 1, 1]]), ">"),
-        (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), "<"),
-    ],
-)
-def test_rand_binary_against_threshold(vec_a, vec_b, expected_comparison):
-    threshold = 0.333
-    similarity = rand_binary_similarity(vec_a, vec_b)
+@pytest.mark.parametrize("vec_a, vec_b, comparison, value", _get_values())
+def test_rand(vec_a, vec_b, comparison, value):
+    vec_a = np.array(vec_a)
+    vec_b = np.array(vec_b)
 
-    if expected_comparison == "==":
-        assert np.isclose(similarity, threshold, atol=1e-3)
-    elif expected_comparison == ">":
-        assert similarity > threshold
-    elif expected_comparison == "<":
-        assert similarity < threshold
+    vec_a_sparse = csr_array([vec_a])
+    vec_b_sparse = csr_array([vec_b])
 
+    sim_dense = rand_binary_similarity(vec_a, vec_b)
+    dist_dense = rand_binary_distance(vec_a, vec_b)
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, expected_comparison",
-    [
-        (np.array([1, 1, 0, 1]), np.array([1, 0, 1, 1]), "=="),
-        (np.array([1, 1, 0, 1]), np.array([1, 1, 1, 1]), "<"),
-        (np.array([1, 0, 0, 0]), np.array([1, 1, 1, 1]), ">"),
-        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 0, 1]]), "=="),
-        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 1, 1]]), "<"),
-        (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), ">"),
-    ],
-)
-def test_rand_binary_distance_against_threshold(
-    vec_a,
-    vec_b,
-    expected_comparison,
-):
-    threshold = 0.5
-    distance = rand_binary_distance(vec_a, vec_b)
+    sim_sparse = rand_binary_similarity(vec_a_sparse, vec_b_sparse)
+    dist_sparse = rand_binary_distance(vec_a_sparse, vec_b_sparse)
 
-    if expected_comparison == "<":
-        assert distance < threshold
-    elif expected_comparison == ">":
-        assert distance > threshold
+    assert_similarity_and_distance_values(sim_dense, dist_dense, comparison, value)
+    assert_similarity_and_distance_values(sim_sparse, dist_sparse, comparison, value)
+
+    assert np.isclose(sim_dense, sim_sparse)
+    assert np.isclose(dist_dense, dist_sparse)

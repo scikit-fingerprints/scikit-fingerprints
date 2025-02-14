@@ -29,7 +29,6 @@ dependencies = [
     "huggingface_hub<1",
     "joblib>=1.0.0,<2",
     "mordredcommunity>=2.0.0,<3",
-    "numba>=0.48.0,<1",
     "numpy>=1.20.0,<3",
     "pandas<3",
     "rdkit<=2024.9.5",
