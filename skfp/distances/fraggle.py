@@ -85,10 +85,6 @@ def fraggle_similarity(
     >>> sim = fraggle_similarity(mol_query, mol_ref)
     >>> sim
     0.1640625
-
-    >>> sim = fraggle_similarity(mol_query, mol_ref)
-    >>> sim
-    0.1640625
     """
     return GetFraggleSimilarity(mol_query, mol_ref, tversky_threshold)[0]
 
@@ -153,15 +149,11 @@ def fraggle_distance(
     Examples
     --------
     >>> from rdkit.Chem import MolFromSmiles
-    >>> from skfp.distances import fraggle_similarity
+    >>> from skfp.distances import fraggle_distance
     >>> mol_query = MolFromSmiles("COc1cc(CN2CCC(NC(=O)c3cncc(C)c3)CC2)c(OC)c2ccccc12")
     >>> mol_ref = MolFromSmiles("COc1ccccc1")
-    >>> sim = fraggle_similarity(mol_query, mol_ref)
-    >>> sim
-    0.1640625
-
-    >>> sim = fraggle_similarity(mol_query, mol_ref)
-    >>> sim
-    0.1640625
+    >>> dist = fraggle_distance(mol_query, mol_ref)
+    >>> dist
+    0.8359375
     """
     return 1 - GetFraggleSimilarity(mol_query, mol_ref, tversky_threshold)[0]
