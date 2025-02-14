@@ -46,17 +46,17 @@ def braun_blanquet_binary_similarity(
     References
     ----------
     .. [1] `Braun-Blanquet, J.
-       "Plant sociology. The study of plant communities. First ed."
-       McGraw-Hill Book Co., Inc., New York and London, 1932.
-       <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
+        "Plant sociology. The study of plant communities. First ed."
+        McGraw-Hill Book Co., Inc., New York and London, 1932.
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
 
     .. [2] `Deza M.M., Deza E.
-       "Encyclopedia of Distances."
-       Springer, Berlin, Heidelberg, 2009.
-       <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
 
     .. [3] `RDKit documentation
-       <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
     Examples
     --------
@@ -133,17 +133,17 @@ def braun_blanquet_binary_distance(
     References
     ----------
     .. [1] `Braun-Blanquet, J.
-       "Plant sociology. The study of plant communities. First ed."
-       McGraw-Hill Book Co., Inc., New York and London, 1932.
-       <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
+        "Plant sociology. The study of plant communities. First ed."
+        McGraw-Hill Book Co., Inc., New York and London, 1932.
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
 
     .. [2] `Deza M.M., Deza E.
-       "Encyclopedia of Distances."
-       Springer, Berlin, Heidelberg, 2009.
-       <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
 
     .. [3] `RDKit documentation
-       <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
     Examples
     --------

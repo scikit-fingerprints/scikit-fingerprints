@@ -30,7 +30,7 @@ def harris_lahey_binary_similarity(
         sim(x, y) = \frac{a * (2d + b + c)}{2 * (a + b + c)} +
                     \frac{d * (2a + b + c)}{2 * (b + c + d)}
 
-    where :math:`a`, :math:`a`, :math:`a` and :math:`a` correspond to the number
+    where :math:`a`, :math:`b`, :math:`c` and :math:`d` correspond to the number
     of bit relations between the two vectors:
 
     - :math:`a` - both are 1 (:math:`|x \cap y|`, common "on" bits)
@@ -63,9 +63,9 @@ def harris_lahey_binary_similarity(
     References
     ----------
     .. [1] `Francis C. Harris, Benjamin B. Lahey
-       "A method for combining occurrence and nonoccurrence interobserver agreement scores"
-       J Appl Behav Anal. 1978 Winter;11(4):523-7.
-       <https://doi.org/10.1901/jaba.1978.11-523>`_
+        "A method for combining occurrence and nonoccurrence interobserver agreement scores"
+        J Appl Behav Anal. 1978 Winter;11(4):523-7.
+        <https://doi.org/10.1901/jaba.1978.11-523>`_
 
     .. [2] `Brusco M, Cradit JD, Steinley D.
         "A comparison of 71 binary similarity coefficients: The effect of base rates"
@@ -172,9 +172,9 @@ def harris_lahey_binary_distance(
     References
     ----------
     .. [1] `Francis C. Harris, Benjamin B. Lahey
-       "A method for combining occurrence and nonoccurrence interobserver agreement scores"
-       J Appl Behav Anal. 1978 Winter;11(4):523-7.
-       <https://doi.org/10.1901/jaba.1978.11-523>`_
+        "A method for combining occurrence and nonoccurrence interobserver agreement scores"
+        J Appl Behav Anal. 1978 Winter;11(4):523-7.
+        <https://doi.org/10.1901/jaba.1978.11-523>`_
 
     .. [2] `Brusco M, Cradit JD, Steinley D.
         "A comparison of 71 binary similarity coefficients: The effect of base rates"
