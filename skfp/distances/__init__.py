@@ -26,6 +26,7 @@ from .kulczynski import (
     kulczynski_binary_distance,
     kulczynski_binary_similarity,
 )
+from .mcconnaughey import mcconnaughey_binary_distance, mcconnaughey_binary_similarity
 from .rand import (
     rand_binary_distance,
     rand_binary_similarity,

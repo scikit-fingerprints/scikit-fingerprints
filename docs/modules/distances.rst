@@ -25,6 +25,7 @@ Distances
     fraggle_distance
     harris_lahey_binary_distance
     kulczynski_binary_distance
+    mcconnaughey_binary_distance
     rand_binary_distance
     simpson_binary_distance
     tanimoto_binary_distance
@@ -45,6 +46,7 @@ Similarities
     fraggle_similarity
     harris_lahey_binary_similarity
     kulczynski_binary_similarity
+    mcconnaughey_binary_similarity
     rand_binary_similarity
     simpson_binary_similarity
     tanimoto_binary_similarity
