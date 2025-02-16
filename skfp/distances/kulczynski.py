@@ -14,23 +14,33 @@ from .utils import _check_finite_values, _check_valid_vectors
     },
     prefer_skip_nested_validation=True,
 )
-def rand_binary_similarity(
+def kulczynski_binary_similarity(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     r"""
-    Rand similarity for vectors of binary values.
+    Kulczynski similarity for vectors of binary values.
 
-    Computes the Rand similarity [1]_ [2]_ (known as All-Bit [3]_ or Sokal-Michener)
-    for binary data between two input arrays or sparse matrices, using the formula:
+    Computes the Kulczynski II similarity [1]_ [2]_ [3]_ for binary data between
+    two input arrays or sparse matrices using the formula:
 
     .. math::
 
-        sim(a, b) = \frac{|a \cap b|}{n}
+        sim(x, y) = \frac{1}{2} \left( \frac{a}{a+b} + \frac{a}{a+c} \right)
 
-    where `n` is the length of vector `a`.
+    where :math:`a`, :math:`b` and :math:`c` correspond to the number of bit
+    relations between the two vectors:
+
+    - :math:`a` - both are 1 (:math:`|x \cap y|`, common "on" bits)
+    - :math:`b` - :math:`x` is 1, :math:`y` is 0
+    - :math:`c` - :math:`x` is 0, :math:`y` is 1
+
+    Note that this is the second Kulczynski similarity, also used by RDKit. It
+    differs from Kulczynski I similarity from e.g. SciPy.
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 0.
+    Passing two all-zero vectors to this function results in a similarity of 1.
+    However, when only one is all-zero (i.e. :math:`a+b=0` or :math:`a+c=0`), the
+    similarity is 0.
 
     Parameters
     ----------
@@ -43,14 +53,13 @@ def rand_binary_similarity(
     Returns
     -------
     similarity : float
-        Rand similarity between ``vec_a`` and ``vec_b``.
+        Kulczynski similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Rand, W.M.
-        "Objective criteria for the evaluation of clustering methods."
-        J. Amer. Stat. Assoc. 1971; 66: 846–850.
-        <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
+    .. [1] Kulczynski, S.
+        "Zespoly roslin w Pieninach."
+        Bull Int l’Academie Pol des Sci des Lettres (1927): 57-203.
 
     .. [2] `Deza M.M., Deza E.
         "Encyclopedia of Distances."
@@ -62,34 +71,48 @@ def rand_binary_similarity(
 
     Examples
     --------
-    >>> from skfp.distances import rand_binary_similarity
+    >>> from skfp.distances import kulczynski_binary_similarity
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
-    >>> sim = rand_binary_similarity(vec_a, vec_b)
+    >>> sim = kulczynski_binary_similarity(vec_a, vec_b)
     >>> sim
-    0.6666666666666666
+    1.0
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
-    >>> sim = rand_binary_similarity(vec_a, vec_b)
+    >>> sim = kulczynski_binary_similarity(vec_a, vec_b)
     >>> sim
-    0.6666666666666666
+    1.0
     """
     _check_finite_values(vec_a)
     _check_finite_values(vec_b)
     _check_valid_vectors(vec_a, vec_b)
 
-    if isinstance(vec_a, np.ndarray):
-        num_common = np.sum(np.logical_and(vec_a, vec_b))
-        length = len(vec_a)
-    else:
-        num_common = len(set(vec_a.indices) & set(vec_b.indices))
-        length = vec_a.shape[1]
+    if np.sum(vec_a) == 0 == np.sum(vec_b):
+        return 1.0
 
-    rand_sim = num_common / length
-    return float(rand_sim)
+    if isinstance(vec_a, np.ndarray):
+        vec_a = vec_a.astype(bool)
+        vec_b = vec_b.astype(bool)
+
+        a = np.sum(vec_a & vec_b)
+        b = np.sum(vec_a & ~vec_b)
+        c = np.sum(~vec_a & vec_b)
+    else:
+        vec_a_idxs = set(vec_a.indices)
+        vec_b_idxs = set(vec_b.indices)
+
+        a = len(vec_a_idxs & vec_b_idxs)
+        b = len(vec_a_idxs - vec_b_idxs)
+        c = len(vec_b_idxs - vec_a_idxs)
+
+    if a + b == 0 or a + c == 0:
+        return 0.0
+
+    sim = (a / (a + b) + a / (a + c)) / 2
+    return float(sim)
 
 
 @validate_params(
@@ -99,20 +122,21 @@ def rand_binary_similarity(
     },
     prefer_skip_nested_validation=True,
 )
-def rand_binary_distance(
+def kulczynski_binary_distance(
     vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
 ) -> float:
     """
-    Rand distance for vectors of binary values.
+    Kulczynski distance for vectors of binary values.
 
-    Computes the Rand distance [1]_ [2]_ [3]_ for binary data between two
-    input arrays or sparse matrices by subtracting the similarity from 1,
-    using the formula:
+    Computes the Kulczynski II distance for binary data between two input arrays
+    or sparse matrices by subtracting the Kulczynski II similarity [1]_ [2]_ [3]_
+    from 1, using to the formula:
 
     .. math::
+
         dist(a, b) = 1 - sim(a, b)
 
-    See also :py:func:`rand_binary_similarity`.
+    See also :py:func:`kulczynski_binary_similarity`.
     The calculated distance falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a distance of 0.
 
@@ -127,14 +151,13 @@ def rand_binary_distance(
     Returns
     -------
     distance : float
-        Rand distance between ``vec_a`` and ``vec_b``.
+        Kulczynski distance between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Rand, W.M.
-        "Objective criteria for the evaluation of clustering methods."
-        J. Amer. Stat. Assoc. 1971; 66: 846–850.
-        <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
+    .. [1] Kulczynski, S.
+        "Zespoly roslin w Pieninach."
+        Bull Int l’Academie Pol des Sci des Lettres (1927): 57-203.
 
     .. [2] `Deza M.M., Deza E.
         "Encyclopedia of Distances."
@@ -146,19 +169,19 @@ def rand_binary_distance(
 
     Examples
     --------
-    >>> from skfp.distances import rand_binary_distance
+    >>> from skfp.distances import kulczynski_binary_distance
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
-    >>> dist = rand_binary_distance(vec_a, vec_b)
+    >>> dist = kulczynski_binary_distance(vec_a, vec_b)
     >>> dist
-    0.33333333333333337
+    0.0
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
-    >>> dist = rand_binary_distance(vec_a, vec_b)
+    >>> dist = kulczynski_binary_distance(vec_a, vec_b)
     >>> dist
-    0.33333333333333337
+    0.0
     """
-    return 1 - rand_binary_similarity(vec_a, vec_b)
+    return 1 - kulczynski_binary_similarity(vec_a, vec_b)
