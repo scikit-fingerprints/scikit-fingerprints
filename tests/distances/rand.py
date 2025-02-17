@@ -2,10 +2,7 @@ import numpy as np
 import pytest
 from scipy.sparse import csr_array
 
-from skfp.distances.rand import (
-    rand_binary_distance,
-    rand_binary_similarity,
-)
+from skfp.distances.rand import rand_binary_distance, rand_binary_similarity
 
 
 @pytest.mark.parametrize(

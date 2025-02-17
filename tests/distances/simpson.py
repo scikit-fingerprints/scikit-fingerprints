@@ -2,10 +2,7 @@ import numpy as np
 import pytest
 from scipy.sparse import csr_array
 
-from skfp.distances.simpson import (
-    simpson_binary_distance,
-    simpson_binary_similarity,
-)
+from skfp.distances.simpson import simpson_binary_distance, simpson_binary_similarity
 
 
 @pytest.mark.parametrize(
