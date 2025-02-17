@@ -105,14 +105,14 @@ def mcconnaughey_binary_similarity(
     if vec_a_ones * vec_b_ones == 0:
         return -1 if not normalized else 0
 
-    sim = (num_common * (vec_a_ones + vec_b_ones) - (vec_a_ones * vec_b_ones)) / (
-        vec_a_ones * vec_b_ones
-    )
+    mcconnaughey_sim = (
+        num_common * (vec_a_ones + vec_b_ones) - (vec_a_ones * vec_b_ones)
+    ) / (vec_a_ones * vec_b_ones)
 
     if normalized:
-        sim = (sim + 1) / 2
+        mcconnaughey_sim = (mcconnaughey_sim + 1) / 2
 
-    return sim
+    return float(mcconnaughey_sim)
 
 
 @validate_params(
