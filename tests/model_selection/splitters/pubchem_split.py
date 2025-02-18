@@ -45,7 +45,7 @@ def test_get_cid_for_smiles_with_proper_smiles(mock):
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {"IdentifierList": {"CID": [25058138]}}
 
-    cid = _get_cid_for_smiles(proper_smiles, 1)
+    cid = _get_cid_for_smiles(proper_smiles, 1, verbosity=0)
 
     assert cid == "25058138"
 
@@ -72,7 +72,7 @@ def test_get_cid_for_smiles_with_wrong_smiles(mock):
         }
     }
 
-    cid = _get_cid_for_smiles(smiles_that_cannot_be_standarized, 1)
+    cid = _get_cid_for_smiles(smiles_that_cannot_be_standarized, 1, verbosity=0)
     assert cid is None
 
 
@@ -81,7 +81,7 @@ def test_get_cid_for_smiles_with_no_existing_smiles(mock):
     smiles_that_not_exists_in_pubchem = "C[Fe](C)(C)OC(C)=O"
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {"IdentifierList": {"CID": [0]}}
-    cid = _get_cid_for_smiles(smiles_that_not_exists_in_pubchem, 1)
+    cid = _get_cid_for_smiles(smiles_that_not_exists_in_pubchem, 1, verbosity=0)
     assert cid is None
 
 

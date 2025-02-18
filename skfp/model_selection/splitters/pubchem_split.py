@@ -1,13 +1,12 @@
 import json
+import sys
 import time
 import warnings
 from collections.abc import Sequence
-from functools import partial
 from numbers import Integral
 from typing import Any, Optional, Union
 from urllib.parse import quote
 
-import pandas as pd
 import requests
 from joblib.parallel import effective_n_jobs
 from rdkit.Chem import Mol
@@ -57,7 +56,7 @@ def pubchem_train_test_split(
     not_found_behavior: str = "test",
     return_indices: bool = False,
     n_jobs: int = 5,
-    n_tries: int = 3,
+    n_retries: int = 3,
     verbose: int = 0,
 ) -> Union[
     tuple[
@@ -107,7 +106,7 @@ def pubchem_train_test_split(
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
-    n_tries : int, default=3
+    n_retries : int, default=3
         defines the number of re-requests to the PubChem REST api in case of errors
         during a request.
 
@@ -134,26 +133,25 @@ def pubchem_train_test_split(
         Nucleic Acids Res. 2018 Jul 2;46(W1):W563-W570.
         <https://doi.org/10.1093/nar/gky294>`_
     """
-    years = _get_pubchem_years(data, n_jobs, n_tries, verbose)
+    years = _get_pubchem_years(data, n_jobs, n_retries, verbose)
 
-    data_df = pd.DataFrame({"year": years})
-    if not_found_behavior != "remove":
-        not_found_mols = list(data_df[data_df["year"].isna()].index)
-        data_df = data_df[~data_df["year"].isna()]
+    idxs_with_year = [(year, i) for i, year in enumerate(years) if year is not None]
+    idxs_with_year.sort()
+    idxs_with_year = [i for year, i in idxs_with_year]
 
-    data_df = data_df.sort_values("year")
+    idxs_no_year = [i for i, year in enumerate(years) if year is None]
 
     train_size, test_size = validate_train_test_split_sizes(
-        train_size, test_size, len(data_df)
+        train_size, test_size, len(idxs_with_year)
     )
 
-    train_idxs: list[int] = list(data_df.iloc[:train_size].index)
-    test_idxs: list[int] = list(data_df.iloc[train_size:].index)
+    train_idxs = idxs_with_year[:train_size]
+    test_idxs = idxs_with_year[train_size:]
 
     if not_found_behavior == "train":
-        train_idxs.extend(not_found_mols)
+        train_idxs.extend(idxs_no_year)
     elif not_found_behavior == "test":
-        test_idxs.extend(not_found_mols)
+        test_idxs.extend(idxs_no_year)
 
     ensure_nonempty_subset(train_idxs, "train")
     ensure_nonempty_subset(test_idxs, "test")
@@ -207,7 +205,7 @@ def pubchem_train_valid_test_split(
     test_size: Optional[float] = None,
     not_found_behavior: str = "test",
     return_indices: bool = False,
-    n_tries: int = 3,
+    n_retries: int = 3,
     n_jobs: int = 5,
     verbose: int = 1,
 ) -> Union[
@@ -274,8 +272,8 @@ def pubchem_train_valid_test_split(
         Whether the method should return the input object subsets, i.e. SMILES strings
         or RDKit `Mol` objects, or only the indices of the subsets instead of the data.
 
-    n_tries : int, default=3
-        defines the number of re-requests to the PubChem REST api in case of errors
+    n_retries : int, default=3
+        Define number of request retries to the PubChem REST API in case of errors
         during a request.
 
     n_jobs : int, default=5
@@ -301,29 +299,26 @@ def pubchem_train_valid_test_split(
         Nucleic Acids Res. 2018 Jul 2;46(W1):W563-W570.
         <https://doi.org/10.1093/nar/gky294>`_
     """
-    years = _get_pubchem_years(data, n_jobs, n_tries, verbose)
+    years = _get_pubchem_years(data, n_jobs, n_retries, verbose)
 
-    data_df = pd.DataFrame({"year": years})
+    idxs_with_year = [(year, i) for i, year in enumerate(years) if year is not None]
+    idxs_with_year.sort()
+    idxs_with_year = [i for year, i in idxs_with_year]
 
-    if not_found_behavior != "remove":
-        not_found_mols = list(data_df[data_df["year"].isna()].index)
-
-    data_df = data_df[~data_df["year"].isna()]
-
-    data_df = data_df.sort_values("year")
+    idxs_no_year = [i for i, year in enumerate(years) if year is None]
 
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)
     )
 
-    train_idxs: list[int] = data_df.index[:train_size].tolist()
-    valid_idxs: list[int] = data_df.index[train_size : train_size + valid_size].tolist()
-    test_idxs: list[int] = data_df.index[train_size + valid_size :].tolist()
+    train_idxs = idxs_with_year[:train_size]
+    valid_idxs = idxs_with_year[train_size : train_size + valid_size]
+    test_idxs = idxs_with_year[train_size + valid_size :]
 
     if not_found_behavior == "train":
-        train_idxs.extend(not_found_mols)
+        train_idxs.extend(idxs_no_year)
     elif not_found_behavior == "test":
-        test_idxs.extend(not_found_mols)
+        test_idxs.extend(idxs_no_year)
 
     if return_indices:
         train_subset = train_idxs
@@ -347,54 +342,61 @@ def pubchem_train_valid_test_split(
         return train_subset, valid_subset, test_subset
 
 
-@validate_params({"n_jobs": [int, (1, 5)]}, prefer_skip_nested_validation=True)
 def _get_pubchem_years(
-    data: Sequence[Union[str, Mol]], n_jobs: int, n_tries: int, verbose: int
-) -> list[list[int]]:
+    data: Sequence[Union[str, Mol]], n_jobs: int, n_retries: int, verbosity: int
+) -> list[Optional[int]]:
     """
     Get first literature publication year from PubChem for a list of molecules, either
     as SMILES strings or RDKit Mol objects.
     """
-    n_jobs = effective_n_jobs(n_jobs)
+    if n_retries == -1:
+        n_retries = sys.maxsize
+    n_jobs = min(effective_n_jobs(n_jobs), 5)
 
     data = ensure_smiles(data)
 
-    get_cid_for_smiles_with_n_tries = partial(_get_cid_for_smiles, n_tries=n_tries)
-    get_earliest_publication_date_with_n_tries = partial(
-        _get_earliest_publication_date, n_tries=n_tries
-    )
-    if verbose > 0:
+    if verbosity > 0:
         print("Converting SMILES to CIDs")
-    cids = run_in_parallel(get_cid_for_smiles_with_n_tries, data, n_jobs)
+    cids = run_in_parallel(
+        _get_cid_for_smiles,
+        data,
+        n_jobs,
+        verbosity=verbosity,
+        n_retries=n_retries,
+        single_element_func=True,
+    )
 
-    if verbose > 0:
-        print("Searching for CIDs literature data")
-    years = run_in_parallel(get_earliest_publication_date_with_n_tries, cids, n_jobs)
+    if verbosity > 0:
+        print("Searching for literature data")
+    years = run_in_parallel(
+        _get_earliest_publication_date,
+        cids,
+        n_jobs,
+        n_retries=n_retries,
+        single_element_func=True,
+    )
 
     return years
 
 
-def _get_cid_for_smiles(smiles: str, n_tries: int) -> Optional[str]:
+def _get_cid_for_smiles(smiles: str, n_retries: int, verbosity: int) -> Optional[str]:
     """
-    Obtain PubChem Cid based on smiles.
-
-    Return:
-    ------
-        PubChem compound identifier if  else None
-
+    Get PubChem CID from SMILES, or None if molecule cannot be found.
     """
+    print(smiles)
     url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{quote(smiles)}/cids/JSON"
 
     response = None
     trial = 0
-    while trial < n_tries:
+    while trial < n_retries:
         try:
             response = requests.get(url, timeout=20)
             response_status = response.status_code
-            if response_status != 200:
+            if response_status != 200 and verbosity > 0:
                 warnings.warn(
                     f"PUG error for URL {url}, status code {response_status}, description: {response.text}"
                 )
+
             if response:
                 response_json = response.json()
                 cid = response_json["IdentifierList"]["CID"][0]
@@ -402,18 +404,16 @@ def _get_cid_for_smiles(smiles: str, n_tries: int) -> Optional[str]:
                 return cid
             else:
                 trial += 1
-                continue
 
         except (requests.exceptions.Timeout, requests.exceptions.RequestException):
             time.sleep(1)
             trial += 1
-            continue
         except (KeyError, ValueError):
             return None
-    return None
+    raise RuntimeError("CID cannot be downloaded, unknown PubChem error")
 
 
-def _get_earliest_publication_date(cid: Optional[str], n_tries: int) -> Optional[int]:
+def _get_earliest_publication_date(cid: Optional[str], n_retries: int) -> Optional[int]:
     """
     Get the date of the earliest publication from PubChem where a given molecule appears.
     There are molecules without publications, for which we return None.
@@ -442,7 +442,7 @@ def _get_earliest_publication_date(cid: Optional[str], n_tries: int) -> Optional
         return article_pub_date
 
     trial = 0
-    while trial < n_tries:
+    while trial < n_retries:
         try:
             response = requests.get(base_url, params=params, timeout=10)
             status_code = response.status_code

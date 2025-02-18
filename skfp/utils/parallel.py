@@ -37,8 +37,10 @@ def run_in_parallel(
     data: Sequence,
     n_jobs: Optional[int] = None,
     batch_size: Optional[int] = None,
+    single_element_func: bool = False,
     flatten_results: bool = False,
     verbose: Union[int, dict] = 0,
+    **kwargs,
 ) -> list:
     """
     Run a function in parallel on provided data in batches, using joblib.
@@ -70,6 +72,11 @@ def run_in_parallel(
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
+    single_element_func : bool, default=False
+        If True, single element will be passed to ``func``, rather than batches
+        of data. This way, non-batched functions can be parallelized. When this
+        option is set, ``batch_size`` will be ignored.
+
     flatten_results : bool, default=False
         Whether to flatten the results, e.g. to change list of lists of integers
         into a list of integers.
@@ -78,6 +85,9 @@ def run_in_parallel(
         Controls the verbosity. If higher than zero, progress bar will be shown,
         tracking the processing of batches. If ``dict`` object is provided,
         it will be used to configure the ``tqdm`` progress bar.
+
+    **kwargs : dict
+        parameters specific to the function passed in the ``func`` parameter
 
     Returns
     -------
@@ -94,6 +104,10 @@ def run_in_parallel(
     [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10]]
     >>> run_in_parallel(func, data, n_jobs=-1, batch_size=1, flatten_results=True)
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    >>> func_single = lambda x: x + 1
+    >>> run_in_parallel(func_single, data, n_jobs=-1, single_element_func=True)
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     """
     n_jobs = effective_n_jobs(n_jobs)
 
@@ -102,8 +116,14 @@ def run_in_parallel(
     elif batch_size <= 0:
         raise ValueError(f"batch_size must be positive, got {batch_size}")
 
-    data_batch_gen = (data[i : i + batch_size] for i in range(0, len(data), batch_size))
-    num_batches = len(data) // batch_size
+    if single_element_func:
+        data_batch_gen = (d for d in data)
+        num_batches = len(data)
+    else:
+        data_batch_gen = (
+            data[i : i + batch_size] for i in range(0, len(data), batch_size)
+        )
+        num_batches = len(data) // batch_size
 
     if isinstance(verbose, int):
         tqdm_settings = {
@@ -124,7 +144,9 @@ def run_in_parallel(
     else:
         parallel = ProgressParallel(n_jobs=n_jobs, tqdm_settings=tqdm_settings)
 
-    results = parallel(delayed(func)(data_batch) for data_batch in data_batch_gen)
+    results = parallel(
+        delayed(func)(data_batch, **kwargs) for data_batch in data_batch_gen
+    )
 
     if flatten_results:
         results = list(itertools.chain.from_iterable(results))
