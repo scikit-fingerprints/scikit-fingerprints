@@ -410,7 +410,7 @@ def _get_cid_for_smiles(smiles: str, n_retries: int, verbosity: int) -> Optional
             trial += 1
         except (KeyError, ValueError):
             return None
-    raise RuntimeError("CID cannot be downloaded, unknown PubChem error")
+    raise RuntimeError("CID could not be downloaded in {n_retries} retries")
 
 
 def _get_earliest_publication_date(cid: Optional[str], n_retries: int) -> Optional[int]:
@@ -449,7 +449,6 @@ def _get_earliest_publication_date(cid: Optional[str], n_retries: int) -> Option
             response = response.json()
 
             if status_code != 200:
-                f"PUG error for URL {base_url}, status code {status_code}, description: {response.text}"
                 trial += 1
                 continue
 
@@ -464,7 +463,7 @@ def _get_earliest_publication_date(cid: Optional[str], n_retries: int) -> Option
             # most probably unstable PubChem network
             time.sleep(1)
         except requests.exceptions.Timeout:
-            print(f"For cid: {cid}, request timeout was reached, trying again... ")
+            time.sleep(1)
         trial += 1
 
     return None
