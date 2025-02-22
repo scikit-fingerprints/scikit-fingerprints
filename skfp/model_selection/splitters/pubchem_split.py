@@ -107,7 +107,7 @@ def pubchem_train_test_split(
         or RDKit ``Mol`` objects, or only the indices of the subsets instead of the data.
 
     n_retries : int, default=3
-        defines the number of re-requests to the PubChem REST api in case of errors
+        defines the number of re-requests to the PubChem REST API in case of errors
         during a request.
 
     n_jobs : int, default=5
