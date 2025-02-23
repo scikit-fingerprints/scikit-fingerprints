@@ -9,14 +9,34 @@ from .utils import _check_finite_values, _check_valid_vectors
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array, coo_array, csc_array],
-        "vec_b": ["array-like", csr_array, coo_array, csc_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
 def braun_blanquet_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array, coo_array, csc_array],
-    vec_b: Union[np.ndarray, csr_array, coo_array, csc_array],
+    vec_a: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
+    vec_b: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
 ) -> float:
     r"""
     Braun-Blanquet similarity for vectors of binary values.
@@ -100,8 +120,18 @@ def braun_blanquet_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array, coo_array, csc_array],
-        "vec_b": ["array-like", csr_array, coo_array, csc_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
