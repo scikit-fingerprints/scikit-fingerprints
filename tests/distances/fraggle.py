@@ -6,6 +6,7 @@ from tests.distances.utils import assert_distance_values, assert_similarity_valu
 
 
 def _get_values() -> list[tuple[Mol, Mol, str, float, float]]:
+    # mol_query, mol_ref, comparison, similarity, distance
     paracetamol = MolFromSmiles("CC(=O)Nc1ccc(O)cc1")
     ibuprofen = MolFromSmiles("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O")
     caffeine = MolFromSmiles("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")

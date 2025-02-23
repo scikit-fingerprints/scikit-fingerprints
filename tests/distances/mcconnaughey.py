@@ -10,6 +10,7 @@ from tests.distances.utils import (
 
 
 def _get_values() -> list[tuple[list[int], list[int], str, float, float, bool]]:
+    # vec_a, vec_b, comparison, similarity, distance, normalized
     return [
         ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0, True),
         ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0, True),

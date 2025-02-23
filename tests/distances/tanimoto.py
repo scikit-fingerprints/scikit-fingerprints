@@ -12,6 +12,7 @@ from tests.distances.utils import assert_distance_values, assert_similarity_valu
 
 
 def _get_binary_values() -> list[tuple[list[int], list[int], str, float, float]]:
+    # vec_a, vec_b, comparison, similarity, distance
     return [
         ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
         ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
@@ -24,6 +25,7 @@ def _get_binary_values() -> list[tuple[list[int], list[int], str, float, float]]
 
 
 def _get_count_values() -> list[tuple[list[int], list[int], str, float, float]]:
+    # vec_a, vec_b, comparison, similarity, distance
     return [
         ([1, 0, 0], [0, 2, 3], "==", 0.0, 1.0),
         ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
