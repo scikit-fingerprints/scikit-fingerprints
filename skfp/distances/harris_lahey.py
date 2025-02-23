@@ -1,7 +1,7 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import csr_array
+from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 from .utils import _check_finite_values, _check_valid_vectors
@@ -9,14 +9,34 @@ from .utils import _check_finite_values, _check_valid_vectors
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            coo_array,
+            csc_array,
+            csr_array,
+        ],
+        "vec_b": [
+            "array-like",
+            coo_array,
+            csc_array,
+            csr_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
 def harris_lahey_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: Union[
+        np.ndarray,
+        coo_array,
+        csc_array,
+        csr_array,
+    ],
+    vec_b: Union[
+        np.ndarray,
+        coo_array,
+        csc_array,
+        csr_array,
+    ],
     normalized: bool = False,
 ) -> float:
     r"""
@@ -112,6 +132,9 @@ def harris_lahey_binary_similarity(
         c = np.sum(~vec_a & vec_b)
         d = np.sum(~vec_a & ~vec_b)
     else:
+        vec_a = vec_a.tocsr()
+        vec_b = vec_b.tocsr()
+
         length = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
@@ -133,13 +156,34 @@ def harris_lahey_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            coo_array,
+            csc_array,
+            csr_array,
+        ],
+        "vec_b": [
+            "array-like",
+            coo_array,
+            csc_array,
+            csr_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
 def harris_lahey_binary_distance(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[
+        np.ndarray,
+        coo_array,
+        csc_array,
+        csr_array,
+    ],
+    vec_b: Union[
+        np.ndarray,
+        coo_array,
+        csc_array,
+        csr_array,
+    ],
 ) -> float:
     """
     Harris-Lahey distance for vectors of binary values.

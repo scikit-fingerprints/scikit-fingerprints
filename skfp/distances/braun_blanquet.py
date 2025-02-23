@@ -1,7 +1,7 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import csr_array
+from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 from .utils import _check_finite_values, _check_valid_vectors
@@ -9,13 +9,34 @@ from .utils import _check_finite_values, _check_valid_vectors
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
 def braun_blanquet_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
+    vec_b: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
 ) -> float:
     r"""
     Braun-Blanquet similarity for vectors of binary values.
@@ -82,6 +103,10 @@ def braun_blanquet_binary_similarity(
     if np.sum(vec_a) == 0 == np.sum(vec_b):
         return 1.0
 
+    if isinstance(vec_a, coo_array):
+        vec_a = vec_a.tocsr()
+        vec_b = vec_b.tocsr()
+
     if isinstance(vec_a, np.ndarray):
         num_common = np.sum(np.logical_and(vec_a, vec_b))
     else:
@@ -95,8 +120,18 @@ def braun_blanquet_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )

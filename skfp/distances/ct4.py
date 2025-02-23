@@ -1,7 +1,7 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import csr_array
+from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 from .utils import _check_finite_values, _check_valid_vectors
@@ -9,13 +9,34 @@ from .utils import _check_finite_values, _check_valid_vectors
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
 def ct4_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
+    vec_b: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
 ) -> float:
     r"""
     Consonni–Todeschini 4 similarity for vectors of binary values.
@@ -90,6 +111,9 @@ def ct4_binary_similarity(
         intersection = np.sum(np.logical_and(vec_a, vec_b))
         union = np.sum(np.logical_or(vec_a, vec_b))
     else:
+        vec_a = vec_a.tocsr()
+        vec_b = vec_b.tocsr()
+
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
         intersection = len(vec_a_idxs & vec_b_idxs)
@@ -100,13 +124,34 @@ def ct4_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
 def ct4_binary_distance(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
+    vec_b: Union[
+        np.ndarray,
+        csr_array,
+        coo_array,
+        csc_array,
+    ],
 ) -> float:
     """
     Consonni–Todeschini distance for vectors of binary values.
@@ -176,8 +221,18 @@ def ct4_binary_distance(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )
@@ -269,8 +324,18 @@ def ct4_count_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
+        "vec_b": [
+            "array-like",
+            csr_array,
+            coo_array,
+            csc_array,
+        ],
     },
     prefer_skip_nested_validation=True,
 )

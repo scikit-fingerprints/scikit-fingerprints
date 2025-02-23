@@ -1,14 +1,14 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import csr_array
+from scipy.sparse import coo_array, csc_array, csr_array
 
 
 def _check_finite_values(arr: Union[np.ndarray, csr_array]) -> None:
     if isinstance(arr, np.ndarray):
         if not np.isfinite(arr).all():
             raise ValueError("Input array contains infinity or NaN values")
-    elif isinstance(arr, csr_array):
+    elif isinstance(arr, (coo_array, csc_array, csr_array)):
         if not np.isfinite(arr.data).all():
             raise ValueError("Input sparse matrix contains infinity or NaN values")
     else:
@@ -22,8 +22,8 @@ def _check_valid_vectors(
 ) -> None:
     if (
         type(vec_a) is not type(vec_b)
-        or not isinstance(vec_a, (np.ndarray, csr_array))
-        or not isinstance(vec_b, (np.ndarray, csr_array))
+        or not isinstance(vec_a, (np.ndarray, coo_array, csc_array, csr_array))
+        or not isinstance(vec_b, (np.ndarray, coo_array, csc_array, csr_array))
     ):
         raise TypeError(
             f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "

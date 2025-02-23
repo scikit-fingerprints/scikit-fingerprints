@@ -3,7 +3,7 @@ from typing import Callable
 
 import numpy as np
 import pytest
-from scipy.sparse import csr_array
+from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import NearestNeighbors
 
@@ -28,8 +28,18 @@ def test_sklearn_pairwise_compatible_binary(dist_func):
     sklearn_dist = pairwise_distances(vec_a, vec_b, metric=dist_func)
     assert dist_func(vec_a[0], vec_b[0]) == sklearn_dist[0][0]
 
+    vec_a = csc_array(vec_a)
+    vec_b = csc_array(vec_b)
+    sklearn_dist = pairwise_distances(vec_a, vec_b, metric=dist_func)
+    assert dist_func(vec_a, vec_b) == sklearn_dist[0][0]
+
     vec_a = csr_array(vec_a)
     vec_b = csr_array(vec_b)
+    sklearn_dist = pairwise_distances(vec_a, vec_b, metric=dist_func)
+    assert dist_func(vec_a, vec_b) == sklearn_dist[0][0]
+
+    vec_a = coo_array(vec_a)
+    vec_b = coo_array(vec_b)
     sklearn_dist = pairwise_distances(vec_a, vec_b, metric=dist_func)
     assert dist_func(vec_a, vec_b) == sklearn_dist[0][0]
 
@@ -48,7 +58,7 @@ def test_sklearn_nearest_neighbors_compatible(dist_func):
 
 
 @pytest.mark.parametrize("dist_func", _get_distance_functions())
-def test_sklearn_nearest_neighbors_compatible_sparse(dist_func):
+def test_sklearn_nearest_neighbors_compatible_sparse_csr(dist_func):
     vec_a = csr_array([[0, 1, 0, 1]])
     vec_b = csr_array([[0, 1, 1, 0]])
     skfp_dist = dist_func(vec_a, vec_b)
