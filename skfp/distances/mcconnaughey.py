@@ -1,7 +1,7 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import csr_array
+from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 from .utils import _check_finite_values, _check_valid_vectors
@@ -9,15 +9,15 @@ from .utils import _check_finite_values, _check_valid_vectors
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", coo_array, csc_array, csr_array],
+        "vec_b": ["array-like", coo_array, csc_array, csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def mcconnaughey_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
-    normalized: bool = True,
+    vec_a: Union[np.ndarray, coo_array, csc_array, csr_array],
+    vec_b: Union[np.ndarray, coo_array, csc_array, csr_array],
+    normalized: bool = False,
 ) -> float:
     r"""
     McConnaughey similarity for vectors of binary values.
@@ -27,7 +27,13 @@ def mcconnaughey_binary_similarity(
 
     .. math::
 
-        sim(a, b) = \frac{(|a \cap b \cdot (|a| + |b|) - |a| \cdot |b|}{|a| \cdot |b|}
+        sim(a, b) = \frac{(|a \cap b| \cdot (|a| + |b|) - |a| \cdot |b|}{|a| \cdot |b|}
+
+    or:
+
+    .. math::
+
+        sim(a, b) = \frac{|a \cap b|}{|a|} + \frac{|a \cap b|}{|b|} - 1
 
 
     The calculated similarity falls within the range :math:`[-1, 1]`.
@@ -44,7 +50,7 @@ def mcconnaughey_binary_similarity(
     vec_b : {ndarray, sparse matrix}
         Second binary input array or sparse matrix.
 
-    normalized : bool, default=True
+    normalized : bool, default=False
         Whether to normalize values to range ``[0, 1]`` by adding one and dividing the result
         by 2.
 
@@ -98,9 +104,15 @@ def mcconnaughey_binary_similarity(
         vec_b_ones = np.sum(vec_b)
 
     else:
-        num_common = len(set(vec_a.indices) & set(vec_b.indices))
-        vec_a_ones = len(set(vec_a.indices))
-        vec_b_ones = len(set(vec_b.indices))
+        vec_a = vec_a.tocsr()
+        vec_b = vec_b.tocsr()
+
+        vec_a_idxs = set(vec_a.indices)
+        vec_b_idxs = set(vec_b.indices)
+
+        num_common = len(vec_a_idxs & vec_b_idxs)
+        vec_a_ones = len(vec_a_idxs)
+        vec_b_ones = len(vec_b_idxs)
 
     if vec_a_ones * vec_b_ones == 0:
         return -1 if not normalized else 0
@@ -117,13 +129,14 @@ def mcconnaughey_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", coo_array, csc_array, csr_array],
+        "vec_b": ["array-like", coo_array, csc_array, csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def mcconnaughey_binary_distance(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[np.ndarray, coo_array, csc_array, csr_array],
+    vec_b: Union[np.ndarray, coo_array, csc_array, csr_array],
 ) -> float:
     """
     McConnaughey distance for vectors of binary values.

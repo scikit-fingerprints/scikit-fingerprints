@@ -6,23 +6,25 @@ from skfp.distances import (
     braun_blanquet_binary_distance,
     braun_blanquet_binary_similarity,
 )
-from tests.distances.utils import assert_similarity_and_distance_values
+from tests.distances.utils import assert_distance_values, assert_similarity_values
 
 
-def _get_values() -> list[tuple[list[int], list[int], str, float]]:
+def _get_values() -> list[tuple[list[int], list[int], str, float, float]]:
     return [
-        ([1, 0, 0], [0, 1, 1], "==", 0.0),
-        ([1, 0, 0], [0, 0, 0], "==", 0.0),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0),
-        ([1, 0, 0], [1, 0, 0], "==", 1.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0),
-        ([1, 0, 0, 0], [1, 1, 1, 1], "<", 0.5),
-        ([1, 1, 1, 0], [1, 1, 1, 1], ">", 0.5),
+        ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
+        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
+        ([1, 0, 0, 0], [1, 1, 1, 1], "<", 0.5, 0.5),
+        ([1, 1, 1, 0], [1, 1, 1, 1], ">", 0.5, 0.5),
     ]
 
 
-@pytest.mark.parametrize("vec_a, vec_b, comparison, value", _get_values())
-def test_braun_blanquet(vec_a, vec_b, comparison, value):
+@pytest.mark.parametrize(
+    "vec_a, vec_b, comparison, similarity, distance", _get_values()
+)
+def test_braun_blanquet(vec_a, vec_b, comparison, similarity, distance):
     vec_a = np.array(vec_a)
     vec_b = np.array(vec_b)
 
@@ -35,8 +37,11 @@ def test_braun_blanquet(vec_a, vec_b, comparison, value):
     sim_sparse = braun_blanquet_binary_similarity(vec_a_sparse, vec_b_sparse)
     dist_sparse = braun_blanquet_binary_distance(vec_a_sparse, vec_b_sparse)
 
-    assert_similarity_and_distance_values(sim_dense, dist_dense, comparison, value)
-    assert_similarity_and_distance_values(sim_sparse, dist_sparse, comparison, value)
+    assert_similarity_values(sim_dense, comparison, similarity)
+    assert_similarity_values(sim_sparse, comparison, similarity)
+
+    assert_distance_values(dist_dense, comparison, distance)
+    assert_distance_values(dist_sparse, comparison, distance)
 
     assert np.isclose(sim_dense, sim_sparse)
     assert np.isclose(dist_dense, dist_sparse)

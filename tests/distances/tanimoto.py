@@ -8,37 +8,39 @@ from skfp.distances import (
     tanimoto_count_distance,
     tanimoto_count_similarity,
 )
-from tests.distances.utils import assert_similarity_and_distance_values
+from tests.distances.utils import assert_distance_values, assert_similarity_values
 
 
-def _get_binary_values() -> list[tuple[list[int], list[int], str, float]]:
+def _get_binary_values() -> list[tuple[list[int], list[int], str, float, float]]:
     return [
-        ([1, 0, 0], [0, 1, 1], "==", 0.0),
-        ([1, 0, 0], [0, 0, 0], "==", 0.0),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0),
-        ([1, 0, 0], [1, 0, 0], "==", 1.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0),
-        ([1, 0, 0, 0], [1, 1, 1, 1], "<", 0.5),
-        ([1, 1, 1, 0], [1, 1, 1, 1], ">", 0.5),
+        ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
+        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
+        ([1, 0, 0, 0], [1, 1, 1, 1], "<", 0.5, 0.5),
+        ([1, 1, 1, 0], [1, 1, 1, 1], ">", 0.5, 0.5),
     ]
 
 
-def _get_count_values() -> list[tuple[list[int], list[int], str, float]]:
+def _get_count_values() -> list[tuple[list[int], list[int], str, float, float]]:
     return [
-        ([1, 0, 0], [0, 2, 3], "==", 0.0),
-        ([1, 0, 0], [0, 0, 0], "==", 0.0),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0),
-        ([1, 0, 0], [1, 0, 0], "==", 1.0),
-        ([4, 0, 0], [4, 0, 0], "==", 1.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0),
-        ([3, 2, 1], [3, 2, 1], "==", 1.0),
-        ([3, 0, 0, 0], [1, 1, 1, 1], "<", 0.5),
-        ([2, 3, 4, 0], [2, 3, 4, 2], ">", 0.5),
+        ([1, 0, 0], [0, 2, 3], "==", 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
+        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
+        ([4, 0, 0], [4, 0, 0], "==", 1.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
+        ([3, 2, 1], [3, 2, 1], "==", 1.0, 0.0),
+        ([3, 0, 0, 0], [1, 1, 1, 1], "<", 0.5, 0.5),
+        ([2, 3, 4, 0], [2, 3, 4, 2], ">", 0.5, 0.5),
     ]
 
 
-@pytest.mark.parametrize("vec_a, vec_b, comparison, value", _get_binary_values())
-def test_tanimoto_binary(vec_a, vec_b, comparison, value):
+@pytest.mark.parametrize(
+    "vec_a, vec_b, comparison, similarity, distance", _get_binary_values()
+)
+def test_tanimoto_binary(vec_a, vec_b, comparison, similarity, distance):
     vec_a = np.array(vec_a)
     vec_b = np.array(vec_b)
 
@@ -51,15 +53,20 @@ def test_tanimoto_binary(vec_a, vec_b, comparison, value):
     sim_sparse = tanimoto_binary_similarity(vec_a_sparse, vec_b_sparse)
     dist_sparse = tanimoto_binary_distance(vec_a_sparse, vec_b_sparse)
 
-    assert_similarity_and_distance_values(sim_dense, dist_dense, comparison, value)
-    assert_similarity_and_distance_values(sim_sparse, dist_sparse, comparison, value)
+    assert_similarity_values(sim_dense, comparison, similarity)
+    assert_similarity_values(sim_sparse, comparison, similarity)
+
+    assert_distance_values(dist_dense, comparison, distance)
+    assert_distance_values(dist_sparse, comparison, distance)
 
     assert np.isclose(sim_dense, sim_sparse)
     assert np.isclose(dist_dense, dist_sparse)
 
 
-@pytest.mark.parametrize("vec_a, vec_b, comparison, value", _get_count_values())
-def test_tanimoto_count(vec_a, vec_b, comparison, value):
+@pytest.mark.parametrize(
+    "vec_a, vec_b, comparison, similarity, distance", _get_count_values()
+)
+def test_tanimoto_count(vec_a, vec_b, comparison, similarity, distance):
     vec_a = np.array(vec_a)
     vec_b = np.array(vec_b)
 
@@ -72,8 +79,11 @@ def test_tanimoto_count(vec_a, vec_b, comparison, value):
     sim_sparse = tanimoto_count_similarity(vec_a_sparse, vec_b_sparse)
     dist_sparse = tanimoto_count_distance(vec_a_sparse, vec_b_sparse)
 
-    assert_similarity_and_distance_values(sim_dense, dist_dense, comparison, value)
-    assert_similarity_and_distance_values(sim_sparse, dist_sparse, comparison, value)
+    assert_similarity_values(sim_dense, comparison, similarity)
+    assert_similarity_values(sim_sparse, comparison, similarity)
+
+    assert_distance_values(dist_dense, comparison, distance)
+    assert_distance_values(dist_sparse, comparison, distance)
 
     assert np.isclose(sim_dense, sim_sparse)
     assert np.isclose(dist_dense, dist_sparse)
