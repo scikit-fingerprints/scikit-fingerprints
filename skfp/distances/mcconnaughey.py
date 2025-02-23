@@ -48,12 +48,7 @@ def mcconnaughey_binary_similarity(
     .. math::
 
         sim(a, b) = \frac{(|a \cap b| \cdot (|a| + |b|) - |a| \cdot |b|}{|a| \cdot |b|}
-
-    or:
-
-    .. math::
-
-        sim(a, b) = \frac{|a \cap b|}{|a|} + \frac{|a \cap b|}{|b|} - 1
+                  = \frac{|a \cap b|}{|a|} + \frac{|a \cap b|}{|b|} - 1
 
 
     The calculated similarity falls within the range :math:`[-1, 1]`.
