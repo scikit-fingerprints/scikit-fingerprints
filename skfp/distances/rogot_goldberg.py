@@ -203,7 +203,7 @@ def rogot_goldberg_binary_distance(
     ----------
     .. [1] `Rogot E., Goldberg I.D.
         "A proposed index for measuring agreement in test-retest studies."
-        Journal of chronic diseases 19.9 (1966): 991-1006.`
+        Journal of Chronic Diseases 19.9 (1966): 991-1006.`
         <https://doi.org/10.1016/0021-9681(66)90032-4>`_
 
     .. [2] `Deza M.M., Deza E.
