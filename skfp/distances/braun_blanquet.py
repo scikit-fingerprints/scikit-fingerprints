@@ -4,8 +4,6 @@ import numpy as np
 from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values, _check_valid_vectors
-
 
 @validate_params(
     {
@@ -96,9 +94,11 @@ def braun_blanquet_binary_similarity(
     >>> sim
     0.5
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
+    if type(vec_a) is not type(vec_b):
+        raise ValueError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if np.sum(vec_a) == 0 == np.sum(vec_b):
         return 1.0

@@ -4,8 +4,6 @@ import numpy as np
 from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values, _check_valid_vectors
-
 
 @validate_params(
     {
@@ -107,10 +105,6 @@ def kulczynski_binary_similarity(
     >>> sim
     1.0
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
     if np.sum(vec_a) == 0 == np.sum(vec_b):
         return 1.0
 

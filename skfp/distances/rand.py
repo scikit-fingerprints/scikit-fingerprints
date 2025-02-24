@@ -4,8 +4,6 @@ import numpy as np
 from scipy.sparse import coo_array, csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
-from .utils import _check_finite_values, _check_valid_vectors
-
 
 @validate_params(
     {
@@ -98,10 +96,6 @@ def rand_binary_similarity(
     >>> sim
     0.6666666666666666
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
     if isinstance(vec_a, coo_array):
         vec_a = vec_a.tocsr()
         vec_b = vec_b.tocsr()
