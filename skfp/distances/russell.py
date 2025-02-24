@@ -24,7 +24,7 @@ from .utils import _check_finite_values, _check_valid_vectors
     },
     prefer_skip_nested_validation=True,
 )
-def rogot_goldberg_binary_similarity(
+def russell_binary_similarity(
     vec_a: Union[
         np.ndarray,
         coo_array,
@@ -39,25 +39,23 @@ def rogot_goldberg_binary_similarity(
     ],
 ) -> float:
     r"""
-    Rogot-Goldberg similarity for vectors of binary values.
+    Russell similarity for vectors of binary values.
 
-    Computes the Rogot-Goldberg similarity [1]_ [2]_ [3]_ for binary data between two
+    Computes the Russell similarity [1]_ [2]_ [3]_ for binary data between two
     input arrays or sparse matrices, using the formula:
 
     .. math::
 
-        sim(x, y) = \frac{a}{2 * (2a + b + c)} +
-                    \frac{d}{2 * (2d + b + c)}
+        sim(x, y) = \frac{a}{n}
 
-    where :math:`a`, :math:`b`, :math:`c` and :math:`d` correspond to the number
-    of bit relations between the two vectors:
+    where
 
-    - :math:`a` - both are 1 (:math:`|x \cap y|`, common "on" bits)
-    - :math:`b` - :math:`x` is 1, :math:`y` is 0
-    - :math:`c` - :math:`x` is 0, :math:`y` is 1
-    - :math:`d` - both are 0
+    - :math:`a` - common "on" bits.
+    - :math:`n` - length of passed vectors
 
     The calculated similarity falls within the range :math:`[0, 1]`.
+    Passing all-zero vectors to this function results in a similarity of 0.
+    Passing empty vectors results in similarity of 0.
 
     Parameters
     ----------
@@ -70,14 +68,13 @@ def rogot_goldberg_binary_similarity(
     Returns
     -------
     similarity : float
-        Rogot-Goldberg similarity between ``vec_a`` and ``vec_b``.
+        Russell similarity between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Rogot E., Goldberg I.D.
-        "A proposed index for measuring agreement in test-retest studies."
-        Journal of Chronic Diseases 19.9 (1966): 991-1006.`
-        <https://doi.org/10.1016/0021-9681(66)90032-4>`_
+    .. [1] `Russell P.F., Rao T.R.
+        "On habitat and association of species of anopheline larvae in south-eastern Madras. (1940)"
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
 
     .. [2] `Deza M.M., Deza E.
         "Encyclopedia of Distances."
@@ -89,18 +86,18 @@ def rogot_goldberg_binary_similarity(
 
     Examples
     --------
-    >>> from skfp.distances import rogot_goldberg_binary_similarity
+    >>> from skfp.distances import russell_binary_similarity
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
-    >>> sim = rogot_goldberg_binary_similarity(vec_a, vec_b)
+    >>> sim = russell_binary_similarity(vec_a, vec_b)
     >>> sim
     1.0
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
-    >>> sim = rogot_goldberg_binary_similarity(vec_a, vec_b)
+    >>> sim = russell_binary_similarity(vec_a, vec_b)
     >>> sim
     1.0
     """
@@ -114,34 +111,25 @@ def rogot_goldberg_binary_similarity(
     if isinstance(vec_a, np.ndarray):
         vec_a = vec_a.astype(bool)
         vec_b = vec_b.astype(bool)
-
+        n = len(vec_a)
         a = np.sum(vec_a & vec_b)
-        b = np.sum(vec_a & ~vec_b)
-        c = np.sum(~vec_a & vec_b)
-        d = np.sum(~vec_a & ~vec_b)
     else:
         vec_a = vec_a.tocsr()
         vec_b = vec_b.tocsr()
 
-        length = vec_a.shape[1]
+        n = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
 
         a = len(vec_a_idxs & vec_b_idxs)
-        b = len(vec_a_idxs - vec_b_idxs)
-        c = len(vec_b_idxs - vec_a_idxs)
-        d = length - (a + b + c)
 
-    first_denom = 2 * a + b + c
-    second_denom = 2 * d + b + c
+    # Empty vectors
+    if n == 0:
+        return 0.0
 
-    # denominator of the second part is equal to 1 if both vectors are all ones
-    if second_denom == 0:
-        return 1.0
+    russell_sim = a / n
 
-    rogot_goldberg_sim = a / first_denom + d / second_denom
-
-    return float(rogot_goldberg_sim)
+    return float(russell_sim)
 
 
 @validate_params(
@@ -161,7 +149,7 @@ def rogot_goldberg_binary_similarity(
     },
     prefer_skip_nested_validation=True,
 )
-def rogot_goldberg_binary_distance(
+def russell_binary_distance(
     vec_a: Union[
         np.ndarray,
         coo_array,
@@ -176,9 +164,9 @@ def rogot_goldberg_binary_distance(
     ],
 ) -> float:
     """
-    Rogot-Goldberg distance for vectors of binary values.
+    Russell distance for vectors of binary values.
 
-    Computes the Rogot-Goldberg distance [1]_ [2]_ [3]_ for binary data between two
+    Computes the Russell distance [1]_ [2]_ [3]_ for binary data between two
     input arrays or sparse matrices by subtracting the similarity from 1,
     using the formula:
 
@@ -199,14 +187,13 @@ def rogot_goldberg_binary_distance(
     Returns
     -------
     distance : float
-        Rogot-Goldberg distance between ``vec_a`` and ``vec_b``.
+        Russell distance between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Rogot E., Goldberg I.D.
-        "A proposed index for measuring agreement in test-retest studies."
-        Journal of Chronic Diseases 19.9 (1966): 991-1006.`
-        <https://doi.org/10.1016/0021-9681(66)90032-4>`_
+    .. [1] `Russell P.F., Rao T.R.
+        "On habitat and association of species of anopheline larvae in south-eastern Madras. (1940)"
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
 
     .. [2] `Deza M.M., Deza E.
         "Encyclopedia of Distances."
@@ -218,19 +205,19 @@ def rogot_goldberg_binary_distance(
 
     Examples
     --------
-    >>> from skfp.distances import rogot_goldberg_binary_distance
+    >>> from skfp.distances import russell_binary_distance
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
-    >>> dist = rogot_goldberg_binary_distance(vec_a, vec_b)
+    >>> dist = russell_binary_distance(vec_a, vec_b)
     >>> dist
     0.0
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
-    >>> dist = rogot_goldberg_binary_distance(vec_a, vec_b)
+    >>> dist = russell_binary_distance(vec_a, vec_b)
     >>> dist
     0.0
     """
-    return 1 - rogot_goldberg_binary_similarity(vec_a, vec_b)
+    return 1 - russell_binary_similarity(vec_a, vec_b)
