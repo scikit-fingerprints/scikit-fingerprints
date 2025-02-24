@@ -74,7 +74,7 @@ def rogot_goldberg_binary_similarity(
     ----------
     .. [1] `Rogot E., Goldberg I.D.
         "A proposed index for measuring agreement in test-retest studies."
-        Journal of chronic diseases 19.9 (1966): 991-1006.`
+        Journal of Chronic Diseases 19.9 (1966): 991-1006.`
         <https://doi.org/10.1016/0021-9681(66)90032-4>`_
 
     .. [2] `Deza M.M., Deza E.
@@ -133,7 +133,8 @@ def rogot_goldberg_binary_similarity(
     first_denom = 2 * a + b + c
     second_denom = 2 * d + b + c
 
-    if first_denom == 0 or second_denom == 0:
+    # The denominator of the second part of the equation is equal to 1 if both vectors are all of 1s.
+    if second_denom == 1:
         return 1.0
 
     rogot_goldberg_sim = a / first_denom + d / second_denom
