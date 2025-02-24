@@ -28,7 +28,7 @@ Distances
     mcconnaughey_binary_distance
     rand_binary_distance
     rogot_goldberg_binary_distance
-    russell_binary_distance,
+    russell_binary_distance
     simpson_binary_distance
     tanimoto_binary_distance
     tanimoto_count_distance
@@ -51,7 +51,7 @@ Similarities
     mcconnaughey_binary_similarity
     rand_binary_similarity
     rogot_goldberg_binary_similarity
-    russell_binary_similarity,
+    russell_binary_similarity
     simpson_binary_similarity
     tanimoto_binary_similarity
     tanimoto_count_similarity
