@@ -133,7 +133,7 @@ def rogot_goldberg_binary_similarity(
     first_denom = 2 * a + b + c
     second_denom = 2 * d + b + c
 
-    # The denominator of the second part of the equation is equal to 1 if both vectors are all of 1s.
+    # denominator of the second part is equal to 1 if both vectors are all ones
     if second_denom == 0:
         return 1.0
 
