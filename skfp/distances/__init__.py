@@ -34,6 +34,10 @@ from .rand import (
     rand_binary_distance,
     rand_binary_similarity,
 )
+from .rogot_goldberg import (
+    rogot_goldberg_binary_distance,
+    rogot_goldberg_binary_similarity,
+)
 from .simpson import (
     simpson_binary_distance,
     simpson_binary_similarity,
