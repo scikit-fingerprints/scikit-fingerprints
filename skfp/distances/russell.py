@@ -88,15 +88,15 @@ def russell_binary_similarity(
     --------
     >>> from skfp.distances import russell_binary_similarity
     >>> import numpy as np
-    >>> vec_a = np.array([1, 0, 1])
-    >>> vec_b = np.array([1, 0, 1])
+    >>> vec_a = np.array([1, 1, 1])
+    >>> vec_b = np.array([1, 1, 1])
     >>> sim = russell_binary_similarity(vec_a, vec_b)
     >>> sim
     1.0
 
     >>> from scipy.sparse import csr_array
-    >>> vec_a = csr_array([[1, 0, 1]])
-    >>> vec_b = csr_array([[1, 0, 1]])
+    >>> vec_a = csr_array([[1, 1, 1]])
+    >>> vec_b = csr_array([[1, 1, 1]])
     >>> sim = russell_binary_similarity(vec_a, vec_b)
     >>> sim
     1.0
