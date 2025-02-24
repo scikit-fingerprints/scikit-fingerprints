@@ -35,6 +35,8 @@ def rogot_goldberg_binary_similarity(
     - :math:`c` - :math:`x` is 0, :math:`y` is 1
     - :math:`d` - both are 0
 
+    The calculated similarity falls within the range :math:`[0, 1]`.
+
     Parameters
     ----------
     vec_a : {ndarray, sparse matrix}
