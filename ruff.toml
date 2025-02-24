@@ -54,6 +54,7 @@ ignore = [
     "RUF012",   # mutable class attributes
     "SLF001",   # use private members
     "SIM108",   # if/else instead of ternary if when we need
+    "PERF203",  # `try`-`except` within a loop incurs performance overhead
 ]
 
 [lint.per-file-ignores]
