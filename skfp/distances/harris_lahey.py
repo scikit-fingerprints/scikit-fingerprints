@@ -61,7 +61,8 @@ def harris_lahey_binary_similarity(
     The calculated similarity falls within the range :math:`[0, n]`, where :math:`n`
     is the length of vectors. Use ``normalized`` argument to scale the similarity to
     range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 1.
+    Passing all-zero or all-one vectors to this function results in a similarity of
+    :math:`n`.
 
     Parameters
     ----------
@@ -142,7 +143,10 @@ def harris_lahey_binary_similarity(
         a = len(vec_a_idxs & vec_b_idxs)
         b = len(vec_a_idxs - vec_b_idxs)
         c = len(vec_b_idxs - vec_a_idxs)
-        d = length - a
+        d = length - (a + b + c)
+
+    if np.sum(vec_a) == length == np.sum(vec_b):
+        return 1.0
 
     first_elem = (a * (2 * d + b + c)) / (2 * (a + b + c))
     second_elem = (d * (2 * a + b + c)) / (2 * (b + c + d))
@@ -198,7 +202,7 @@ def harris_lahey_binary_distance(
     See also :py:func:`harris_lahey_binary_similarity`. It uses the normalized
     similarity, scaled to range `[0, 1]`.
     The calculated distance falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a distance of 0.
+    Passing all-zero or all-ones vectors to this function results in a distance of 0.
 
     Parameters
     ----------
