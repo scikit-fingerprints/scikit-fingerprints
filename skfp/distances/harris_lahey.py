@@ -145,7 +145,8 @@ def harris_lahey_binary_similarity(
         c = len(vec_b_idxs - vec_a_idxs)
         d = length - (a + b + c)
 
-    if np.sum(vec_a) == length == np.sum(vec_b):
+    # all-ones vectors
+    if b + c + d == 0:
         return 1.0
 
     first_elem = (a * (2 * d + b + c)) / (2 * (a + b + c))
