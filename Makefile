@@ -2,11 +2,13 @@
 .DEFAULT_GOAL := help
 
 setup: ## Install development dependencies
-	# check if poetry is installed
-	poetry --version >/dev/null 2>&1 || (echo "Poetry is not installed. Please install it from https://python-poetry.org/docs/#installation" && exit 1)
-	# check if pandoc (for docs) is installed
-	pandoc --version >/dev/null 2>&1 || (echo "Pandoc is not installed. Please install it from https://pandoc.org/" && exit 1)
-	# install dependencies
+	@# check if poetry is installed
+	@poetry --version >/dev/null 2>&1 || (echo "Poetry is not installed, please install it" && exit 1)
+
+	@# check if pandoc (for docs) is installed
+	@pandoc --version >/dev/null 2>&1 || (echo "Pandoc is not installed. Please install it from https://pandoc.org/" && exit 1)
+
+	@# install dependencies
 	poetry sync --with dev,docs
 	poetry run pre-commit install
 
