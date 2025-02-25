@@ -1,40 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def mcconnaughey_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
     normalized: bool = False,
 ) -> float:
     r"""
@@ -47,7 +27,6 @@ def mcconnaughey_binary_similarity(
 
         sim(a, b) = \frac{(|a \cap b| \cdot (|a| + |b|) - |a| \cdot |b|}{|a| \cdot |b|}
                   = \frac{|a \cap b|}{|a|} + \frac{|a \cap b|}{|b|} - 1
-
 
     The calculated similarity falls within the range :math:`[-1, 1]`.
     Use ``normalized`` argument to scale the similarity to range :math:`[0, 1]`.
@@ -104,18 +83,17 @@ def mcconnaughey_binary_similarity(
     >>> sim
     1.0
     """
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         num_common = np.sum(np.logical_and(vec_a, vec_b))
         vec_a_ones = np.sum(vec_a)
         vec_b_ones = np.sum(vec_b)
-
     else:
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
-
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
 
@@ -123,49 +101,32 @@ def mcconnaughey_binary_similarity(
         vec_a_ones = len(vec_a_idxs)
         vec_b_ones = len(vec_b_idxs)
 
-    if vec_a_ones * vec_b_ones == 0:
-        return -1 if not normalized else 0
+    sum_ab_ones = vec_a_ones + vec_b_ones
+    dot_ab_ones = vec_a_ones * vec_b_ones
 
-    mcconnaughey_sim = (
-        num_common * (vec_a_ones + vec_b_ones) - (vec_a_ones * vec_b_ones)
-    ) / (vec_a_ones * vec_b_ones)
+    if sum_ab_ones == 0:
+        sim = 1.0
+    elif dot_ab_ones == 0:
+        sim = -1.0
+    else:
+        sim = (num_common * sum_ab_ones - dot_ab_ones) / dot_ab_ones
 
     if normalized:
-        mcconnaughey_sim = (mcconnaughey_sim + 1) / 2
+        sim = (sim + 1) / 2
 
-    return float(mcconnaughey_sim)
+    return float(sim)
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def mcconnaughey_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     """
     McConnaughey distance for vectors of binary values.

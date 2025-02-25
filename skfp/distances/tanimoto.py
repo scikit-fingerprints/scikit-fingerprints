@@ -1,42 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def tanimoto_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     r"""
     Tanimoto similarity for vectors of binary values.
@@ -89,14 +67,14 @@ def tanimoto_binary_similarity(
     1.0
     """
     if type(vec_a) is not type(vec_b):
-        raise ValueError(
+        raise TypeError(
             f"Both vec_a and vec_b must be of the same type, "
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
     if isinstance(vec_a, np.ndarray):
-        intersection = np.sum(vec_a & vec_b)
-        union = np.sum(vec_a | vec_b)
+        intersection = np.sum(np.logical_and(vec_a, vec_b))
+        union = np.sum(np.logical_or(vec_a, vec_b))
     else:
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
@@ -109,36 +87,14 @@ def tanimoto_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def tanimoto_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     """
     Tanimoto distance for vectors of binary values.
@@ -197,36 +153,14 @@ def tanimoto_binary_distance(
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def tanimoto_count_similarity(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     r"""
     Tanimoto similarity for vectors of count values.
@@ -279,7 +213,7 @@ def tanimoto_count_similarity(
     0.9811320754716981
     """
     if type(vec_a) is not type(vec_b):
-        raise ValueError(
+        raise TypeError(
             f"Both vec_a and vec_b must be of the same type, "
             f"got {type(vec_a)} and {type(vec_b)}"
         )
@@ -296,42 +230,20 @@ def tanimoto_count_similarity(
     intersection = dot_ab
     union = dot_aa + dot_bb - dot_ab
 
-    sim = intersection / union if not np.isclose(union, 0) else 1.0
+    sim = intersection / union if union >= 1e-8 else 1.0
     return float(sim)
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def tanimoto_count_distance(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     """
     Tanimoto distance for vectors of count values.

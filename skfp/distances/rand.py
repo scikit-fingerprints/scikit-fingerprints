@@ -1,40 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def rand_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     r"""
     Rand similarity for vectors of binary values.
@@ -96,9 +76,11 @@ def rand_binary_similarity(
     >>> sim
     0.6666666666666666
     """
-    if isinstance(vec_a, coo_array):
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         num_common = np.sum(np.logical_and(vec_a, vec_b))
@@ -115,34 +97,14 @@ def rand_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def rand_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     """
     Rand distance for vectors of binary values.

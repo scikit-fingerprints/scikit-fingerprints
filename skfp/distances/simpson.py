@@ -1,40 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csc_array, csr_array
 from sklearn.utils._param_validation import validate_params
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def simpson_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     r"""
     Simpson similarity for vectors of binary values.
@@ -98,12 +78,11 @@ def simpson_binary_similarity(
     >>> sim
     1.0
     """
-    if np.sum(vec_a) == 0 or np.sum(vec_b) == 0:
-        return 0.0
-
-    if isinstance(vec_a, coo_array):
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         num_common = np.sum(np.logical_and(vec_a, vec_b))
@@ -112,40 +91,20 @@ def simpson_binary_similarity(
 
     min_vec = min(np.sum(vec_a), np.sum(vec_b))
 
-    simpson_sim = num_common / min_vec
-    return float(simpson_sim)
+    sim = num_common / min_vec if min_vec != 0 else 0.0
+    return float(sim)
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array, csc_array],
+        "vec_b": ["array-like", csr_array, csc_array],
     },
     prefer_skip_nested_validation=True,
 )
 def simpson_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array, csc_array],
+    vec_b: Union[np.ndarray, csr_array, csc_array],
 ) -> float:
     """
     Simpson distance for vectors of binary values.
