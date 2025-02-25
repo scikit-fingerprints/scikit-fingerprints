@@ -1,20 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import csc_array, csr_array
+from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
 
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array, csc_array],
-        "vec_b": ["array-like", csr_array, csc_array],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def rand_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array, csc_array],
-    vec_b: Union[np.ndarray, csr_array, csc_array],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Rand similarity for vectors of binary values.
@@ -97,14 +97,14 @@ def rand_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array, csc_array],
-        "vec_b": ["array-like", csr_array, csc_array],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def rand_binary_distance(
-    vec_a: Union[np.ndarray, csr_array, csc_array],
-    vec_b: Union[np.ndarray, csr_array, csc_array],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Rand distance for vectors of binary values.
