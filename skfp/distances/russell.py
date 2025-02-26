@@ -7,26 +7,14 @@ from sklearn.utils._param_validation import validate_params
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def russell_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Russell similarity for vectors of binary values.
@@ -40,12 +28,11 @@ def russell_binary_similarity(
 
     where
 
-    - :math:`a` - common "on" bits.
+    - :math:`a` - common "on" bits
     - :math:`n` - length of passed vectors
 
     The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 0.
-    Passing empty vectors results in similarity of 0.
 
     Parameters
     ----------
@@ -78,27 +65,24 @@ def russell_binary_similarity(
     --------
     >>> from skfp.distances import russell_binary_similarity
     >>> import numpy as np
-    >>> vec_a = np.array([1, 1, 1])
-    >>> vec_b = np.array([1, 1, 1])
+    >>> vec_a = np.array([1, 1, 1, 1])
+    >>> vec_b = np.array([1, 1, 0, 0])
     >>> sim = russell_binary_similarity(vec_a, vec_b)
     >>> sim
-    1.0
+    0.5
 
     >>> from scipy.sparse import csr_array
-    >>> vec_a = csr_array([[1, 1, 1]])
-    >>> vec_b = csr_array([[1, 1, 1]])
+    >>> vec_a = csr_array([[1, 1, 1, 1]])
+    >>> vec_b = csr_array([[1, 1, 0, 0]])
     >>> sim = russell_binary_similarity(vec_a, vec_b)
     >>> sim
-    1.0
+    0.5
     """
     if type(vec_a) is not type(vec_b):
         raise TypeError(
             f"Both vec_a and vec_b must be of the same type, "
             f"got {type(vec_a)} and {type(vec_b)}"
         )
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
 
     if isinstance(vec_a, np.ndarray):
         a = np.sum(np.logical_and(vec_a, vec_b))
@@ -110,37 +94,21 @@ def russell_binary_similarity(
 
         a = len(vec_a_idxs & vec_b_idxs)
 
-    # Empty vectors
-    if n == 0:
-        return 0.0
+    sim = a / n
 
-    russell_sim = a / n
-
-    return float(russell_sim)
+    return float(sim)
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def russell_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Russell distance for vectors of binary values.
@@ -171,7 +139,9 @@ def russell_binary_distance(
     References
     ----------
     .. [1] `Russell P.F., Rao T.R.
-        "On habitat and association of species of anopheline larvae in south-eastern Madras. (1940)"
+        "On habitat and association of species of anopheline larvae in south-eastern Madras"
+        [Journal of the Malaria Institute of India](https://www.cabidigitallibrary.org/action/doSearch?do=Journal+of+the+Malaria+Institute+of+India),
+        1940, June, Vol. 3, No. 1, 153-178 pp
         <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
 
     .. [2] `Deza M.M., Deza E.
@@ -186,17 +156,17 @@ def russell_binary_distance(
     --------
     >>> from skfp.distances import russell_binary_distance
     >>> import numpy as np
-    >>> vec_a = np.array([1, 1, 1])
-    >>> vec_b = np.array([1, 1, 1])
+    >>> vec_a = np.array([1, 1, 1, 1])
+    >>> vec_b = np.array([1, 1, 0, 0])
     >>> dist = russell_binary_distance(vec_a, vec_b)
     >>> dist
-    0.0
+    0.5
 
     >>> from scipy.sparse import csr_array
-    >>> vec_a = csr_array([[1, 1, 1]])
-    >>> vec_b = csr_array([[1, 1, 1]])
+    >>> vec_a = csr_array([[1, 1, 1, 1]])
+    >>> vec_b = csr_array([[1, 1, 0, 0]])
     >>> dist = russell_binary_distance(vec_a, vec_b)
     >>> dist
-    0.0
+    0.5
     """
     return 1 - russell_binary_similarity(vec_a, vec_b)
