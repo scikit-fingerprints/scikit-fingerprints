@@ -101,14 +101,9 @@ def russell_binary_similarity(
         return 1.0
 
     if isinstance(vec_a, np.ndarray):
-        vec_a = vec_a.astype(bool)
-        vec_b = vec_b.astype(bool)
+        a = np.sum(np.logical_and(vec_a, vec_b))
         n = len(vec_a)
-        a = np.sum(vec_a & vec_b)
     else:
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
-
         n = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
