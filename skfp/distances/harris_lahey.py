@@ -1,42 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
-
-from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def harris_lahey_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
     normalized: bool = False,
 ) -> float:
     r"""
@@ -116,26 +94,22 @@ def harris_lahey_binary_similarity(
     >>> sim
     3.0
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         length = len(vec_a)
-        vec_a = vec_a.astype(bool)
-        vec_b = vec_b.astype(bool)
+        vec_a_neg = 1 - vec_a
+        vec_b_neg = 1 - vec_b
 
-        a = np.sum(vec_a & vec_b)
-        b = np.sum(vec_a & ~vec_b)
-        c = np.sum(~vec_a & vec_b)
-        d = np.sum(~vec_a & ~vec_b)
+        a = np.sum(np.logical_and(vec_a, vec_b))
+        b = np.sum(np.logical_and(vec_a, vec_b_neg))
+        c = np.sum(np.logical_and(vec_a_neg, vec_b))
+        d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
     else:
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
-
         length = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
@@ -145,13 +119,17 @@ def harris_lahey_binary_similarity(
         c = len(vec_b_idxs - vec_a_idxs)
         d = length - (a + b + c)
 
-    # all-ones vectors
-    if b + c + d == 0:
+    first_denom = a + b + c
+    second_denom = b + c + d
+
+    # all-ones or all-zeros vectors
+    if first_denom == 0 or second_denom == 0:
         return 1.0
 
-    first_elem = (a * (2 * d + b + c)) / (2 * (a + b + c))
-    second_elem = (d * (2 * a + b + c)) / (2 * (b + c + d))
-    sim = float(first_elem + second_elem)
+    sim = float(
+        (a * (2 * d + b + c)) / (2 * first_denom)
+        + (d * (2 * a + b + c)) / (2 * second_denom)
+    )
 
     if normalized:
         sim = sim / length
@@ -161,34 +139,14 @@ def harris_lahey_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def harris_lahey_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Harris-Lahey distance for vectors of binary values.

@@ -1,42 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
-
-from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def ct4_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        csr_array,
-        coo_array,
-        csc_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        csr_array,
-        coo_array,
-        csc_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Consonni–Todeschini 4 similarity for vectors of binary values.
@@ -100,58 +78,35 @@ def ct4_binary_similarity(
     >>> sim
     1.0
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         intersection = np.sum(np.logical_and(vec_a, vec_b))
         union = np.sum(np.logical_or(vec_a, vec_b))
     else:
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
-
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
         intersection = len(vec_a_idxs & vec_b_idxs)
         union = len(vec_a_idxs | vec_b_idxs)
 
-    return float(np.log(1 + intersection) / np.log(1 + union))
+    sim = float(np.log(1 + intersection) / np.log(1 + union)) if union != 0 else 1.0
+    return sim
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def ct4_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        csr_array,
-        coo_array,
-        csc_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        csr_array,
-        coo_array,
-        csc_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Consonni–Todeschini distance for vectors of binary values.
@@ -221,18 +176,8 @@ def ct4_binary_distance(
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
@@ -300,12 +245,11 @@ def ct4_count_similarity(
     >>> sim
     0.9953140617275088
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         dot_aa = np.dot(vec_a, vec_a)
@@ -316,26 +260,18 @@ def ct4_count_similarity(
         dot_aa = vec_a.multiply(vec_a).sum()
         dot_bb = vec_b.multiply(vec_b).sum()
 
-    intersection = 1 + dot_ab
-    union = 1 + dot_aa + dot_bb - dot_ab
+    numerator = np.log(1 + dot_ab)
+    denominator = np.log(1 + dot_aa + dot_bb - dot_ab)
 
-    return float(np.log(intersection) / np.log(union))
+    sim = float(numerator / denominator) if denominator >= 1e-8 else 1.0
+
+    return sim
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )

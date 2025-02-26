@@ -1,23 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
-from scipy.spatial.distance import dice
+from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
-
-from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
     {
-        "vec_a": ["array-like", coo_array, csc_array, csr_array],
-        "vec_b": ["array-like", coo_array, csc_array, csr_array],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def dice_binary_similarity(
-    vec_a: Union[np.ndarray, coo_array, csc_array, csr_array],
-    vec_b: Union[np.ndarray, coo_array, csc_array, csr_array],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Dice similarity for vectors of binary values.
@@ -63,7 +60,6 @@ def dice_binary_similarity(
         Journal of Chemical Information and Modeling 52.11 (2012): 2884-2901.
         <https://doi.org/10.1021/ci300261r>`_
 
-
     Examples
     --------
     >>> from skfp.distances import dice_binary_similarity
@@ -81,37 +77,33 @@ def dice_binary_similarity(
     >>> sim
     1.0
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
-
-    if isinstance(vec_a, coo_array):
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
-        vec_a = vec_a.astype(bool)
-        vec_b = vec_b.astype(bool)
-        sim = 1 - dice(vec_a, vec_b)
+        intersection = np.sum(np.logical_and(vec_a, vec_b))
     else:
         intersection = len(set(vec_a.indices) & set(vec_b.indices))
-        sim = 2 * intersection / (vec_a.sum() + vec_b.sum())
+
+    denominator = vec_a.sum() + vec_b.sum()
+    sim = 2 * intersection / denominator if denominator != 0 else 1.0
+
     return float(sim)
 
 
 @validate_params(
     {
-        "vec_a": ["array-like", coo_array, csc_array, csr_array],
-        "vec_b": ["array-like", coo_array, csc_array, csr_array],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def dice_binary_distance(
-    vec_a: Union[np.ndarray, coo_array, csc_array, csr_array],
-    vec_b: Union[np.ndarray, coo_array, csc_array, csr_array],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Dice distance for vectors of binary values.
@@ -181,14 +173,14 @@ def dice_binary_distance(
 
 @validate_params(
     {
-        "vec_a": ["array-like", coo_array, csc_array, csr_array],
-        "vec_b": ["array-like", coo_array, csc_array, csr_array],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def dice_count_similarity(
-    vec_a: Union[np.ndarray, coo_array, csc_array, csr_array],
-    vec_b: Union[np.ndarray, coo_array, csc_array, csr_array],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Dice similarity for vectors of count values.
@@ -251,12 +243,11 @@ def dice_count_similarity(
     >>> sim
     0.9904761904761905
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         dot_aa = np.dot(vec_a, vec_a)
@@ -267,19 +258,22 @@ def dice_count_similarity(
         dot_aa = vec_a.multiply(vec_a).sum()
         dot_bb = vec_b.multiply(vec_b).sum()
 
-    return float(2 * dot_ab / (dot_aa + dot_bb))
+    denominator = dot_aa + dot_bb
+    sim = 2 * dot_ab / denominator if denominator >= 1e-8 else 1.0
+
+    return float(sim)
 
 
 @validate_params(
     {
-        "vec_a": ["array-like", coo_array, csc_array, csr_array],
-        "vec_b": ["array-like", coo_array, csc_array, csr_array],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def dice_count_distance(
-    vec_a: Union[np.ndarray, coo_array, csc_array, csr_array],
-    vec_b: Union[np.ndarray, coo_array, csc_array, csr_array],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Dice distance for vectors of count values.

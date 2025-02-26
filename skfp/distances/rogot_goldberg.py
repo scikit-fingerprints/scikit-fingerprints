@@ -1,42 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
-
-from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def rogot_goldberg_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Rogot-Goldberg similarity for vectors of binary values.
@@ -102,25 +80,21 @@ def rogot_goldberg_binary_similarity(
     >>> sim
     1.0
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
-        vec_a = vec_a.astype(bool)
-        vec_b = vec_b.astype(bool)
+        vec_a_neg = 1 - vec_a
+        vec_b_neg = 1 - vec_b
 
-        a = np.sum(vec_a & vec_b)
-        b = np.sum(vec_a & ~vec_b)
-        c = np.sum(~vec_a & vec_b)
-        d = np.sum(~vec_a & ~vec_b)
+        a = np.sum(np.logical_and(vec_a, vec_b))
+        b = np.sum(np.logical_and(vec_a, vec_b_neg))
+        c = np.sum(np.logical_and(vec_a_neg, vec_b))
+        d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
     else:
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
-
         length = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
@@ -133,45 +107,25 @@ def rogot_goldberg_binary_similarity(
     first_denom = 2 * a + b + c
     second_denom = 2 * d + b + c
 
-    # denominator of the second part is equal to 1 if both vectors are all ones
-    if second_denom == 0:
+    # all-ones or all-zeros vectors
+    if first_denom == 0 or second_denom == 0:
         return 1.0
 
-    rogot_goldberg_sim = a / first_denom + d / second_denom
+    sim = a / first_denom + d / second_denom
 
-    return float(rogot_goldberg_sim)
+    return float(sim)
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
-        "vec_b": [
-            "array-like",
-            coo_array,
-            csc_array,
-            csr_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def rogot_goldberg_binary_distance(
-    vec_a: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        coo_array,
-        csc_array,
-        csr_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Rogot-Goldberg distance for vectors of binary values.

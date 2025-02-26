@@ -1,42 +1,20 @@
 from typing import Union
 
 import numpy as np
-from scipy.sparse import coo_array, csc_array, csr_array
+from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
-
-from .utils import _check_finite_values, _check_valid_vectors
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
 def braun_blanquet_binary_similarity(
-    vec_a: Union[
-        np.ndarray,
-        csr_array,
-        coo_array,
-        csc_array,
-    ],
-    vec_b: Union[
-        np.ndarray,
-        csr_array,
-        coo_array,
-        csc_array,
-    ],
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Braun-Blanquet similarity for vectors of binary values.
@@ -96,16 +74,11 @@ def braun_blanquet_binary_similarity(
     >>> sim
     0.5
     """
-    _check_finite_values(vec_a)
-    _check_finite_values(vec_b)
-    _check_valid_vectors(vec_a, vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
-
-    if isinstance(vec_a, coo_array):
-        vec_a = vec_a.tocsr()
-        vec_b = vec_b.tocsr()
+    if type(vec_a) is not type(vec_b):
+        raise TypeError(
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
+        )
 
     if isinstance(vec_a, np.ndarray):
         num_common = np.sum(np.logical_and(vec_a, vec_b))
@@ -114,24 +87,14 @@ def braun_blanquet_binary_similarity(
 
     max_vec = max(np.sum(vec_a), np.sum(vec_b))
 
-    braun_blanquet_sim = num_common / max_vec
-    return float(braun_blanquet_sim)
+    sim = float(num_common / max_vec) if max_vec != 0 else 1.0
+    return sim
 
 
 @validate_params(
     {
-        "vec_a": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
-        "vec_b": [
-            "array-like",
-            csr_array,
-            coo_array,
-            csc_array,
-        ],
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
     },
     prefer_skip_nested_validation=True,
 )
