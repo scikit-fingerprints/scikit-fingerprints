@@ -51,6 +51,7 @@ def russell_binary_similarity(
     ----------
     .. [1] `Russell P.F., Rao T.R.
         "On habitat and association of species of anopheline larvae in south-eastern Madras. (1940)"
+        Journal of the Malaria Institute of India, 1940, June, Vol. 3, No. 1, 153-178 pp.
         <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
 
     .. [2] `Deza M.M., Deza E.
@@ -139,9 +140,8 @@ def russell_binary_distance(
     References
     ----------
     .. [1] `Russell P.F., Rao T.R.
-        "On habitat and association of species of anopheline larvae in south-eastern Madras"
-        [Journal of the Malaria Institute of India](https://www.cabidigitallibrary.org/action/doSearch?do=Journal+of+the+Malaria+Institute+of+India),
-        1940, June, Vol. 3, No. 1, 153-178 pp
+        "On habitat and association of species of anopheline larvae in south-eastern Madras. (1940)"
+        Journal of the Malaria Institute of India, 1940, June, Vol. 3, No. 1, 153-178 pp.
         <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
 
     .. [2] `Deza M.M., Deza E.
