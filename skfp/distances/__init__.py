@@ -47,6 +47,8 @@ from .simpson import (
     simpson_binary_similarity,
 )
 from .tanimoto import (
+    bulk_tanimoto_binary_similarity,
+    bulk_tanimoto_count_similarity,
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
     tanimoto_count_distance,
