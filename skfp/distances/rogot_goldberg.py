@@ -137,6 +137,7 @@ def rogot_goldberg_binary_distance(
     .. math::
         dist(a, b) = 1 - sim(a, b)
 
+    See also :py:func:`rogot_goldberg_binary_similarity`.
     The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 1.
 

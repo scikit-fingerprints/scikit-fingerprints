@@ -12,24 +12,23 @@ from sklearn.utils._param_validation import validate_params
     },
     prefer_skip_nested_validation=True,
 )
-def russell_binary_similarity(
+def sokal_sneath_2_binary_similarity(
     vec_a: Union[np.ndarray, csr_array],
     vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
-    Russell similarity for vectors of binary values.
+    Sokal-Sneath similarity 2 for vectors of binary values.
 
-    Computes the Russell similarity [1]_ [2]_ [3]_ for binary data between two
+    Computes the Sokal-Sneath similarity 2 [1]_ [2]_ [3]_ for binary data between two
     input arrays or sparse matrices, using the formula:
 
     .. math::
 
-        sim(x, y) = \frac{a}{n}
+        sim(a, b) = \frac{|a \cap b|}{|a \cup b| + |a \Delta b} =
+                    \frac{|a \cap b|}{2 * |a| + 2 * |b| - 3 * |a \cap b|}
 
-    where
-
-    - :math:`a` - common "on" bits
-    - :math:`n` - length of passed vectors
+    where :`|a \Delta b|` is the XOR operation (symmetric difference), i.e. number
+    of bits that are "on" in one vector and "off" in another.
 
     The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 0.
@@ -45,14 +44,14 @@ def russell_binary_similarity(
     Returns
     -------
     similarity : float
-        Russell similarity between ``vec_a`` and ``vec_b``.
+        Sokal-Sneath similarity 2 between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Russell P.F., Rao T.R.
-        "On habitat and association of species of anopheline larvae in south-eastern Madras"
-        Journal of the Malaria Institute of India, 1940, June, Vol. 3, No. 1, 153-178 pp.
-        <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
+    .. [1] `R. R. Sokal, P. H. A. Sneath
+        "Principles of Numerical Taxonomy"
+        Principles of Numerical Taxonomy., 1963, 359 ref. bibl. 18 pp.
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19650300280>`_
 
     .. [2] `Deza M.M., Deza E.
         "Encyclopedia of Distances."
@@ -64,20 +63,20 @@ def russell_binary_similarity(
 
     Examples
     --------
-    >>> from skfp.distances import russell_binary_similarity
+    >>> from skfp.distances import sokal_sneath_2_binary_similarity
     >>> import numpy as np
     >>> vec_a = np.array([1, 1, 1, 1])
     >>> vec_b = np.array([1, 1, 0, 0])
-    >>> sim = russell_binary_similarity(vec_a, vec_b)
+    >>> sim = sokal_sneath_2_binary_similarity(vec_a, vec_b)
     >>> sim
-    0.5
+    0.3333333333333333
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 1, 1, 1]])
     >>> vec_b = csr_array([[1, 1, 0, 0]])
-    >>> sim = russell_binary_similarity(vec_a, vec_b)
+    >>> sim = sokal_sneath_2_binary_similarity(vec_a, vec_b)
     >>> sim
-    0.5
+    0.3333333333333333
     """
     if type(vec_a) is not type(vec_b):
         raise TypeError(
@@ -86,16 +85,19 @@ def russell_binary_similarity(
         )
 
     if isinstance(vec_a, np.ndarray):
-        a = np.sum(np.logical_and(vec_a, vec_b))
-        n = len(vec_a)
+        intersection = np.sum(np.logical_and(vec_a, vec_b))
+        a_sum = np.sum(vec_a)
+        b_sum = np.sum(vec_b)
     else:
-        n = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
 
-        a = len(vec_a_idxs & vec_b_idxs)
+        intersection = len(vec_a_idxs & vec_b_idxs)
+        a_sum = len(vec_a_idxs)
+        b_sum = len(vec_b_idxs)
 
-    sim = a / n
+    denominator = 2 * a_sum + 2 * b_sum - 3 * intersection
+    sim = intersection / denominator if denominator > 0 else 1.0
 
     return float(sim)
 
@@ -107,21 +109,21 @@ def russell_binary_similarity(
     },
     prefer_skip_nested_validation=True,
 )
-def russell_binary_distance(
+def sokal_sneath_2_binary_distance(
     vec_a: Union[np.ndarray, csr_array],
     vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
-    Russell distance for vectors of binary values.
+    Sokal-Sneath distance 2 for vectors of binary values.
 
-    Computes the Russell distance [1]_ [2]_ [3]_ for binary data between two
+    Computes the Sokal-Sneath distance 2 [1]_ [2]_ [3]_ for binary data between two
     input arrays or sparse matrices by subtracting the similarity from 1,
     using the formula:
 
     .. math::
         dist(a, b) = 1 - sim(a, b)
 
-    See also :py:func:`russell_binary_similarity`.
+    See also :py:func:`sokal_sneath_2_binary_similarity`.
     The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 1.
 
@@ -136,14 +138,14 @@ def russell_binary_distance(
     Returns
     -------
     distance : float
-        Russell distance between ``vec_a`` and ``vec_b``.
+        Sokal-Sneath distance 2 between ``vec_a`` and ``vec_b``.
 
     References
     ----------
-    .. [1] `Russell P.F., Rao T.R.
-        "On habitat and association of species of anopheline larvae in south-eastern Madras"
-        Journal of the Malaria Institute of India, 1940, June, Vol. 3, No. 1, 153-178 pp.
-        <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
+    .. [1] `R. R. Sokal, P. H. A. Sneath
+        "Principles of Numerical Taxonomy"
+        Principles of Numerical Taxonomy., 1963, 359 ref. bibl. 18 pp.
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19650300280>`_
 
     .. [2] `Deza M.M., Deza E.
         "Encyclopedia of Distances."
@@ -155,19 +157,19 @@ def russell_binary_distance(
 
     Examples
     --------
-    >>> from skfp.distances import russell_binary_distance
+    >>> from skfp.distances import sokal_sneath_2_binary_distance
     >>> import numpy as np
     >>> vec_a = np.array([1, 1, 1, 1])
     >>> vec_b = np.array([1, 1, 0, 0])
-    >>> dist = russell_binary_distance(vec_a, vec_b)
+    >>> dist = sokal_sneath_2_binary_distance(vec_a, vec_b)
     >>> dist
     0.5
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 1, 1, 1]])
     >>> vec_b = csr_array([[1, 1, 0, 0]])
-    >>> dist = russell_binary_distance(vec_a, vec_b)
+    >>> dist = sokal_sneath_2_binary_distance(vec_a, vec_b)
     >>> dist
     0.5
     """
-    return 1 - russell_binary_similarity(vec_a, vec_b)
+    return 1 - sokal_sneath_2_binary_similarity(vec_a, vec_b)

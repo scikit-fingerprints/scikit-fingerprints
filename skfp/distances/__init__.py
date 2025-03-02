@@ -46,6 +46,10 @@ from .simpson import (
     simpson_binary_distance,
     simpson_binary_similarity,
 )
+from .sokal_sneath import (
+    sokal_sneath_2_binary_distance,
+    sokal_sneath_2_binary_similarity,
+)
 from .tanimoto import (
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
