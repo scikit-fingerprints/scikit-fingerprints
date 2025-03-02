@@ -30,6 +30,7 @@ Distances
     rogot_goldberg_binary_distance
     russell_binary_distance
     simpson_binary_distance
+    sokal_sneath_2_binary_distance
     tanimoto_binary_distance
     tanimoto_count_distance
 
@@ -53,5 +54,6 @@ Similarities
     rogot_goldberg_binary_similarity
     russell_binary_similarity
     simpson_binary_similarity
+    sokal_sneath_2_binary_similarity
     tanimoto_binary_similarity
     tanimoto_count_similarity
