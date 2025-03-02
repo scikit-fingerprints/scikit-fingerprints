@@ -163,13 +163,13 @@ def sokal_sneath_2_binary_distance(
     >>> vec_b = np.array([1, 1, 0, 0])
     >>> dist = sokal_sneath_2_binary_distance(vec_a, vec_b)
     >>> dist
-    0.5
+    0.6666666666666667
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 1, 1, 1]])
     >>> vec_b = csr_array([[1, 1, 0, 0]])
     >>> dist = sokal_sneath_2_binary_distance(vec_a, vec_b)
     >>> dist
-    0.5
+    0.6666666666666667
     """
     return 1 - sokal_sneath_2_binary_similarity(vec_a, vec_b)
