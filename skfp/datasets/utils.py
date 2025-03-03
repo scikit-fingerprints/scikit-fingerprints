@@ -71,6 +71,7 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
     Returns the absolute path to the directory with downloaded dataset.
     """
     pbar_was_disabled = are_progress_bars_disabled()
+
     try:
         if not verbose:
             disable_progress_bars()
@@ -80,6 +81,7 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
             repo_type="dataset",
             local_dir=data_home_dir,
             cache_dir=data_home_dir,
+            resume_download=True,
         )
     finally:
         if not pbar_was_disabled:
