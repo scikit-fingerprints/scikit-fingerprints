@@ -407,7 +407,7 @@ def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.nda
 )
 def bulk_tanimoto_binary_distance(
     X: np.ndarray, Y: Optional[np.ndarray] = None
-) -> float:
+) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of binary values.
 
@@ -501,9 +501,12 @@ def bulk_tanimoto_count_similarity(
     >>> sim
     [[1.0, 0.5], [0.5, 1.0]]
     """
+    X = X.astype(float)  # Numba does not allow integers
+
     if Y is None:
         return _bulk_tanimoto_count_similarity_single(X)
     else:
+        Y = Y.astype(float)
         return _bulk_tanimoto_count_similarity_two(X, Y)
 
 
@@ -571,7 +574,7 @@ def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
 )
 def bulk_tanimoto_count_distance(
     X: np.ndarray, Y: Optional[np.ndarray] = None
-) -> float:
+) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of count values.
 
@@ -623,4 +626,4 @@ def bulk_tanimoto_count_distance(
     >>> dist
     [[0.0, 0.0], [0.0, 0.0]]
     """
-    return 1 - bulk_tanimoto_binary_similarity(X, Y)
+    return 1 - bulk_tanimoto_count_similarity(X, Y)

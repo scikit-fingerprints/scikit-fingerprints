@@ -102,8 +102,8 @@ def test_tanimoto_count(vec_a, vec_b, comparison, similarity, distance):
 
 
 def test_bulk_tanimoto_binary(mols_list):
-    mols = mols_list[:10]
-    fps = np.array(ECFPFingerprint().transform(mols), dtype=np.float32)
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
 
     pairwise_sim = [
         [tanimoto_binary_similarity(fps[i], fps[j]) for j in range(len(fps))]
@@ -114,13 +114,16 @@ def test_bulk_tanimoto_binary(mols_list):
         for i in range(len(fps))
     ]
 
-    assert np.allclose(pairwise_sim, bulk_tanimoto_binary_similarity(fps, fps))
-    assert np.allclose(pairwise_dist, bulk_tanimoto_binary_distance(fps, fps))
+    bulk_sim = bulk_tanimoto_binary_similarity(fps)
+    bulk_dist = bulk_tanimoto_binary_distance(fps)
+
+    assert np.allclose(pairwise_sim, bulk_sim)
+    assert np.allclose(pairwise_dist, bulk_dist)
 
 
 def test_bulk_tanimoto_count(mols_list):
-    mols = mols_list[:10]
-    fps = np.array(ECFPFingerprint().transform(mols), dtype=np.float32)
+    fp = ECFPFingerprint(count=True)
+    fps = fp.transform(mols_list[:10])
 
     pairwise_sim = [
         [tanimoto_count_similarity(fps[i], fps[j]) for j in range(len(fps))]
@@ -131,5 +134,24 @@ def test_bulk_tanimoto_count(mols_list):
         for i in range(len(fps))
     ]
 
-    assert np.allclose(pairwise_sim, bulk_tanimoto_count_similarity(fps, fps))
-    assert np.allclose(pairwise_dist, bulk_tanimoto_count_distance(fps, fps))
+    bulk_sim = bulk_tanimoto_count_similarity(fps)
+    bulk_dist = bulk_tanimoto_count_distance(fps)
+
+    assert np.allclose(pairwise_sim, bulk_sim)
+    assert np.allclose(pairwise_dist, bulk_dist)
+
+
+def test_bulk_tanimoto_second_array(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    bulk_sim_single = bulk_tanimoto_binary_similarity(fps)
+    bulk_sim_two = bulk_tanimoto_binary_similarity(fps, fps)
+    assert np.allclose(bulk_sim_single, bulk_sim_two)
+
+    fp = ECFPFingerprint(count=True)
+    fps = fp.transform(mols_list[:10])
+
+    bulk_sim_single = bulk_tanimoto_count_similarity(fps)
+    bulk_sim_two = bulk_tanimoto_count_similarity(fps, fps)
+    assert np.allclose(bulk_sim_single, bulk_sim_two)
