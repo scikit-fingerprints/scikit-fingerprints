@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from typing import Optional, Union
 
+import huggingface_hub.constants
 import numpy as np
 import pandas as pd
 from huggingface_hub import snapshot_download
@@ -71,6 +72,10 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
     Returns the absolute path to the directory with downloaded dataset.
     """
     pbar_was_disabled = are_progress_bars_disabled()
+
+    # use longer timeout, since HuggingFace regularly timeouts by default
+    default_timeout = huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT
+    huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = 60
     try:
         if not verbose:
             disable_progress_bars()
@@ -84,6 +89,8 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
     finally:
         if not pbar_was_disabled:
             enable_progress_bars()
+
+        huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = default_timeout
 
 
 def get_mol_strings_and_labels(
