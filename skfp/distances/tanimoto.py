@@ -619,11 +619,11 @@ def bulk_tanimoto_count_distance(
     >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
     >>> dist = bulk_tanimoto_count_distance(X, Y)
     >>> dist
-    [[0.0, 0.0], [0.0, 0.0]]
+    [[0., 0.], [0., 0.]]
 
     >>> X = np.array([[1, 0, 1], [1, 0, 1]])
     >>> dist = bulk_tanimoto_count_distance(X)
     >>> dist
-    [[0.0, 0.0], [0.0, 0.0]]
+    [[0., 0.], [0., 0.]]
     """
     return 1 - bulk_tanimoto_count_similarity(X, Y)
