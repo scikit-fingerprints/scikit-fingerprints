@@ -22,6 +22,18 @@ def load_ames(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the AMES dataset from TDC benchmark.
+
+    The task is to predict the ability of drugs to cause
+    genetic mutations given a set of molecules [1]_.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                     7255
+    Recommended split      scaffold/random
+    Recommended metric               AUROC
+    ==================   =================
 
     Parameters
     ----------
@@ -44,6 +56,13 @@ def load_ames(
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
+
+    References
+    ----------
+    .. [1] `Xu, Congying, et al.
+        “In silico prediction of chemical Ames mutagenicity.”
+        Journal of chemical information and modeling 52.11 (2012): 2840-2847
+        <https://doi.org/10.1021/ci300400a>`_
 
     """
     df = fetch_dataset(
