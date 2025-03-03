@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 from typing import Optional, Union
 
-import huggingface_hub.constants
 import numpy as np
 import pandas as pd
 from huggingface_hub import snapshot_download
@@ -73,13 +72,6 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
     """
     pbar_was_disabled = are_progress_bars_disabled()
 
-    # use longer timeout, since HuggingFace regularly timeouts by default
-    default_req_timeout = huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT
-    default_down_timeout = huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT
-    default_etag_timeout = huggingface_hub.constants.DEFAULT_ETAG_TIMEOUT
-    huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = 60
-    huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT = 60
-    huggingface_hub.constants.DEFAULT_ETAG_TIMEOUT = 60
     try:
         if not verbose:
             disable_progress_bars()
@@ -89,14 +81,11 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
             repo_type="dataset",
             local_dir=data_home_dir,
             cache_dir=data_home_dir,
+            resume_download=True,
         )
     finally:
         if not pbar_was_disabled:
             enable_progress_bars()
-
-        huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = default_req_timeout
-        huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT = default_down_timeout
-        huggingface_hub.constants.DEFAULT_ETAG_TIMEOUT = default_etag_timeout
 
 
 def get_mol_strings_and_labels(
