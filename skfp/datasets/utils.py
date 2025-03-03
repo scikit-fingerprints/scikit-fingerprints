@@ -76,8 +76,10 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
     # use longer timeout, since HuggingFace regularly timeouts by default
     default_req_timeout = huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT
     default_down_timeout = huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT
+    default_etag_timeout = huggingface_hub.constants.DEFAULT_ETAG_TIMEOUT
     huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = 60
     huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT = 60
+    huggingface_hub.constants.DEFAULT_ETAG_TIMEOUT = 60
     try:
         if not verbose:
             disable_progress_bars()
@@ -94,6 +96,7 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
 
         huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = default_req_timeout
         huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT = default_down_timeout
+        huggingface_hub.constants.DEFAULT_ETAG_TIMEOUT = default_etag_timeout
 
 
 def get_mol_strings_and_labels(
