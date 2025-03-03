@@ -351,7 +351,8 @@ def bulk_tanimoto_binary_similarity(
     >>> vec_b = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_tanimoto_binary_similarity(vec_a, vec_b)
     >>> sim
-    [[1., 0.5], [0.5, 1.]]
+    np.array([[1. , 0.5],
+           [0.5, 1. ]])
     """
     if Y is None:
         return _bulk_tanimoto_binary_similarity_single(X)
@@ -445,12 +446,14 @@ def bulk_tanimoto_binary_distance(
     >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
     >>> dist = bulk_tanimoto_binary_distance(X, Y)
     >>> dist
-    np.array([[0, 0], [0, 0]])
+    np.array([[0., 0.],
+           [0., 0.]])
 
     >>> X = np.array([[1, 0, 1], [1, 0, 1]])
     >>> dist = bulk_tanimoto_binary_distance(X)
     >>> dist
-    np.array([[0, 0], [0, 0]])
+    np.array([[0., 0.],
+           [0., 0.]])
     """
     return 1 - bulk_tanimoto_binary_similarity(X, Y)
 
@@ -499,7 +502,8 @@ def bulk_tanimoto_count_similarity(
     >>> vec_b = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_tanimoto_count_similarity(vec_a, vec_b)
     >>> sim
-    np.array([[1., 0.5], [0.5, 1.]])
+    np.array([[1. , 0.5],
+           [0.5, 1. ]])
     """
     X = X.astype(float)  # Numba does not allow integers
 
@@ -619,11 +623,13 @@ def bulk_tanimoto_count_distance(
     >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
     >>> dist = bulk_tanimoto_count_distance(X, Y)
     >>> dist
-    np.array([[0., 0.], [0., 0.]])
+    np.array([[0., 0.],
+           [0., 0.]])
 
     >>> X = np.array([[1, 0, 1], [1, 0, 1]])
     >>> dist = bulk_tanimoto_count_distance(X)
     >>> dist
-    np.array([[0., 0.], [0., 0.]])
+    np.array([[0., 0.],
+           [0., 0.]])
     """
     return 1 - bulk_tanimoto_count_similarity(X, Y)
