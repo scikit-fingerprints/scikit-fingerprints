@@ -30,7 +30,7 @@ def load_herg_karim(
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        If True, returns the raw DataFrame with columns: "SMILES", "Y". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
         vector).
 
@@ -41,7 +41,7 @@ def load_herg_karim(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "label"
+        - Pandas DataFrame with columns: "SMILES", "Y"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
 

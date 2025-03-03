@@ -22,6 +22,19 @@ def load_carcinogens_lagunin(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the Carcinogens dataset from TDC benchmark.
+
+    Given a drug SMILES string, predict whether it can cause the formation of cancer.
+
+    The task is to predict whether the drug can cause the formation of cancer [1]_.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      280
+    Recommended split      scaffold/random
+    Recommended metric               AUROC
+    ==================   =================
 
     Parameters
     ----------
@@ -30,7 +43,7 @@ def load_carcinogens_lagunin(
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        If True, returns the raw DataFrame with columns: "SMILES", "Y". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
         vector).
 
@@ -41,9 +54,23 @@ def load_carcinogens_lagunin(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "label"
+        - Pandas DataFrame with columns: "SMILES", "Y"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
+
+    References
+    ----------
+    .. [1] `Lagunin, Alexey, et al.
+        “Computer‐aided prediction of rodent carcinogenicity by PASS and CISOC‐PSCT.”
+        QSAR & Combinatorial Science 28.8 (2009): 806-810
+        <https://doi.org/10.1002/qsar.200860192>`_
+
+
+
+    .. [2] `Cheng, Feixiong, et al.
+        “admetSAR: a comprehensive source and free tool for assessment of chemical ADMET properties.”
+        Journal of chemical information and modeling 52.11 (2012): 2840-2847
+        <https://doi.org/10.1021/ci300367a>`_
 
     """
     df = fetch_dataset(

@@ -25,3 +25,5 @@ Dataset loaders
     :toctree: generated/
 
     tox.load_ames
+    tox.load_dili
+    tox.load_carcinogens_lagunin

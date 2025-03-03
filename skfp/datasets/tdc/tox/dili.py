@@ -23,6 +23,20 @@ def load_dili(
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
 
+
+    Load and return the DILI (Drug Induced Liver Injury) dataset from TDC benchmark.
+
+    The task is to predict whether the drugs can cause liver injury given a set of molecules [1]_.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      475
+    Recommended split      scaffold/random
+    Recommended metric               AUROC
+    ==================   =================
+
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -30,7 +44,7 @@ def load_dili(
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        If True, returns the raw DataFrame with columns: "SMILES", "Y". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
         vector).
 
@@ -41,9 +55,16 @@ def load_dili(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "label"
+        - Pandas DataFrame with columns: "SMILES", "Y"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
+
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep learning for drug-induced liver injury.”
+        Journal of chemical information and modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
 
     """
     df = fetch_dataset(
