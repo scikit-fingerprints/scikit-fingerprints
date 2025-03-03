@@ -383,6 +383,21 @@ def _bulk_tanimoto_binary_similarity_single(X: np.ndarray) -> np.ndarray:
     return sims
 
 
+@numba.njit(parallel=True)
+def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+    m = X.shape[0]
+    n = Y.shape[0]
+    sims = np.empty((m, n))
+
+    for i in numba.prange(m):
+        for j in numba.prange(m):
+            intersection = np.sum(np.logical_and(X[i], Y[j]))
+            union = np.sum(np.logical_or(X[i], X[j]))
+            sims[i, j] = intersection / union if union != 0 else 1.0
+
+    return sims
+
+
 @validate_params(
     {
         "vec_a": ["array-like", csr_array],
@@ -438,21 +453,6 @@ def bulk_tanimoto_binary_distance(
     [[1, 1], [1, 1]]
     """
     return 1 - bulk_tanimoto_binary_similarity(X, Y)
-
-
-@numba.njit(parallel=True)
-def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
-
-    for i in numba.prange(m):
-        for j in numba.prange(m):
-            intersection = np.sum(np.logical_and(X[i], Y[j]))
-            union = np.sum(np.logical_or(X[i], X[j]))
-            sims[i, j] = intersection / union if union != 0 else 1.0
-
-    return sims
 
 
 @validate_params(
