@@ -74,8 +74,10 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
     pbar_was_disabled = are_progress_bars_disabled()
 
     # use longer timeout, since HuggingFace regularly timeouts by default
-    default_timeout = huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT
+    default_req_timeout = huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT
+    default_down_timeout = huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT
     huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = 60
+    huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT = 60
     try:
         if not verbose:
             disable_progress_bars()
@@ -90,7 +92,8 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
         if not pbar_was_disabled:
             enable_progress_bars()
 
-        huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = default_timeout
+        huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = default_req_timeout
+        huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT = default_down_timeout
 
 
 def get_mol_strings_and_labels(
