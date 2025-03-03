@@ -310,7 +310,7 @@ def bulk_tanimoto_binary_similarity(
     r"""
     Bulk Tanimoto similarity for binary matrices.
 
-    Computes the pairwise Tanimoto similarity between binary matrices. If one array is
+    Computes the pairwise Tanimoto [1]_ similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
     corresponding to `i`-th row from first array and `j`-th row from second array.
@@ -332,6 +332,13 @@ def bulk_tanimoto_binary_similarity(
         Array with pairwise Tanimoto similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
 
+    References
+    ----------
+    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
+        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+        J Cheminform, 7, 20 (2015).
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+
     See Also
     --------
     :py:func:`tanimoto_binary_similarity` : Tanimoto similarity function for two vectors.
@@ -344,7 +351,7 @@ def bulk_tanimoto_binary_similarity(
     >>> vec_b = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_tanimoto_binary_similarity(vec_a, vec_b)
     >>> sim
-    1.0
+    [[1.0, 1.0], [1.0, 1.0]]
     """
     if Y is None:
         return _bulk_tanimoto_binary_similarity_single(X)
@@ -366,8 +373,7 @@ def _bulk_tanimoto_binary_similarity_single(X: np.ndarray) -> np.ndarray:
 
     # diagonal - always 1
     for i in numba.prange(m):
-        for j in numba.prange(m):
-            sims[i, j] = 1
+        sims[i, i] = 1.0
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):
@@ -375,6 +381,63 @@ def _bulk_tanimoto_binary_similarity_single(X: np.ndarray) -> np.ndarray:
             sims[i, j] = sims[j, i]
 
     return sims
+
+
+@validate_params(
+    {
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_tanimoto_binary_distance(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> float:
+    r"""
+    Bulk Tanimoto distance for vectors of binary values.
+
+    Computes the pairwise Tanimoto distance between binary matrices. If one array is
+    passed, distances are computed between its rows. For two arrays, distances
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`tanimoto_binary_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Tanimoto distance values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`tanimoto_binary_distance` : Tanimoto distance function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_tanimoto_binary_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_tanimoto_binary_distance(X, Y)
+    >>> dist
+    [[1, 1], [1, 1]]
+
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_tanimoto_binary_distance(X)
+    >>> dist
+    [[1, 1], [1, 1]]
+    """
+    return 1 - bulk_tanimoto_binary_similarity(X, Y)
 
 
 @numba.njit(parallel=True)
@@ -436,12 +499,12 @@ def bulk_tanimoto_count_similarity(
     >>> vec_b = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_tanimoto_count_similarity(vec_a, vec_b)
     >>> sim
-    1.0
+    [[1.0, 0.5], [0.5, 1.0]]
     """
     if Y is None:
-        return _bulk_tanimoto_binary_similarity_single(X)
+        return _bulk_tanimoto_count_similarity_single(X)
     else:
-        return _bulk_tanimoto_binary_similarity_two(X, Y)
+        return _bulk_tanimoto_count_similarity_two(X, Y)
 
 
 @numba.njit(parallel=True)
@@ -466,8 +529,7 @@ def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
 
     # diagonal - always 1
     for i in numba.prange(m):
-        for j in numba.prange(m):
-            sims[i, j] = 1
+        sims[i, i] = 1.0
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):
@@ -477,14 +539,14 @@ def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
     return sims
 
 
-@numba.njit(parallel=True)
+@numba.jit(parallel=True)
 def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     m = X.shape[0]
     n = Y.shape[0]
     sims = np.empty((m, n))
 
     for i in numba.prange(m):
-        for j in numba.prange(m):
+        for j in numba.prange(n):
             vec_a = X[i]
             vec_b = X[j]
 
@@ -498,3 +560,67 @@ def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
             sims[i, j] = intersection / union if union >= 1e-8 else 1.0
 
     return sims
+
+
+@validate_params(
+    {
+        "vec_a": ["array-like", csr_array],
+        "vec_b": ["array-like", csr_array],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_tanimoto_count_distance(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> float:
+    r"""
+    Bulk Tanimoto distance for vectors of count values.
+
+    Computes the pairwise Tanimoto [1]_ distance between count matrices. If one array is
+    passed, distances are computed between its rows. For two arrays, distances
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`tanimoto_count_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First count input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second count input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Tanimoto distance values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    References
+    ----------
+    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
+        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
+        J Cheminform, 7, 20 (2015).
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
+
+    See Also
+    --------
+    :py:func:`tanimoto_count_distance` : Tanimoto distance function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_tanimoto_count_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_tanimoto_count_distance(X, Y)
+    >>> dist
+    [[0.0, 0.0], [0.0, 0.0]]
+
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_tanimoto_count_distance(X)
+    >>> dist
+    [[0.0, 0.0], [0.0, 0.0]]
+    """
+    return 1 - bulk_tanimoto_binary_similarity(X, Y)

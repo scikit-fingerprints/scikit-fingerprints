@@ -18,6 +18,7 @@ def _get_distance_functions() -> list[Callable]:
         and "distance" in name
         # omit Fraggle similarity, since it doesn't operate on vectors
         and "fraggle" not in name
+        and "bulk" not in name
     ]
 
 
