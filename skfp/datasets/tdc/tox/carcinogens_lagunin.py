@@ -22,17 +22,16 @@ def load_carcinogens_lagunin(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Carcinogens dataset from TDC benchmark.
+    Load and return the Carcinogens dataset from TDC benchmark [1]_.
 
-    Given a drug SMILES string, predict whether it can cause the formation of cancer.
-
-    The task is to predict whether the drug can cause the formation of cancer [1]_.
+    The task is to predict whether the drug is a carcinogen [2]_ [3]_.
+    Carcinogens are substances, radionuclides, or radiation, that causes the formation of cancer.
 
     ==================   =================
     Tasks                                1
     Task type               classification
     Total samples                      280
-    Recommended split      scaffold/random
+    Recommended split             scaffold
     Recommended metric               AUROC
     ==================   =================
 
@@ -43,7 +42,7 @@ def load_carcinogens_lagunin(
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns: "SMILES", "Y". Otherwise,
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
         vector).
 
@@ -54,22 +53,25 @@ def load_carcinogens_lagunin(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "Y"
+        - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
 
     References
     ----------
-    .. [1] `Lagunin, Alexey, et al.
-        “Computer‐aided prediction of rodent carcinogenicity by PASS and CISOC‐PSCT.”
+    .. [1] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development."
+        arXiv preprint arXiv: 2102.09548 (2021)
+        <https://arxiv.org/abs/2102.09548>`_
+
+    .. [2] `Lagunin, Alexey, et al.
+        “Computer-Aided Prediction of Rodent Carcinogenicity by PASS and CISOC-PSCT.”
         QSAR & Combinatorial Science 28.8 (2009): 806-810
         <https://doi.org/10.1002/qsar.200860192>`_
 
-
-
-    .. [2] `Cheng, Feixiong, et al.
-        “admetSAR: a comprehensive source and free tool for assessment of chemical ADMET properties.”
-        Journal of chemical information and modeling 52.11 (2012): 2840-2847
+    .. [3] `Cheng, Feixiong, et al.
+        “admetSAR: A Comprehensive Source and Free Tool for Assessment of Chemical ADMET Properties.”
+        Journal of Chemical Information and Modeling 52.11 (2012): 2840-2847
         <https://doi.org/10.1021/ci300367a>`_
 
     """

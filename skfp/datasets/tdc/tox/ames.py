@@ -22,16 +22,16 @@ def load_ames(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the AMES dataset from TDC benchmark.
+    Load and return the AMES dataset from TDC benchmark [1]_.
 
-    The task is to predict the ability of drugs to cause
-    genetic mutations given a set of molecules [1]_.
+    The task is to predict the potential of drugs to induce genetic alterations given a set of molecules [2]_.
+    The labels for the data were created with Ames test - a bacterial mutation assay devised by Bruce Ames.
 
     ==================   =================
     Tasks                                1
     Task type               classification
     Total samples                     7278
-    Recommended split      scaffold/random
+    Recommended split             scaffold
     Recommended metric               AUROC
     ==================   =================
 
@@ -42,7 +42,7 @@ def load_ames(
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns: "SMILES", "Y". Otherwise,
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
         vector).
 
@@ -53,16 +53,23 @@ def load_ames(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "Y"
+        - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
 
     References
     ----------
-    .. [1] `Xu, Congying, et al.
-        “In silico prediction of chemical Ames mutagenicity.”
-        Journal of chemical information and modeling 52.11 (2012): 2840-2847
+    .. [1] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development."
+        arXiv preprint arXiv: 2102.09548 (2021)
+        <https://arxiv.org/abs/2102.09548>`_
+
+    .. [2] `Xu, Congying, et al.
+        “In silico Prediction of Chemical Ames Mutagenicity.”
+        Journal of Chemical Information and Modeling 52.11 (2012): 2840-2847
         <https://doi.org/10.1021/ci300400a>`_
+
+
 
     """
     df = fetch_dataset(

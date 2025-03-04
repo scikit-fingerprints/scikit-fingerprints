@@ -41,7 +41,7 @@ def load_herg_central_at_10um(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "Y"
+        - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
 

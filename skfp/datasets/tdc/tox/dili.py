@@ -22,20 +22,21 @@ def load_dili(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the DILI (Drug Induced Liver Injury) dataset from TDC benchmark [1]_.
 
+    The task is to predict whether the drugs can cause liver injury [2]_.
+    Drug caused liver injuries have been recognized as the single,
+    most frequent cause of safety-related drug marketing withdrawal.
+    This dataset is aggregated from U.S. FDA’s National Center for Toxicological Research.
 
-    Load and return the DILI (Drug Induced Liver Injury) dataset from TDC benchmark.
-
-    The task is to predict whether the drugs can cause liver injury given a set of molecules [1]_.
 
     ==================   =================
     Tasks                                1
     Task type               classification
     Total samples                      475
-    Recommended split      scaffold/random
+    Recommended split             scaffold
     Recommended metric               AUROC
     ==================   =================
-
 
     Parameters
     ----------
@@ -44,7 +45,7 @@ def load_dili(
         is used, by default `$HOME/scikit_learn_data`.
 
     as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns: "SMILES", "Y". Otherwise,
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
         returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
         vector).
 
@@ -55,17 +56,21 @@ def load_dili(
     -------
     data : pd.DataFrame or tuple(list[str], np.ndarray)
         Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "Y"
+        - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
     -------
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep learning for drug-induced liver injury.”
-        Journal of chemical information and modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+    .. [1] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development."
+        arXiv preprint arXiv: 2102.09548 (2021)
+        <https://arxiv.org/abs/2102.09548>`_
 
+    .. [2] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
     """
     df = fetch_dataset(
         data_dir,
