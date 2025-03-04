@@ -83,7 +83,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
            [0.       , 0.       , 1.       , ..., 1.       , 2.       ,
             1.       ],
            [1.4142135, 1.4142135, 0.       , ..., 4.       , 2.25     ,
-            1.       ]], shape=(4, 1613), dtype=float32)
+            1.       ]], dtype=float32)
     """
 
     _parameter_constraints: dict = {

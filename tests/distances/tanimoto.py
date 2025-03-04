@@ -3,12 +3,22 @@ import pytest
 from scipy.sparse import csr_array
 
 from skfp.distances import (
+    bulk_tanimoto_binary_similarity,
+    bulk_tanimoto_count_similarity,
     tanimoto_binary_distance,
     tanimoto_binary_similarity,
     tanimoto_count_distance,
     tanimoto_count_similarity,
 )
-from tests.distances.utils import assert_distance_values, assert_similarity_values
+from skfp.distances.tanimoto import (
+    bulk_tanimoto_binary_distance,
+    bulk_tanimoto_count_distance,
+)
+from skfp.fingerprints import ECFPFingerprint
+from tests.distances.utils import (
+    assert_distance_values,
+    assert_similarity_values,
+)
 
 
 def _get_binary_values() -> list[tuple[list[int], list[int], str, float, float]]:
@@ -89,3 +99,59 @@ def test_tanimoto_count(vec_a, vec_b, comparison, similarity, distance):
 
     assert np.isclose(sim_dense, sim_sparse)
     assert np.isclose(dist_dense, dist_sparse)
+
+
+def test_bulk_tanimoto_binary(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    pairwise_sim = [
+        [tanimoto_binary_similarity(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+    pairwise_dist = [
+        [tanimoto_binary_distance(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+
+    bulk_sim = bulk_tanimoto_binary_similarity(fps)
+    bulk_dist = bulk_tanimoto_binary_distance(fps)
+
+    assert np.allclose(pairwise_sim, bulk_sim)
+    assert np.allclose(pairwise_dist, bulk_dist)
+
+
+def test_bulk_tanimoto_count(mols_list):
+    fp = ECFPFingerprint(count=True)
+    fps = fp.transform(mols_list[:10])
+
+    pairwise_sim = [
+        [tanimoto_count_similarity(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+    pairwise_dist = [
+        [tanimoto_count_distance(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+
+    bulk_sim = bulk_tanimoto_count_similarity(fps)
+    bulk_dist = bulk_tanimoto_count_distance(fps)
+
+    assert np.allclose(pairwise_sim, bulk_sim)
+    assert np.allclose(pairwise_dist, bulk_dist)
+
+
+def test_bulk_tanimoto_second_array(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    bulk_sim_single = bulk_tanimoto_binary_similarity(fps)
+    bulk_sim_two = bulk_tanimoto_binary_similarity(fps, fps)
+    assert np.allclose(bulk_sim_single, bulk_sim_two)
+
+    fp = ECFPFingerprint(count=True)
+    fps = fp.transform(mols_list[:10])
+
+    bulk_sim_single = bulk_tanimoto_count_similarity(fps)
+    bulk_sim_two = bulk_tanimoto_count_similarity(fps, fps)
+    assert np.allclose(bulk_sim_single, bulk_sim_two)

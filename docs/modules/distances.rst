@@ -13,6 +13,8 @@ Functions for computing distance and similarity measures common in chemoinformat
 Distances
 ---------
 
+Single vectors:
+
 .. autosummary::
     :nosignatures:
     :toctree: generated/
@@ -34,8 +36,19 @@ Distances
     tanimoto_binary_distance
     tanimoto_count_distance
 
+Bulk functions for matrices (pairwise distances):
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    bulk_tanimoto_binary_distance
+    bulk_tanimoto_count_distance
+
 Similarities
 ------------
+
+Single vectors:
 
 .. autosummary::
     :nosignatures:
@@ -57,3 +70,12 @@ Similarities
     sokal_sneath_2_binary_similarity
     tanimoto_binary_similarity
     tanimoto_count_similarity
+
+Bulk functions for matrices (pairwise similarities):
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    bulk_tanimoto_binary_similarity
+    bulk_tanimoto_count_similarity
