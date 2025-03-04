@@ -35,16 +35,18 @@ from .adme.solubility_aqsoldb import load_solubility_aqsoldb
 from .adme.vdss_lombardo import load_vdss_lombardo
 from .hts.sarscov2_3clpro_diamond import load_sarscov2_3clpro_diamond
 from .hts.sarscov2_vitro_touret import load_sarscov2_vitro_touret
-from .tox.ames import load_ames
-from .tox.carcinogens_lagunin import load_carcinogens_lagunin
-from .tox.dili import load_dili
-from .tox.herg import load_herg
-from .tox.herg_central_at_1um import load_herg_central_at_1um
-from .tox.herg_central_at_10um import load_herg_central_at_10um
-from .tox.herg_central_inhib import load_herg_central_inhib
-from .tox.herg_karim import load_herg_karim
-from .tox.ld50_zhu import load_ld50_zhu
-from .tox.skin_reaction import load_skin_reaction
+from .tox import (
+    load_ames,
+    load_carcinogens_lagunin,
+    load_dili,
+    load_herg,
+    load_herg_central_at_1um,
+    load_herg_central_at_10um,
+    load_herg_central_inhib,
+    load_herg_karim,
+    load_ld50_zhu,
+    load_skin_reaction,
+)
 
 
 @validate_params(
