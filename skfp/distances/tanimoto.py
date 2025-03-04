@@ -347,9 +347,9 @@ def bulk_tanimoto_binary_similarity(
     --------
     >>> from skfp.distances import bulk_tanimoto_binary_similarity
     >>> import numpy as np
-    >>> vec_a = np.array([[1, 0, 1], [0, 0, 1]])
-    >>> vec_b = np.array([[1, 0, 1], [0, 1, 1]])
-    >>> sim = bulk_tanimoto_binary_similarity(vec_a, vec_b)
+    >>> X = np.array([[1, 0, 1], [0, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> sim = bulk_tanimoto_binary_similarity(X, Y)
     >>> sim
     array([[1. , 0.5],
            [0.5, 1. ]])
@@ -498,12 +498,12 @@ def bulk_tanimoto_count_similarity(
     --------
     >>> from skfp.distances import bulk_tanimoto_count_similarity
     >>> import numpy as np
-    >>> vec_a = np.array([[1, 0, 1], [0, 0, 1]])
-    >>> vec_b = np.array([[1, 0, 1], [0, 1, 1]])
-    >>> sim = bulk_tanimoto_count_similarity(vec_a, vec_b)
+    >>> X = np.array([[1, 0, 1], [0, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> sim = bulk_tanimoto_count_similarity(X, Y)
     >>> sim
-    array([[1. , 0.5],
-           [0.5, 1. ]])
+    array([[1.        , 0.33333333],
+           [0.5       , 0.5       ]])
     """
     X = X.astype(float)  # Numba does not allow integers
 
@@ -555,7 +555,7 @@ def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
     for i in numba.prange(m):
         for j in numba.prange(n):
             vec_a = X[i]
-            vec_b = X[j]
+            vec_b = Y[j]
 
             dot_aa = np.dot(vec_a, vec_a)
             dot_bb = np.dot(vec_b, vec_b)
