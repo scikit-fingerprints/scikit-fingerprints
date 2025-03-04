@@ -58,7 +58,6 @@ def load_dili(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
 
     References
     ----------
