@@ -82,7 +82,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
     array([[0, 0, 0, ..., 0, 0, 0],
            [1, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
-           [1, 0, 0, ..., 0, 0, 0]], shape=(4, 881), dtype=uint8)
+           [1, 0, 0, ..., 0, 0, 0]], dtype=uint8)
     """
 
     def __init__(
