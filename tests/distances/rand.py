@@ -3,6 +3,8 @@ import pytest
 from scipy.sparse import csr_array
 
 from skfp.distances import rand_binary_distance, rand_binary_similarity
+from skfp.distances.rand import bulk_rand_binary_distance, bulk_rand_binary_similarity
+from skfp.fingerprints.ecfp import ECFPFingerprint
 from tests.distances.utils import assert_distance_values, assert_similarity_values
 
 
@@ -43,3 +45,32 @@ def test_rand(vec_a, vec_b, comparison, similarity, distance):
 
     assert np.isclose(sim_dense, sim_sparse)
     assert np.isclose(dist_dense, dist_sparse)
+
+
+def test_bulk_rand_binary(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    pairwise_sim = [
+        [rand_binary_similarity(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+    pairwise_dist = [
+        [rand_binary_distance(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+
+    bulk_sim = bulk_rand_binary_similarity(fps)
+    bulk_dist = bulk_rand_binary_distance(fps)
+
+    assert np.allclose(pairwise_sim, bulk_sim)
+    assert np.allclose(pairwise_dist, bulk_dist)
+
+
+def test_bulk_rand_second_array(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    bulk_sim_single = bulk_rand_binary_similarity(fps)
+    bulk_sim_two = bulk_rand_binary_similarity(fps, fps)
+    assert np.allclose(bulk_sim_single, bulk_sim_two)

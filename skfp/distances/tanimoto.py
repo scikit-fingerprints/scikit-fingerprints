@@ -301,7 +301,7 @@ def tanimoto_count_distance(
 
 
 @validate_params(
-    {"vec_a": ["array-like"], "vec_b": ["array-like"]},
+    {"X": ["array-like"], "Y": ["array-like", None]},
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_binary_similarity(
@@ -401,8 +401,8 @@ def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.nda
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
 )
@@ -459,7 +459,7 @@ def bulk_tanimoto_binary_distance(
 
 
 @validate_params(
-    {"vec_a": ["array-like"], "vec_b": ["array-like"]},
+    {"X": ["array-like"], "Y": ["array-like", None]},
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_count_similarity(
@@ -571,8 +571,8 @@ def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
 )
