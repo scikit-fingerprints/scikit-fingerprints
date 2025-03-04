@@ -502,8 +502,8 @@ def bulk_tanimoto_count_similarity(
     >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_tanimoto_count_similarity(X, Y)
     >>> sim
-    array([[1. , 0.5],
-           [0.5, 1. ]])
+    array([[1.        , 0.33333333],
+           [0.5       , 0.5       ]])
     """
     X = X.astype(float)  # Numba does not allow integers
 
