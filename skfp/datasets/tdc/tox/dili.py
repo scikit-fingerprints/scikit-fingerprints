@@ -22,13 +22,11 @@ def load_dili(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the DILI (Drug Induced Liver Injury) dataset from TDC benchmark [1]_.
+    Load and return the DILI (Drug Induced Liver Injury) dataset.
 
-    The task is to predict whether the drugs can cause liver injury [2]_.
-    Drug caused liver injuries have been recognized as the single,
-    most frequent cause of safety-related drug marketing withdrawal.
-    This dataset is aggregated from U.S. FDA’s National Center for Toxicological Research.
-
+    DILI (Drug-Induced Liver Injury) is the most frequent cause of safety-related
+    drug withdrawal. The task of this dataset is to predict whether a drug can
+    cause such liver injury [1]_ [2]_.
 
     ==================   =================
     Tasks                                1
@@ -61,15 +59,15 @@ def load_dili(
 
     References
     ----------
-    .. [1] `Huang, Kexin, et al.
-        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development."
-        arXiv preprint arXiv: 2102.09548 (2021)
-        <https://arxiv.org/abs/2102.09548>`_
-
-    .. [2] `Xu, Youjun, et al.
+    .. [1] `Xu, Youjun, et al.
         “Deep Learning for Drug-Induced Liver Injury.”
         Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
         <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,

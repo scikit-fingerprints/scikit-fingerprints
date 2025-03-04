@@ -22,10 +22,11 @@ def load_ames(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the AMES dataset from TDC benchmark [1]_.
+    Load and return the AMES dataset.
 
-    The task is to predict the potential of drugs to induce genetic alterations given a set of molecules [2]_.
-    The labels for the data were created with Ames test - a bacterial mutation assay devised by Bruce Ames.
+    The task is to predict mutagenicity of drugs, i.e. potential to induce
+    genetic alterations [1]_ [2]_. This data comes from a standardized Ames test,
+    which is a short-term bacterial reverse mutation assay.
 
     ==================   =================
     Tasks                                1
@@ -58,18 +59,15 @@ def load_ames(
 
     References
     ----------
-    .. [1] `Huang, Kexin, et al.
-        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development."
-        arXiv preprint arXiv: 2102.09548 (2021)
-        <https://arxiv.org/abs/2102.09548>`_
-
-    .. [2] `Xu, Congying, et al.
-        “In silico Prediction of Chemical Ames Mutagenicity.”
+    .. [1] `Xu, Congying, et al.
+        "In silico Prediction of Chemical Ames Mutagenicity"
         Journal of Chemical Information and Modeling 52.11 (2012): 2840-2847
         <https://doi.org/10.1021/ci300400a>`_
 
-
-
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,

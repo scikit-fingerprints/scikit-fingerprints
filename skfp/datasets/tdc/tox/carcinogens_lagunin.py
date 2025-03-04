@@ -22,10 +22,9 @@ def load_carcinogens_lagunin(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Carcinogens dataset from TDC benchmark [1]_.
+    Load and return the Carcinogens dataset.
 
-    The task is to predict whether the drug is a carcinogen [2]_ [3]_.
-    Carcinogens are substances, radionuclides, or radiation, that causes the formation of cancer.
+    The task is to predict whether the drug is a carcinogen [1]_ [2]_ [3]_.
 
     ==================   =================
     Tasks                                1
@@ -58,21 +57,20 @@ def load_carcinogens_lagunin(
 
     References
     ----------
-    .. [1] `Huang, Kexin, et al.
-        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development."
-        arXiv preprint arXiv: 2102.09548 (2021)
-        <https://arxiv.org/abs/2102.09548>`_
-
-    .. [2] `Lagunin, Alexey, et al.
+    .. [1] `Lagunin, Alexey, et al.
         “Computer-Aided Prediction of Rodent Carcinogenicity by PASS and CISOC-PSCT.”
         QSAR & Combinatorial Science 28.8 (2009): 806-810
         <https://doi.org/10.1002/qsar.200860192>`_
 
-    .. [3] `Cheng, Feixiong, et al.
+    .. [2] `Cheng, Feixiong, et al.
         “admetSAR: A Comprehensive Source and Free Tool for Assessment of Chemical ADMET Properties.”
         Journal of Chemical Information and Modeling 52.11 (2012): 2840-2847
         <https://doi.org/10.1021/ci300367a>`_
 
+    .. [3] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
