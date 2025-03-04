@@ -1,10 +1,12 @@
-from .ames import load_ames
-from .carcinogens_lagunin import load_carcinogens_lagunin
-from .dili import load_dili
-from .herg import load_herg
-from .herg_central_at_1um import load_herg_central_at_1um
-from .herg_central_at_10um import load_herg_central_at_10um
-from .herg_central_inhib import load_herg_central_inhib
-from .herg_karim import load_herg_karim
-from .ld50_zhu import load_ld50_zhu
-from .skin_reaction import load_skin_reaction
+from .tox import (
+    load_ames,
+    load_carcinogens_lagunin,
+    load_dili,
+    load_herg,
+    load_herg_central_at_1um,
+    load_herg_central_at_10um,
+    load_herg_central_inhib,
+    load_herg_karim,
+    load_ld50_zhu,
+    load_skin_reaction,
+)
