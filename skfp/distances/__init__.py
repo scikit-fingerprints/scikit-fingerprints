@@ -31,6 +31,8 @@ from .mcconnaughey import (
     mcconnaughey_binary_similarity,
 )
 from .rand import (
+    bulk_rand_binary_distance,
+    bulk_rand_binary_similarity,
     rand_binary_distance,
     rand_binary_similarity,
 )
