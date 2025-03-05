@@ -45,6 +45,8 @@ from .russell import (
     russell_binary_similarity,
 )
 from .simpson import (
+    bulk_simpson_binary_distance,
+    bulk_simpson_binary_similarity,
     simpson_binary_distance,
     simpson_binary_similarity,
 )
