@@ -27,3 +27,10 @@ Dataset loaders
     tox.load_ames
     tox.load_dili
     tox.load_carcinogens_lagunin
+    tox.load_herg
+    tox.load_herg_central_at_1um
+    tox.load_herg_central_at_10um
+    tox.load_herg_central_inhib
+    tox.load_herg_karim
+    tox.load_ld50_zhu
+    tox.load_skin_reaction

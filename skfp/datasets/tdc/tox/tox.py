@@ -235,6 +235,18 @@ def load_herg(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the hERG blockers dataset.
+
+    The task is to predict whether the drug blocks ether-à-go-go related gene (hERG),
+    crucial for coordination of the heart's beating [1]_ [2]_.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      655
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
 
     Parameters
     ----------
@@ -256,8 +268,18 @@ def load_herg(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
 
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Wang, Shuangquan, et al.
+        “ADMET Evaluation in Drug Discovery. 16. Predicting hERG Blockers by Combining Multiple Pharmacophores and Machine Learning Approaches.”
+        Molecular Pharmaceutics 13.8 (2016): 2855-2866.
+        <https://doi.org/10.1021/acs.molpharmaceut.6b00471>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -282,6 +304,19 @@ def load_herg_central_at_1um(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the ''hERG_at_1uM'' subset of hERG central dataset.
+
+    The task is to predict the inhibition of ether-à-go-go related gene (hERG),
+    crucial for coordination of the heart's beating [1]_ [2]_.
+    The measure is expressed as the percent inhibition at a 1µM concentration.
+
+    ==================   =================
+    Tasks                                1
+    Task type                   regression
+    Total samples                   306893
+    Recommended split             scaffold
+    Recommended metric                 MAE
+    ==================   =================
 
     Parameters
     ----------
@@ -303,8 +338,19 @@ def load_herg_central_at_1um(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
 
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Du F, et al.
+        "hERGCentral: a large database to store, retrieve, and analyze compound-human Ether-à-go-go
+        related gene channel interactions to facilitate cardiotoxicity assessment in drug development."
+        Assay Drug Dev Technol. 2011 Dec;9(6):580-8.
+        <https://doi.org/10.1089/adt.2011.0425>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -329,6 +375,19 @@ def load_herg_central_at_10um(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the ''hERG_at_10uM'' subset of hERG central dataset.
+
+    The task is to predict the inhibition of ether-à-go-go related gene (hERG),
+    crucial for coordination of the heart's beating [1]_ [2]_.
+    The measure is expressed as the percent inhibition at a 10µM concentration.
+
+    ==================   =================
+    Tasks                                1
+    Task type                   regression
+    Total samples                   306893
+    Recommended split             scaffold
+    Recommended metric                 MAE
+    ==================   =================
 
     Parameters
     ----------
@@ -350,8 +409,19 @@ def load_herg_central_at_10um(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
 
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Du F, et al.
+        "hERGCentral: a large database to store, retrieve, and analyze compound-human Ether-à-go-go
+        related gene channel interactions to facilitate cardiotoxicity assessment in drug development."
+        Assay Drug Dev Technol. 2011 Dec;9(6):580-8.
+        <https://doi.org/10.1089/adt.2011.0425>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -376,6 +446,19 @@ def load_herg_central_inhib(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the ''hERG_inhib'' subset of hERG central dataset.
+
+    The task is to predict whether the drug blocks ether-à-go-go related gene (hERG),
+    crucial for coordination of the heart's beating [1]_ [2]_.
+    This task is modeled as classification whether the percentage inhibition at 10µM is smaller than -50.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                   306893
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
 
     Parameters
     ----------
@@ -397,8 +480,19 @@ def load_herg_central_inhib(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
 
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Du F, et al.
+        "hERGCentral: a large database to store, retrieve, and analyze compound-human Ether-à-go-go
+        related gene channel interactions to facilitate cardiotoxicity assessment in drug development."
+        Assay Drug Dev Technol. 2011 Dec;9(6):580-8.
+        <https://doi.org/10.1089/adt.2011.0425>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -423,6 +517,18 @@ def load_herg_karim(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load and return the hERG karim dataset.
+
+    The task is to predict whether the drug blocks ether-à-go-go related gene (hERG),
+    crucial for coordination of the heart's beating [1]_ [2]_.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                    13445
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
 
     Parameters
     ----------
@@ -444,8 +550,18 @@ def load_herg_karim(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
 
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Karim, A., et al.
+        "CardioTox net: a robust predictor for hERG channel blockade based on deep learning meta-feature ensembles."
+        Journal of Cheminformatics 13, 60 (2021).
+        <https://doi.org/10.1186/s13321-021-00541-z>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -470,6 +586,18 @@ def load_ld50_zhu(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the Acute Toxicity LD50 dataset.
+
+    Acute toxicity LD50 measures the most conservative dose that can lead to lethal adverse effects [1]_ [2]_.
+    The regression task is to predict the acute toxicity of drugs.
+
+    ==================   =================
+    Tasks                                1
+    Task type                   regression
+    Total samples                     7385
+    Recommended split             scaffold
+    Recommended metric                 MAE
+    ==================   =================
 
     Parameters
     ----------
@@ -491,7 +619,18 @@ def load_ld50_zhu(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Zhu, Hao, et al.
+        “Quantitative Structure−Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure.”
+        Chemical Research in Toxicology 22.12 (2009): 1913-1921.
+        <https://doi.org/10.1021/tx900189p>`_
 
     """
     df = fetch_dataset(
@@ -517,6 +656,17 @@ def load_skin_reaction(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the Skin Reaction dataset.
+
+    The task is to predict whether the drug can cause immune reaction that leads to skin sensitization [1]_ [2]_.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      404
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
 
     Parameters
     ----------
@@ -538,8 +688,18 @@ def load_skin_reaction(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
 
+    References
+    ----------
+    .. [1] `Xu, Youjun, et al.
+        “Deep Learning for Drug-Induced Liver Injury.”
+        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
+        <https://doi.org/10.1021/acs.jcim.5b00238>`_
+
+    .. [2] `Alves, Vinicius M., et al.
+        “Predicting chemically-induced skin reactions. Part I: QSAR models of skin sensitization and their application to identify potentially hazardous compounds”
+        Toxicology and Applied Pharmacology 284.2 (2015): 262-272.
+        <https://doi.org/10.1016/j.taap.2014.12.014>`_
     """
     df = fetch_dataset(
         data_dir,
