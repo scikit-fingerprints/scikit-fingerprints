@@ -80,6 +80,6 @@ Bulk functions for matrices (pairwise similarities):
     :toctree: generated/
 
     bulk_rand_binary_similarity
-    bulk_simpson_binary_similaritys
+    bulk_simpson_binary_similarity
     bulk_tanimoto_binary_similarity
     bulk_tanimoto_count_similarity
