@@ -249,7 +249,7 @@ def _bulk_rand_binary_similarity_single(X: np.ndarray) -> np.ndarray:
         for j in numba.prange(i, m):
             intersection = np.sum(np.logical_and(X[i], X[j]))
             length = len(X[i])
-            sims[i, j] = intersection / length if length != 0 else 1.0
+            sims[i, j] = intersection / length
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):
@@ -269,7 +269,7 @@ def _bulk_rand_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray
         for j in numba.prange(m):
             intersection = np.sum(np.logical_and(X[i], Y[j]))
             length = len(X[i])
-            sims[i, j] = intersection / length if length != 0 else 1.0
+            sims[i, j] = intersection / length
 
     return sims
 
