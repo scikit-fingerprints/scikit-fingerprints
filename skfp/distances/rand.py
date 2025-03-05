@@ -240,7 +240,7 @@ def bulk_rand_binary_similarity(
 
 @numba.njit(parallel=True)
 def _bulk_rand_binary_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
+    m, length = X.shape
     sims = np.empty((m, m))
 
     # upper triangle - actual similarities
@@ -248,7 +248,6 @@ def _bulk_rand_binary_similarity_single(X: np.ndarray) -> np.ndarray:
         # in this case diagonal is not always 1
         for j in numba.prange(i, m):
             intersection = np.sum(np.logical_and(X[i], X[j]))
-            length = len(X[i])
             sims[i, j] = intersection / length
 
     # lower triangle - symmetric with upper triangle
@@ -261,14 +260,13 @@ def _bulk_rand_binary_similarity_single(X: np.ndarray) -> np.ndarray:
 
 @numba.njit(parallel=True)
 def _bulk_rand_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
+    m, length = X.shape
     n = Y.shape[0]
     sims = np.empty((m, n))
 
     for i in numba.prange(m):
         for j in numba.prange(m):
             intersection = np.sum(np.logical_and(X[i], Y[j]))
-            length = len(X[i])
             sims[i, j] = intersection / length
 
     return sims
