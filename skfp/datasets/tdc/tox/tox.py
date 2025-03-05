@@ -563,7 +563,7 @@ def load_herg_karim(
     ----------
     .. [1] `Karim, A., et al.
         "CardioTox net: a robust predictor for hERG channel blockade based on
-         deep learning meta-feature ensembles"
+        deep learning meta-feature ensembles"
         Journal of Cheminformatics 13, 60 (2021).
         <https://doi.org/10.1186/s13321-021-00541-z>`_
 
