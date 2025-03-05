@@ -42,6 +42,7 @@ Bulk functions for matrices (pairwise distances):
     :nosignatures:
     :toctree: generated/
 
+    bulk_rand_binary_distance
     bulk_tanimoto_binary_distance
     bulk_tanimoto_count_distance
 
@@ -77,5 +78,6 @@ Bulk functions for matrices (pairwise similarities):
     :nosignatures:
     :toctree: generated/
 
+    bulk_rand_binary_similarity
     bulk_tanimoto_binary_similarity
     bulk_tanimoto_count_similarity
