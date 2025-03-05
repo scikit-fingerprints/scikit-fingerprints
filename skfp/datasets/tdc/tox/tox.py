@@ -631,7 +631,6 @@ def load_ld50_zhu(
         “Quantitative Structure−Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure.”
         Chemical Research in Toxicology 22.12 (2009): 1913-1921.
         <https://doi.org/10.1021/tx900189p>`_
-
     """
     df = fetch_dataset(
         data_dir,
