@@ -22,7 +22,7 @@ def load_ames(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the AMES dataset.
+    Load the AMES dataset.
 
     The task is to predict mutagenicity of drugs, i.e. potential to induce
     genetic alterations [1]_ [2]_. This data comes from a standardized Ames test,
@@ -92,7 +92,7 @@ def load_carcinogens_lagunin(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Carcinogens dataset.
+    Load the Carcinogens dataset.
 
     The task is to predict whether the drug is a carcinogen [1]_ [2]_ [3]_.
 
@@ -128,12 +128,12 @@ def load_carcinogens_lagunin(
     References
     ----------
     .. [1] `Lagunin, Alexey, et al.
-        “Computer-Aided Prediction of Rodent Carcinogenicity by PASS and CISOC-PSCT.”
+        "Computer-Aided Prediction of Rodent Carcinogenicity by PASS and CISOC-PSCT"
         QSAR & Combinatorial Science 28.8 (2009): 806-810
         <https://doi.org/10.1002/qsar.200860192>`_
 
     .. [2] `Cheng, Feixiong, et al.
-        “admetSAR: A Comprehensive Source and Free Tool for Assessment of Chemical ADMET Properties.”
+        "admetSAR: A Comprehensive Source and Free Tool for Assessment of Chemical ADMET Properties"
         Journal of Chemical Information and Modeling 52.11 (2012): 2840-2847
         <https://doi.org/10.1021/ci300367a>`_
 
@@ -165,7 +165,7 @@ def load_dili(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the DILI (Drug Induced Liver Injury) dataset.
+    Load the DILI (Drug Induced Liver Injury) dataset.
 
     DILI (Drug-Induced Liver Injury) is the most frequent cause of safety-related
     drug withdrawal. The task of this dataset is to predict whether a drug can
@@ -203,7 +203,7 @@ def load_dili(
     References
     ----------
     .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
+        "Deep Learning for Drug-Induced Liver Injury"
         Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
         <https://doi.org/10.1021/acs.jcim.5b00238>`_
 
@@ -235,7 +235,7 @@ def load_herg(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the hERG blockers dataset.
+    Load the hERG blockers dataset.
 
     The task is to predict whether the drug blocks ether-à-go-go related gene (hERG),
     crucial for coordination of the heart's beating [1]_ [2]_.
@@ -271,15 +271,16 @@ def load_herg(
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
-        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
-
-    .. [2] `Wang, Shuangquan, et al.
-        “ADMET Evaluation in Drug Discovery. 16. Predicting hERG Blockers by Combining Multiple Pharmacophores and Machine Learning Approaches.”
+    .. [1] `Wang, Shuangquan, et al.
+        "ADMET Evaluation in Drug Discovery. 16. Predicting hERG Blockers by Combining
+        Multiple Pharmacophores and Machine Learning Approaches"
         Molecular Pharmaceutics 13.8 (2016): 2855-2866.
         <https://doi.org/10.1021/acs.molpharmaceut.6b00471>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -304,11 +305,12 @@ def load_herg_central_at_1um(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ''hERG_at_1uM'' subset of hERG central dataset.
+    Load the 1 µM subset of hERG Central dataset.
 
     The task is to predict the inhibition of ether-à-go-go related gene (hERG),
     crucial for coordination of the heart's beating [1]_ [2]_.
-    The measure is expressed as the percent inhibition at a 1µM concentration.
+
+    In this subset, the task is predicting percent inhibition at 1 µM concentration.
 
     ==================   =================
     Tasks                                1
@@ -341,16 +343,16 @@ def load_herg_central_at_1um(
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
-        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
-
-    .. [2] `Du F, et al.
+    .. [1] `Du F, et al.
         "hERGCentral: a large database to store, retrieve, and analyze compound-human Ether-à-go-go
-        related gene channel interactions to facilitate cardiotoxicity assessment in drug development."
+        related gene channel interactions to facilitate cardiotoxicity assessment in drug development"
         Assay Drug Dev Technol. 2011 Dec;9(6):580-8.
         <https://doi.org/10.1089/adt.2011.0425>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -375,11 +377,12 @@ def load_herg_central_at_10um(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ''hERG_at_10uM'' subset of hERG central dataset.
+    Load the 10 µM subset of hERG Central dataset.
 
     The task is to predict the inhibition of ether-à-go-go related gene (hERG),
     crucial for coordination of the heart's beating [1]_ [2]_.
-    The measure is expressed as the percent inhibition at a 10µM concentration.
+
+    In this subset, the task is predicting percent inhibition at 10 µM concentration.
 
     ==================   =================
     Tasks                                1
@@ -412,16 +415,16 @@ def load_herg_central_at_10um(
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
-        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
-
-    .. [2] `Du F, et al.
+    .. [1] `Du F, et al.
         "hERGCentral: a large database to store, retrieve, and analyze compound-human Ether-à-go-go
-        related gene channel interactions to facilitate cardiotoxicity assessment in drug development."
+        related gene channel interactions to facilitate cardiotoxicity assessment in drug development"
         Assay Drug Dev Technol. 2011 Dec;9(6):580-8.
         <https://doi.org/10.1089/adt.2011.0425>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -446,11 +449,13 @@ def load_herg_central_inhib(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ''hERG_inhib'' subset of hERG central dataset.
+    Load the inhibition subset of hERG Central dataset.
 
-    The task is to predict whether the drug blocks ether-à-go-go related gene (hERG),
+    The task is to predict the inhibition of ether-à-go-go related gene (hERG),
     crucial for coordination of the heart's beating [1]_ [2]_.
-    This task is modeled as classification whether the percentage inhibition at 10µM is smaller than -50.
+
+    In this subset, the task is predicting the binary inhibition ability, i.e.
+    if percentage inhibition at 10 µM is smaller than -50.
 
     ==================   =================
     Tasks                                1
@@ -483,16 +488,16 @@ def load_herg_central_inhib(
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
-        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
-
-    .. [2] `Du F, et al.
+    .. [1] `Du F, et al.
         "hERGCentral: a large database to store, retrieve, and analyze compound-human Ether-à-go-go
-        related gene channel interactions to facilitate cardiotoxicity assessment in drug development."
+        related gene channel interactions to facilitate cardiotoxicity assessment in drug development"
         Assay Drug Dev Technol. 2011 Dec;9(6):580-8.
         <https://doi.org/10.1089/adt.2011.0425>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -517,10 +522,13 @@ def load_herg_karim(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the hERG karim dataset.
+    Load the hERG Karim dataset.
 
     The task is to predict whether the drug blocks ether-à-go-go related gene (hERG),
     crucial for coordination of the heart's beating [1]_ [2]_.
+
+    This dataset is a binary classification task, with molecules defined as hERG (<10 µM)
+    and non-hERG (>=10 µM) blockers.
 
     ==================   =================
     Tasks                                1
@@ -553,15 +561,16 @@ def load_herg_karim(
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
-        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
-
-    .. [2] `Karim, A., et al.
-        "CardioTox net: a robust predictor for hERG channel blockade based on deep learning meta-feature ensembles."
+    .. [1] `Karim, A., et al.
+        "CardioTox net: a robust predictor for hERG channel blockade based on
+         deep learning meta-feature ensembles"
         Journal of Cheminformatics 13, 60 (2021).
         <https://doi.org/10.1186/s13321-021-00541-z>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -588,7 +597,8 @@ def load_ld50_zhu(
     """
     Load the Acute Toxicity LD50 dataset.
 
-    Acute toxicity LD50 measures the most conservative dose that can lead to lethal adverse effects [1]_ [2]_.
+    Acute toxicity LD50 measures the most conservative dose that
+    can lead to lethal adverse effects [1]_ [2]_.
     The regression task is to predict the acute toxicity of drugs.
 
     ==================   =================
@@ -622,15 +632,15 @@ def load_ld50_zhu(
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
-        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
-
-    .. [2] `Zhu, Hao, et al.
-        “Quantitative Structure−Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure.”
+    .. [1] `Zhu, Hao, et al.
+        "Quantitative Structure−Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure"
         Chemical Research in Toxicology 22.12 (2009): 1913-1921.
         <https://doi.org/10.1021/tx900189p>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -657,7 +667,8 @@ def load_skin_reaction(
     """
     Load the Skin Reaction dataset.
 
-    The task is to predict whether the drug can cause immune reaction that leads to skin sensitization [1]_ [2]_.
+    The task is to predict whether the drug can cause immune reaction
+    that leads to skin sensitization [1]_ [2]_.
 
     ==================   =================
     Tasks                                1
@@ -690,15 +701,16 @@ def load_skin_reaction(
 
     References
     ----------
-    .. [1] `Xu, Youjun, et al.
-        “Deep Learning for Drug-Induced Liver Injury.”
-        Journal of Chemical Information and Modeling 55.10 (2015): 2085-2093
-        <https://doi.org/10.1021/acs.jcim.5b00238>`_
-
-    .. [2] `Alves, Vinicius M., et al.
-        “Predicting chemically-induced skin reactions. Part I: QSAR models of skin sensitization and their application to identify potentially hazardous compounds”
+    .. [1] `Alves, Vinicius M., et al.
+        "Predicting chemically-induced skin reactions. Part I: QSAR models of
+        skin sensitization and their application to identify potentially hazardous compounds"
         Toxicology and Applied Pharmacology 284.2 (2015): 262-272.
         <https://doi.org/10.1016/j.taap.2014.12.014>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,

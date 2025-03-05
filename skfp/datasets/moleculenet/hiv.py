@@ -22,7 +22,7 @@ def load_hiv(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the HIV dataset.
+    Load the HIV dataset.
 
     The task is to predict ability of molecules to inhibit HIV replication [1]_ [2]_.
 

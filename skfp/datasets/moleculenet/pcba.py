@@ -22,7 +22,7 @@ def load_pcba(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the PCBA (PubChem BioAssay) dataset.
+    Load the PCBA (PubChem BioAssay) dataset.
 
     The task is to predict biological activity against 128 bioassays, generated
     by high-throughput screening (HTS). All tasks are binary active/non-active.
