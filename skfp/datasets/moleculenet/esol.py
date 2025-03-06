@@ -22,7 +22,7 @@ def load_esol(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ESOL (Estimated SOLubility) dataset.
+    Load the ESOL (Estimated SOLubility) dataset.
 
     The task is to predict aqueous solubility [1]_ [2]_. Targets are log-transformed,
     and the unit is log mols per litre (log Mol/L).

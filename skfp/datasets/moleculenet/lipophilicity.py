@@ -22,7 +22,7 @@ def load_lipophilicity(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Lipophilicity dataset.
+    Load the Lipophilicity dataset.
 
     The task is to predict octanol/water distribution coefficient (logD) at pH 7.4 [1]_.
     Targets are already log transformed, and are a unitless ratio.

@@ -24,7 +24,7 @@ def load_peptides_func(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Peptides-func dataset.
+    Load the Peptides-func dataset.
 
     The task is to predict functional properties (binary classes) for a set
     of peptides (small proteins) [1]_.

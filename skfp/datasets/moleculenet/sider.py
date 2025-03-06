@@ -22,7 +22,7 @@ def load_sider(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the SIDER (Side Effect Resource) dataset.
+    Load the SIDER (Side Effect Resource) dataset.
 
     The task is to predict adverse drug reactions (ADRs) as drug side effects to
     27 system organ classes in MedDRA classification [1]_ [2]_. All tasks are binary.
