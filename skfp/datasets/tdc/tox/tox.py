@@ -354,8 +354,8 @@ def load_herg_central_at_1um(
     """
     df = fetch_dataset(
         data_dir,
-        dataset_name="TDC_herg_central_herg_at_1um",
-        filename="tdc_herg_central_herg_at_1um.csv",
+        dataset_name="TDC_herg_central_at_1um",
+        filename="tdc_herg_central_at_1um.csv",
         verbose=verbose,
     )
     return df if as_frame else get_mol_strings_and_labels(df)
@@ -425,8 +425,8 @@ def load_herg_central_at_10um(
     """
     df = fetch_dataset(
         data_dir,
-        dataset_name="TDC_herg_central_herg_at_10um",
-        filename="tdc_herg_central_herg_at_10um.csv",
+        dataset_name="TDC_herg_central_at_10um",
+        filename="tdc_herg_central_at_10um.csv",
         verbose=verbose,
     )
     return df if as_frame else get_mol_strings_and_labels(df)
@@ -496,8 +496,8 @@ def load_herg_central_inhib(
     """
     df = fetch_dataset(
         data_dir,
-        dataset_name="TDC_herg_central_herg_inhib",
-        filename="tdc_herg_central_herg_inhib.csv",
+        dataset_name="TDC_herg_central_inhib",
+        filename="tdc_herg_central_inhib.csv",
         verbose=verbose,
     )
     return df if as_frame else get_mol_strings_and_labels(df)
