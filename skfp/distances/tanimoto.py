@@ -351,8 +351,8 @@ def bulk_tanimoto_binary_similarity(
     >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_tanimoto_binary_similarity(X, Y)
     >>> sim
-    array([[1. , 0.5],
-           [0.5, 1. ]])
+    array([[1.        , 0.33333333],
+           [0.5       , 0.5       ]])
     """
     if Y is None:
         return _bulk_tanimoto_binary_similarity_single(X)
