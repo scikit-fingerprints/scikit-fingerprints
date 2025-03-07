@@ -455,7 +455,7 @@ def _bulk_ct4_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     for i in numba.prange(m):
         for j in numba.prange(n):
             intersection = np.sum(np.logical_and(X[i], Y[j]))
-            union = np.sum(np.logical_or(X[i], X[j]))
+            union = np.sum(np.logical_or(X[i], Y[j]))
             sims[i, j] = (
                 float(np.log(1 + intersection) / np.log(1 + union))
                 if union != 0
