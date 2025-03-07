@@ -5,6 +5,10 @@ from .braun_blanquet import (
     bulk_braun_blanquet_binary_similarity,
 )
 from .ct4 import (
+    bulk_ct4_binary_distance,
+    bulk_ct4_binary_similarity,
+    bulk_ct4_count_distance,
+    bulk_ct4_count_similarity,
     ct4_binary_distance,
     ct4_binary_similarity,
     ct4_count_distance,

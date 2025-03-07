@@ -43,6 +43,8 @@ Bulk functions for matrices (pairwise distances):
     :toctree: generated/
 
     bulk_braun_blanquet_binary_distance
+    bulk_ct4_binary_distance
+    bulk_ct4_count_distance
     bulk_rand_binary_distance
     bulk_simpson_binary_distance
     bulk_tanimoto_binary_distance
@@ -81,6 +83,8 @@ Bulk functions for matrices (pairwise similarities):
     :toctree: generated/
 
     bulk_braun_blanquet_binary_similarity
+    bulk_ct4_binary_similarity
+    bulk_ct4_count_similarity
     bulk_rand_binary_similarity
     bulk_simpson_binary_similarity
     bulk_tanimoto_binary_similarity
