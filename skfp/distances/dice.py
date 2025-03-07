@@ -352,7 +352,7 @@ def bulk_dice_binary_similarity(
     r"""
     Bulk Dice similarity for binary matrices.
 
-    Computes the pairwise Dice [1]_ [2]_ [3]_ similarity between binary matrices. If one array is
+    Computes the pairwise Dice similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
     corresponding to `i`-th row from first array and `j`-th row from second array.
@@ -373,25 +373,6 @@ def bulk_dice_binary_similarity(
     similarities : ndarray
         Array with pairwise Dice similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    References
-    ----------
-    .. [1] `Dice, Lee R.
-        "Measures of the amount of ecologic association between species."
-        Ecology 26.3 (1945): 297-302.
-        <https://esajournals.onlinelibrary.wiley.com/doi/abs/10.2307/1932409>`_
-
-    .. [2] `Brusco M., Cradit J. D., Steinley D.
-        "A comparison of 71 binary similarity coefficients: The effect of base rates."
-        PloS one 16.4 (2021): e0247751.
-        <https://doi.org/10.1371/journal.pone.0247751>`_
-
-    .. [3] `Todeschini R., Consonni V., Xiang H., Holliday J., Buscema M., Willett P.
-        "Similarity Coefficients for Binary Chemoinformatics Data: Overview and
-        Extended Comparison Using Simulated and Real Data Sets."
-        Journal of Chemical Information and Modeling 52.11 (2012): 2884-2901.
-        <https://doi.org/10.1021/ci300261r>`_
-
 
     See Also
     --------
