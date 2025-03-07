@@ -20,7 +20,7 @@ def ct4_binary_similarity(
     r"""
     Consonni–Todeschini 4 similarity for vectors of binary values.
 
-    Computes the Consonni–Todeschini 4 similarity [1]_ [2]_ [3]_ for binary data
+    Computes the Consonni–Todeschini 4 (CT4) similarity [1]_ [2]_ [3]_ for binary data
     between two input arrays or sparse matrices, using the formula:
 
     .. math::
@@ -110,9 +110,9 @@ def ct4_binary_distance(
     vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
-    Consonni–Todeschini distance for vectors of binary values.
+    Consonni–Todeschini 4 distance for vectors of binary values.
 
-    Computes the Consonni–Todeschini 4 distance [1]_ [2]_ [3]_ for binary data
+    Computes the Consonni–Todeschini 4 (CT4) distance [1]_ [2]_ [3]_ for binary data
     between two input arrays or sparse matrices by subtracting the similarity
     from 1, using the formula:
 
@@ -188,7 +188,7 @@ def ct4_count_similarity(
     r"""
     Consonni–Todeschini 4 similarity for vectors of count values.
 
-    Computes the Consonni–Todeschini 4 similarity [1]_ [2]_ [3]_ for count data
+    Computes the Consonni–Todeschini 4 (CT4) similarity [1]_ [2]_ [3]_ for count data
     between two input arrays or sparse matrices, using the formula:
 
     .. math::
@@ -282,7 +282,7 @@ def ct4_count_distance(
     """
     Consonni–Todeschini distance for vectors of count values.
 
-    Computes the Consonni–Todeschini 4 distance [1]_ [2]_ [3]_ for count data
+    Computes the Consonni–Todeschini 4 (CT4) distance [1]_ [2]_ [3]_ for count data
     between two input arrays or sparse matrices by subtracting the similarity
     from 1, using the formula:
 
@@ -354,12 +354,13 @@ def bulk_ct4_binary_similarity(
     X: np.ndarray, Y: Optional[np.ndarray] = None
 ) -> np.ndarray:
     r"""
-    Bulk Consonni–Todeschini similarity for binary matrices.
+    Bulk Consonni–Todeschini 4 similarity for binary matrices.
 
-    Computes the pairwise Consonni–Todeschini [1]_ [2]_ [3]_ similarity between binary matrices.
-    If one array is passed, similarities are computed between its rows. For two arrays, similarities
-    are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    Computes the pairwise Consonni–Todeschini 4 (CT4) [1]_ [2]_ [3]_ similarity
+    between binary matrices. If one array is passed, similarities are computed
+    between its rows. For two arrays, similarities are between their respective
+    rows, with `i`-th row and `j`-th column in output corresponding to `i`-th row
+    from first array and `j`-th row from second array.
 
     See also :py:func:`ct4_binary_similarity`.
 
@@ -475,12 +476,12 @@ def bulk_ct4_binary_distance(
     X: np.ndarray, Y: Optional[np.ndarray] = None
 ) -> np.ndarray:
     r"""
-    Bulk Consonni–Todeschini distance for vectors of binary values.
+    Bulk Consonni–Todeschini 4 distance for vectors of binary values.
 
-    Computes the pairwise Consonni–Todeschini distance between binary matrices. If one array is
-    passed, distances are computed between its rows. For two arrays, distances
-    are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    Computes the pairwise Consonni–Todeschini 4 (CT4) distance between binary matrices.
+    If one array is passed, distances are computed between its rows. For two arrays,
+    distances are between their respective rows, with `i`-th row and `j`-th column
+    in output corresponding to `i`-th row from first array and `j`-th row from second array.
 
     See also :py:func:`ct4_binary_distance`.
 
@@ -531,12 +532,12 @@ def bulk_ct4_count_similarity(
     X: np.ndarray, Y: Optional[np.ndarray] = None
 ) -> np.ndarray:
     r"""
-    Bulk Consonni–Todeschini similarity for count matrices.
+    Bulk Consonni–Todeschini 4 similarity for count matrices.
 
-    Computes the pairwise Consonni–Todeschini similarity between count matrices. If one array is
-    passed, similarities are computed between its rows. For two arrays, similarities
-    are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    Computes the pairwise Consonni–Todeschini 4 similarity between count matrices.
+    If one array is passed, similarities are computed between its rows. For two arrays,
+    similarities are between their respective rows, with `i`-th row and `j`-th column
+    in output corresponding to `i`-th row from first array and `j`-th row from second array.
 
     See also :py:func:`ct4_count_similarity`.
 
@@ -645,12 +646,12 @@ def bulk_ct4_count_distance(
     X: np.ndarray, Y: Optional[np.ndarray] = None
 ) -> np.ndarray:
     r"""
-    Bulk Consonni–Todeschini distance for vectors of count values.
+    Bulk Consonni–Todeschini 4 distance for vectors of count values.
 
-    Computes the pairwise Consonni–Todeschini [1]_ distance between count matrices. If one array is
-    passed, distances are computed between its rows. For two arrays, distances
-    are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    Computes the pairwise Consonni–Todeschini 4 [1]_ distance between count matrices.
+    If one array is passed, distances are computed between its rows. For two arrays,
+    distances are between their respective rows, with `i`-th row and `j`-th column
+    in output corresponding to `i`-th row from first array and `j`-th row from second array.
 
     See also :py:func:`ct4_count_distance`.
 
