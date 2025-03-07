@@ -1,6 +1,8 @@
 from .braun_blanquet import (
     braun_blanquet_binary_distance,
     braun_blanquet_binary_similarity,
+    bulk_braun_blanquet_binary_distance,
+    bulk_braun_blanquet_binary_similarity,
 )
 from .ct4 import (
     ct4_binary_distance,
