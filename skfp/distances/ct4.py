@@ -409,8 +409,8 @@ def bulk_ct4_binary_similarity(
     >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_ct4_binary_similarity(X, Y)
     >>> sim
-    array([[1.        , 0.63092975],
-           [0.63092975, 1.        ]])
+    array([[1.        , 0.5       ],
+           [0.63092975, 0.63092975]])
     """
     if Y is None:
         return _bulk_ct4_binary_similarity_single(X)
@@ -648,7 +648,7 @@ def bulk_ct4_count_distance(
     r"""
     Bulk Consonni–Todeschini 4 distance for vectors of count values.
 
-    Computes the pairwise Consonni–Todeschini 4 [1]_ distance between count matrices.
+    Computes the pairwise Consonni–Todeschini 4 distance between count matrices.
     If one array is passed, distances are computed between its rows. For two arrays,
     distances are between their respective rows, with `i`-th row and `j`-th column
     in output corresponding to `i`-th row from first array and `j`-th row from second array.
@@ -669,13 +669,6 @@ def bulk_ct4_count_distance(
     distances : ndarray
         Array with pairwise Consonni–Todeschini distance values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    References
-    ----------
-    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-        "Why is Consonni–Todeschini index an appropriate choice for fingerprint-based similarity calculations?"
-        J Cheminform, 7, 20 (2015).
-        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     See Also
     --------
