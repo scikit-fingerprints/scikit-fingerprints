@@ -391,9 +391,9 @@ def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.nda
     sims = np.empty((m, n))
 
     for i in numba.prange(m):
-        for j in numba.prange(m):
+        for j in numba.prange(n):
             intersection = np.sum(np.logical_and(X[i], Y[j]))
-            union = np.sum(np.logical_or(X[i], X[j]))
+            union = np.sum(np.logical_or(X[i], Y[j]))
             sims[i, j] = intersection / union if union != 0 else 1.0
 
     return sims

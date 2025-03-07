@@ -271,7 +271,7 @@ def _bulk_braun_blanquet_binary_similarity_two(
     row_sums_Y = np.sum(Y, axis=1)
 
     for i in numba.prange(m):
-        for j in numba.prange(m):
+        for j in numba.prange(n):
             num_common = np.sum(np.logical_and(X[i], Y[j]))
             max_vec = max(row_sums_X[i], row_sums_Y[j])
             sims[i, j] = num_common / max_vec if max_vec != 0 else 0.0

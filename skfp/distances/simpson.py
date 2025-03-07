@@ -279,7 +279,7 @@ def _bulk_simpson_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
     row_sums_Y = np.sum(Y, axis=1)
 
     for i in numba.prange(m):
-        for j in numba.prange(m):
+        for j in numba.prange(n):
             num_common = np.sum(np.logical_and(X[i], Y[j]))
             min_vec = min(row_sums_X[i], row_sums_Y[j])
             sims[i, j] = num_common / min_vec if min_vec != 0 else 0.0
