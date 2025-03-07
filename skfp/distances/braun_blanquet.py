@@ -213,7 +213,6 @@ def bulk_braun_blanquet_binary_similarity(
     .. [3] `RDKit documentation
         <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
-
     See Also
     --------
     :py:func:`braun_blanquet_binary_similarity` : Braun-Blanquet similarity function for two vectors.
