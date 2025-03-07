@@ -15,6 +15,10 @@ from .ct4 import (
     ct4_count_similarity,
 )
 from .dice import (
+    bulk_dice_binary_distance,
+    bulk_dice_binary_similarity,
+    bulk_dice_count_distance,
+    bulk_dice_count_similarity,
     dice_binary_distance,
     dice_binary_similarity,
     dice_count_distance,

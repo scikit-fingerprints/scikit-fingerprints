@@ -265,7 +265,7 @@ def _bulk_rand_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray
     sims = np.empty((m, n))
 
     for i in numba.prange(m):
-        for j in numba.prange(m):
+        for j in numba.prange(n):
             intersection = np.sum(np.logical_and(X[i], Y[j]))
             sims[i, j] = intersection / length
 

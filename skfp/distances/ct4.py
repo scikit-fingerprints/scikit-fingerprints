@@ -356,8 +356,8 @@ def bulk_ct4_binary_similarity(
     r"""
     Bulk Consonni–Todeschini 4 similarity for binary matrices.
 
-    Computes the pairwise Consonni–Todeschini 4 (CT4) [1]_ [2]_ [3]_ similarity
-    between binary matrices. If one array is passed, similarities are computed
+    Computes the pairwise Consonni–Todeschini 4 (CT4) similarity between
+    binary matrices. If one array is passed, similarities are computed
     between its rows. For two arrays, similarities are between their respective
     rows, with `i`-th row and `j`-th column in output corresponding to `i`-th row
     from first array and `j`-th row from second array.
@@ -379,24 +379,6 @@ def bulk_ct4_binary_similarity(
         Array with pairwise Consonni–Todeschini similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
 
-    References
-    ----------
-    .. [1] `V. Consonni, R. Todeschini
-        "New similarity coefficients for binary data"
-        MATCH Commun.Math.Comput.Chem.. 68. 581-592.
-        <https://match.pmf.kg.ac.rs/electronic_versions/Match68/n2/match68n2_581-592.pdf>`_
-
-    .. [2] `Todeschini, Roberto, Davide Ballabio, and Viviana Consonni
-        "Distances and similarity measures in chemometrics and chemoinformatics."
-        Encyclopedia of Analytical Chemistry: Applications, Theory and Instrumentation (2006): 1-40.
-        <https://doi.org/10.1002/9780470027318.a9438.pub2>`_
-
-    .. [3] `Todeschini, Roberto, et al.
-        "Similarity coefficients for binary chemoinformatics data: overview and
-        extended comparison using simulated and real data sets."
-        J. Chem. Inf. Model. 2012, 52, 11, 2884–2901
-        <https://doi.org/10.1021/ci300261r>`_
-
     See Also
     --------
     :py:func:`ct4_binary_similarity` : Consonni–Todeschini similarity function for two vectors.
@@ -409,8 +391,8 @@ def bulk_ct4_binary_similarity(
     >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_ct4_binary_similarity(X, Y)
     >>> sim
-    array([[1.        , 0.63092975],
-           [0.63092975, 1.        ]])
+    array([[1.        , 0.5       ],
+           [0.63092975, 0.63092975]])
     """
     if Y is None:
         return _bulk_ct4_binary_similarity_single(X)
@@ -453,9 +435,9 @@ def _bulk_ct4_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     sims = np.empty((m, n))
 
     for i in numba.prange(m):
-        for j in numba.prange(m):
+        for j in numba.prange(n):
             intersection = np.sum(np.logical_and(X[i], Y[j]))
-            union = np.sum(np.logical_or(X[i], X[j]))
+            union = np.sum(np.logical_or(X[i], Y[j]))
             sims[i, j] = (
                 float(np.log(1 + intersection) / np.log(1 + union))
                 if union != 0
@@ -648,7 +630,7 @@ def bulk_ct4_count_distance(
     r"""
     Bulk Consonni–Todeschini 4 distance for vectors of count values.
 
-    Computes the pairwise Consonni–Todeschini 4 [1]_ distance between count matrices.
+    Computes the pairwise Consonni–Todeschini 4 distance between count matrices.
     If one array is passed, distances are computed between its rows. For two arrays,
     distances are between their respective rows, with `i`-th row and `j`-th column
     in output corresponding to `i`-th row from first array and `j`-th row from second array.
@@ -669,13 +651,6 @@ def bulk_ct4_count_distance(
     distances : ndarray
         Array with pairwise Consonni–Todeschini distance values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    References
-    ----------
-    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-        "Why is Consonni–Todeschini index an appropriate choice for fingerprint-based similarity calculations?"
-        J Cheminform, 7, 20 (2015).
-        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     See Also
     --------
