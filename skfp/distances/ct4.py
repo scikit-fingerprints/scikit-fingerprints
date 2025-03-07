@@ -356,8 +356,8 @@ def bulk_ct4_binary_similarity(
     r"""
     Bulk Consonni–Todeschini 4 similarity for binary matrices.
 
-    Computes the pairwise Consonni–Todeschini 4 (CT4) [1]_ [2]_ [3]_ similarity
-    between binary matrices. If one array is passed, similarities are computed
+    Computes the pairwise Consonni–Todeschini 4 (CT4) similarity between
+    binary matrices. If one array is passed, similarities are computed
     between its rows. For two arrays, similarities are between their respective
     rows, with `i`-th row and `j`-th column in output corresponding to `i`-th row
     from first array and `j`-th row from second array.
@@ -378,24 +378,6 @@ def bulk_ct4_binary_similarity(
     similarities : ndarray
         Array with pairwise Consonni–Todeschini similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    References
-    ----------
-    .. [1] `V. Consonni, R. Todeschini
-        "New similarity coefficients for binary data"
-        MATCH Commun.Math.Comput.Chem.. 68. 581-592.
-        <https://match.pmf.kg.ac.rs/electronic_versions/Match68/n2/match68n2_581-592.pdf>`_
-
-    .. [2] `Todeschini, Roberto, Davide Ballabio, and Viviana Consonni
-        "Distances and similarity measures in chemometrics and chemoinformatics."
-        Encyclopedia of Analytical Chemistry: Applications, Theory and Instrumentation (2006): 1-40.
-        <https://doi.org/10.1002/9780470027318.a9438.pub2>`_
-
-    .. [3] `Todeschini, Roberto, et al.
-        "Similarity coefficients for binary chemoinformatics data: overview and
-        extended comparison using simulated and real data sets."
-        J. Chem. Inf. Model. 2012, 52, 11, 2884–2901
-        <https://doi.org/10.1021/ci300261r>`_
 
     See Also
     --------

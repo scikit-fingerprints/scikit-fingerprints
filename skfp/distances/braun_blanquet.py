@@ -176,7 +176,7 @@ def bulk_braun_blanquet_binary_similarity(
     r"""
     Bulk Braun-Blanquet similarity for binary matrices.
 
-    Computes the pairwise Braun-Blanquet [1]_ [2]_ [3]_ similarity between binary matrices.
+    Computes the pairwise Braun-Blanquet similarity between binary matrices.
     If one array is passed, similarities are computed between its rows. For two arrays,
     similarities are between their respective rows, with `i`-th row and `j`-th column in output
     corresponding to `i`-th row from first array and `j`-th row from second array.
@@ -197,21 +197,6 @@ def bulk_braun_blanquet_binary_similarity(
     similarities : ndarray
         Array with pairwise Braun-Blanquet similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    References
-    ----------
-    .. [1] `Braun-Blanquet, J.
-        "Plant sociology. The study of plant communities. First ed."
-        McGraw-Hill Book Co., Inc., New York and London, 1932.
-        <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
-
-    .. [2] `Deza M.M., Deza E.
-        "Encyclopedia of Distances."
-        Springer, Berlin, Heidelberg, 2009.
-        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
-
-    .. [3] `RDKit documentation
-        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
     See Also
     --------

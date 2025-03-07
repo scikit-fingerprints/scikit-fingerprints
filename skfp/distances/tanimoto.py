@@ -310,7 +310,7 @@ def bulk_tanimoto_binary_similarity(
     r"""
     Bulk Tanimoto similarity for binary matrices.
 
-    Computes the pairwise Tanimoto [1]_ similarity between binary matrices. If one array is
+    Computes the pairwise Tanimoto similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
     corresponding to `i`-th row from first array and `j`-th row from second array.
@@ -331,13 +331,6 @@ def bulk_tanimoto_binary_similarity(
     similarities : ndarray
         Array with pairwise Tanimoto similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    References
-    ----------
-    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-        J Cheminform, 7, 20 (2015).
-        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     See Also
     --------
@@ -582,7 +575,7 @@ def bulk_tanimoto_count_distance(
     r"""
     Bulk Tanimoto distance for vectors of count values.
 
-    Computes the pairwise Tanimoto [1]_ distance between count matrices. If one array is
+    Computes the pairwise Tanimoto distance between count matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
     corresponding to `i`-th row from first array and `j`-th row from second array.
@@ -603,13 +596,6 @@ def bulk_tanimoto_count_distance(
     distances : ndarray
         Array with pairwise Tanimoto distance values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    References
-    ----------
-    .. [1] `Bajusz, D., Rácz, A. & Héberger, K.
-        "Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?"
-        J Cheminform, 7, 20 (2015).
-        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-015-0069-3>`_
 
     See Also
     --------
