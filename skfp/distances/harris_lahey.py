@@ -244,8 +244,8 @@ def bulk_harris_lahey_binary_similarity(
         are computed between rows of X.
 
     normalized : bool, default=False
-        Whether to divide the resulting similarity by length of vectors (number of columns in the
-        matrix), to normalize values to range ``[0, 1]``.
+        Whether to divide the resulting similarity by length of vectors, (their number
+        of elements), to normalize values to range ``[0, 1]``.
 
     Returns
     -------
@@ -278,7 +278,7 @@ def bulk_harris_lahey_binary_similarity(
 def _bulk_harris_lahey_binary_similarity_single(
     X: np.ndarray, normalized: bool
 ) -> np.ndarray:
-    m, n = X.shape
+    m = X.shape[0]
     sims = np.empty((m, m))
 
     # upper triangle - actual similarities
@@ -312,7 +312,7 @@ def _bulk_harris_lahey_binary_similarity_single(
             )
 
             if normalized:
-                sims[i, j] = sims[i, j] / n
+                sims[i, j] = sims[i, j] / len(vec_a)
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):
@@ -360,7 +360,7 @@ def _bulk_harris_lahey_binary_similarity_two(
             )
 
             if normalized:
-                sims[i, j] = sims[i, j] / n
+                sims[i, j] = sims[i, j] / len(vec_a)
 
     return sims
 
