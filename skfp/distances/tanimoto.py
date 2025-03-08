@@ -514,8 +514,9 @@ def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
+        vec_a = X[i]
+
         for j in numba.prange(i + 1, m):
-            vec_a = X[i]
             vec_b = X[j]
 
             dot_aa = np.dot(vec_a, vec_a)
@@ -546,8 +547,9 @@ def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
     sims = np.empty((m, n))
 
     for i in numba.prange(m):
+        vec_a = X[i]
+
         for j in numba.prange(n):
-            vec_a = X[i]
             vec_b = Y[j]
 
             dot_aa = np.dot(vec_a, vec_a)

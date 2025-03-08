@@ -6,6 +6,11 @@ from skfp.distances import (
     harris_lahey_binary_distance,
     harris_lahey_binary_similarity,
 )
+from skfp.distances.harris_lahey import (
+    bulk_harris_lahey_binary_distance,
+    bulk_harris_lahey_binary_similarity,
+)
+from skfp.fingerprints.ecfp import ECFPFingerprint
 from tests.distances.utils import assert_distance_values, assert_similarity_values
 
 
@@ -79,3 +84,32 @@ def test_harris_lahey_normalized(vec_a, vec_b, comparison, similarity, distance)
     assert_similarity_values(sim_sparse, comparison, similarity)
 
     assert np.isclose(sim_dense, sim_sparse)
+
+
+def test_bulk_harris_lahey_binary(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    pairwise_sim = [
+        [harris_lahey_binary_similarity(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+    pairwise_dist = [
+        [harris_lahey_binary_distance(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+
+    bulk_sim = bulk_harris_lahey_binary_similarity(fps)
+    bulk_dist = bulk_harris_lahey_binary_distance(fps)
+
+    assert np.allclose(pairwise_sim, bulk_sim)
+    assert np.allclose(pairwise_dist, bulk_dist)
+
+
+def test_bulk_harris_lahey_second_array(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    bulk_sim_single = bulk_harris_lahey_binary_similarity(fps)
+    bulk_sim_two = bulk_harris_lahey_binary_similarity(fps, fps)
+    assert np.allclose(bulk_sim_single, bulk_sim_two)

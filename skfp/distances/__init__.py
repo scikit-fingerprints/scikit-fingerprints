@@ -29,6 +29,8 @@ from .fraggle import (
     fraggle_similarity,
 )
 from .harris_lahey import (
+    bulk_harris_lahey_binary_distance,
+    bulk_harris_lahey_binary_similarity,
     harris_lahey_binary_distance,
     harris_lahey_binary_similarity,
 )
