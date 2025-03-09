@@ -242,8 +242,8 @@ def bulk_mcconnaughey_binary_similarity(
     >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_mcconnaughey_binary_similarity(X, Y)
     >>> sim
-    array([[0.16666667, 0.16666667],
-           [0.25      , 0.25      ]])
+    array([[0.66666667, 0.66666667],
+           [0.5       , 0.5       ]])
     """
     if Y is None:
         return _bulk_mcconnaughey_binary_similarity_single(X, normalized)
