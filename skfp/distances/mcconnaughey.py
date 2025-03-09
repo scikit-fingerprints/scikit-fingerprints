@@ -1,5 +1,6 @@
-from typing import Union
+from typing import Optional, Union
 
+import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -189,3 +190,206 @@ def mcconnaughey_binary_distance(
     0.0
     """
     return 1 - mcconnaughey_binary_similarity(vec_a, vec_b, normalized=True)
+
+
+@validate_params(
+    {"X": ["array-like"], "Y": ["array-like", None]},
+    prefer_skip_nested_validation=True,
+)
+def bulk_mcconnaughey_binary_similarity(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    normalized: bool = False,
+) -> np.ndarray:
+    r"""
+    Bulk McConnaughey similarity for binary matrices.
+
+    Computes the pairwise McConnaughey similarity between binary matrices. If one array is
+    passed, similarities are computed between its rows. For two arrays, similarities
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`mcconnaughey_binary_similarity`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+        are computed between rows of X.
+
+    normalized : bool, default=False
+        Whether to normalize the values inside the result matrix to range ``[0, 1]`` by adding
+        one and dividing the result by 2.
+
+    Returns
+    -------
+    similarities : ndarray
+        Array with pairwise McConnaughey similarity values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`mcconnaughey_binary_similarity` : McConnaughey similarity function for two vectors.
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_mcconnaughey_binary_similarity
+    >>> import numpy as np
+    >>> X = np.array([[1, 1, 1], [0, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> sim = bulk_mcconnaughey_binary_similarity(X, Y)
+    >>> sim
+    array([[0.66666667, 0.66666667],
+           [0.5       , 0.5       ]])
+    """
+    if Y is None:
+        return _bulk_mcconnaughey_binary_similarity_single(X, normalized)
+    else:
+        return _bulk_mcconnaughey_binary_similarity_two(X, Y, normalized)
+
+
+@numba.njit(parallel=True)
+def _bulk_mcconnaughey_binary_similarity_single(
+    X: np.ndarray,
+    normalized: bool,
+) -> np.ndarray:
+    m = X.shape[0]
+    sims = np.empty((m, m))
+    sum_X = np.sum(X, axis=1)
+
+    # upper triangle - actual similarities
+    for i in numba.prange(m):
+        vec_a = X[i]
+        sum_a = sum_X[i]
+
+        for j in numba.prange(i, m):
+            vec_b = X[j]
+            sum_b = sum_X[j]
+
+            num_common = np.sum(np.logical_and(vec_a, vec_b))
+            sum_ab = sum_a + sum_b
+            dot_ab = sum_a * sum_b
+
+            if sum_ab == 0:
+                sims[i, j] = 1.0
+                continue
+            elif dot_ab == 0:
+                sims[i, j] = -1.0
+                continue
+            else:
+                sim = (num_common * sum_ab - dot_ab) / dot_ab
+
+            if normalized:
+                sim = (sim + 1) / 2
+
+            sims[i, j] = sim
+
+    # lower triangle - symmetric with upper triangle
+    for i in numba.prange(1, m):
+        for j in numba.prange(i):
+            sims[i, j] = sims[j, i]
+
+    return sims
+
+
+@numba.njit(parallel=True)
+def _bulk_mcconnaughey_binary_similarity_two(
+    X: np.ndarray,
+    Y: np.ndarray,
+    normalized: bool,
+) -> np.ndarray:
+    m = X.shape[0]
+    n = Y.shape[0]
+    sims = np.empty((m, n))
+    sum_X = np.sum(X, axis=1)
+    sum_Y = np.sum(Y, axis=1)
+
+    for i in numba.prange(m):
+        vec_a = X[i]
+        sum_a = sum_X[i]
+
+        for j in numba.prange(n):
+            vec_b = Y[j]
+            sum_b = sum_Y[j]
+
+            num_common = np.sum(np.logical_and(vec_a, vec_b))
+            sum_ab = sum_a + sum_b
+            dot_ab = sum_a * sum_b
+
+            if sum_ab == 0:
+                sims[i, j] = 1.0
+                continue
+            elif dot_ab == 0:
+                sims[i, j] = -1.0
+                continue
+            else:
+                sim = (num_common * sum_ab - dot_ab) / dot_ab
+
+            if normalized:
+                sim = (sim + 1) / 2
+
+            sims[i, j] = sim
+
+    return sims
+
+
+@validate_params(
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_mcconnaughey_binary_distance(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> np.ndarray:
+    r"""
+    Bulk McConnaughey distance for vectors of binary values.
+
+    Computes the pairwise McConnaughey distance between binary matrices. If one array is
+    passed, distances are computed between its rows. For two arrays, distances
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`mcconnaughey_binary_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise McConnaughey distance values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`mcconnaughey_binary_distance` : McConnaughey distance function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_mcconnaughey_binary_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 1, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 1, 0]])
+    >>> dist = bulk_mcconnaughey_binary_distance(X, Y)
+    >>> dist
+    array([[0.16666667, 0.16666667],
+           [0.        , 0.5       ]])
+
+    >>> X = np.array([[1, 1, 1], [1, 0, 0]])
+    >>> dist = bulk_mcconnaughey_binary_distance(X)
+    >>> dist
+    array([[0.        , 0.33333333],
+           [0.33333333, 0.        ]])
+    """
+    return 1 - bulk_mcconnaughey_binary_similarity(X, Y, normalized=True)
