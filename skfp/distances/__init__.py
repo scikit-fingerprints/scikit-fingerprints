@@ -41,6 +41,8 @@ from .kulczynski import (
     kulczynski_binary_similarity,
 )
 from .mcconnaughey import (
+    bulk_mcconnaughey_binary_distance,
+    bulk_mcconnaughey_binary_similarity,
     mcconnaughey_binary_distance,
     mcconnaughey_binary_similarity,
 )

@@ -247,15 +247,16 @@ def _bulk_kulczynski_binary_similarity_single(
 ) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
+    sum_X = np.sum(X, axis=1)
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-        sum_a = np.sum(vec_a)
+        sum_a = sum_X[i]
 
         for j in numba.prange(i, m):
             vec_b = X[j]
-            sum_b = np.sum(vec_b)
+            sum_b = sum_X[j]
 
             if sum_a == 0 == sum_b:
                 sims[i, j] = 1.0
@@ -290,14 +291,16 @@ def _bulk_kulczynski_binary_similarity_two(
     m = X.shape[0]
     n = Y.shape[0]
     sims = np.empty((m, n))
+    sum_X = np.sum(X, axis=1)
+    sum_Y = np.sum(Y, axis=1)
 
     for i in numba.prange(m):
         vec_a = X[i]
-        sum_a = np.sum(vec_a)
+        sum_a = sum_X[i]
 
         for j in numba.prange(n):
             vec_b = Y[j]
-            sum_b = np.sum(vec_b)
+            sum_b = sum_Y[j]
 
             if sum_a == 0 == sum_b:
                 sims[i, j] = 1.0
