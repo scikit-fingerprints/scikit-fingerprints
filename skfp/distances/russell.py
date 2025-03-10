@@ -219,7 +219,7 @@ def bulk_russell_binary_similarity(
     >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_russell_binary_similarity(X, Y)
     >>> sim
-    array([[1.        , 0.33333333],
+    array([[0.66666667, 0.66666667],
            [0.33333333, 0.33333333]])
     """
     if Y is None:
@@ -328,7 +328,7 @@ def bulk_russell_binary_distance(
     >>> dist = bulk_russell_binary_distance(X, Y)
     >>> dist
     array([[0.33333333, 0.33333333],
-           [0.33333333, 0.66666667]]))
+           [0.33333333, 0.66666667]])
 
     >>> X = np.array([[1, 1, 1], [1, 0, 0]])
     >>> dist = bulk_russell_binary_distance(X)
