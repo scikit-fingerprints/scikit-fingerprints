@@ -53,6 +53,8 @@ from .rand import (
     rand_binary_similarity,
 )
 from .rogot_goldberg import (
+    bulk_rogot_goldberg_binary_distance,
+    bulk_rogot_goldberg_binary_similarity,
     rogot_goldberg_binary_distance,
     rogot_goldberg_binary_similarity,
 )

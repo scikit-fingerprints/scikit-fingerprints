@@ -227,14 +227,12 @@ def _bulk_braun_blanquet_binary_similarity_single(X: np.ndarray) -> np.ndarray:
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
+        # diagonal - always 1
+        sims[i, i] = 1.0
         for j in numba.prange(i + 1, m):
             num_common = np.sum(np.logical_and(X[i], X[j]))
             max_vec = max(row_sums[i], row_sums[j])
             sims[i, j] = num_common / max_vec if max_vec != 0 else 0.0
-
-    # diagonal - always 1
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):

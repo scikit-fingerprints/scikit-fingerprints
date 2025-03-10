@@ -248,11 +248,13 @@ def _bulk_kulczynski_binary_similarity_single(
     m = X.shape[0]
     sims = np.empty((m, m))
     sum_X = np.sum(X, axis=1)
+    X_neg = 1 - X
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
         sum_a = sum_X[i]
+        vec_a_neg = X_neg[i]
 
         for j in numba.prange(i, m):
             vec_b = X[j]
@@ -262,8 +264,8 @@ def _bulk_kulczynski_binary_similarity_single(
                 sims[i, j] = 1.0
                 continue
 
-            vec_a_neg = 1 - vec_a
-            vec_b_neg = 1 - vec_b
+            # no need to compute vec_b_neg if sum_a == 0 == sum_b
+            vec_b_neg = X_neg[j]
 
             a = np.sum(np.logical_and(vec_a, vec_b))
             b = np.sum(np.logical_and(vec_a, vec_b_neg))
@@ -293,10 +295,13 @@ def _bulk_kulczynski_binary_similarity_two(
     sims = np.empty((m, n))
     sum_X = np.sum(X, axis=1)
     sum_Y = np.sum(Y, axis=1)
+    X_neg = 1 - X
+    Y_neg = 1 - Y
 
     for i in numba.prange(m):
         vec_a = X[i]
         sum_a = sum_X[i]
+        vec_a_neg = X_neg[i]
 
         for j in numba.prange(n):
             vec_b = Y[j]
@@ -306,8 +311,8 @@ def _bulk_kulczynski_binary_similarity_two(
                 sims[i, j] = 1.0
                 continue
 
-            vec_a_neg = 1 - vec_a
-            vec_b_neg = 1 - vec_b
+            # no need to compute vec_b_neg if sum_a == 0 == sum_b
+            vec_b_neg = Y_neg[j]
 
             a = np.sum(np.logical_and(vec_a, vec_b))
             b = np.sum(np.logical_and(vec_a, vec_b_neg))

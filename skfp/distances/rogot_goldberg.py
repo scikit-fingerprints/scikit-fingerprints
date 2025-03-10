@@ -1,5 +1,6 @@
-from typing import Union
+from typing import Optional, Union
 
+import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -187,3 +188,193 @@ def rogot_goldberg_binary_distance(
     0.0
     """
     return 1 - rogot_goldberg_binary_similarity(vec_a, vec_b)
+
+
+@validate_params(
+    {"X": ["array-like"], "Y": ["array-like", None]},
+    prefer_skip_nested_validation=True,
+)
+def bulk_rogot_goldberg_binary_similarity(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+) -> np.ndarray:
+    r"""
+    Bulk Rogot-Goldberg similarity for binary matrices.
+
+    Computes the pairwise Rogot-Goldberg similarity between binary matrices. If one array is
+    passed, similarities are computed between its rows. For two arrays, similarities
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`rogot_goldberg_binary_similarity`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+        are computed between rows of X.
+
+    Returns
+    -------
+    similarities : ndarray
+        Array with pairwise Rogot-Goldberg similarity values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`rogot_goldberg_binary_similarity` : Rogot-Goldberg similarity function for two vectors.
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_rogot_goldberg_binary_similarity
+    >>> import numpy as np
+    >>> X = np.array([[1, 1, 1], [0, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> sim = bulk_rogot_goldberg_binary_similarity(X, Y)
+    >>> sim
+    array([[0.4       , 0.4       ],
+           [0.66666667, 0.66666667]])
+    """
+    if Y is None:
+        return _bulk_rogot_goldberg_binary_similarity_single(X)
+    else:
+        return _bulk_rogot_goldberg_binary_similarity_two(X, Y)
+
+
+@numba.njit(parallel=True)
+def _bulk_rogot_goldberg_binary_similarity_single(
+    X: np.ndarray,
+) -> np.ndarray:
+    m = X.shape[0]
+    sims = np.empty((m, m))
+    X_neg = 1 - X
+
+    # upper triangle - actual similarities
+    for i in numba.prange(m):
+        vec_a = X[i]
+        vec_a_neg = X_neg[i]
+        sims[i, i] = 1.0
+
+        for j in numba.prange(i + 1, m):
+            vec_b = X[j]
+            vec_b_neg = X_neg[j]
+
+            a = np.sum(np.logical_and(vec_a, vec_b))
+            b = np.sum(np.logical_and(vec_a, vec_b_neg))
+            c = np.sum(np.logical_and(vec_a_neg, vec_b))
+            d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
+
+            first_denom = 2 * a + b + c
+            second_denom = 2 * d + b + c
+
+            if first_denom == 0 or second_denom == 0:
+                sims[i, j] = 1.0
+
+            sim = a / first_denom + d / second_denom
+            sims[i, j] = sim
+
+    # lower triangle - symmetric with upper triangle
+    for i in numba.prange(1, m):
+        for j in numba.prange(i):
+            sims[i, j] = sims[j, i]
+
+    return sims
+
+
+@numba.njit(parallel=True)
+def _bulk_rogot_goldberg_binary_similarity_two(
+    X: np.ndarray,
+    Y: np.ndarray,
+) -> np.ndarray:
+    m = X.shape[0]
+    n = Y.shape[0]
+    sims = np.empty((m, n))
+    X_neg = 1 - X
+    Y_neg = 1 - Y
+
+    for i in numba.prange(m):
+        vec_a = X[i]
+        vec_a_neg = X_neg[i]
+
+        for j in numba.prange(n):
+            vec_b = Y[j]
+            vec_b_neg = Y_neg[j]
+
+            a = np.sum(np.logical_and(vec_a, vec_b))
+            b = np.sum(np.logical_and(vec_a, vec_b_neg))
+            c = np.sum(np.logical_and(vec_a_neg, vec_b))
+            d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
+
+            first_denom = 2 * a + b + c
+            second_denom = 2 * d + b + c
+
+            if first_denom == 0 or second_denom == 0:
+                sims[i, j] = 1.0
+                continue
+
+            sim = a / first_denom + d / second_denom
+            sims[i, j] = sim
+
+    return sims
+
+
+@validate_params(
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_rogot_goldberg_binary_distance(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> np.ndarray:
+    r"""
+    Bulk Rogot-Goldberg distance for vectors of binary values.
+
+    Computes the pairwise Rogot-Goldberg distance between binary matrices. If one array is
+    passed, distances are computed between its rows. For two arrays, distances
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`rogot_goldberg_binary_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Rogot-Goldberg distance values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`rogot_goldberg_binary_distance` : Rogot-Goldberg distance function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_rogot_goldberg_binary_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 1, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 1, 0]])
+    >>> dist = bulk_rogot_goldberg_binary_distance(X, Y)
+    >>> dist
+    array([[0.6 , 0.6 ],
+           [0.  , 0.75]])
+
+    >>> X = np.array([[1, 1, 1], [1, 0, 0]])
+    >>> dist = bulk_rogot_goldberg_binary_distance(X)
+    >>> dist
+    array([[0.  , 0.75],
+           [0.75, 0.  ]])
+    """
+    return 1 - bulk_rogot_goldberg_binary_similarity(X, Y)
