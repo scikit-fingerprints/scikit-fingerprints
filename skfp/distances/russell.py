@@ -234,18 +234,18 @@ def _bulk_russell_binary_similarity_single(
 ) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
+    X_len = X.shape[1]
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-        len_a = len(vec_a)
 
         for j in numba.prange(i, m):
             vec_b = X[j]
 
             a = np.sum(np.logical_and(vec_a, vec_b))
 
-            sim = a / len_a
+            sim = a / X_len
             sims[i, j] = sim
 
     # lower triangle - symmetric with upper triangle
@@ -264,17 +264,17 @@ def _bulk_russell_binary_similarity_two(
     m = X.shape[0]
     n = Y.shape[0]
     sims = np.empty((m, n))
+    X_len = X.shape[1]
 
     for i in numba.prange(m):
         vec_a = X[i]
-        len_a = len(vec_a)
 
         for j in numba.prange(n):
             vec_b = Y[j]
 
             a = np.sum(np.logical_and(vec_a, vec_b))
 
-            sim = a / len_a
+            sim = a / X_len
             sims[i, j] = sim
 
     return sims
