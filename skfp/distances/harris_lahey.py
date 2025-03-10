@@ -280,16 +280,15 @@ def _bulk_harris_lahey_binary_similarity_single(
 ) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
-    X_neg = 1 - X
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-        vec_a_neg = X_neg[i]
+        vec_a_neg = 1 - vec_a
 
         for j in numba.prange(i, m):
             vec_b = X[j]
-            vec_b_neg = X_neg[j]
+            vec_b_neg = 1 - vec_b
 
             a = np.sum(np.logical_and(vec_a, vec_b))
             b = np.sum(np.logical_and(vec_a, vec_b_neg))
@@ -329,16 +328,14 @@ def _bulk_harris_lahey_binary_similarity_two(
     m = X.shape[0]
     n = Y.shape[0]
     sims = np.empty((m, n))
-    X_neg = 1 - X
-    Y_neg = 1 - Y
 
     for i in numba.prange(m):
         vec_a = X[i]
-        vec_a_neg = X_neg[i]
+        vec_a_neg = 1 - vec_a
 
         for j in numba.prange(n):
             vec_b = Y[j]
-            vec_b_neg = Y_neg[j]
+            vec_b_neg = 1 - vec_b
 
             a = np.sum(np.logical_and(vec_a, vec_b))
             b = np.sum(np.logical_and(vec_a, vec_b_neg))
