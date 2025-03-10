@@ -238,14 +238,14 @@ def _bulk_russell_binary_similarity_single(
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-        n = len(vec_a)
+        len_a = len(vec_a)
 
         for j in numba.prange(i, m):
             vec_b = X[j]
 
             a = np.sum(np.logical_and(vec_a, vec_b))
 
-            sim = a / n
+            sim = a / len_a
             sims[i, j] = sim
 
     # lower triangle - symmetric with upper triangle
@@ -267,14 +267,14 @@ def _bulk_russell_binary_similarity_two(
 
     for i in numba.prange(m):
         vec_a = X[i]
-        n = len(vec_a)
+        len_a = len(vec_a)
 
         for j in numba.prange(n):
-            vec_b = X[j]
+            vec_b = Y[j]
 
             a = np.sum(np.logical_and(vec_a, vec_b))
 
-            sim = a / n
+            sim = a / len_a
             sims[i, j] = sim
 
     return sims
@@ -327,8 +327,8 @@ def bulk_russell_binary_distance(
     >>> Y = np.array([[1, 0, 1], [1, 1, 0]])
     >>> dist = bulk_russell_binary_distance(X, Y)
     >>> dist
-    array([[0.        , 0.33333333],
-           [0.        , 0.33333333]])
+    array([[0.33333333, 0.33333333],
+           [0.33333333, 0.66666667]]))
 
     >>> X = np.array([[1, 1, 1], [1, 0, 0]])
     >>> dist = bulk_russell_binary_distance(X)
