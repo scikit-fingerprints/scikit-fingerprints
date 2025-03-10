@@ -52,6 +52,7 @@ Bulk functions for matrices (pairwise distances):
     bulk_mcconnaughey_binary_distance
     bulk_rand_binary_distance
     bulk_rogot_goldberg_binary_distance
+    bulk_russell_binary_distance
     bulk_simpson_binary_distance
     bulk_tanimoto_binary_distance
     bulk_tanimoto_count_distance
@@ -97,6 +98,7 @@ Bulk functions for matrices (pairwise similarities):
     bulk_kulczynski_binary_similarity
     bulk_mcconnaughey_binary_similarity
     bulk_rand_binary_similarity
+    bulk_russell_binary_similarity
     bulk_rogot_goldberg_binary_similarity
     bulk_simpson_binary_similarity
     bulk_tanimoto_binary_similarity
