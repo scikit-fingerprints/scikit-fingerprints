@@ -59,6 +59,8 @@ from .rogot_goldberg import (
     rogot_goldberg_binary_similarity,
 )
 from .russell import (
+    bulk_russell_binary_distance,
+    bulk_russell_binary_similarity,
     russell_binary_distance,
     russell_binary_similarity,
 )
