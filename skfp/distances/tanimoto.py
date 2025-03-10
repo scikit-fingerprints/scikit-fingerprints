@@ -360,14 +360,12 @@ def _bulk_tanimoto_binary_similarity_single(X: np.ndarray) -> np.ndarray:
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
+        # diagonal - always 1
+        sims[i, i] = 1.0
         for j in numba.prange(i + 1, m):
             intersection = np.sum(np.logical_and(X[i], X[j]))
             union = np.sum(np.logical_or(X[i], X[j]))
             sims[i, j] = intersection / union if union != 0 else 1.0
-
-    # diagonal - always 1
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):
@@ -516,6 +514,9 @@ def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
     for i in numba.prange(m):
         vec_a = X[i]
 
+        # diagonal - always 1
+        sims[i, i] = 1.0
+
         for j in numba.prange(i + 1, m):
             vec_b = X[j]
 
@@ -527,10 +528,6 @@ def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
             union = dot_aa + dot_bb - dot_ab
 
             sims[i, j] = intersection / union if union >= 1e-8 else 1.0
-
-    # diagonal - always 1
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):

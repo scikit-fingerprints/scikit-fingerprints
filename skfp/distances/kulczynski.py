@@ -253,6 +253,7 @@ def _bulk_kulczynski_binary_similarity_single(
     for i in numba.prange(m):
         vec_a = X[i]
         sum_a = sum_X[i]
+        vec_a_neg = 1 - vec_a
 
         for j in numba.prange(i, m):
             vec_b = X[j]
@@ -262,7 +263,7 @@ def _bulk_kulczynski_binary_similarity_single(
                 sims[i, j] = 1.0
                 continue
 
-            vec_a_neg = 1 - vec_a
+            # no need to compute vec_b_neg if sum_a == 0 == sum_b
             vec_b_neg = 1 - vec_b
 
             a = np.sum(np.logical_and(vec_a, vec_b))
@@ -297,6 +298,7 @@ def _bulk_kulczynski_binary_similarity_two(
     for i in numba.prange(m):
         vec_a = X[i]
         sum_a = sum_X[i]
+        vec_a_neg = 1 - vec_a
 
         for j in numba.prange(n):
             vec_b = Y[j]
@@ -306,7 +308,7 @@ def _bulk_kulczynski_binary_similarity_two(
                 sims[i, j] = 1.0
                 continue
 
-            vec_a_neg = 1 - vec_a
+            # no need to compute vec_b_neg if sum_a == 0 == sum_b
             vec_b_neg = 1 - vec_b
 
             a = np.sum(np.logical_and(vec_a, vec_b))

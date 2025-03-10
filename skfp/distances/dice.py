@@ -404,14 +404,12 @@ def _bulk_dice_binary_similarity_single(X: np.ndarray) -> np.ndarray:
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
+        # diagonal - always 1
+        sims[i, i] = 1.0
         for j in numba.prange(i + 1, m):
             intersection = np.sum(np.logical_and(X[i], X[j]))
             denominator = row_sums[i] + row_sums[j]
             sims[i, j] = 2 * intersection / denominator if denominator != 0 else 1.0
-
-    # diagonal - always 1
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):
@@ -562,6 +560,8 @@ def _bulk_dice_count_similarity_single(X: np.ndarray) -> np.ndarray:
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
+        # diagonal - always 1
+        sims[i, i] = 1.0
 
         for j in numba.prange(i + 1, m):
             vec_b = X[j]
@@ -572,10 +572,6 @@ def _bulk_dice_count_similarity_single(X: np.ndarray) -> np.ndarray:
 
             denominator = dot_aa + dot_bb
             sims[i, j] = 2 * dot_ab / denominator if denominator >= 1e-8 else 1.0
-
-    # diagonal - always 1
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
 
     # lower triangle - symmetric with upper triangle
     for i in numba.prange(1, m):
