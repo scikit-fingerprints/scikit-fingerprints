@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE.md)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/scikit-fingerprints.svg)](https://pypi.org/project/scikit-fingerprints/)
 [![Contributors](https://img.shields.io/github/contributors/scikit-fingerprints/scikit-fingerprints)](https://github.com/scikit-fingerprints/scikit-fingerprints/graphs/contributors)
-[![check](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/tests.yml/badge.svg)](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/tests.yml)
+[![check](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/tests.yml)
 
 [scikit-fingerprints](https://scikit-fingerprints.github.io/scikit-fingerprints/) is a Python library for efficient
 computation of molecular fingerprints.
