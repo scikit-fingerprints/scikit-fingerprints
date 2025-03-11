@@ -250,19 +250,12 @@ def _bulk_simpson_binary_similarity_single(X: np.ndarray) -> np.ndarray:
     sims = np.empty((m, m))
     row_sums = np.sum(X, axis=1)
 
-    # upper triangle - actual similarities
     for i in numba.prange(m):
-        # diagonal - always 1
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
+        for j in numba.prange(i, m):
             num_common = np.sum(np.logical_and(X[i], X[j]))
             min_vec = min(row_sums[i], row_sums[j])
-            sims[i, j] = num_common / min_vec if min_vec != 0 else 0.0
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sim = num_common / min_vec if min_vec != 0 else 0.0
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 

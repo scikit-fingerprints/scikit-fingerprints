@@ -71,6 +71,8 @@ from .simpson import (
     simpson_binary_similarity,
 )
 from .sokal_sneath import (
+    bulk_sokal_sneath_2_binary_distance,
+    bulk_sokal_sneath_2_binary_similarity,
     sokal_sneath_2_binary_distance,
     sokal_sneath_2_binary_similarity,
 )

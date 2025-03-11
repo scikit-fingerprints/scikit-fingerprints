@@ -358,19 +358,13 @@ def _bulk_tanimoto_binary_similarity_single(X: np.ndarray) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
 
-    # upper triangle - actual similarities
     for i in numba.prange(m):
-        # diagonal - always 1
         sims[i, i] = 1.0
         for j in numba.prange(i + 1, m):
             intersection = np.sum(np.logical_and(X[i], X[j]))
             union = np.sum(np.logical_or(X[i], X[j]))
-            sims[i, j] = intersection / union if union != 0 else 1.0
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sim = intersection / union if union != 0 else 1.0
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 
@@ -510,11 +504,8 @@ def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
 
-    # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-
-        # diagonal - always 1
         sims[i, i] = 1.0
 
         for j in numba.prange(i + 1, m):
@@ -527,12 +518,8 @@ def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
             intersection = dot_ab
             union = dot_aa + dot_bb - dot_ab
 
-            sims[i, j] = intersection / union if union >= 1e-8 else 1.0
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sim = intersection / union if union >= 1e-8 else 1.0
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 

@@ -270,15 +270,11 @@ def _bulk_rogot_goldberg_binary_similarity_single(
             second_denom = 2 * d + b + c
 
             if first_denom == 0 or second_denom == 0:
-                sims[i, j] = 1.0
+                sim = 1.0
+            else:
+                sim = a / first_denom + d / second_denom
 
-            sim = a / first_denom + d / second_denom
-            sims[i, j] = sim
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 

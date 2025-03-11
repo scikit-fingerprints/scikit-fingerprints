@@ -1,5 +1,6 @@
-from typing import Union
+from typing import Optional, Union
 
+import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -173,3 +174,173 @@ def sokal_sneath_2_binary_distance(
     0.6666666666666667
     """
     return 1 - sokal_sneath_2_binary_similarity(vec_a, vec_b)
+
+
+@validate_params(
+    {"X": ["array-like"], "Y": ["array-like", None]},
+    prefer_skip_nested_validation=True,
+)
+def bulk_sokal_sneath_2_binary_similarity(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+) -> np.ndarray:
+    r"""
+    Bulk Sokal-Sneath similarity 2 for binary matrices.
+
+    Computes the pairwise Sokal-Sneath similarity 2 between binary matrices. If one array is
+    passed, similarities are computed between its rows. For two arrays, similarities
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`sokal_sneath_2_binary_similarity`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+        are computed between rows of X.
+
+    Returns
+    -------
+    similarities : ndarray
+        Array with pairwise Sokal-Sneath similarity 2 values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`sokal_sneath_2_binary_similarity` : Sokal-Sneath similarity 2 function for two vectors.
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_sokal_sneath_2_binary_similarity
+    >>> import numpy as np
+    >>> X = np.array([[1, 1, 1], [0, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> sim = bulk_sokal_sneath_2_binary_similarity(X, Y)
+    >>> sim
+    array([[0.5       , 0.5       ],
+           [0.33333333, 0.33333333]])
+    """
+    if Y is None:
+        return _bulk_sokal_sneath_2_binary_similarity_single(X)
+    else:
+        return _bulk_sokal_sneath_2_binary_similarity_two(X, Y)
+
+
+@numba.njit(parallel=True)
+def _bulk_sokal_sneath_2_binary_similarity_single(
+    X: np.ndarray,
+) -> np.ndarray:
+    m = X.shape[0]
+    sims = np.empty((m, m))
+    X_sum = np.sum(X, axis=1)
+
+    # upper triangle - actual similarities
+    for i in numba.prange(m):
+        vec_a = X[i]
+        sum_a = X_sum[i]
+        sims[i, i] = 1.0
+
+        for j in numba.prange(i + 1, m):
+            vec_b = X[j]
+            sum_b = X_sum[j]
+
+            intersection = np.sum(np.logical_and(vec_a, vec_b))
+
+            denominator = 2 * sum_a + 2 * sum_b - 3 * intersection
+            sim = intersection / denominator if denominator > 0 else 1.0
+
+            sims[i, j] = sims[j, i] = sim
+
+    return sims
+
+
+@numba.njit(parallel=True)
+def _bulk_sokal_sneath_2_binary_similarity_two(
+    X: np.ndarray,
+    Y: np.ndarray,
+) -> np.ndarray:
+    m = X.shape[0]
+    n = Y.shape[0]
+    sims = np.empty((m, n))
+    X_sum = np.sum(X, axis=1)
+    Y_sum = np.sum(Y, axis=1)
+
+    for i in numba.prange(m):
+        vec_a = X[i]
+        sum_a = X_sum[i]
+
+        for j in numba.prange(n):
+            vec_b = Y[j]
+            sum_b = Y_sum[j]
+
+            intersection = np.sum(np.logical_and(vec_a, vec_b))
+
+            denominator = 2 * sum_a + 2 * sum_b - 3 * intersection
+            sim = intersection / denominator if denominator > 0 else 1.0
+
+            sims[i, j] = sim
+
+    return sims
+
+
+@validate_params(
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_sokal_sneath_2_binary_distance(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> np.ndarray:
+    r"""
+    Bulk Sokal-Sneath distance 2 for vectors of binary values.
+
+    Computes the pairwise Sokal-Sneath distance 2 between binary matrices. If one array is
+    passed, distances are computed between its rows. For two arrays, distances
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`sokal_sneath_2_binary_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Sokal-Sneath distance 2 values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`sokal_sneath_2_binary_distance` : Sokal-Sneath distance 2 function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_sokal_sneath_2_binary_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 1, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 1, 0]])
+    >>> dist = bulk_sokal_sneath_2_binary_distance(X, Y)
+    >>> dist
+    array([[0.5, 0.5],
+           [0. , 0.8]])
+
+    >>> X = np.array([[1, 1, 1], [1, 0, 0]])
+    >>> dist = bulk_sokal_sneath_2_binary_distance(X)
+    >>> dist
+    array([[0. , 0.8],
+           [0.8, 0. ]])
+    """
+    return 1 - bulk_sokal_sneath_2_binary_similarity(X, Y)

@@ -243,17 +243,11 @@ def _bulk_rand_binary_similarity_single(X: np.ndarray) -> np.ndarray:
     m, length = X.shape
     sims = np.empty((m, m))
 
-    # upper triangle - actual similarities
     for i in numba.prange(m):
-        # in this case diagonal is not always 1
         for j in numba.prange(i, m):
             intersection = np.sum(np.logical_and(X[i], X[j]))
-            sims[i, j] = intersection / length
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sim = intersection / length
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 

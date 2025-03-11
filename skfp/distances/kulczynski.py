@@ -247,23 +247,23 @@ def _bulk_kulczynski_binary_similarity_single(
 ) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
-    sum_X = np.sum(X, axis=1)
+    X_sum = np.sum(X, axis=1)
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-        sum_a = sum_X[i]
+        sum_a = X_sum[i]
         vec_a_neg = 1 - vec_a
+        sims[i, i] = 1.0
 
-        for j in numba.prange(i, m):
+        for j in numba.prange(i + 1, m):
             vec_b = X[j]
-            sum_b = sum_X[j]
+            sum_b = X_sum[j]
 
             if sum_a == 0 == sum_b:
-                sims[i, j] = 1.0
+                sims[i, j] = sims[j, i] = 1.0
                 continue
 
-            # no need to compute vec_b_neg if sum_a == 0 == sum_b
             vec_b_neg = 1 - vec_b
 
             a = np.sum(np.logical_and(vec_a, vec_b))
@@ -271,15 +271,11 @@ def _bulk_kulczynski_binary_similarity_single(
             c = np.sum(np.logical_and(vec_a_neg, vec_b))
 
             if a + b == 0 or a + c == 0:
-                sims[i, j] = 0.0
+                sims[i, j] = sims[j, i] = 0.0
                 continue
 
-            sims[i, j] = (a / (a + b) + a / (a + c)) / 2.0
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sim = (a / (a + b) + a / (a + c)) / 2.0
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 
@@ -292,17 +288,17 @@ def _bulk_kulczynski_binary_similarity_two(
     m = X.shape[0]
     n = Y.shape[0]
     sims = np.empty((m, n))
-    sum_X = np.sum(X, axis=1)
-    sum_Y = np.sum(Y, axis=1)
+    X_sum = np.sum(X, axis=1)
+    Y_sum = np.sum(Y, axis=1)
 
     for i in numba.prange(m):
         vec_a = X[i]
-        sum_a = sum_X[i]
+        sum_a = X_sum[i]
         vec_a_neg = 1 - vec_a
 
         for j in numba.prange(n):
             vec_b = Y[j]
-            sum_b = sum_Y[j]
+            sum_b = Y_sum[j]
 
             if sum_a == 0 == sum_b:
                 sims[i, j] = 1.0
