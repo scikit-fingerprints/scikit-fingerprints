@@ -178,11 +178,6 @@ Main features:
    `flake8`), typing (`mypy`), and security (e.g. `bandit`, `safety`). CI/CD process with
    GitHub Actions also includes over 250 unit and integration tests.
 
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of
-conduct, and the process for submitting pull requests to us.
-
 ## Citing
 
 If you use scikit-fingerprints in your work, please cite our main publication, 
@@ -203,6 +198,18 @@ If you use scikit-fingerprints in your work, please cite our main publication,
 ```
 
 Its preprint is also [available on ArXiv](https://arxiv.org/abs/2407.13291).
+
+## Publications and usage
+
+Publications using scikit-fingerprints:
+1. [J. Adamczyk, W. Czech "Molecular Topological Profile (MOLTOP) - Simple and Strong Baseline for Molecular Graph Classification" ECAI 2024](https://ebooks.iospress.nl/doi/10.3233/FAIA240663)
+2. [J. Adamczyk, P. Ludynia "Scikit-fingerprints: easy and efficient computation of molecular fingerprints in Python" SoftwareX](https://www.sciencedirect.com/science/article/pii/S2352711024003145)
+3. [J. Adamczyk, P. Ludynia, W. Czech "Molecular Fingerprints Are Strong Models for Peptide Function Prediction" ArXiv preprint](https://arxiv.org/abs/2501.17901)
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of
+conduct, and the process for submitting pull requests to us.
 
 ## License
 
