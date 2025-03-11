@@ -243,7 +243,9 @@ def _bulk_sokal_sneath_2_binary_similarity_single(
         vec_a = X[i]
         sum_a = sum_X[i]
 
-        for j in numba.prange(i, m):
+        sims[i, i] = 1.0
+
+        for j in numba.prange(i + 1, m):
             vec_b = X[j]
             sum_b = sum_X[j]
 
@@ -252,12 +254,7 @@ def _bulk_sokal_sneath_2_binary_similarity_single(
             denominator = 2 * sum_a + 2 * sum_b - 3 * intersection
             sim = intersection / denominator if denominator > 0 else 1.0
 
-            sims[i, j] = sim
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 
