@@ -175,7 +175,7 @@ Main features:
    inheriting from existing classes.
 
 6. **High code quality:** pre-commit hooks scan each commit for code quality (e.g. `black`,
-   `flake8`), typing (`mypy`), and security (e.g. `bandit`, `safety`). CI/CD process with
+   `flake8`), typing (`mypy`), and security (e.g. `bandit`, `pip-audit`). CI/CD process with
    GitHub Actions also includes over 250 unit and integration tests.
 
 ## Citing
