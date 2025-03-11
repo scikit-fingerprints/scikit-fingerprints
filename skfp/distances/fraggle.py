@@ -1,5 +1,7 @@
 from numbers import Real
+from typing import Optional
 
+import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Fraggle.FraggleSim import GetFraggleSimilarity
 from sklearn.utils._param_validation import Interval, validate_params
@@ -157,3 +159,133 @@ def fraggle_distance(
     0.8359375
     """
     return 1 - GetFraggleSimilarity(mol_query, mol_ref, tversky_threshold)[0]
+
+
+@validate_params(
+    {
+        "mol_query": [list],
+        "mol_ref": [list],
+        "tversky_threshold": [Interval(Real, 0, 1, closed="both")],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_fraggle_similarity(
+    X: list[Mol], Y: Optional[list[Mol]] = None, tversky_threshold: float = 0.8
+) -> np.ndarray:
+    r"""
+    Bulk Fraggle similarity.
+
+    Computes the pairwise Fraggle similarity between lists of molecules.
+    If a single list is passed, similarities are computed between its molecules.
+    For two lists, similarities are between their respective molecules, with `i`-th row
+    and `j`-th column in output corresponding to `i`-th molecule from first list
+    and `j`-th molecule from second list.
+
+    See also :py:func:`fraggle_similarity`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First list of molecules, of length `m`.
+
+    Y : ndarray, default=None
+        First list of molecules, of length `n`. If not passed, similarities are
+        computed between molecules from X.
+
+    tversky_threshold : float, default=0.8
+        Required minimal Tversky similarity between a fragment and the reference molecule.
+
+    Returns
+    -------
+    similarities : ndarray
+        Array with pairwise Fraggle similarity values. Shape is :math:`m \times n` if two
+        lists of molecules are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`fraggle_similarity` : Fraggle similarity function for two molecules.
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_fraggle_similarity
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> mols = [MolFromSmiles("COc1ccccc1"), MolFromSmiles("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")]
+    >>> sim = bulk_fraggle_similarity(mols)
+    >>> sim
+    array([[1.        , 0.23275862],
+           [0.23275862, 1.        ]])
+    """
+    if Y is None:
+        Y = X
+
+    sims = np.empty((len(X), len(Y)))
+    for i in range(len(X)):
+        for j in range(len(Y)):
+            sims[i, j] = fraggle_similarity(X[i], Y[j], tversky_threshold)
+
+    return sims
+
+
+@validate_params(
+    {
+        "mol_query": [list],
+        "mol_ref": [list],
+        "tversky_threshold": [Interval(Real, 0, 1, closed="both")],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_fraggle_distance(
+    X: list[Mol], Y: Optional[list[Mol]] = None, tversky_threshold: float = 0.8
+) -> np.ndarray:
+    r"""
+    Bulk Fraggle distance.
+
+    Computes the pairwise Fraggle distance between lists of molecules.
+    If a single list is passed, distances are computed between its molecules.
+    For two lists, distances are between their respective molecules, with `i`-th row
+    and `j`-th column in output corresponding to `i`-th molecule from first list
+    and `j`-th molecule from second list.
+
+    See also :py:func:`fraggle_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First list of molecules, of length `m`.
+
+    Y : ndarray, default=None
+        First list of molecules, of length `n`. If not passed, distances are
+        computed between molecules from X.
+
+    tversky_threshold : float, default=0.8
+        Required minimal Tversky similarity between a fragment and the reference molecule.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Fraggle distance values. Shape is :math:`m \times n` if two
+        lists of molecules are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`fraggle_distance` : Fraggle distance function for two molecules.
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_fraggle_distance
+    >>> from rdkit.Chem import MolFromSmiles
+    >>> mols = [MolFromSmiles("COc1ccccc1"), MolFromSmiles("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")]
+    >>> dist = bulk_fraggle_distance(mols)
+    >>> dist
+    array([[0.        , 0.76724138],
+           [0.76724138, 0.        ]])
+    """
+    if Y is None:
+        Y = X
+
+    sims = np.empty((len(X), len(Y)))
+    for i in range(len(X)):
+        for j in range(len(Y)):
+            sims[i, j] = fraggle_distance(X[i], Y[j], tversky_threshold)
+
+    return sims
