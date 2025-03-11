@@ -140,6 +140,11 @@ as well as in the ["examples" directory](https://github.com/scikit-fingerprints/
 Examples and tutorials:
 1. [Introduction to scikit-fingerprints](examples/01_skfp_introduction.ipynb)
 2. [Fingerprint types](examples/02_fingerprint_types.ipynb)
+3. [Molecular pipelines](examples/03_pipelines.ipynb)
+4. [Conformers and conformational fingerprints](examples/04_conformers.ipynb)
+5. [Hyperparameter tuning](examples/05_hyperparameter_tuning.ipynb)
+6. [Dataset splits](examples/06_dataset_splits.ipynb)
+7. [Datasets and benchmarking](examples/07_datasets_and_benchmarking.ipynb)
 
 ## Project overview
 
