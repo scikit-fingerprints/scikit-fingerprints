@@ -243,7 +243,7 @@ def bulk_mcconnaughey_binary_similarity(
     >>> sim = bulk_mcconnaughey_binary_similarity(X, Y)
     >>> sim
     array([[0.66666667, 0.5       ],
-           [0.5       , 0.5       ]]
+           [0.5       , 0.5       ]])
     """
     if Y is None:
         return _bulk_mcconnaughey_binary_similarity_single(X, normalized)
