@@ -164,12 +164,10 @@ def braun_blanquet_binary_distance(
     return 1 - braun_blanquet_binary_similarity(vec_a, vec_b)
 
 
-validate_params(
+@validate_params(
     {"X": ["array-like"], "Y": ["array-like", None]},
     prefer_skip_nested_validation=True,
 )
-
-
 def bulk_braun_blanquet_binary_similarity(
     X: np.ndarray, Y: Optional[np.ndarray] = None
 ) -> np.ndarray:

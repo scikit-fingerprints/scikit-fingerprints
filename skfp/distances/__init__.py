@@ -25,6 +25,8 @@ from .dice import (
     dice_count_similarity,
 )
 from .fraggle import (
+    bulk_fraggle_distance,
+    bulk_fraggle_similarity,
     fraggle_distance,
     fraggle_similarity,
 )

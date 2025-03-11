@@ -47,6 +47,7 @@ Bulk functions for matrices (pairwise distances):
     bulk_ct4_count_distance
     bulk_dice_binary_distance
     bulk_dice_count_distance
+    bulk_fraggle_distance
     bulk_harris_lahey_binary_distance
     bulk_kulczynski_binary_distance
     bulk_mcconnaughey_binary_distance
@@ -95,6 +96,7 @@ Bulk functions for matrices (pairwise similarities):
     bulk_ct4_count_similarity
     bulk_dice_binary_similarity
     bulk_dice_count_similarity
+    bulk_fraggle_similarity
     bulk_harris_lahey_binary_similarity
     bulk_kulczynski_binary_similarity
     bulk_mcconnaughey_binary_similarity
