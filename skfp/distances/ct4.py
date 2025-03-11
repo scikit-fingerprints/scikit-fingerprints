@@ -405,23 +405,17 @@ def _bulk_ct4_binary_similarity_single(X: np.ndarray) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
 
-    # upper triangle - actual similarities
     for i in numba.prange(m):
-        # diagonal - always 1
         sims[i, i] = 1.0
         for j in numba.prange(i + 1, m):
             intersection = np.sum(np.logical_and(X[i], X[j]))
             union = np.sum(np.logical_or(X[i], X[j]))
-            sims[i, j] = (
+            sim = (
                 float(np.log(1 + intersection) / np.log(1 + union))
                 if union != 0
                 else 1.0
             )
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 
@@ -565,13 +559,9 @@ def _bulk_ct4_count_similarity_single(X: np.ndarray) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
 
-    # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-
-        # diagonal - always 1
         sims[i, i] = 1.0
-
         for j in numba.prange(i + 1, m):
             vec_b = X[j]
 
@@ -582,12 +572,8 @@ def _bulk_ct4_count_similarity_single(X: np.ndarray) -> np.ndarray:
             numerator = np.log(1 + dot_ab)
             denominator = np.log(1 + dot_aa + dot_bb - dot_ab)
 
-            sims[i, j] = float(numerator / denominator) if denominator >= 1e-8 else 1.0
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sim = float(numerator / denominator) if denominator >= 1e-8 else 1.0
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 

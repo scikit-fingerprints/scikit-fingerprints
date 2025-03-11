@@ -278,10 +278,9 @@ def bulk_harris_lahey_binary_similarity(
 def _bulk_harris_lahey_binary_similarity_single(
     X: np.ndarray, normalized: bool
 ) -> np.ndarray:
-    m = X.shape[0]
+    m, length = X.shape
     sims = np.empty((m, m))
 
-    # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
         vec_a_neg = 1 - vec_a
@@ -302,21 +301,16 @@ def _bulk_harris_lahey_binary_similarity_single(
 
             # all-ones or all-zeros vectors
             if first_denom == 0 or second_denom == 0:
-                sims[i, j] = 1.0
-                continue
+                sim = 1.0
+            else:
+                sim = float(
+                    (a * (2 * d + bc_sum)) / (2 * first_denom)
+                    + (d * (2 * a + bc_sum)) / (2 * second_denom)
+                )
+                if normalized:
+                    sim /= length
 
-            sims[i, j] = float(
-                (a * (2 * d + bc_sum)) / (2 * first_denom)
-                + (d * (2 * a + bc_sum)) / (2 * second_denom)
-            )
-
-            if normalized:
-                sims[i, j] = sims[i, j] / len(vec_a)
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 
@@ -325,7 +319,7 @@ def _bulk_harris_lahey_binary_similarity_single(
 def _bulk_harris_lahey_binary_similarity_two(
     X: np.ndarray, Y: np.ndarray, normalized: bool
 ) -> np.ndarray:
-    m = X.shape[0]
+    m, length = X.shape
     n = Y.shape[0]
     sims = np.empty((m, n))
 
@@ -349,16 +343,16 @@ def _bulk_harris_lahey_binary_similarity_two(
 
             # all-ones or all-zeros vectors
             if first_denom == 0 or second_denom == 0:
-                sims[i, j] = 1.0
-                continue
+                sim = 1.0
+            else:
+                sim = float(
+                    (a * (2 * d + bc_sum)) / (2 * first_denom)
+                    + (d * (2 * a + bc_sum)) / (2 * second_denom)
+                )
+                if normalized:
+                    sim /= length
 
-            sims[i, j] = float(
-                (a * (2 * d + bc_sum)) / (2 * first_denom)
-                + (d * (2 * a + bc_sum)) / (2 * second_denom)
-            )
-
-            if normalized:
-                sims[i, j] = sims[i, j] / len(vec_a)
+            sims[i, j] = sim
 
     return sims
 

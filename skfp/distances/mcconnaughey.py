@@ -258,39 +258,31 @@ def _bulk_mcconnaughey_binary_similarity_single(
 ) -> np.ndarray:
     m = X.shape[0]
     sims = np.empty((m, m))
-    sum_X = np.sum(X, axis=1)
+    X_sum = np.sum(X, axis=1)
 
     # upper triangle - actual similarities
     for i in numba.prange(m):
         vec_a = X[i]
-        sum_a = sum_X[i]
+        sum_a = X_sum[i]
 
         for j in numba.prange(i, m):
             vec_b = X[j]
-            sum_b = sum_X[j]
+            sum_b = X_sum[j]
 
             num_common = np.sum(np.logical_and(vec_a, vec_b))
             sum_ab = sum_a + sum_b
             dot_ab = sum_a * sum_b
 
             if sum_ab == 0:
-                sims[i, j] = 1.0
-                continue
+                sim = 1.0
             elif dot_ab == 0:
-                sims[i, j] = -1.0
-                continue
+                sim = -1.0
             else:
                 sim = (num_common * sum_ab - dot_ab) / dot_ab
+                if normalized:
+                    sim = (sim + 1) / 2
 
-            if normalized:
-                sim = (sim + 1) / 2
-
-            sims[i, j] = sim
-
-    # lower triangle - symmetric with upper triangle
-    for i in numba.prange(1, m):
-        for j in numba.prange(i):
-            sims[i, j] = sims[j, i]
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 
@@ -304,34 +296,31 @@ def _bulk_mcconnaughey_binary_similarity_two(
     m = X.shape[0]
     n = Y.shape[0]
     sims = np.empty((m, n))
-    sum_X = np.sum(X, axis=1)
-    sum_Y = np.sum(Y, axis=1)
+    X_sum = np.sum(X, axis=1)
+    Y_sum = np.sum(Y, axis=1)
 
     for i in numba.prange(m):
         vec_a = X[i]
-        sum_a = sum_X[i]
+        sum_a = X_sum[i]
 
         for j in numba.prange(n):
             vec_b = Y[j]
-            sum_b = sum_Y[j]
+            sum_b = Y_sum[j]
 
             num_common = np.sum(np.logical_and(vec_a, vec_b))
             sum_ab = sum_a + sum_b
             dot_ab = sum_a * sum_b
 
             if sum_ab == 0:
-                sims[i, j] = 1.0
-                continue
+                sim = 1.0
             elif dot_ab == 0:
-                sims[i, j] = -1.0
-                continue
+                sim = -1.0
             else:
                 sim = (num_common * sum_ab - dot_ab) / dot_ab
+                if normalized:
+                    sim = (sim + 1) / 2
 
-            if normalized:
-                sim = (sim + 1) / 2
-
-            sims[i, j] = sim
+            sims[i, j] = sims[j, i] = sim
 
     return sims
 
