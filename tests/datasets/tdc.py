@@ -2,39 +2,37 @@ import pytest
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.datasets.tdc import load_tdc_benchmark, load_tdc_splits
-from skfp.datasets.tdc.adme.approved_pampa_ncats import load_approved_pampa_ncats
-from skfp.datasets.tdc.adme.b3db_classification import load_b3db_classification
-from skfp.datasets.tdc.adme.b3db_regression import load_b3db_regression
-from skfp.datasets.tdc.adme.bbb_martins import load_bbb_martins
-from skfp.datasets.tdc.adme.bioavailability_ma import load_bioavailability_ma
-from skfp.datasets.tdc.adme.caco2_wang import load_caco2_wang
-from skfp.datasets.tdc.adme.clearance_hepatocyte_az import load_clearance_hepatocyte_az
-from skfp.datasets.tdc.adme.clearance_microsome_az import load_clearance_microsome_az
-from skfp.datasets.tdc.adme.cyp1a2_veith import load_cyp1a2_veith
-from skfp.datasets.tdc.adme.cyp2c9_substrate_carbonmangels import (
+from skfp.datasets.tdc.adme import (
+    load_approved_pampa_ncats,
+    load_b3db_classification,
+    load_b3db_regression,
+    load_bbb_martins,
+    load_bioavailability_ma,
+    load_caco2_wang,
+    load_clearance_hepatocyte_az,
+    load_clearance_microsome_az,
+    load_cyp1a2_veith,
     load_cyp2c9_substrate_carbonmangels,
-)
-from skfp.datasets.tdc.adme.cyp2c9_veith import load_cyp2c9_veith
-from skfp.datasets.tdc.adme.cyp2c19_veith import load_cyp2c19_veith
-from skfp.datasets.tdc.adme.cyp2d6_substrate_carbonmangels import (
+    load_cyp2c9_veith,
+    load_cyp2c19_veith,
     load_cyp2d6_substrate_carbonmangels,
-)
-from skfp.datasets.tdc.adme.cyp2d6_veith import load_cyp2d6_veith
-from skfp.datasets.tdc.adme.cyp3a4_substrate_carbonmangels import (
+    load_cyp2d6_veith,
     load_cyp3a4_substrate_carbonmangels,
+    load_cyp3a4_veith,
+    load_half_life_obach,
+    load_hia_hou,
+    load_hlm,
+    load_pampa_ncats,
+    load_pgp_broccatelli,
+    load_ppbr_az,
+    load_rlm,
+    load_solubility_aqsoldb,
+    load_vdss_lombardo,
 )
-from skfp.datasets.tdc.adme.cyp3a4_veith import load_cyp3a4_veith
-from skfp.datasets.tdc.adme.half_life_obach import load_half_life_obach
-from skfp.datasets.tdc.adme.hia_hou import load_hia_hou
-from skfp.datasets.tdc.adme.hlm import load_hlm
-from skfp.datasets.tdc.adme.pampa_ncats import load_pampa_ncats
-from skfp.datasets.tdc.adme.pgp_broccatelli import load_pgp_broccatelli
-from skfp.datasets.tdc.adme.ppbr_az import load_ppbr_az
-from skfp.datasets.tdc.adme.rlm import load_rlm
-from skfp.datasets.tdc.adme.solubility_aqsoldb import load_solubility_aqsoldb
-from skfp.datasets.tdc.adme.vdss_lombardo import load_vdss_lombardo
-from skfp.datasets.tdc.hts.sarscov2_3clpro_diamond import load_sarscov2_3clpro_diamond
-from skfp.datasets.tdc.hts.sarscov2_vitro_touret import load_sarscov2_vitro_touret
+from skfp.datasets.tdc.hts import (
+    load_sarscov2_3clpro_diamond,
+    load_sarscov2_vitro_touret,
+)
 from skfp.datasets.tdc.tox import (
     load_ames,
     load_carcinogens_lagunin,

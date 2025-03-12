@@ -1,2 +1,1 @@
-from .sarscov2_3clpro_diamond import load_sarscov2_3clpro_diamond
-from .sarscov2_vitro_touret import load_sarscov2_vitro_touret
+from .hts import load_sarscov2_3clpro_diamond, load_sarscov2_vitro_touret
