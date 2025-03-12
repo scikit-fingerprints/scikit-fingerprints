@@ -22,10 +22,10 @@ def load_sarscov2_3clpro_diamond(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the SARS-CoV-2 3CL Protease, Diamond dataset.
+    Load the SARS-CoV-2 3CL Protease Diamond dataset.
 
     XChem crystallographic fragment screen against SARS-CoV-2 main protease at high resolution [1]_ [2]_.
-    The task is to predict molecules' activity against SARSCoV2 3CL Protease.
+    The task is to predict molecules' activity against SARS-CoV-2 3CL Protease.
 
     ==================   =================
     Tasks                                1
