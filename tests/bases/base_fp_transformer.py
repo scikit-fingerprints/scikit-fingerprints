@@ -13,9 +13,9 @@ from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
 from skfp.fingerprints import AtomPairFingerprint, MACCSFingerprint
 
 """
-We cannot test most of BaseFingerprintTransformer directly, as it is an abstract base
-class (ABC), but its methods are used extensively by inheriting classes. Therefore,
-we use inheriting fingerprints as proxies.
+We cannot test most of BaseFingerprintTransformer directly, as it is an abstract base class (ABC),
+but its methods are used extensively by inheriting classes. Therefore, we use
+inheriting classes as proxies.
 """
 
 

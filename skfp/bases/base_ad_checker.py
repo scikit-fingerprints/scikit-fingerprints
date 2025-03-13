@@ -16,7 +16,7 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
     of the dataset.
 
     This is very similar to outlier detection, and such methods from e.g.
-    scikit-learn can also be applied here. Note that here 0 denotes an outlier
+    scikit-learn can also be applied here. However, here 0 denotes an outlier
     (outside AD), and 1 means inside AD (inlier). This differs slightly from
     scikit-learn, which uses -1 for outliers, but results in easier filtering.
 
@@ -34,8 +34,8 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
     least in the limit) if the point is surely outside AD. It can be e.g. number
     of violations or distance to AD.
 
-    Sparse arrays are not supported in most cases, as most methods rely on inherently
-    dense physicochemical descriptors.
+    Sparse arrays are not supported, as most methods rely on inherently dense
+    physicochemical descriptors.
 
     Parameters
     ----------
@@ -125,6 +125,5 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
         -------
         scores : ndarray of shape (n_samples,)
             Applicability domain scores of samples.
-
         """
         raise NotImplementedError

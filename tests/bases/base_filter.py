@@ -6,7 +6,7 @@ from skfp.filters import LipinskiFilter
 """
 We cannot test most of BaseFilter directly, as it is an abstract base class (ABC),
 but its methods are used extensively by inheriting classes. Therefore, we use
-inheriting fingerprints as proxies.
+inheriting classes as proxies.
 """
 
 

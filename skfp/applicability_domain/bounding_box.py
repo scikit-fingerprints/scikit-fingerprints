@@ -82,8 +82,8 @@ class BoundingBoxADChecker(BaseADChecker):
 
     def __init__(
         self,
-        percentile_lower: Optional[float] = 0,
-        percentile_upper: Optional[float] = 100,
+        percentile_lower: Union[float, str] = 0,
+        percentile_upper: Union[float, str] = 100,
         num_allowed_violations: Optional[int] = 0,
         n_jobs: Optional[int] = None,
         batch_size: Optional[int] = None,
@@ -104,8 +104,24 @@ class BoundingBoxADChecker(BaseADChecker):
         y: Optional[np.ndarray] = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
-        self.lower_bounds_ = np.percentile(X, self.percentile_lower, axis=0)
-        self.upper_bounds_ = np.percentile(X, self.percentile_upper, axis=0)
+
+        if (
+            self.percentile_lower == "three_sigma"
+            or self.percentile_upper == "three_sigma"
+        ):
+            mean = np.mean(X, axis=0)
+            std = np.std(X, axis=0)
+
+        if self.percentile_lower == "three_sigma":
+            self.lower_bounds_ = mean - 3 * std
+        else:
+            self.lower_bounds_ = np.percentile(X, self.percentile_lower, axis=0)
+
+        if self.percentile_upper == "three_sigma":
+            self.upper_bounds_ = mean + 3 * std
+        else:
+            self.upper_bounds_ = np.percentile(X, self.percentile_upper, axis=0)
+
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
@@ -114,7 +130,23 @@ class BoundingBoxADChecker(BaseADChecker):
         passed = violations <= self.num_allowed_violations
         return passed
 
-    def score_samples(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
+    def score_samples(self, X: np.ndarray) -> np.ndarray:
+        """
+        Calculate the applicability domain score of samples. It is the number
+        of feature ranges fulfilled by samples. It ranges between 0 and
+        ``num_features``, where 0 means all descriptors inside training data
+        ranges.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The data matrix.
+
+        Returns
+        -------
+        scores : ndarray of shape (n_samples,)
+            Applicability domain scores of samples.
+        """
         inside_range = (self.lower_bounds_ <= X) & (self.upper_bounds_ >= X)
         scores = np.sum(inside_range, axis=1)
         return scores
