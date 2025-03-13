@@ -3,7 +3,6 @@ from numbers import Integral
 from typing import Optional, Union
 
 import numpy as np
-from scipy.sparse import csr_array
 from sklearn.base import BaseEstimator, OutlierMixin
 
 
@@ -17,9 +16,9 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
     of the dataset.
 
     This is very similar to outlier detection, and such methods from e.g.
-    scikit-learn can also be applied here. This class follows the scikit-learn
-    API for outlier detection, e.g. predicts -1 as outside AD (outlier) and 1
-    as inside AD (inlier).
+    scikit-learn can also be applied here. Note that here 0 denotes an outlier
+    (outside AD), and 1 means inside AD (inlier). This differs slightly from
+    scikit-learn, which uses -1 for outliers, but results in easier filtering.
 
     This class is not meant to be used directly. If you want to create custom
     applicability domain checkers, inherit from this class and override methods:
@@ -34,6 +33,9 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
     Note that score values differ by method, but always should approach zero (at
     least in the limit) if the point is surely outside AD. It can be e.g. number
     of violations or distance to AD.
+
+    Sparse arrays are not supported in most cases, as most methods rely on inherently
+    dense physicochemical descriptors.
 
     Parameters
     ----------
@@ -71,24 +73,16 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
         self.verbose = verbose
 
     @abstractmethod
-    def fit(
-        self,
-        X: Union[np.ndarray, csr_array],
-        y: Optional[np.ndarray] = None,
-        **fit_params,
-    ):
+    def fit(self, X: np.ndarray, y: Optional[np.ndarray] = None):
         """
         Fit applicability domain estimator.
 
         Parameters
         ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+        X : array-like of shape (n_samples, n_features)
             The input samples.
 
         y : any
-            Unused, kept for scikit-learn compatibility.
-
-        **fit_params : dict
             Unused, kept for scikit-learn compatibility.
 
         Returns
@@ -99,9 +93,9 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
         raise NotImplementedError
 
     @abstractmethod
-    def predict(self, X: Union[np.ndarray, csr_array]):
+    def predict(self, X: np.ndarray) -> np.ndarray:
         """
-        Predict labels (1 inside AD, -1 outside AD) of X according to fitted model.
+        Predict labels (1 inside AD, 0 outside AD) of X according to fitted model.
 
         Parameters
         ----------
@@ -111,7 +105,26 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
         Returns
         -------
         is_inside_applicability_domain : ndarray of shape (n_samples,)
-            Returns -1 for molecules outside applicability domain (outliers)
-            and +1 for those inside AD (inliers).
+            Returns 1 for molecules inside applicability domain, and 0 for those
+            outside (outliers).
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def score_samples(self, X: np.ndarray) -> np.ndarray:
+        """
+        Calculate the applicability domain score of samples. Higher values indicate
+        inliers, well within AD. Lowest possible value is 0, i.e. a definite outlier.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The data matrix.
+
+        Returns
+        -------
+        scores : ndarray of shape (n_samples,)
+            Applicability domain scores of samples.
+
         """
         raise NotImplementedError
