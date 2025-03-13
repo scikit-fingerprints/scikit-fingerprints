@@ -112,7 +112,7 @@ def load_bioavailability_ma(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the bioavailability dataset.
+    Load the Bioavailability dataset.
 
     The task is to predict the activity of oral bioavailability.
     Bioavailability is defined as "the rate and extent to which the active ingredient or active moiety
@@ -184,7 +184,7 @@ def load_caco2_wang(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the Caco-2 cell effective permeability dataset.
+    Load the Caco-2 dataset.
 
     The task is to predict the rate at which drug passes through Caco-2 cells
     that serve as in vitro simulation of human intestinal tissue [1]_ [2]_.
@@ -261,7 +261,7 @@ def load_clearance_hepatocyte_az(
     It is defined as the volume of plasma cleared of a drug over a specified time period
     and it measures the rate at which the active drug is removed from the body [1]_ [2]_ [3]_.
     Many studies [2]_ show various clearance outcomes of experiments performed with
-    human hepatocytes (HHEP) and human liver microsomes (HLM) which are tow main
+    human hepatocytes (HHEP) and human liver microsomes (HLM) which are two main
     in vitro systems used in metabolic stability and inhibition studies.
     This subset od the Clearance dataset includes measurements from hepatocyte studies.
     This dataset is a part of "excretion" subset of ADME tasks.
@@ -336,13 +336,13 @@ def load_clearance_microsome_az(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the mmicrosome subset of Clearance AstraZeneca dataset.
+    Load the microsome subset of Clearance AstraZeneca dataset.
 
     The task is to predict drug clearance.
     It is defined as the volume of plasma cleared of a drug over a specified time period
     and it measures the rate at which the active drug is removed from the body [1]_ [2]_ [3]_.
     Many studies [2]_ show various clearance outcomes of experiments performed with
-    human hepatocytes (HHEP) and human liver microsomes (HLM) which are tow main
+    human hepatocytes (HHEP) and human liver microsomes (HLM) which are two main
     in vitro systems used in metabolic stability and inhibition studies.
     This subset od the Clearance dataset includes measurements from microsome studies.
     This dataset is a part of "excretion" subset of ADME tasks.
@@ -848,7 +848,7 @@ def load_hia_hou(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the human intestinal absorption dataset.
+    Load the Human Intestinal Absorption dataset.
 
     The task is to predict whether a drug is well absorbed
     via the human intestine. It is relevant for oral drug design [1]_ [2]_.
@@ -1366,7 +1366,7 @@ def load_vdss_lombardo(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the Volume of Distribution at steady state dataset.
+    Load the Volume of Distribution at Steady State dataset.
 
     The task is to predict the volume of distribution at steady state (VDss) that measures
     the degree of drug's concentration in body tissue compared to concentration in blood [1]_ [2]_.
