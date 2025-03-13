@@ -320,7 +320,7 @@ def _bulk_mcconnaughey_binary_similarity_two(
                 if normalized:
                     sim = (sim + 1) / 2
 
-            sims[i, j] = sims[j, i] = sim
+            sims[i, j] = sim
 
     return sims
 
