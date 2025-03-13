@@ -70,7 +70,7 @@ class BoundingBoxADChecker(BaseADChecker):
     BoundingBoxADChecker()
 
     >>> bb_ad_checker.predict(X_test)
-    [ True  True False]
+    array([ True,  True, False])
     """
 
     _parameter_constraints: dict = {

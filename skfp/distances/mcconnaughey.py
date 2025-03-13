@@ -372,8 +372,8 @@ def bulk_mcconnaughey_binary_distance(
     >>> Y = np.array([[1, 0, 1], [1, 1, 0]])
     >>> dist = bulk_mcconnaughey_binary_distance(X, Y)
     >>> dist
-    array([[0.16666667, 0.        ],
-           [0.        , 0.5       ]])
+    array([[0.16666667, 0.16666667],
+           [0.16666667, 0.5       ]])
 
     >>> X = np.array([[1, 1, 1], [1, 0, 0]])
     >>> dist = bulk_mcconnaughey_binary_distance(X)
