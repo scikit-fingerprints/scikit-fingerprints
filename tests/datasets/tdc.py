@@ -3,10 +3,8 @@ from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.datasets.tdc import load_tdc_benchmark, load_tdc_splits
 from skfp.datasets.tdc.adme import (
-    load_approved_pampa_ncats,
     load_b3db_classification,
     load_b3db_regression,
-    load_bbb_martins,
     load_bioavailability_ma,
     load_caco2_wang,
     load_clearance_hepatocyte_az,
@@ -22,6 +20,7 @@ from skfp.datasets.tdc.adme import (
     load_half_life_obach,
     load_hia_hou,
     load_hlm,
+    load_pampa_approved_drugs,
     load_pampa_ncats,
     load_pgp_broccatelli,
     load_ppbr_az,
@@ -54,7 +53,6 @@ def get_dataset_names() -> list[str]:
         "approved_pampa_ncats",
         "b3db_classification",
         "b3db_regression",
-        "bbb_martins",
         "bioavailability_ma",
         "caco2_wang",
         "clearance_hepatocyte_az",
@@ -174,7 +172,6 @@ def test_load_ogb_splits_as_dict(dataset_name):
         ("cyp2c9_substrate_carbonmangels", 669),
         ("cyp2d6_substrate_carbonmangels", 667),
         ("cyp3a4_substrate_carbonmangels", 670),
-        ("bbb_martins", 2030),
         ("b3db_classification", 6167),
         ("b3db_regression", 942),
         ("ppbr_az", 1614),
@@ -234,7 +231,7 @@ def test_load_tdc_splits_nonexistent_dataset():
         ("pampa_ncats", load_pampa_ncats, 2034, 1, "binary_classification"),
         (
             "approved_pampa_ncats",
-            load_approved_pampa_ncats,
+            load_pampa_approved_drugs,
             142,
             1,
             "binary_classification",
@@ -275,7 +272,6 @@ def test_load_tdc_splits_nonexistent_dataset():
             1,
             "binary_classification",
         ),
-        ("bbb_martins", load_bbb_martins, 2030, 1, "binary_classification"),
         (
             "b3db_classification",
             load_b3db_classification,
