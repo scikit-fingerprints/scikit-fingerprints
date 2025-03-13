@@ -4,9 +4,9 @@ from sklearn.utils._param_validation import InvalidParameterError
 from skfp.preprocessing import MolFromSmilesTransformer
 
 """
-We cannot test most of BasePreprocessor directly, as it is an abstract base
-class (ABC), but its methods are used extensively by inheriting classes. Therefore,
-we use inheriting preprocessors as proxies.
+We cannot test most of BasePreprocessor directly, as it is an abstract base class (ABC),
+but its methods are used extensively by inheriting classes. Therefore, we use
+inheriting classes as proxies.
 """
 
 

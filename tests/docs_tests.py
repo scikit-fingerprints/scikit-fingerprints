@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 from pathlib import Path
 
+import skfp.applicability_domain
 import skfp.descriptors
 import skfp.distances
 import skfp.filters
@@ -34,6 +35,7 @@ def test_docs():
 
     undocumented = defaultdict(list)
     for docs_file, code_file in [
+        ("applicability_domain.rst", skfp.applicability_domain),
         ("descriptors.rst", skfp.descriptors),
         ("distances.rst", skfp.distances),
         ("filters.rst", skfp.filters),
