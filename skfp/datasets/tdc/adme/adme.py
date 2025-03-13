@@ -186,8 +186,8 @@ def load_bioavailability_ma(
     Load the bioavailability dataset.
 
     The task is to predict the activity of oral bioavailability.
-    Bioavailability is defined as “the rate and extent to which the active ingredient or active moiety
-    is absorbed from a drug product and becomes available at the site of action”. [1]_ [2]_.
+    Bioavailability is defined as "the rate and extent to which the active ingredient or active moiety
+    is absorbed from a drug product and becomes available at the site of action" [1]_ [2]_.
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
