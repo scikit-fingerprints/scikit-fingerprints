@@ -28,7 +28,6 @@ ADME dataset loaders
     adme.load_approved_pampa_ncats
     adme.load_b3db_classification
     adme.load_b3db_regression
-    adme.load_bbb_martins
     adme.load_bioavailability_ma
     adme.load_caco2_wang
     adme.load_clearance_hepatocyte_az

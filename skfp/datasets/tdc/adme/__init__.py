@@ -2,7 +2,6 @@ from .adme import (
     load_approved_pampa_ncats,
     load_b3db_classification,
     load_b3db_regression,
-    load_bbb_martins,
     load_bioavailability_ma,
     load_caco2_wang,
     load_clearance_hepatocyte_az,
