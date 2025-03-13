@@ -16,77 +16,6 @@ from skfp.datasets.utils import fetch_dataset, get_mol_strings_and_labels
     },
     prefer_skip_nested_validation=True,
 )
-def load_approved_pampa_ncats(
-    data_dir: Optional[Union[str, os.PathLike]] = None,
-    as_frame: bool = False,
-    verbose: bool = False,
-) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    """
-    Load the approved set of PAMPA Permeability NCATS dataset.
-
-    PAMPA (parallel artificial membrane permeability assay) is an assay
-    to evaluate drug permeability across the cellular membrane.
-    The task models only the passive membrane diffusion [1]_ [2]_.
-    This dataset is a part of "absorption" subset of ADME tasks.
-
-    ==================   =================
-    Tasks                                1
-    Task type               classification
-    Total samples                      142
-    Recommended split             scaffold
-    Recommended metric               AUROC
-    ==================   =================
-
-    Parameters
-    ----------
-    data_dir : {None, str, path-like}, default=None
-        Path to the root data directory. If ``None``, currently set scikit-learn directory
-        is used, by default `$HOME/scikit_learn_data`.
-
-    as_frame : bool, default=False
-        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
-        returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
-        vector).
-
-    verbose : bool, default=False
-        If True, progress bar will be shown for downloading or loading files.
-
-    Returns
-    -------
-    data : pd.DataFrame or tuple(list[str], np.ndarray)
-        Depending on the ``as_frame`` argument, one of:
-        - Pandas DataFrame with columns: "SMILES", "label"
-        - tuple of: list of strings (SMILES), NumPy array (labels)
-
-    References
-    ----------
-    .. [1] `Siramshetty, V.B., Shah, P., et al.
-        "Validating ADME QSAR Models Using Marketed Drugs."
-        SLAS Discovery 2021 Dec;26(10):1326-1336.
-        <https://doi.org/10.1177/24725552211017520>`_
-
-    .. [2] `Huang, Kexin, et al.
-        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
-        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
-        <https://openreview.net/forum?id=8nvgnORnoWr>`_
-    """
-    df = fetch_dataset(
-        data_dir,
-        dataset_name="TDC_approved_pampa_ncats",
-        filename="tdc_approved_pampa_ncats.csv",
-        verbose=verbose,
-    )
-    return df if as_frame else get_mol_strings_and_labels(df)
-
-
-@validate_params(
-    {
-        "data_dir": [None, str, os.PathLike],
-        "as_frame": ["boolean"],
-        "verbose": ["boolean"],
-    },
-    prefer_skip_nested_validation=True,
-)
 def load_b3db_classification(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
@@ -326,11 +255,15 @@ def load_clearance_hepatocyte_az(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the hepatocyte part of Clearance AstraZeneca dataset.
+    Load the hepatocyte subset of Clearance AstraZeneca dataset.
 
-    The task is to predict the activity of clearance.
-    Drug clearance is defined as the volume of plasma cleared of a drug over a specified time period
+    The task is to predict drug clearance.
+    It is defined as the volume of plasma cleared of a drug over a specified time period
     and it measures the rate at which the active drug is removed from the body [1]_ [2]_ [3]_.
+    Many studies [2]_ show various clearance outcomes of experiments performed with
+    human hepatocytes (HHEP) and human liver microsomes (HLM) which are tow main
+    in vitro systems used in metabolic stability and inhibition studies.
+    This subset od the Clearance dataset includes measurements from hepatocyte studies.
     This dataset is a part of "excretion" subset of ADME tasks.
 
     ==================   =================
@@ -403,11 +336,15 @@ def load_clearance_microsome_az(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the mmicrosome part of Clearance AstraZeneca dataset.
+    Load the mmicrosome subset of Clearance AstraZeneca dataset.
 
-    The task is to predict the activity of clearance.
-    Drug clearance is defined as the volume of plasma cleared of a drug over a specified time period
+    The task is to predict drug clearance.
+    It is defined as the volume of plasma cleared of a drug over a specified time period
     and it measures the rate at which the active drug is removed from the body [1]_ [2]_ [3]_.
+    Many studies [2]_ show various clearance outcomes of experiments performed with
+    human hepatocytes (HHEP) and human liver microsomes (HLM) which are tow main
+    in vitro systems used in metabolic stability and inhibition studies.
+    This subset od the Clearance dataset includes measurements from microsome studies.
     This dataset is a part of "excretion" subset of ADME tasks.
 
     ==================   =================
@@ -843,7 +780,7 @@ def load_half_life_obach(
     Load the Half Life Obach dataset.
 
     The task is to predict the half life of a drug.
-    Half life of a drug is the duration for the concentration of the drug in the body to be reduced by half.
+    It is defined as a duration for the concentration of the drug in the body to be reduced by half.
     It measures the duration of actions of a drug [1]_ [2]_.
     This dataset is a part of "excretion" subset of ADME tasks.
 
@@ -911,10 +848,10 @@ def load_hia_hou(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the human intestinal absorbtion dataset.
+    Load the human intestinal absorption dataset.
 
-    The task models absorption of drugs through human intestine.
-    It's important when designing drugs administered orally [1]_ [2]_.
+    The task is to predict whether a drug is well absorbed
+    via the human intestine. It is relevant for oral drug design [1]_ [2]_.
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -1020,17 +957,90 @@ def load_hlm(
     },
     prefer_skip_nested_validation=True,
 )
+def load_pampa_approved_drugs(
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    as_frame: bool = False,
+    verbose: bool = False,
+) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load the approved drugs subset of PAMPA dataset.
+
+    PAMPA (parallel artificial membrane permeability assay) is an assay
+    to evaluate drug permeability across the cellular membrane.
+    The task models only the passive membrane diffusion [1]_ [2]_.
+    This is the "approved drugs" subset that includes 142 marketed-approved drugs assessed by NCATS [1]_.
+    This dataset is a part of "absorption" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      142
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
+    Parameters
+    ----------
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns: "SMILES", "label". Otherwise,
+        returns SMILES as list of strings, and labels as a NumPy array (1D integer binary
+        vector).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the ``as_frame`` argument, one of:
+        - Pandas DataFrame with columns: "SMILES", "label"
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Siramshetty, V.B., Shah, P., et al.
+        "Validating ADME QSAR Models Using Marketed Drugs."
+        SLAS Discovery 2021 Dec;26(10):1326-1336.
+        <https://doi.org/10.1177/24725552211017520>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
+    """
+    df = fetch_dataset(
+        data_dir,
+        dataset_name="TDC_approved_pampa_ncats",
+        filename="tdc_approved_pampa_ncats.csv",
+        verbose=verbose,
+    )
+    return df if as_frame else get_mol_strings_and_labels(df)
+
+
+@validate_params(
+    {
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
 def load_pampa_ncats(
     data_dir: Optional[Union[str, os.PathLike]] = None,
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the PAMPA Permeability NCATS dataset.
+    Load the NCATS subset of PAMPA  dataset.
 
     PAMPA (parallel artificial membrane permeability assay) is an assay
     to evaluate drug permeability across the cellular membrane.
     The task models only the passive membrane diffusion [1]_ [2]_.
+    This is "NCATS" subset of the dataset created at National Center for Advancing Translational Sciences (NCATS).
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -1097,10 +1107,10 @@ def load_pgp_broccatelli(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the Pgp (P-glycoprotein) Inhibition dataset.
+    Load the P-gp (P-glycoprotein) Inhibition dataset.
 
     The task is to predict whether a molecule inhibits the P-glycoprotein.
-    P-glycoprotein (Pgp) is an ABC transporter protein involved in intestinal absorption, drug metabolism,
+    P-glycoprotein (P-gp) is an ABC transporter protein involved in intestinal absorption, drug metabolism,
     and brain penetration, and its inhibition can seriously alter a drug's bioavailability and safety [1]_ [2]_.
     This dataset is a part of "absorption" subset of ADME tasks.
 
@@ -1172,7 +1182,7 @@ def load_ppbr_az(
 
     The task is to predict human plasma protein binding rate (PPBR) [1]_ [2]_.
     PPBR is expressed as the percentage of a drug bound to plasma proteins in the blood.
-    This rate strongly affect a drug's efficiency of delivery.
+    This rate strongly affects the drug delivery efficiency.
     The less bound a drug is, the more efficiently it can traverse and diffuse to the site of actions.
     This dataset is a part of "distribution" subset of ADME tasks.
 
@@ -1289,7 +1299,7 @@ def load_solubility_aqsoldb(
 
     The task is to predict the aqeuous solubility - a measure drug's ability to dissolve in water.
     Poor water solubility could lead to slow drug absorptions,
-    inadequate bioavailablity and even induce toxicity. [1]_ [2]_.
+    inadequate bioavailablity and even induce toxicity [1]_ [2]_.
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================

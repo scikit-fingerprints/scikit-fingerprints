@@ -25,7 +25,7 @@ ADME dataset loaders
     :nosignatures:
     :toctree: generated/
 
-    adme.load_approved_pampa_ncats
+    adme.load_pampa_approved_drugs
     adme.load_b3db_classification
     adme.load_b3db_regression
     adme.load_bioavailability_ma

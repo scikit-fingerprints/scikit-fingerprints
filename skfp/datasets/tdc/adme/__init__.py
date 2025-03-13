@@ -1,5 +1,4 @@
 from .adme import (
-    load_approved_pampa_ncats,
     load_b3db_classification,
     load_b3db_regression,
     load_bioavailability_ma,
@@ -17,6 +16,7 @@ from .adme import (
     load_half_life_obach,
     load_hia_hou,
     load_hlm,
+    load_pampa_approved_drugs,
     load_pampa_ncats,
     load_pgp_broccatelli,
     load_ppbr_az,

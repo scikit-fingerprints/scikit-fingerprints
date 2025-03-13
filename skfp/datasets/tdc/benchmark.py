@@ -9,7 +9,6 @@ from sklearn.utils._param_validation import StrOptions, validate_params
 from skfp.datasets.utils import fetch_splits
 
 from .adme import (
-    load_approved_pampa_ncats,
     load_b3db_classification,
     load_b3db_regression,
     load_bioavailability_ma,
@@ -27,6 +26,7 @@ from .adme import (
     load_half_life_obach,
     load_hia_hou,
     load_hlm,
+    load_pampa_approved_drugs,
     load_pampa_ncats,
     load_pgp_broccatelli,
     load_ppbr_az,
@@ -101,7 +101,7 @@ def load_tdc_benchmark(
     dataset_names = _subset_to_dataset_names(subset)
 
     dataset_name_to_func = {
-        "approved_pampa_ncats": load_approved_pampa_ncats,
+        "approved_pampa_ncats": load_pampa_approved_drugs,
         "b3db_classification": load_b3db_classification,
         "b3db_regression": load_b3db_regression,
         "bioavailability_ma": load_bioavailability_ma,
