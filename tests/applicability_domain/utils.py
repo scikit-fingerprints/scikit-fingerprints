@@ -7,7 +7,6 @@ def get_data_inside_ad(
 ) -> tuple[np.ndarray, np.ndarray]:
     X_train, y_train = make_blobs(
         n_samples=n_train,
-        n_features=10,
         centers=1,
         cluster_std=10,
         center_box=(-10, 10),
@@ -16,7 +15,6 @@ def get_data_inside_ad(
     X_test, y_test = make_blobs(
         n_samples=n_test,
         centers=1,
-        n_features=10,
         cluster_std=0.1,
         center_box=(-0.1, 0.1),
         random_state=0,
