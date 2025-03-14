@@ -2,72 +2,75 @@ import numpy as np
 import pytest
 from scipy.sparse import csr_array
 
-from skfp.distances.rand import rand_binary_distance, rand_binary_similarity
+from skfp.distances import rand_binary_distance, rand_binary_similarity
+from skfp.distances.rand import bulk_rand_binary_distance, bulk_rand_binary_similarity
+from skfp.fingerprints.ecfp import ECFPFingerprint
+from tests.distances.utils import assert_distance_values, assert_similarity_values
+
+
+def _get_values() -> list[tuple[list[int], list[int], str, float, float]]:
+    # vec_a, vec_b, comparison, similarity, distance
+    return [
+        ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
+        ([0, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
+        ([1, 0, 0], [1, 0, 0], "==", 1 / 3, 2 / 3),
+        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
+        ([1, 0, 0, 0], [1, 1, 1, 1], "<", 0.5, 0.5),
+        ([1, 1, 1, 0], [1, 1, 1, 1], ">", 0.5, 0.5),
+    ]
 
 
 @pytest.mark.parametrize(
-    "data_type, similarity_function, expected_similarity",
-    [
-        (np.zeros, rand_binary_similarity, 0.0),
-        (np.ones, rand_binary_similarity, 1.0),
-    ],
+    "vec_a, vec_b, comparison, similarity, distance", _get_values()
 )
-@pytest.mark.parametrize("matrix_type", ["numpy", "scipy"])
-def test_rand_similarity(
-    data_type, similarity_function, expected_similarity, matrix_type
-):
-    size = 5
-    if matrix_type == "numpy":
-        vec_a = data_type(size, dtype=int)
-        vec_b = data_type(size, dtype=int)
-    elif matrix_type == "scipy":
-        vec_a = csr_array(data_type((size, size), dtype=int))
-        vec_b = csr_array(data_type((size, size), dtype=int))
+def test_rand(vec_a, vec_b, comparison, similarity, distance):
+    vec_a = np.array(vec_a)
+    vec_b = np.array(vec_b)
 
-    assert similarity_function(vec_a, vec_b) == expected_similarity
+    vec_a_sparse = csr_array([vec_a])
+    vec_b_sparse = csr_array([vec_b])
 
+    sim_dense = rand_binary_similarity(vec_a, vec_b)
+    dist_dense = rand_binary_distance(vec_a, vec_b)
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, expected_comparison",
-    [
-        (np.array([1, 1, 0, 1]), np.array([1, 1, 1, 1]), ">"),
-        (np.array([1, 0, 0, 0]), np.array([1, 1, 1, 1]), "<"),
-        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 1, 1]]), ">"),
-        (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), "<"),
-    ],
-)
-def test_rand_binary_against_threshold(vec_a, vec_b, expected_comparison):
-    threshold = 0.333
-    similarity = rand_binary_similarity(vec_a, vec_b)
+    sim_sparse = rand_binary_similarity(vec_a_sparse, vec_b_sparse)
+    dist_sparse = rand_binary_distance(vec_a_sparse, vec_b_sparse)
 
-    if expected_comparison == "==":
-        assert np.isclose(similarity, threshold, atol=1e-3)
-    elif expected_comparison == ">":
-        assert similarity > threshold
-    elif expected_comparison == "<":
-        assert similarity < threshold
+    assert_similarity_values(sim_dense, comparison, similarity)
+    assert_similarity_values(sim_sparse, comparison, similarity)
+
+    assert_distance_values(dist_dense, comparison, distance)
+    assert_distance_values(dist_sparse, comparison, distance)
+
+    assert np.isclose(sim_dense, sim_sparse)
+    assert np.isclose(dist_dense, dist_sparse)
 
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, expected_comparison",
-    [
-        (np.array([1, 1, 0, 1]), np.array([1, 0, 1, 1]), "=="),
-        (np.array([1, 1, 0, 1]), np.array([1, 1, 1, 1]), "<"),
-        (np.array([1, 0, 0, 0]), np.array([1, 1, 1, 1]), ">"),
-        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 0, 1]]), "=="),
-        (csr_array([[1, 1, 0, 1]]), csr_array([[1, 1, 1, 1]]), "<"),
-        (csr_array([[1, 0, 0, 0]]), csr_array([[1, 1, 1, 1]]), ">"),
-    ],
-)
-def test_rand_binary_distance_against_threshold(
-    vec_a,
-    vec_b,
-    expected_comparison,
-):
-    threshold = 0.5
-    distance = rand_binary_distance(vec_a, vec_b)
+def test_bulk_rand_binary(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
 
-    if expected_comparison == "<":
-        assert distance < threshold
-    elif expected_comparison == ">":
-        assert distance > threshold
+    pairwise_sim = [
+        [rand_binary_similarity(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+    pairwise_dist = [
+        [rand_binary_distance(fps[i], fps[j]) for j in range(len(fps))]
+        for i in range(len(fps))
+    ]
+
+    bulk_sim = bulk_rand_binary_similarity(fps)
+    bulk_dist = bulk_rand_binary_distance(fps)
+
+    assert np.allclose(pairwise_sim, bulk_sim)
+    assert np.allclose(pairwise_dist, bulk_dist)
+
+
+def test_bulk_rand_second_array(mols_list):
+    fp = ECFPFingerprint()
+    fps = fp.transform(mols_list[:10])
+
+    bulk_sim_single = bulk_rand_binary_similarity(fps)
+    bulk_sim_two = bulk_rand_binary_similarity(fps, fps)
+    assert np.allclose(bulk_sim_single, bulk_sim_two)

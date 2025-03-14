@@ -1,10 +1,9 @@
-from typing import Union
+from typing import Optional, Union
 
+import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
-
-from .utils import _check_nan
 
 
 @validate_params(
@@ -15,7 +14,8 @@ from .utils import _check_nan
     prefer_skip_nested_validation=True,
 )
 def braun_blanquet_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Braun-Blanquet similarity for vectors of binary values.
@@ -28,7 +28,7 @@ def braun_blanquet_binary_similarity(
         sim(a, b) = \frac{|a \cap b|}{\max(|a|, |b|)}
 
     The calculated similarity falls within the range :math:`[0, 1]`.
-    Passing all-zero vectors to this function results in a similarity of 0.
+    Passing all-zero vectors to this function results in a similarity of 1.
 
     Parameters
     ----------
@@ -46,17 +46,17 @@ def braun_blanquet_binary_similarity(
     References
     ----------
     .. [1] `Braun-Blanquet, J.
-       "Plant sociology. The study of plant communities. First ed."
-       McGraw-Hill Book Co., Inc., New York and London, 1932.
-       <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
+        "Plant sociology. The study of plant communities. First ed."
+        McGraw-Hill Book Co., Inc., New York and London, 1932.
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
 
     .. [2] `Deza M.M., Deza E.
-       "Encyclopedia of Distances."
-       Springer, Berlin, Heidelberg, 2009.
-       <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
 
     .. [3] `RDKit documentation
-       <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
     Examples
     --------
@@ -65,38 +65,31 @@ def braun_blanquet_binary_similarity(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> sim = braun_blanquet_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
+    >>> sim
     1.0
 
-    >>> from skfp.distances import braun_blanquet_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
-    >>> vec_b = csr_array([[1, 0, 1]])
+    >>> vec_b = csr_array([[0, 0, 1]])
     >>> sim = braun_blanquet_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
-    1.0
+    >>> sim
+    0.5
     """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 0.0
-
-    if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-        return _braun_blanquet_binary_scipy(vec_a_bool, vec_b_bool)
-
-    elif isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-        return _braun_blanquet_binary_numpy(vec_a_bool, vec_b_bool)
-
-    else:
+    if type(vec_a) is not type(vec_b):
         raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
         )
+
+    if isinstance(vec_a, np.ndarray):
+        num_common = np.sum(np.logical_and(vec_a, vec_b))
+    else:
+        num_common = len(set(vec_a.indices) & set(vec_b.indices))
+
+    max_vec = max(np.sum(vec_a), np.sum(vec_b))
+
+    sim = float(num_common / max_vec) if max_vec != 0 else 1.0
+    return sim
 
 
 @validate_params(
@@ -139,17 +132,17 @@ def braun_blanquet_binary_distance(
     References
     ----------
     .. [1] `Braun-Blanquet, J.
-       "Plant sociology. The study of plant communities. First ed."
-       McGraw-Hill Book Co., Inc., New York and London, 1932.
-       <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
+        "Plant sociology. The study of plant communities. First ed."
+        McGraw-Hill Book Co., Inc., New York and London, 1932.
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19331600801>`_
 
     .. [2] `Deza M.M., Deza E.
-       "Encyclopedia of Distances."
-       Springer, Berlin, Heidelberg, 2009.
-       <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
 
     .. [3] `RDKit documentation
-       <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
     Examples
     --------
@@ -158,49 +151,163 @@ def braun_blanquet_binary_distance(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> dist = braun_blanquet_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.0
 
-    >>> from skfp.distances import braun_blanquet_binary_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = braun_blanquet_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
+    >>> dist
     0.0
     """
     return 1 - braun_blanquet_binary_similarity(vec_a, vec_b)
 
 
-def _braun_blanquet_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    and_count = np.sum(vec_a & vec_b)
-    max_vec = max(np.sum(vec_a), np.sum(vec_b))
+@validate_params(
+    {"X": ["array-like"], "Y": ["array-like", None]},
+    prefer_skip_nested_validation=True,
+)
+def bulk_braun_blanquet_binary_similarity(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> np.ndarray:
+    r"""
+    Bulk Braun-Blanquet similarity for binary matrices.
 
-    if max_vec == 0:
-        return 0.0
+    Computes the pairwise Braun-Blanquet similarity between binary matrices.
+    If one array is passed, similarities are computed between its rows. For two arrays,
+    similarities are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
 
-    braun_blanquet_sim = and_count / max_vec
-    return braun_blanquet_sim
+    See also :py:func:`braun_blanquet_binary_similarity`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+        are computed between rows of X.
+
+    Returns
+    -------
+    similarities : ndarray
+        Array with pairwise Braun-Blanquet similarity values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`braun_blanquet_binary_similarity` : Braun-Blanquet similarity function for two vectors.
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_braun_blanquet_binary_similarity
+    >>> import numpy as np
+    >>> X = np.array([[1, 0, 1], [0, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> sim = bulk_braun_blanquet_binary_similarity(X, Y)
+    >>> sim
+    array([[1. , 0.5],
+           [0.5, 0.5]])
+    """
+    if Y is None:
+        return _bulk_braun_blanquet_binary_similarity_single(X)
+    else:
+        return _bulk_braun_blanquet_binary_similarity_two(X, Y)
 
 
-def _braun_blanquet_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    a_indices = vec_a.indices
-    b_indices = vec_b.indices
+@numba.njit(parallel=True)
+def _bulk_braun_blanquet_binary_similarity_single(X: np.ndarray) -> np.ndarray:
+    m = X.shape[0]
+    sims = np.empty((m, m))
+    row_sums = np.sum(X, axis=1)
 
-    common_indices = set(a_indices).intersection(b_indices)
+    for i in numba.prange(m):
+        sims[i, i] = 1.0
+        for j in numba.prange(i + 1, m):
+            num_common = np.sum(np.logical_and(X[i], X[j]))
+            max_vec = max(row_sums[i], row_sums[j])
+            sim = num_common / max_vec if max_vec != 0 else 0.0
+            sims[i, j] = sims[j, i] = sim
 
-    max_vec = max(np.sum(vec_a), np.sum(vec_b))
+    return sims
 
-    if max_vec == 0:
-        return 0.0
 
-    and_count = 0
-    for idx in common_indices:
-        a_val = vec_a.data[vec_a.indices == idx]
-        b_val = vec_b.data[vec_b.indices == idx]
+@numba.njit(parallel=True)
+def _bulk_braun_blanquet_binary_similarity_two(
+    X: np.ndarray, Y: np.ndarray
+) -> np.ndarray:
+    m = X.shape[0]
+    n = Y.shape[0]
+    sims = np.empty((m, n))
 
-        and_count += a_val[0] & b_val[0]
+    row_sums_X = np.sum(X, axis=1)
+    row_sums_Y = np.sum(Y, axis=1)
 
-    braun_blanquet_sim = and_count / max_vec
+    for i in numba.prange(m):
+        for j in numba.prange(n):
+            num_common = np.sum(np.logical_and(X[i], Y[j]))
+            max_vec = max(row_sums_X[i], row_sums_Y[j])
+            sims[i, j] = num_common / max_vec if max_vec != 0 else 0.0
 
-    return braun_blanquet_sim
+    return sims
+
+
+@validate_params(
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_braun_blanquet_binary_distance(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> np.ndarray:
+    r"""
+    Bulk Braun-Blanquet distance for vectors of binary values.
+
+    Computes the pairwise Braun-Blanquet distance between binary matrices. If one array is
+    passed, distances are computed between its rows. For two arrays, distances
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`braun_blanquet_binary_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Braun-Blanquet distance values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`braun_blanquet_binary_distance` : Braun-Blanquet distance function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_braun_blanquet_binary_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_braun_blanquet_binary_distance(X, Y)
+    >>> dist
+    array([[0., 0.],
+           [0., 0.]])
+
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_braun_blanquet_binary_distance(X)
+    >>> dist
+    array([[0., 0.],
+           [0., 0.]])
+    """
+    return 1 - bulk_braun_blanquet_binary_similarity(X, Y)

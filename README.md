@@ -3,12 +3,10 @@
 [![PyPI version](https://badge.fury.io/py/scikit-fingerprints.svg)](https://badge.fury.io/py/scikit-fingerprints)
 [![](https://img.shields.io/pypi/dm/scikit-fingerprints)](https://pypi.org/project/scikit-fingerprints/)
 [![Downloads](https://static.pepy.tech/badge/scikit-fingerprints)](https://pepy.tech/project/scikit-fingerprints)
-![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/pypi/scikit-fingerprints)
 [![Code style: ruff](https://img.shields.io/badge/style-ruff-41B5BE?style=flat)](https://github.com/astral-sh/ruff)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE.md)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/scikit-fingerprints.svg)](https://pypi.org/project/scikit-fingerprints/)
 [![Contributors](https://img.shields.io/github/contributors/scikit-fingerprints/scikit-fingerprints)](https://github.com/scikit-fingerprints/scikit-fingerprints/graphs/contributors)
-[![check](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/tests.yml/badge.svg)](https://github.com/scikit-fingerprints/scikit-fingerprints/actions/workflows/tests.yml)
 
 [scikit-fingerprints](https://scikit-fingerprints.github.io/scikit-fingerprints/) is a Python library for efficient
 computation of molecular fingerprints.
@@ -141,6 +139,11 @@ as well as in the ["examples" directory](https://github.com/scikit-fingerprints/
 Examples and tutorials:
 1. [Introduction to scikit-fingerprints](examples/01_skfp_introduction.ipynb)
 2. [Fingerprint types](examples/02_fingerprint_types.ipynb)
+3. [Molecular pipelines](examples/03_pipelines.ipynb)
+4. [Conformers and conformational fingerprints](examples/04_conformers.ipynb)
+5. [Hyperparameter tuning](examples/05_hyperparameter_tuning.ipynb)
+6. [Dataset splits](examples/06_dataset_splits.ipynb)
+7. [Datasets and benchmarking](examples/07_datasets_and_benchmarking.ipynb)
 
 ## Project overview
 
@@ -171,13 +174,8 @@ Main features:
    inheriting from existing classes.
 
 6. **High code quality:** pre-commit hooks scan each commit for code quality (e.g. `black`,
-   `flake8`), typing (`mypy`), and security (e.g. `bandit`, `safety`). CI/CD process with
+   `flake8`), typing (`mypy`), and security (e.g. `bandit`, `pip-audit`). CI/CD process with
    GitHub Actions also includes over 250 unit and integration tests.
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of
-conduct, and the process for submitting pull requests to us.
 
 ## Citing
 
@@ -199,6 +197,18 @@ If you use scikit-fingerprints in your work, please cite our main publication,
 ```
 
 Its preprint is also [available on ArXiv](https://arxiv.org/abs/2407.13291).
+
+## Publications and usage
+
+Publications using scikit-fingerprints:
+1. [J. Adamczyk, W. Czech "Molecular Topological Profile (MOLTOP) - Simple and Strong Baseline for Molecular Graph Classification" ECAI 2024](https://ebooks.iospress.nl/doi/10.3233/FAIA240663)
+2. [J. Adamczyk, P. Ludynia "Scikit-fingerprints: easy and efficient computation of molecular fingerprints in Python" SoftwareX](https://www.sciencedirect.com/science/article/pii/S2352711024003145)
+3. [J. Adamczyk, P. Ludynia, W. Czech "Molecular Fingerprints Are Strong Models for Peptide Function Prediction" ArXiv preprint](https://arxiv.org/abs/2501.17901)
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of
+conduct, and the process for submitting pull requests to us.
 
 ## License
 

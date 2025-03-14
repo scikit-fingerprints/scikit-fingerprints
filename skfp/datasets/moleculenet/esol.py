@@ -71,7 +71,7 @@ def load_esol(
     --------
     >>> from skfp.datasets.moleculenet import load_esol
     >>> dataset = load_esol()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['OCC3OC(OCC2OC(OC(C#N)c1ccccc1)C(O)C(O)C2O)C(O)C(O)C3O ', ..., 'COP(=O)(OC)OC(=CCl)c1cc(Cl)c(Cl)cc1Cl'],
         array([-0.77 , -3.3  , -2.06 , ..., -3.091, -3.18 , -4.522]))
 

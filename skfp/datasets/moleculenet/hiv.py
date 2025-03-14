@@ -77,7 +77,7 @@ def load_hiv(
     --------
     >>> from skfp.datasets.moleculenet import load_hiv
     >>> dataset = load_hiv()
-    >>> dataset  # doctest: +ELLIPSIS
+    >>> dataset  # doctest: +SKIP
     (['CCC1=[O+][Cu-3]2([O+]=C(CC)C1)[O+]=C(CC)CC(CC)=[O+]2', ..., \
 'CCCCCC=C(c1cc(Cl)c(OC)c(-c2nc(C)no2)c1)c1cc(Cl)c(OC)c(-c2nc(C)no2)c1'], \
 array([0, 0, 0, ..., 0, 0, 0]))

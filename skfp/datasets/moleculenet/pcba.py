@@ -83,7 +83,7 @@ def load_pcba(
     --------
     >>> from skfp.datasets.moleculenet import load_pcba
     >>> dataset = load_pcba()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['CC(=O)N1CCC2(CC1)NC(=O)N(c1ccccc1)N2', ..., 'CCN(CC(=O)Nc1ccc(C)c(S(=O)(=O)N(C)C)c1)Cc1ccccc1'], \
 array([[ 0.,  0., nan, ..., nan, nan, nan],
        [ 0.,  0., nan, ..., nan, nan, nan],

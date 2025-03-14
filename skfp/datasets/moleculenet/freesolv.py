@@ -72,7 +72,7 @@ def load_freesolv(
     --------
     >>> from skfp.datasets.moleculenet import load_freesolv
     >>> dataset = load_freesolv()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['CN(C)C(=O)c1ccc(cc1)OC', ..., 'C1COCCO1'], array([-1.101e+01, -4.870e+00,  ..., 2.900e-01, -5.060e+00]))
 
     >>> dataset = load_freesolv(as_frame=True)

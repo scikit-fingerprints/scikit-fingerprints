@@ -40,6 +40,7 @@ def run_in_parallel(
     single_element_func: bool = False,
     flatten_results: bool = False,
     verbose: Union[int, dict] = 0,
+    **kwargs,
 ) -> list:
     """
     Run a function in parallel on provided data in batches, using joblib.
@@ -84,6 +85,9 @@ def run_in_parallel(
         Controls the verbosity. If higher than zero, progress bar will be shown,
         tracking the processing of batches. If ``dict`` object is provided,
         it will be used to configure the ``tqdm`` progress bar.
+
+    **kwargs : dict
+        parameters specific to the function passed in the ``func`` parameter
 
     Returns
     -------
@@ -140,7 +144,9 @@ def run_in_parallel(
     else:
         parallel = ProgressParallel(n_jobs=n_jobs, tqdm_settings=tqdm_settings)
 
-    results = parallel(delayed(func)(data_batch) for data_batch in data_batch_gen)
+    results = parallel(
+        delayed(func)(data_batch, **kwargs) for data_batch in data_batch_gen
+    )
 
     if flatten_results:
         results = list(itertools.chain.from_iterable(results))

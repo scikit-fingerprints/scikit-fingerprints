@@ -1,10 +1,9 @@
-from typing import Union
+from typing import Optional, Union
 
+import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
-
-from .utils import _check_nan
 
 
 @validate_params(
@@ -15,7 +14,8 @@ from .utils import _check_nan
     prefer_skip_nested_validation=True,
 )
 def rand_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     r"""
     Rand similarity for vectors of binary values.
@@ -48,17 +48,17 @@ def rand_binary_similarity(
     References
     ----------
     .. [1] `Rand, W.M.
-       "Objective criteria for the evaluation of clustering methods."
-       J. Amer. Stat. Assoc. 1971; 66: 846–850.
-       <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
+        "Objective criteria for the evaluation of clustering methods."
+        J. Amer. Stat. Assoc. 1971; 66: 846–850.
+        <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
 
     .. [2] `Deza M.M., Deza E.
-       "Encyclopedia of Distances."
-       Springer, Berlin, Heidelberg, 2009.
-       <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
 
     .. [3] `RDKit documentation
-       <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
     Examples
     --------
@@ -67,38 +67,33 @@ def rand_binary_similarity(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> sim = rand_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
-    1.0
+    >>> sim
+    0.6666666666666666
 
-    >>> from skfp.distances import rand_binary_similarity
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> sim = rand_binary_similarity(vec_a, vec_b)
-    >>> sim  # doctest: +SKIP
-    1.0
+    >>> sim
+    0.6666666666666666
     """
-    _check_nan(vec_a)
-    _check_nan(vec_b)
-
-    if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 0.0
-
-    if isinstance(vec_a, csr_array) and isinstance(vec_b, csr_array):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-        return _rand_binary_scipy(vec_a_bool, vec_b_bool)
-
-    elif isinstance(vec_a, np.ndarray) and isinstance(vec_b, np.ndarray):
-        vec_a_bool = vec_a.astype(bool)
-        vec_b_bool = vec_b.astype(bool)
-        return _rand_binary_numpy(vec_a_bool, vec_b_bool)
-
-    else:
+    if type(vec_a) is not type(vec_b):
         raise TypeError(
-            f"Both vec_a and vec_b must be of the same type, either numpy.ndarray "
-            f"or scipy.sparse.csr_array, got {type(vec_a)} and {type(vec_b)}"
+            f"Both vec_a and vec_b must be of the same type, "
+            f"got {type(vec_a)} and {type(vec_b)}"
         )
+
+    if isinstance(vec_a, np.ndarray):
+        num_common = np.sum(np.logical_and(vec_a, vec_b))
+        length = len(vec_a)
+    else:
+        vec_a_idxs = set(vec_a.indices)
+        vec_b_idxs = set(vec_b.indices)
+        num_common = len(vec_a_idxs & vec_b_idxs)
+        length = vec_a.shape[1]
+
+    rand_sim = num_common / length
+    return float(rand_sim)
 
 
 @validate_params(
@@ -109,7 +104,8 @@ def rand_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def rand_binary_distance(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: Union[np.ndarray, csr_array],
+    vec_b: Union[np.ndarray, csr_array],
 ) -> float:
     """
     Rand distance for vectors of binary values.
@@ -141,17 +137,17 @@ def rand_binary_distance(
     References
     ----------
     .. [1] `Rand, W.M.
-       "Objective criteria for the evaluation of clustering methods."
-       J. Amer. Stat. Assoc. 1971; 66: 846–850.
-       <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
+        "Objective criteria for the evaluation of clustering methods."
+        J. Amer. Stat. Assoc. 1971; 66: 846–850.
+        <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
 
     .. [2] `Deza M.M., Deza E.
-       "Encyclopedia of Distances."
-       Springer, Berlin, Heidelberg, 2009.
-       <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
 
     .. [3] `RDKit documentation
-       <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
 
     Examples
     --------
@@ -160,48 +156,170 @@ def rand_binary_distance(
     >>> vec_a = np.array([1, 0, 1])
     >>> vec_b = np.array([1, 0, 1])
     >>> dist = rand_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
-    0.0
+    >>> dist
+    0.33333333333333337
 
-    >>> from skfp.distances import rand_binary_distance
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
     >>> vec_b = csr_array([[1, 0, 1]])
     >>> dist = rand_binary_distance(vec_a, vec_b)
-    >>> dist  # doctest: +SKIP
-    0.0
+    >>> dist
+    0.33333333333333337
     """
     return 1 - rand_binary_similarity(vec_a, vec_b)
 
 
-def _rand_binary_numpy(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    and_count = np.sum(vec_a & vec_b)
-    len_a = len(vec_a)
+@validate_params(
+    {"X": ["array-like"], "Y": ["array-like", None]},
+    prefer_skip_nested_validation=True,
+)
+def bulk_rand_binary_similarity(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> np.ndarray:
+    r"""
+    Bulk Rand similarity for binary matrices.
 
-    if len_a == 0:
-        return 0.0
+    Computes the pairwise Rand [1]_ [2]_ (known as All-Bit [3]_ or Sokal-Michener)
+    similarity between binary matrices. If one array is passed, similarities are
+    computed between its rows. For two arrays, similarities are between their respective
+    rows, with `i`-th row and `j`-th column in output corresponding to `i`-th row from
+    first array and `j`-th row from second array.
 
-    rand_sim = and_count / len_a
-    return rand_sim
+    See also :py:func:`rand_binary_similarity`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+        are computed between rows of X.
+
+    Returns
+    -------
+    similarities : ndarray
+        Array with pairwise Rand similarity values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    References
+    ----------
+    .. [1] `Rand, W.M.
+        "Objective criteria for the evaluation of clustering methods."
+        J. Amer. Stat. Assoc. 1971; 66: 846–850.
+        <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
+
+    .. [2] `Deza M.M., Deza E.
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+
+    .. [3] `RDKit documentation
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+
+    See Also
+    --------
+    :py:func:`rand_binary_similarity` : Rand similarity function for two vectors.
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_rand_binary_similarity
+    >>> import numpy as np
+    >>> X = np.array([[1, 0, 1], [0, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> sim = bulk_rand_binary_similarity(X, Y)
+    >>> sim
+    array([[0.66666667, 0.33333333],
+           [0.33333333, 0.33333333]])
+    """
+    if Y is None:
+        return _bulk_rand_binary_similarity_single(X)
+    else:
+        return _bulk_rand_binary_similarity_two(X, Y)
 
 
-def _rand_binary_scipy(vec_a: csr_array, vec_b: csr_array) -> float:
-    len_a = vec_a.shape[1]
+@numba.njit(parallel=True)
+def _bulk_rand_binary_similarity_single(X: np.ndarray) -> np.ndarray:
+    m, length = X.shape
+    sims = np.empty((m, m))
 
-    if len_a == 0:
-        return 0.0
+    for i in numba.prange(m):
+        for j in numba.prange(i, m):
+            intersection = np.sum(np.logical_and(X[i], X[j]))
+            sim = intersection / length
+            sims[i, j] = sims[j, i] = sim
 
-    a_indices = vec_a.indices
-    b_indices = vec_b.indices
+    return sims
 
-    common_indices = set(a_indices).intersection(b_indices)
 
-    and_count = 0
-    for idx in common_indices:
-        a_val = vec_a.data[vec_a.indices == idx]
-        b_val = vec_b.data[vec_b.indices == idx]
+@numba.njit(parallel=True)
+def _bulk_rand_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+    m, length = X.shape
+    n = Y.shape[0]
+    sims = np.empty((m, n))
 
-        and_count += a_val[0] & b_val[0]
+    for i in numba.prange(m):
+        for j in numba.prange(n):
+            intersection = np.sum(np.logical_and(X[i], Y[j]))
+            sims[i, j] = intersection / length
 
-    rand_sim = and_count / len_a
-    return rand_sim
+    return sims
+
+
+@validate_params(
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
+    prefer_skip_nested_validation=True,
+)
+def bulk_rand_binary_distance(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> np.ndarray:
+    r"""
+    Bulk Rand distance for vectors of binary values.
+
+    Computes the pairwise Rand distance between binary matrices. If one array is
+    passed, distances are computed between its rows. For two arrays, distances
+    are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
+
+    See also :py:func:`rand_binary_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Rand distance values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`rand_binary_distance` : Rand distance function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_rand_binary_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_rand_binary_distance(X, Y)
+    >>> dist
+    array([[0.33333333, 0.33333333],
+           [0.33333333, 0.33333333]])
+
+    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> dist = bulk_rand_binary_distance(X)
+    >>> dist
+    array([[0.33333333, 0.33333333],
+           [0.33333333, 0.33333333]])
+    """
+    return 1 - bulk_rand_binary_similarity(X, Y)

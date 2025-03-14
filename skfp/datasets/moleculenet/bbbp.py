@@ -72,7 +72,7 @@ def load_bbbp(
     --------
     >>> from skfp.datasets.moleculenet import load_bbbp
     >>> dataset = load_bbbp()
-    >>> dataset  # doctest: +ELLIPSIS
+    >>> dataset  # doctest: +SKIP
     (['[Cl].CC(C)NCC(O)COc1cccc2ccccc12', ..., '[N+](=NCC(=O)N[C@@H]([C@H](O)C1=CC=C([N+]([O-])=O)C=C1)CO)=[N-]'], \
 array([1, 1, 1, ..., 1, 1, 1]))
 

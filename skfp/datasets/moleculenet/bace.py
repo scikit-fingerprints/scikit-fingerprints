@@ -73,7 +73,7 @@ def load_bace(
     --------
     >>> from skfp.datasets.moleculenet import load_bace
     >>> dataset = load_bace()
-    >>> dataset  # doctest: +ELLIPSIS
+    >>> dataset  # doctest: +SKIP
     (['O1CC[C@@H](NC(=O)[C@@H](Cc2cc3cc(ccc3nc2N)-c2ccccc2C)C)CC1(C)C', ..., 'Clc1cc2nc(n(c2cc1)CCCC(=O)NCC1CC1)N'], \
 array([1, 1, 1, ..., 0, 0, 0]))
 

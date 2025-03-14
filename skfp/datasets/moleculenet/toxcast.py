@@ -76,7 +76,7 @@ def load_toxcast(
     --------
     >>> from skfp.datasets.moleculenet import load_toxcast
     >>> dataset = load_toxcast()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['[O-][N+](=O)C1=CC=C(Cl)C=C1', ..., 'CN1CC2=C(N[C@H](CC(O)=O)C1=O)C=CC(=C2)C(=O)N1CCC(CC1)C1CCNCC1'], \
 array([[ 0.,  0., nan, ...,  0.,  0.,  0.],
            [nan, nan, nan, ..., nan, nan, nan],

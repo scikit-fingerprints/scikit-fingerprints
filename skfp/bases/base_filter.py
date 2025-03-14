@@ -88,9 +88,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         """
         return True
 
-    def fit(
-        self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
-    ):
+    def fit(self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None):
         """Unused, kept for scikit-learn compatibility.
 
         Parameters
@@ -99,9 +97,6 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
             Unused, kept for scikit-learn compatibility.
 
         y : any
-            Unused, kept for scikit-learn compatibility.
-
-        **fit_params : dict
             Unused, kept for scikit-learn compatibility.
 
         Returns

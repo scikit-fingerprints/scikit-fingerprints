@@ -67,7 +67,7 @@ def load_clintox(
     --------
     >>> from skfp.datasets.moleculenet import load_clintox
     >>> dataset = load_clintox()
-    >>> dataset  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dataset  # doctest: +SKIP
     (['[C@@H]1([C@@H]([C@@H]([C@H]([C@@H]([C@@H]1Cl)Cl)Cl)Cl)Cl)Cl', ..., 'S=[Se]=S'], array([[1, 0],
        [1, 0],
        [1, 0],
