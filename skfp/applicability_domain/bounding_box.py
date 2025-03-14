@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 import numpy as np
 from sklearn.utils._param_validation import Interval
-from sklearn.utils.validation import validate_data
+from sklearn.utils.validation import check_is_fitted, validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
 
@@ -16,16 +16,19 @@ class BoundingBoxADChecker(BaseADChecker):
     This creates a "bounding box" using their extreme values, and new molecules
     should lie in this distribution, i.e. have properties in the same ranges.
 
-    Typically, physicochemical properties (continous features) are used as inputs,
-    such as RDKit 2D or Mordred descriptors. Consider scaling, normalizing, or transforming
-    them before computing AD to avoid effects of outliers, e.g. with ``PowerTransformer``
-    or ``RobustScaler``. This is particularly important if ``"three_sigma"`` is used
-    as percentile bound, as it assumes normal distribution.
+    Typically, physicochemical properties (continous features) are used as inputs.
+    Consider scaling, normalizing, or transforming them before computing AD to lessen
+    effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``. This is
+    particularly important if ``"three_sigma"`` is used as percentile bound, as it
+    assumes normal distribution.
 
     By default, the full range of training descriptors are allowed as AD. For stricter
     check, use ``percentile_lower`` and ``percentile_upper`` arguments to disallow
     extremely low or large values, respectively. For looser check, use ``num_allowed_violations``
     to allow a number of desrciptors to lie outside the given ranges.
+
+    This method scales great with both number of samples and features. It's arguably the
+    fastest and most scalable AD checker.
 
     Parameters
     ----------
@@ -125,6 +128,9 @@ class BoundingBoxADChecker(BaseADChecker):
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
+        check_is_fitted(self)
+        X = validate_data(self, X, reset=False)
+
         outside_range = (self.lower_bounds_ > X) | (self.upper_bounds_ < X)
         violations = np.sum(outside_range, axis=1)
         passed = violations <= self.num_allowed_violations
@@ -147,6 +153,9 @@ class BoundingBoxADChecker(BaseADChecker):
         scores : ndarray of shape (n_samples,)
             Applicability domain scores of samples.
         """
+        check_is_fitted(self)
+        X = validate_data(self, X, reset=False)
+
         inside_range = (self.lower_bounds_ <= X) & (self.upper_bounds_ >= X)
         scores = np.sum(inside_range, axis=1)
         return scores

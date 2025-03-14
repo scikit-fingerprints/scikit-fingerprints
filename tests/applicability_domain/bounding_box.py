@@ -65,7 +65,7 @@ def test_lower_percentages():
 
 
 def test_num_allowed_violations():
-    X_train, X_test = get_data_inside_ad()
+    X_train, X_test = get_data_inside_ad(n_train=100, n_test=100)
     X_test += 25
 
     ad_checker = BoundingBoxADChecker(num_allowed_violations=0)

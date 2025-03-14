@@ -15,3 +15,4 @@ Classes for checking applicability domain.
     :toctree: generated/
 
     BoundingBoxADChecker
+    ConvexHullADChecker
