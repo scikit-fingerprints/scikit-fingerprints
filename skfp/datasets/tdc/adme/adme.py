@@ -21,7 +21,34 @@ def load_b3db_classification(
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    """
+    r"""
+    Load the classification subset of Blood-Brain-Barrier dataset.
+
+    The task is to classify molecules as either BBB permeable (BBB+) or BBB non-permeable (BBB-) [1]_ [2]_.
+    The BBB permeability is measured by the logarithm of the brain-plasma concentration ratio:
+
+    .. math::
+
+        \log BB = \log \frac{C_{brain}}{C_{blood}}
+
+    where:
+        - :math:`C_{brain}` is the concentration in the brain.
+        - :math:`C_{blood}` is the concentration in the blood.
+
+    The molecules with :math:`\log BB` greater than 0 make up the positive class.
+    This dataset should not be confused with :py:func:`~skfp.datasets.moleculenet.load_bbbp`
+    See also :py:func:`load_b3db_regression`
+
+    This dataset is a part of "distribution" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                     6167
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -42,7 +69,18 @@ def load_b3db_classification(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Meng, F., Xi, Y., Huang, J. & Ayers, P. W.
+        "A curated diverse molecular database of blood-brain barrier permeability with chemical descriptors"
+        Sci Data 8, 289 (2021).
+        <https://doi.org/10.1038/s41597-021-01069-5>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -66,7 +104,33 @@ def load_b3db_regression(
     as_frame: bool = False,
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
-    """
+    r"""
+    Load the regression subset of Blood-Brain-Barrier dataset.
+
+    The task is to predict the BBB permeability [1]_ [2]_.
+    The BBB permeability is measured by the logarithm of the brain-plasma concentration ratio:
+
+    .. math::
+
+        \log BB = \log \frac{C_{brain}}{C_{blood}}
+
+    where:
+        - :math:`C_{brain}` is the concentration in the brain.
+        - :math:`C_{blood}` is the concentration in the blood.
+
+    This dataset should not be confused with :py:func:`~skfp.datasets.moleculenet.load_bbbp`
+    See also :py:func:`load_b3db_classification`
+
+    This dataset is a part of "distribution" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type                   regression
+    Total samples                      942
+    Recommended split             scaffold
+    Recommended metric                 MAE
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -87,7 +151,18 @@ def load_b3db_regression(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Meng, F., Xi, Y., Huang, J. & Ayers, P. W.
+        "A curated diverse molecular database of blood-brain barrier permeability with chemical descriptors"
+        Sci Data 8, 289 (2021).
+        <https://doi.org/10.1038/s41597-021-01069-5>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -117,6 +192,7 @@ def load_bioavailability_ma(
     The task is to predict the activity of oral bioavailability.
     Bioavailability is defined as "the rate and extent to which the active ingredient or active moiety
     is absorbed from a drug product and becomes available at the site of action" [1]_ [2]_.
+
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -152,7 +228,7 @@ def load_bioavailability_ma(
     ----------
     .. [1] `Ma, Chang-Ying, et al.
         "Prediction models of human plasma protein binding rate
-        and oral bioavailability derived by using GA–CG–SVM method."
+        and oral bioavailability derived by using GA–CG–SVM method"
         Journal of Pharmaceutical and Biomedical Analysis 47.4-5 (2008): 677-682.
         <https://doi.org/10.1016/j.jpba.2008.03.023>`_
 
@@ -188,6 +264,7 @@ def load_caco2_wang(
 
     The task is to predict the rate at which drug passes through Caco-2 cells
     that serve as in vitro simulation of human intestinal tissue [1]_ [2]_.
+
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -264,6 +341,7 @@ def load_clearance_hepatocyte_az(
     human hepatocytes (HHEP) and human liver microsomes (HLM) which are two main
     in vitro systems used in metabolic stability and inhibition studies.
     This subset od the Clearance dataset includes measurements from hepatocyte studies.
+
     This dataset is a part of "excretion" subset of ADME tasks.
 
     ==================   =================
@@ -345,6 +423,7 @@ def load_clearance_microsome_az(
     human hepatocytes (HHEP) and human liver microsomes (HLM) which are two main
     in vitro systems used in metabolic stability and inhibition studies.
     This subset od the Clearance dataset includes measurements from microsome studies.
+
     This dataset is a part of "excretion" subset of ADME tasks.
 
     ==================   =================
@@ -417,6 +496,33 @@ def load_cyp1a2_veith(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP1A2 subset of CYP P450 Veith dataset.
+
+    The CYP P450 genes are involved in the formation and breakdown (metabolism)
+    of various molecules and chemicals within cells.
+    The task is to predict CYP1A2 inhibition.
+    CYP1A2 localizes to the endoplasmic reticulum and its expression is induced by some polycyclic
+    aromatic hydrocarbons (PAHs), some of which are found in cigarette smoke.
+    It is able to metabolize some PAHs to carcinogenic intermediates.
+    Other xenobiotic substrates for this enzyme include caffeine, aflatoxin B1, and acetaminophen [1]_ [2]_.
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    All CYP P450 Veith subsets:
+        - :py:func:`load_cyp1a2_veith`
+        - :py:func:`load_cyp2c9_veith`
+        - :py:func:`load_cyp2c19_veith`
+        - :py:func:`load_cyp2d6_veith`
+        - :py:func:`load_cyp3a4_veith`
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                    12579
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -437,7 +543,18 @@ def load_cyp1a2_veith(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Veith, Henrike et al.
+        "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
+        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        <https://doi.org/10.1038/nbt.1581>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -462,6 +579,27 @@ def load_cyp2c9_substrate_carbonmangels(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP2C9 subset of Substrate Carbon-Mangels dataset.
+
+    CYP2C9 plays a major role in the oxidation of both xenobiotic and endogenous compounds [1]_ [2]_ [3]_.
+    Substrates are drugs that are metabolized by the enzyme.
+    The task is to predict whether a molecule is a substrate to CYP2C9.
+
+    All Substrate Carbon-Mangels subsets:
+        - :py:func:`load_cyp2c9_substrate_carbonmangels`
+        - :py:func:`load_cyp2d6_substrate_carbonmangels`
+        - :py:func:`load_cyp3a4_substrate_carbonmangels`
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      669
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -482,7 +620,24 @@ def load_cyp2c9_substrate_carbonmangels(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Carbon‐Mangels, Miriam, and Michael C. Hutter.
+        "Selecting relevant descriptors for classification by bayesian estimates:
+        a comparison with decision trees and support vector machines approaches for disparate data sets"
+        Molecular informatics 30.10 (2011): 885-895.
+        <https://doi.org/10.1002/minf.201100069>`_
+
+    .. [2] `Cheng, Feixiong, et al.
+        "admetSAR: A Comprehensive Source and Free Tool for Assessment of Chemical ADMET Properties"
+        J. Chem. Inf. Model. 2012, 52, 11, 3099–3105
+        <https://doi.org/10.1002/minf.201100069>`_
+
+    .. [3] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -507,6 +662,30 @@ def load_cyp2c9_veith(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP2C9 subset of CYP P450 Veith dataset.
+
+    The CYP P450 genes are involved in the formation and breakdown (metabolism)
+    of various molecules and chemicals within cells.
+    The task is to predict CYP2C9 inhibition.
+    CYP P450 2C9 plays a major role in the oxidation of both xenobiotic and endogenous compounds [1]_ [2]_.
+
+    All CYP P450 Veith subsets:
+        - :py:func:`load_cyp1a2_veith`
+        - :py:func:`load_cyp2c9_veith`
+        - :py:func:`load_cyp2c19_veith`
+        - :py:func:`load_cyp2d6_veith`
+        - :py:func:`load_cyp3a4_veith`
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                    12092
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -527,7 +706,18 @@ def load_cyp2c9_veith(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Veith, Henrike et al.
+        "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
+        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        <https://doi.org/10.1038/nbt.1581>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -552,6 +742,31 @@ def load_cyp2c19_veith(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP2C19 subset of CYP P450 Veith dataset.
+
+    The CYP P450 genes are involved in the formation and breakdown (metabolism)
+    of various molecules and chemicals within cells.
+    The task is to predict CYP2C19 inhibition.
+    CYP2C19 gene provides instructions for making an enzyme called the endoplasmic reticulum,
+    which is involved in protein processing and transport [1]_ [2]_.
+
+    All CYP P450 Veith subsets:
+        - :py:func:`load_cyp1a2_veith`
+        - :py:func:`load_cyp2c9_veith`
+        - :py:func:`load_cyp2c19_veith`
+        - :py:func:`load_cyp2d6_veith`
+        - :py:func:`load_cyp3a4_veith`
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                    12665
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -572,7 +787,18 @@ def load_cyp2c19_veith(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Veith, Henrike et al.
+        "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
+        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        <https://doi.org/10.1038/nbt.1581>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -597,6 +823,28 @@ def load_cyp2d6_substrate_carbonmangels(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP2D6 subset of Substrate Carbon-Mangels dataset.
+
+    CYP2D6 is primarily expressed in the liver. It is also highly expressed in areas of the central nervous system,
+    including the substantia nigra [1]_ [2]_ [3]_.
+    Substrates are drugs that are metabolized by the enzyme.
+    The task is to predict whether a molecule is a substrate to CYP2D6.
+
+    All Substrate Carbon-Mangels subsets:
+        - :py:func:`load_cyp2c9_substrate_carbonmangels`
+        - :py:func:`load_cyp2d6_substrate_carbonmangels`
+        - :py:func:`load_cyp3a4_substrate_carbonmangels`
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      667
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -617,7 +865,24 @@ def load_cyp2d6_substrate_carbonmangels(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Carbon‐Mangels, Miriam, and Michael C. Hutter.
+        "Selecting relevant descriptors for classification by bayesian estimates:
+        a comparison with decision trees and support vector machines approaches for disparate data sets"
+        Molecular informatics 30.10 (2011): 885-895.
+        <https://doi.org/10.1002/minf.201100069>`_
+
+    .. [2] `Cheng, Feixiong, et al.
+        "admetSAR: A Comprehensive Source and Free Tool for Assessment of Chemical ADMET Properties"
+        J. Chem. Inf. Model. 2012, 52, 11, 3099–3105
+        <https://doi.org/10.1002/minf.201100069>`_
+
+    .. [3] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -642,6 +907,31 @@ def load_cyp2d6_veith(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP2D6 subset of CYP P450 Veith dataset.
+
+    The CYP P450 genes are involved in the formation and breakdown (metabolism)
+    of various molecules and chemicals within cells.
+    The task is to predict CYP2D6 inhibition.
+    CYP2D6 is primarily expressed in the liver. It is also highly expressed in areas of the central nervous system,
+    including the substantia nigra [1]_ [2]_.
+
+    All CYP P450 Veith subsets:
+        - :py:func:`load_cyp1a2_veith`
+        - :py:func:`load_cyp2c9_veith`
+        - :py:func:`load_cyp2c19_veith`
+        - :py:func:`load_cyp2d6_veith`
+        - :py:func:`load_cyp3a4_veith`
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                    13130
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -662,7 +952,18 @@ def load_cyp2d6_veith(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Veith, Henrike et al.
+        "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
+        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        <https://doi.org/10.1038/nbt.1581>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -687,6 +988,29 @@ def load_cyp3a4_substrate_carbonmangels(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP3A4 subset of Substrate Carbon-Mangels dataset.
+
+    CYP3A4 is an important enzyme in the body, mainly found in the liver and in the intestine.
+    It oxidizes small foreign organic molecules (xenobiotics), such as toxins or drugs,
+    so that they can be removed from the body [1]_ [2]_ [3]_.
+    Substrates are drugs that are metabolized by the enzyme.
+    The task is to predict whether a molecule is a substrate to CYP3A4.
+
+    All Substrate Carbon-Mangels subsets:
+        - :py:func:`load_cyp2c9_substrate_carbonmangels`
+        - :py:func:`load_cyp2d6_substrate_carbonmangels`
+        - :py:func:`load_cyp3a4_substrate_carbonmangels`
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                      670
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -707,7 +1031,24 @@ def load_cyp3a4_substrate_carbonmangels(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Carbon‐Mangels, Miriam, and Michael C. Hutter.
+        "Selecting relevant descriptors for classification by bayesian estimates:
+        a comparison with decision trees and support vector machines approaches for disparate data sets"
+        Molecular informatics 30.10 (2011): 885-895.
+        <https://doi.org/10.1002/minf.201100069>`_
+
+    .. [2] `Cheng, Feixiong, et al.
+        "admetSAR: A Comprehensive Source and Free Tool for Assessment of Chemical ADMET Properties"
+        J. Chem. Inf. Model. 2012, 52, 11, 3099–3105
+        <https://doi.org/10.1002/minf.201100069>`_
+
+    .. [3] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -732,6 +1073,32 @@ def load_cyp3a4_veith(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the CYP3A4 subset of CYP P450 Veith dataset.
+
+    The CYP P450 genes are involved in the formation and breakdown (metabolism)
+    of various molecules and chemicals within cells.
+    The task is to predict CYP3A4 inhibition.
+    CYP3A4 is an important enzyme in the body, mainly found in the liver and in the intestine.
+    It oxidizes small foreign organic molecules (xenobiotics),
+    such as toxins or drugs, so that they can be removed from the body [1]_ [2]_.
+
+    All CYP P450 Veith subsets:
+        - :py:func:`load_cyp1a2_veith`
+        - :py:func:`load_cyp2c9_veith`
+        - :py:func:`load_cyp2c19_veith`
+        - :py:func:`load_cyp2d6_veith`
+        - :py:func:`load_cyp3a4_veith`
+
+    This dataset is a part of "metabolism" subset of ADME tasks.
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                    12328
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -752,7 +1119,18 @@ def load_cyp3a4_veith(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Veith, Henrike et al.
+        "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
+        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        <https://doi.org/10.1038/nbt.1581>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -782,6 +1160,7 @@ def load_half_life_obach(
     The task is to predict the half life of a drug.
     It is defined as a duration for the concentration of the drug in the body to be reduced by half.
     It measures the duration of actions of a drug [1]_ [2]_.
+
     This dataset is a part of "excretion" subset of ADME tasks.
 
     ==================   =================
@@ -852,6 +1231,7 @@ def load_hia_hou(
 
     The task is to predict whether a drug is well absorbed
     via the human intestine. It is relevant for oral drug design [1]_ [2]_.
+
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -886,7 +1266,7 @@ def load_hia_hou(
     References
     ----------
     .. [1] `Hou T et al.
-        "ADME evaluation in drug discovery. 7. Prediction of oral absorption by correlation and classification."
+        "ADME evaluation in drug discovery. 7. Prediction of oral absorption by correlation and classification"
         J Chem Inf Model. 2007;47(1):208-218.
         <https://doi.org/10.1021/ci600343x>`_
 
@@ -918,6 +1298,21 @@ def load_hlm(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the human subset of Human and Rat Liver Microsomal Stability dataset.
+
+    Liver microsomal stability or hepatic metabolic stability
+    is an important property considered for the screening of drug candidates.
+    The task is to determine whether the drug is stable or not [1]_ [2]_.
+    This subset relates to human liver microsomes. See also :py:func:`load_rlm`
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                     6013
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -938,7 +1333,18 @@ def load_hlm(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Longqiang, Li., Zhou, Lu., Guixia, Liu., Yun, Tang., Weihua, Li.
+        "In Silico Prediction of Human and Rat Liver Microsomal Stability via Machine Learning Methods"
+        Chem. Res. Toxicol. 2022, 35, 9, 1614–1624
+        <https://doi.org/10.1021/acs.chemrestox.2c00207>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -969,6 +1375,7 @@ def load_pampa_approved_drugs(
     to evaluate drug permeability across the cellular membrane.
     The task models only the passive membrane diffusion [1]_ [2]_.
     This is the "approved drugs" subset that includes 142 marketed-approved drugs assessed by NCATS [1]_.
+
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -1003,7 +1410,7 @@ def load_pampa_approved_drugs(
     References
     ----------
     .. [1] `Siramshetty, V.B., Shah, P., et al.
-        "Validating ADME QSAR Models Using Marketed Drugs."
+        "Validating ADME QSAR Models Using Marketed Drugs"
         SLAS Discovery 2021 Dec;26(10):1326-1336.
         <https://doi.org/10.1177/24725552211017520>`_
 
@@ -1041,6 +1448,7 @@ def load_pampa_ncats(
     to evaluate drug permeability across the cellular membrane.
     The task models only the passive membrane diffusion [1]_ [2]_.
     This is "NCATS" subset of the dataset created at National Center for Advancing Translational Sciences (NCATS).
+
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -1075,7 +1483,7 @@ def load_pampa_ncats(
     References
     ----------
     .. [1] `Siramshetty, V.B., Shah, P., et al.
-        "Validating ADME QSAR Models Using Marketed Drugs."
+        "Validating ADME QSAR Models Using Marketed Drugs"
         SLAS Discovery 2021 Dec;26(10):1326-1336.
         <https://doi.org/10.1177/24725552211017520>`_
 
@@ -1112,6 +1520,7 @@ def load_pgp_broccatelli(
     The task is to predict whether a molecule inhibits the P-glycoprotein.
     P-glycoprotein (P-gp) is an ABC transporter protein involved in intestinal absorption, drug metabolism,
     and brain penetration, and its inhibition can seriously alter a drug's bioavailability and safety [1]_ [2]_.
+
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -1146,7 +1555,7 @@ def load_pgp_broccatelli(
     References
     ----------
     .. [1] `Broccatelli et al.
-        "A Novel Approach for Predicting P-Glycoprotein (ABCB1) Inhibition Using Molecular Interaction Fields."
+        "A Novel Approach for Predicting P-Glycoprotein (ABCB1) Inhibition Using Molecular Interaction Fields"
         Journal of Medicinal Chemistry, 2011 54 (6), 1740-1751
         <https://doi.org/10.1021/jm101421d>`_
 
@@ -1184,6 +1593,7 @@ def load_ppbr_az(
     PPBR is expressed as the percentage of a drug bound to plasma proteins in the blood.
     This rate strongly affects the drug delivery efficiency.
     The less bound a drug is, the more efficiently it can traverse and diffuse to the site of actions.
+
     This dataset is a part of "distribution" subset of ADME tasks.
 
     ==================   =================
@@ -1218,7 +1628,7 @@ def load_ppbr_az(
     References
     ----------
     .. [1] `AstraZeneca.
-        "Experimental in vitro Dmpk and physicochemical data on a set of publicly disclosed compounds "
+        "Experimental in vitro Dmpk and physicochemical data on a set of publicly disclosed compounds"
         (2016)
         <https://www.ebi.ac.uk/chembl/explore/document/CHEMBL3301361>`_
 
@@ -1250,6 +1660,21 @@ def load_rlm(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
+    Load the rat subset of Human and Rat Liver Microsomal Stability dataset.
+
+    Liver microsomal stability or hepatic metabolic stability
+    is an important property considered for the screening of drug candidates.
+    The task is to determine whether the drug is stable or not [1]_ [2]_.
+    This subset relates to rat liver microsomes. See also :py:func:`load_rlm`
+
+    ==================   =================
+    Tasks                                1
+    Task type               classification
+    Total samples                     6013
+    Recommended split             scaffold
+    Recommended metric               AUROC
+    ==================   =================
+
     Parameters
     ----------
     data_dir : {None, str, path-like}, default=None
@@ -1270,7 +1695,18 @@ def load_rlm(
         Depending on the ``as_frame`` argument, one of:
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
-    -------
+
+    References
+    ----------
+    .. [1] `Longqiang, Li., Zhou, Lu., Guixia, Liu., Yun, Tang., Weihua, Li.
+        "In Silico Prediction of Human and Rat Liver Microsomal Stability via Machine Learning Methods"
+        Chem. Res. Toxicol. 2022, 35, 9, 1614–1624
+        <https://doi.org/10.1021/acs.chemrestox.2c00207>`_
+
+    .. [2] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     df = fetch_dataset(
         data_dir,
@@ -1300,6 +1736,7 @@ def load_solubility_aqsoldb(
     The task is to predict the aqeuous solubility - a measure drug's ability to dissolve in water.
     Poor water solubility could lead to slow drug absorptions,
     inadequate bioavailablity and even induce toxicity [1]_ [2]_.
+
     This dataset is a part of "absorption" subset of ADME tasks.
 
     ==================   =================
@@ -1334,7 +1771,7 @@ def load_solubility_aqsoldb(
     References
     ----------
     .. [1] `Sorkun, M.C., Khetan, A. & Er, S.
-        "AqSolDB, a curated reference set of aqueous solubility and 2D descriptors for a diverse set of compounds."
+        "AqSolDB, a curated reference set of aqueous solubility and 2D descriptors for a diverse set of compounds"
         Sci Data 6, 143 (2019).
         <https://doi.org/10.1038/s41597-019-0151-1>`_
 
@@ -1370,6 +1807,7 @@ def load_vdss_lombardo(
 
     The task is to predict the volume of distribution at steady state (VDss) that measures
     the degree of drug's concentration in body tissue compared to concentration in blood [1]_ [2]_.
+
     This dataset is a part of "distribution" subset of ADME tasks.
 
     ==================   =================
