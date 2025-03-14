@@ -31,13 +31,11 @@ def load_b3db_classification(
 
         \log BB = \log \frac{C_{brain}}{C_{blood}}
 
-    where:
-        - :math:`C_{brain}` is the concentration in the brain.
-        - :math:`C_{blood}` is the concentration in the blood.
+    Where :math:`C_{brain}` and :math:`C_{blood}` are concentrations in brain and blood, respectively.
 
     The molecules with :math:`\log BB` greater than 0 make up the positive class.
 
-    This dataset should not be confused with :py:func:`~skfp.datasets.moleculenet.load_bbbp`
+    This dataset should not be confused with BBBP dataset from MoleculeNet.
 
     See also :py:func:`load_b3db_regression`
 
@@ -116,11 +114,9 @@ def load_b3db_regression(
 
         \log BB = \log \frac{C_{brain}}{C_{blood}}
 
-    where:
-        - :math:`C_{brain}` is the concentration in the brain.
-        - :math:`C_{blood}` is the concentration in the blood.
+    Where :math:`C_{brain}` and :math:`C_{blood}` are concentrations in brain and blood, respectively.
 
-    This dataset should not be confused with :py:func:`~skfp.datasets.moleculenet.load_bbbp`
+    This dataset should not be confused with BBBP dataset from MoleculeNet.
 
     See also :py:func:`load_b3db_classification`
 
@@ -512,6 +508,7 @@ def load_cyp1a2_veith(
     This dataset is a part of "metabolism" subset of ADME tasks.
 
     All CYP P450 Veith subsets:
+
         - :py:func:`load_cyp1a2_veith`
         - :py:func:`load_cyp2c9_veith`
         - :py:func:`load_cyp2c19_veith`
@@ -551,7 +548,7 @@ def load_cyp1a2_veith(
     ----------
     .. [1] `Veith, Henrike et al.
         "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
-        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        Nature Biotechnology vol. 27,11 (2009): 1050-5.
         <https://doi.org/10.1038/nbt.1581>`_
 
     .. [2] `Huang, Kexin, et al.
@@ -589,6 +586,7 @@ def load_cyp2c9_substrate_carbonmangels(
     The task is to predict whether a molecule is a substrate to CYP2C9.
 
     All Substrate Carbon-Mangels subsets:
+
         - :py:func:`load_cyp2c9_substrate_carbonmangels`
         - :py:func:`load_cyp2d6_substrate_carbonmangels`
         - :py:func:`load_cyp3a4_substrate_carbonmangels`
@@ -629,7 +627,7 @@ def load_cyp2c9_substrate_carbonmangels(
     .. [1] `Carbon‐Mangels, Miriam, and Michael C. Hutter.
         "Selecting relevant descriptors for classification by bayesian estimates:
         a comparison with decision trees and support vector machines approaches for disparate data sets"
-        Molecular informatics 30.10 (2011): 885-895.
+        Molecular Informatics 30.10 (2011): 885-895.
         <https://doi.org/10.1002/minf.201100069>`_
 
     .. [2] `Cheng, Feixiong, et al.
@@ -673,6 +671,7 @@ def load_cyp2c9_veith(
     CYP P450 2C9 plays a major role in the oxidation of both xenobiotic and endogenous compounds [1]_ [2]_.
 
     All CYP P450 Veith subsets:
+
         - :py:func:`load_cyp1a2_veith`
         - :py:func:`load_cyp2c9_veith`
         - :py:func:`load_cyp2c19_veith`
@@ -714,7 +713,7 @@ def load_cyp2c9_veith(
     ----------
     .. [1] `Veith, Henrike et al.
         "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
-        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        Nature Biotechnology vol. 27,11 (2009): 1050-5.
         <https://doi.org/10.1038/nbt.1581>`_
 
     .. [2] `Huang, Kexin, et al.
@@ -754,6 +753,7 @@ def load_cyp2c19_veith(
     which is involved in protein processing and transport [1]_ [2]_.
 
     All CYP P450 Veith subsets:
+
         - :py:func:`load_cyp1a2_veith`
         - :py:func:`load_cyp2c9_veith`
         - :py:func:`load_cyp2c19_veith`
@@ -795,7 +795,7 @@ def load_cyp2c19_veith(
     ----------
     .. [1] `Veith, Henrike et al.
         "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
-        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        Nature Biotechnology vol. 27,11 (2009): 1050-5.
         <https://doi.org/10.1038/nbt.1581>`_
 
     .. [2] `Huang, Kexin, et al.
@@ -834,6 +834,7 @@ def load_cyp2d6_substrate_carbonmangels(
     The task is to predict whether a molecule is a substrate to CYP2D6.
 
     All Substrate Carbon-Mangels subsets:
+
         - :py:func:`load_cyp2c9_substrate_carbonmangels`
         - :py:func:`load_cyp2d6_substrate_carbonmangels`
         - :py:func:`load_cyp3a4_substrate_carbonmangels`
@@ -874,7 +875,7 @@ def load_cyp2d6_substrate_carbonmangels(
     .. [1] `Carbon‐Mangels, Miriam, and Michael C. Hutter.
         "Selecting relevant descriptors for classification by bayesian estimates:
         a comparison with decision trees and support vector machines approaches for disparate data sets"
-        Molecular informatics 30.10 (2011): 885-895.
+        Molecular Informatics 30.10 (2011): 885-895.
         <https://doi.org/10.1002/minf.201100069>`_
 
     .. [2] `Cheng, Feixiong, et al.
@@ -919,6 +920,7 @@ def load_cyp2d6_veith(
     including the substantia nigra [1]_ [2]_.
 
     All CYP P450 Veith subsets:
+
         - :py:func:`load_cyp1a2_veith`
         - :py:func:`load_cyp2c9_veith`
         - :py:func:`load_cyp2c19_veith`
@@ -960,7 +962,7 @@ def load_cyp2d6_veith(
     ----------
     .. [1] `Veith, Henrike et al.
         "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
-        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        Nature Biotechnology vol. 27,11 (2009): 1050-5.
         <https://doi.org/10.1038/nbt.1581>`_
 
     .. [2] `Huang, Kexin, et al.
@@ -1000,6 +1002,7 @@ def load_cyp3a4_substrate_carbonmangels(
     The task is to predict whether a molecule is a substrate to CYP3A4.
 
     All Substrate Carbon-Mangels subsets:
+
         - :py:func:`load_cyp2c9_substrate_carbonmangels`
         - :py:func:`load_cyp2d6_substrate_carbonmangels`
         - :py:func:`load_cyp3a4_substrate_carbonmangels`
@@ -1040,7 +1043,7 @@ def load_cyp3a4_substrate_carbonmangels(
     .. [1] `Carbon‐Mangels, Miriam, and Michael C. Hutter.
         "Selecting relevant descriptors for classification by bayesian estimates:
         a comparison with decision trees and support vector machines approaches for disparate data sets"
-        Molecular informatics 30.10 (2011): 885-895.
+        Molecular Informatics 30.10 (2011): 885-895.
         <https://doi.org/10.1002/minf.201100069>`_
 
     .. [2] `Cheng, Feixiong, et al.
@@ -1086,6 +1089,7 @@ def load_cyp3a4_veith(
     such as toxins or drugs, so that they can be removed from the body [1]_ [2]_.
 
     All CYP P450 Veith subsets:
+
         - :py:func:`load_cyp1a2_veith`
         - :py:func:`load_cyp2c9_veith`
         - :py:func:`load_cyp2c19_veith`
@@ -1127,7 +1131,7 @@ def load_cyp3a4_veith(
     ----------
     .. [1] `Veith, Henrike et al.
         "Comprehensive Characterization of Cytochrome P450 Isozyme Selectivity across Chemical Libraries"
-        Nature biotechnology vol. 27,11 (2009): 1050-5.
+        Nature Biotechnology vol. 27,11 (2009): 1050-5.
         <https://doi.org/10.1038/nbt.1581>`_
 
     .. [2] `Huang, Kexin, et al.
