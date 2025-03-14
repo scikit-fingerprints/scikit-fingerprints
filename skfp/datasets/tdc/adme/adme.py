@@ -36,7 +36,9 @@ def load_b3db_classification(
         - :math:`C_{blood}` is the concentration in the blood.
 
     The molecules with :math:`\log BB` greater than 0 make up the positive class.
+
     This dataset should not be confused with :py:func:`~skfp.datasets.moleculenet.load_bbbp`
+
     See also :py:func:`load_b3db_regression`
 
     This dataset is a part of "distribution" subset of ADME tasks.
@@ -119,6 +121,7 @@ def load_b3db_regression(
         - :math:`C_{blood}` is the concentration in the blood.
 
     This dataset should not be confused with :py:func:`~skfp.datasets.moleculenet.load_bbbp`
+
     See also :py:func:`load_b3db_classification`
 
     This dataset is a part of "distribution" subset of ADME tasks.
@@ -1303,7 +1306,9 @@ def load_hlm(
     Liver microsomal stability or hepatic metabolic stability
     is an important property considered for the screening of drug candidates.
     The task is to determine whether the drug is stable or not [1]_ [2]_.
-    This subset relates to human liver microsomes. See also :py:func:`load_rlm`
+    This subset relates to human liver microsomes.
+
+    See also :py:func:`load_rlm`
 
     ==================   =================
     Tasks                                1
@@ -1665,7 +1670,9 @@ def load_rlm(
     Liver microsomal stability or hepatic metabolic stability
     is an important property considered for the screening of drug candidates.
     The task is to determine whether the drug is stable or not [1]_ [2]_.
-    This subset relates to rat liver microsomes. See also :py:func:`load_rlm`
+    This subset relates to rat liver microsomes.
+
+    See also :py:func:`load_rlm`
 
     ==================   =================
     Tasks                                1
