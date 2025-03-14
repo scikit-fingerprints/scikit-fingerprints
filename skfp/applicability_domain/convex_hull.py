@@ -19,23 +19,23 @@ class ConvexHullADChecker(BaseADChecker):
     set points. Formally, for training set of vectors :math:`X={x_1,x_2,...,x_n}` and query
     point `q`, we check whether a problem has any solution:
 
-    - variables :math:`\\lambda_i` for :math:`i=1,...,n`
+    - variables :math:`\lambda_i` for :math:`i=1,...,n`
     - we only check if feasible solution exists, setting coefficients :math:`c = 0`
       (all-zeros vector of length :math:`n`)
     - convex combination conditions:
 
-      - :math:`q = \\lambda_1 x_1 + ... + \\lambda_n x_n`
-      - :math:`\\lambda_1 + ... + \\lambda_n = 1`
-      - :math:`\\lambda_i \\geq 0` for all :math:`i`
+      - :math:`q = \lambda_1 x_1 + ... + \lambda_n x_n`
+      - :math:`\lambda_1 + ... + \lambda_n = 1`
+      - :math:`\lambda_i \geq 0` for all :math:`i=1,...,n`
 
     - linear programming formulation:
 
     .. math::
 
-        \\min_\\lambda \\ & c^T \\lambda \\
-        \\mbox{such that} \\ & X \\lambda = q,\\
-        & 1^T \\lambda = 1,\\
-        & \\lambda_i \\geq 0 \text{for all} i=1,...,n
+        \min_\lambda \ & c^T \lambda \\
+        \mbox{such that} \ & X \lambda = q,\\
+        & 1^T \lambda = 1,\\
+        & \lambda_i \geq 0 \text{  for all  } i=1,...,n
 
     Typically, physicochemical properties (continous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
@@ -61,10 +61,9 @@ class ConvexHullADChecker(BaseADChecker):
 
     References
     ----------
-    .. [3] `StackOverflow discussion - "What's an efficient way to find if a point
+    .. [1] `StackOverflow discussion - "What's an efficient way to find if a point
         lies in the convex hull of a point cloud?"
         <https://stackoverflow.com/a/43564754/9472066>`_
-
 
     Examples
     --------
