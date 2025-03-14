@@ -22,7 +22,7 @@ def load_bace(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the BACE dataset.
+    Load the BACE dataset.
 
     The task is to predict binding results for a set of inhibitors of human
     β-secretase 1 (BACE-1) [1]_ [2]_.

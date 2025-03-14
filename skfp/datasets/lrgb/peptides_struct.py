@@ -27,7 +27,7 @@ def load_peptides_struct(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Peptides-struct dataset.
+    Load the Peptides-struct dataset.
 
     The task is to predict structural properties (real values) for a set
     of peptides (small proteins) [1]_.

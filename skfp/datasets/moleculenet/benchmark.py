@@ -52,7 +52,7 @@ def load_moleculenet_benchmark(
     Iterator[tuple[str, pd.DataFrame]], Iterator[tuple[str, list[str], np.ndarray]]
 ]:
     """
-    Load and return the MoleculeNet benchmark datasets.
+    Load the MoleculeNet benchmark datasets.
 
     Datasets have varied molecular property prediction tasks: regression, single-task,
     and multitask classification. Scaffold split is recommended for all of them,
@@ -170,7 +170,7 @@ def load_ogb_splits(
     verbose: bool = False,
 ) -> Union[tuple[list[int], list[int], list[int]], dict[str, list[int]]]:
     """
-    Load and return the MoleculeNet dataset splits from Open Graph Benchmark (OGB).
+    Load the MoleculeNet dataset splits from Open Graph Benchmark (OGB).
 
     OGB [1]_ uses precomputed scaffold split with 80/10/10% split between train/valid/test
     subsets. Test set consists of the smallest scaffold groups, and follows MoleculeNet

@@ -22,7 +22,7 @@ def load_bbbp(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the BBBP (Blood-Brain Barrier Penetration) dataset.
+    Load the BBBP (Blood-Brain Barrier Penetration) dataset.
 
     The task is to predict blood-brain barrier penetration (barrier permeability)
     of small drug-like molecules [1]_ [2]_.

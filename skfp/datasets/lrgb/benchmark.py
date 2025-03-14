@@ -32,7 +32,7 @@ def load_lrgb_mol_benchmark(
     Iterator[tuple[str, pd.DataFrame]], Iterator[tuple[str, list[str], np.ndarray]]
 ]:
     """
-    Load and return the LRGB molecular datasets.
+    Load the LRGB molecular datasets.
 
     There are two datasets: Peptides-func (binary multitask classification) and
     Peptides-struct (multitask regression). Stratified random split is recommended for
@@ -127,7 +127,7 @@ def load_lrgb_mol_splits(
     verbose: bool = False,
 ) -> Union[tuple[list[int], list[int], list[int]], dict[str, list[int]]]:
     """
-    Load and return the official LRGB splits for molecular datasets.
+    Load the official LRGB splits for molecular datasets.
 
     Long Range Graph Benchmark (LRGB) [1]_ uses precomputed stratified random split for
     both Peptides-func and Peptides-struct datasets.

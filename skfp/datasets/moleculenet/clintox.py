@@ -22,7 +22,7 @@ def load_clintox(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     r"""
-    Load and return the ClinTox dataset.
+    Load the ClinTox dataset.
 
     The task is to predict drug approval viability, by predicting clinical trial
     toxicity and final FDA approval status [1]_. Both tasks are binary.

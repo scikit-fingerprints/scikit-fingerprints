@@ -22,7 +22,7 @@ def load_muv(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the MUV (Maximum Unbiased Validation) dataset.
+    Load the MUV (Maximum Unbiased Validation) dataset.
 
     The task is to predict 17 targets designed for validation of virtual screening
     techniques, based on PubChem BioAssays. All tasks are binary.

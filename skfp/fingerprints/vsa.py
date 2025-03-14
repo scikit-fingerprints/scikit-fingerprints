@@ -170,15 +170,9 @@ class VSAFingerprint(BaseFingerprintTransformer):
             VSA feature names.
         """
         from rdkit.Chem.EState.EState_VSA import estateBins as EState_bins
-        from rdkit.Chem.MolSurf import (
-            chgBins as PEOE_bins,
-        )
-        from rdkit.Chem.MolSurf import (
-            logpBins as SlogP_bins,
-        )
-        from rdkit.Chem.MolSurf import (
-            mrBins as SMR_bins,
-        )
+        from rdkit.Chem.MolSurf import chgBins as PEOE_bins
+        from rdkit.Chem.MolSurf import logpBins as SlogP_bins
+        from rdkit.Chem.MolSurf import mrBins as SMR_bins
 
         group_feature_names = {}
         for group_name, bins in [
