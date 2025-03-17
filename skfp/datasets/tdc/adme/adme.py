@@ -1428,8 +1428,8 @@ def load_pampa_approved_drugs(
     """
     df = fetch_dataset(
         data_dir,
-        dataset_name="TDC_approved_pampa_ncats",
-        filename="tdc_approved_pampa_ncats.csv",
+        dataset_name="TDC_pampa_approved_drugs",
+        filename="tdc_pampa_approved_drugs.csv",
         verbose=verbose,
     )
     return df if as_frame else get_mol_strings_and_labels(df)

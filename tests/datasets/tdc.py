@@ -50,7 +50,6 @@ from tests.datasets.test_utils import run_basic_dataset_checks
 def get_dataset_names() -> list[str]:
     return [
         # adme
-        "approved_pampa_ncats",
         "b3db_classification",
         "b3db_regression",
         "bioavailability_ma",
@@ -68,6 +67,7 @@ def get_dataset_names() -> list[str]:
         "half_life_obach",
         "hia_hou",
         "hlm",
+        "pampa_approved_drugs",
         "pampa_ncats",
         "pgp_broccatelli",
         "ppbr_az",
@@ -99,14 +99,14 @@ def test_load_tdc_benchmark():
 
 
 def test_load_tdc_benchmark_subset():
-    dataset_names = ["approved_pampa_ncats", "sarscov2_3clpro_diamond", "ames"]
+    dataset_names = ["pampa_approved_drugs", "sarscov2_3clpro_diamond", "ames"]
     benchmark_full = load_tdc_benchmark(subset=dataset_names, as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
     assert benchmark_names == dataset_names
 
 
 def test_load_tdc_benchmark_wrong_subset():
-    dataset_names = ["approved_pampa_ncats", "Nonexistent"]
+    dataset_names = ["pampa_approved_drugs", "Nonexistent"]
     with pytest.raises(ValueError) as exc_info:
         load_tdc_benchmark(subset=dataset_names, as_frames=True)
 
@@ -114,7 +114,7 @@ def test_load_tdc_benchmark_wrong_subset():
 
 
 @pytest.mark.parametrize("dataset_name", get_dataset_names())
-def test_load_ogb_splits(dataset_name):
+def test_load_tdc_splits(dataset_name):
     train, valid, test = load_tdc_splits(dataset_name)
     assert isinstance(train, list)
     assert len(train) > 0
@@ -158,8 +158,8 @@ def test_load_ogb_splits_as_dict(dataset_name):
         ("ld50_zhu", 7385),
         ("solubility_aqsoldb", 9982),
         ("caco2_wang", 910),
+        ("pampa_approved_drugs", 142),
         ("pampa_ncats", 2034),
-        ("approved_pampa_ncats", 142),
         ("hia_hou", 578),
         ("pgp_broccatelli", 1218),
         ("bioavailability_ma", 640),
@@ -228,14 +228,14 @@ def test_load_tdc_splits_nonexistent_dataset():
         ("ld50_zhu", load_ld50_zhu, 7385, 1, "regression"),
         ("solubility_aqsoldb", load_solubility_aqsoldb, 9982, 1, "regression"),
         ("caco2_wang", load_caco2_wang, 910, 1, "regression"),
-        ("pampa_ncats", load_pampa_ncats, 2034, 1, "binary_classification"),
         (
-            "approved_pampa_ncats",
+            "pampa_approved_drugs",
             load_pampa_approved_drugs,
             142,
             1,
             "binary_classification",
         ),
+        ("pampa_ncats", load_pampa_ncats, 2034, 1, "binary_classification"),
         ("hia_hou", load_hia_hou, 578, 1, "binary_classification"),
         ("pgp_broccatelli", load_pgp_broccatelli, 1218, 1, "binary_classification"),
         (
