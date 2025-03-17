@@ -71,7 +71,7 @@ def load_tdc_benchmark(
     Iterator[tuple[str, pd.DataFrame]], Iterator[tuple[str, list[str], np.ndarray]]
 ]:
     """
-    Load the TDC benchmark datasets [1]_.
+    Load the TDC benchmark datasets.
 
     Datasets have varied molecular property prediction tasks.
     Scaffold split is recommended for all of them.
@@ -80,7 +80,7 @@ def load_tdc_benchmark(
     - HTS - high-throughput screening
     - Tox - toxicity
 
-    For more details, see loading functions for particular datasets.
+    For more details, see loading functions for particular datasets [1]_.
 
     Dataset names are also returned (case-sensitive).
 

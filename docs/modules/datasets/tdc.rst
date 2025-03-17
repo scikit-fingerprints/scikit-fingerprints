@@ -25,7 +25,7 @@ ADME dataset loaders
     :nosignatures:
     :toctree: generated/
 
-adme.load_b3db_classification
+    adme.load_b3db_classification
     adme.load_b3db_regression
     adme.load_bioavailability_ma
     adme.load_caco2_wang
