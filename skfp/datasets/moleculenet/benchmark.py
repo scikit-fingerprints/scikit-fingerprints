@@ -229,7 +229,7 @@ def load_ogb_splits(
 
 
 def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
-    # transform given subset (e.g. "regression") into list of dataset names
+    # map given subset (e.g. "regression") to list of dataset names
     # for appropriate MoleculeNet datasets
 
     regression_names = ["ESOL", "FreeSolv", "Lipophilicity"]

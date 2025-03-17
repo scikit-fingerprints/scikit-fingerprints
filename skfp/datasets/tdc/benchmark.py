@@ -71,12 +71,24 @@ def load_tdc_benchmark(
     Iterator[tuple[str, pd.DataFrame]], Iterator[tuple[str, list[str], np.ndarray]]
 ]:
     """
+    Load the TDC benchmark datasets [1]_.
+
+    Datasets have varied molecular property prediction tasks.
+    Scaffold split is recommended for all of them.
+    The tasks are split into 3 different groups:
+        - ADME (absorbtion, distribution, metabolism, excertion)
+        - HTS - high-throughput screening
+        - Tox - toxicity
+    For more details, see loading functions for particular datasets.
+
+    Dataset names are also returned (case-sensitive).
 
     Parameters
     ----------
-    subset : {None, "adme", "hts", "tox"} or list of strings
+    subset : {None, "adme", "hts", "tox"}, default=None
         If ``None``, returns all datasets. String loads only a given subset of all
-        datasets. List of strings loads only datasets with given names.
+        datasets. Alternatively the subset can contain names of individual datasets.
+        List of strings loads only datasets with given names.
 
     data_dir : {None, str, path-like}, default=None
         Path to the root data directory. If ``None``, currently set scikit-learn directory
@@ -97,11 +109,14 @@ def load_tdc_benchmark(
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
 
+    .. [1] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     dataset_names = _subset_to_dataset_names(subset)
 
     dataset_name_to_func = {
-        "approved_pampa_ncats": load_pampa_approved_drugs,
         "b3db_classification": load_b3db_classification,
         "b3db_regression": load_b3db_regression,
         "bioavailability_ma": load_bioavailability_ma,
@@ -119,6 +134,7 @@ def load_tdc_benchmark(
         "half_life_obach": load_half_life_obach,
         "hia_hou": load_hia_hou,
         "hlm": load_hlm,
+        "pampa_approved_drugs": load_pampa_approved_drugs,
         "pampa_ncats": load_pampa_ncats,
         "pgp_broccatelli": load_pgp_broccatelli,
         "ppbr_az": load_ppbr_az,
@@ -164,7 +180,6 @@ def load_tdc_benchmark(
         "dataset_name": [
             StrOptions(
                 {
-                    "approved_pampa_ncats",
                     "b3db_classification",
                     "b3db_regression",
                     "bioavailability_ma",
@@ -183,6 +198,7 @@ def load_tdc_benchmark(
                     "hia_hou",
                     "hlm",
                     "pampa_ncats",
+                    "pampa_approved_drugs",
                     "pgp_broccatelli",
                     "ppbr_az",
                     "rlm",
@@ -218,9 +234,18 @@ def load_tdc_splits(
     verbose: bool = False,
 ) -> Union[tuple[list[int], list[int], list[int]], dict[str, list[int]]]:
     """
+    Load pre-generated dataset splits from the TDC benchmark.
+
+    TDC [1]_ uses precomputed scaffold split with 80/10/10% split between train/valid/test
+    subsets. Those splits are widely used in literature and allow for
+    a realistic estimate of model performance on new data.
+
+    Dataset names here are the same as returned by `load_tdc_benchmark` function,
+    and are case-sensitive.
+
     Parameters
     ----------
-    dataset_name
+    dataset_name : str
         Name of the dataset to loads splits for.
 
     data_dir : {None, str, path-like}, default=None
@@ -242,6 +267,10 @@ def load_tdc_splits(
         - dictionary with "train", "valid" and "test" keys, and values as lists with
         splits indexes
 
+    .. [1] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
     """
     splits = fetch_splits(
         data_dir,
@@ -256,11 +285,10 @@ def load_tdc_splits(
 
 
 def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
-    # transform given subset (e.g. "adme", "hts" or "tox") into list of dataset names
+    # map given subset (e.g. "adme", "hts" or "tox") to list of dataset names
     # for appropriate TDC datasets
 
     adme_names = [
-        "approved_pampa_ncats",
         "b3db_classification",
         "b3db_regression",
         "bioavailability_ma",
@@ -278,6 +306,7 @@ def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
         "half_life_obach",
         "hia_hou",
         "hlm",
+        "pampa_approved_drugs",
         "pampa_ncats",
         "pgp_broccatelli",
         "ppbr_az",
@@ -319,7 +348,6 @@ def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
             if name not in all_dataset_names:
                 raise ValueError(
                     f"Dataset name '{name}' not recognized among TDC datasets"
-                    f"Some TDC datasets can be imported from MoleculeNet benchmark"
                 )
         dataset_names = subset
     else:

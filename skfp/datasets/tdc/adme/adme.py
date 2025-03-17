@@ -32,7 +32,6 @@ def load_b3db_classification(
         \log BB = \log \frac{C_{brain}}{C_{blood}}
 
     Where :math:`C_{brain}` and :math:`C_{blood}` are concentrations in brain and blood, respectively.
-
     The molecules with :math:`\log BB` greater than 0 make up the positive class.
 
     This dataset should not be confused with BBBP dataset from MoleculeNet.
@@ -115,7 +114,6 @@ def load_b3db_regression(
         \log BB = \log \frac{C_{brain}}{C_{blood}}
 
     Where :math:`C_{brain}` and :math:`C_{blood}` are concentrations in brain and blood, respectively.
-
     This dataset should not be confused with BBBP dataset from MoleculeNet.
 
     See also :py:func:`load_b3db_classification`
@@ -188,8 +186,8 @@ def load_bioavailability_ma(
     """
     Load the Bioavailability dataset.
 
-    The task is to predict the activity of oral bioavailability.
-    Bioavailability is defined as "the rate and extent to which the active ingredient or active moiety
+    The task is to predict the oral bioavailability.
+    It is defined as "the rate and extent to which the active ingredient or active moiety
     is absorbed from a drug product and becomes available at the site of action" [1]_ [2]_.
 
     This dataset is a part of "absorption" subset of ADME tasks.
@@ -1305,7 +1303,7 @@ def load_hlm(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the human subset of Human and Rat Liver Microsomal Stability dataset.
+    Load the human subset of Human/Rat Liver Microsomal Stability dataset.
 
     Liver microsomal stability or hepatic metabolic stability
     is an important property considered for the screening of drug candidates.
@@ -1451,7 +1449,7 @@ def load_pampa_ncats(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the NCATS subset of PAMPA  dataset.
+    Load the NCATS subset of PAMPA dataset.
 
     PAMPA (parallel artificial membrane permeability assay) is an assay
     to evaluate drug permeability across the cellular membrane.
@@ -1669,7 +1667,7 @@ def load_rlm(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load the rat subset of Human and Rat Liver Microsomal Stability dataset.
+    Load the rat subset of Human/Rat Liver Microsomal Stability dataset.
 
     Liver microsomal stability or hepatic metabolic stability
     is an important property considered for the screening of drug candidates.

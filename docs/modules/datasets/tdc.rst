@@ -25,17 +25,16 @@ ADME dataset loaders
     :nosignatures:
     :toctree: generated/
 
-    adme.load_pampa_approved_drugs
-    adme.load_b3db_classification
+adme.load_b3db_classification
     adme.load_b3db_regression
     adme.load_bioavailability_ma
     adme.load_caco2_wang
     adme.load_clearance_hepatocyte_az
     adme.load_clearance_microsome_az
     adme.load_cyp1a2_veith
+    adme.load_cyp2c19_veith
     adme.load_cyp2c9_substrate_carbonmangels
     adme.load_cyp2c9_veith
-    adme.load_cyp2c19_veith
     adme.load_cyp2d6_substrate_carbonmangels
     adme.load_cyp2d6_veith
     adme.load_cyp3a4_substrate_carbonmangels
@@ -43,6 +42,7 @@ ADME dataset loaders
     adme.load_half_life_obach
     adme.load_hia_hou
     adme.load_hlm
+    adme.load_pampa_approved_drugs
     adme.load_pampa_ncats
     adme.load_pgp_broccatelli
     adme.load_ppbr_az
