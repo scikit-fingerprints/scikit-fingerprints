@@ -109,6 +109,7 @@ def fraggle_distance(
     by subtracting similarity value from 1, using the formula:
 
     .. math::
+
         dist(a, b) = 1 - sim(a, b)
 
     See also :py:func:`fraggle_binary_similarity`.
@@ -132,7 +133,7 @@ def fraggle_distance(
     Returns
     -------
     similarity : float
-        Fraggle similarity between ``mol_query`` and ``mol_ref``.
+        Fraggle distance between ``mol_query`` and ``mol_ref``.
 
     References
     ----------

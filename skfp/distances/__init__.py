@@ -48,6 +48,12 @@ from .mcconnaughey import (
     mcconnaughey_binary_distance,
     mcconnaughey_binary_similarity,
 )
+from .mcs import (
+    bulk_mcs_distance,
+    bulk_mcs_similarity,
+    mcs_distance,
+    mcs_similarity,
+)
 from .rand import (
     bulk_rand_binary_distance,
     bulk_rand_binary_similarity,
