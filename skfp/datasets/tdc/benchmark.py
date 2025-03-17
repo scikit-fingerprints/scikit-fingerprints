@@ -76,9 +76,10 @@ def load_tdc_benchmark(
     Datasets have varied molecular property prediction tasks.
     Scaffold split is recommended for all of them.
     The tasks are split into 3 different groups:
-        - ADME (absorbtion, distribution, metabolism, excertion)
-        - HTS - high-throughput screening
-        - Tox - toxicity
+    - ADME (absorbtion, distribution, metabolism, excertion)
+    - HTS - high-throughput screening
+    - Tox - toxicity
+
     For more details, see loading functions for particular datasets.
 
     Dataset names are also returned (case-sensitive).
@@ -109,6 +110,8 @@ def load_tdc_benchmark(
         - Pandas DataFrame with columns: "SMILES", "label"
         - tuple of: list of strings (SMILES), NumPy array (labels)
 
+    References
+    ----------
     .. [1] `Huang, Kexin, et al.
         "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
         Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
@@ -267,6 +270,8 @@ def load_tdc_splits(
         - dictionary with "train", "valid" and "test" keys, and values as lists with
         splits indexes
 
+    References
+    ----------
     .. [1] `Huang, Kexin, et al.
         "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
         Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
