@@ -279,7 +279,7 @@ def bulk_mcs_distance(
     >>> dist = bulk_mcs_distance(mols)
     >>> dist
     array([[0.        , 0.84210526],
-           [0.84210526, 0.        ]]
+           [0.84210526, 0.        ]])
     """
     if Y is None:
         Y = X
