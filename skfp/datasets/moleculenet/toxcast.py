@@ -22,7 +22,7 @@ def load_toxcast(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the ToxCast dataset.
+    Load the ToxCast dataset.
 
     The task is to predict 617 toxicity targets from a large library of compounds
     based on in vitro high-throughput screening. All tasks are binary.

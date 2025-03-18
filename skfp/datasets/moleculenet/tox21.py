@@ -22,7 +22,7 @@ def load_tox21(
     verbose: bool = False,
 ) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
     """
-    Load and return the Tox21 dataset.
+    Load the Tox21 dataset.
 
     The task is to predict 12 toxicity targets, including nuclear receptors and
     stress response pathways. All tasks are binary.
