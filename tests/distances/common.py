@@ -16,8 +16,9 @@ def _get_distance_functions() -> list[Callable]:
         for name, obj in inspect.getmembers(skfp.distances)
         if inspect.isfunction(obj)
         and "distance" in name
-        # omit Fraggle similarity, since it doesn't operate on vectors
+        # omit Fraggle and MCS similarities, since they don't operate on vectors
         and "fraggle" not in name
+        and "mcs" not in name
         and "bulk" not in name
     ]
 
