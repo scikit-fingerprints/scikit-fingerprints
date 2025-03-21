@@ -144,6 +144,7 @@ Examples and tutorials:
 5. [Hyperparameter tuning](examples/05_hyperparameter_tuning.ipynb)
 6. [Dataset splits](examples/06_dataset_splits.ipynb)
 7. [Datasets and benchmarking](examples/07_datasets_and_benchmarking.ipynb)
+8. [Similarity and distance metrics](examples/08_similarity_and_distance_metrics.ipynb)
 
 ## Project overview
 
