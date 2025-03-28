@@ -341,13 +341,13 @@ def load_clearance_hepatocyte_az(
 
     This dataset is a part of "excretion" subset of ADME tasks.
 
-    ==================   =================
-    Tasks                                1
-    Task type                   regression
-    Total samples                     1213
-    Recommended split             scaffold
-    Recommended metric            SPEARMAN
-    ==================   =================
+    ==================  ====================
+    Tasks                                  1
+    Task type                     regression
+    Total samples                       1213
+    Recommended split               scaffold
+    Recommended metric  Spearman correlation
+    ==================  ====================
 
     Parameters
     ----------
@@ -423,13 +423,13 @@ def load_clearance_microsome_az(
 
     This dataset is a part of "excretion" subset of ADME tasks.
 
-    ==================   =================
-    Tasks                                1
-    Task type                   regression
-    Total samples                     1102
-    Recommended split             scaffold
-    Recommended metric            SPEARMAN
-    ==================   =================
+    ==================  ====================
+    Tasks                                  1
+    Task type                     regression
+    Total samples                       1102
+    Recommended split               scaffold
+    Recommended metric  Spearman correlation
+    ==================  ====================
 
     Parameters
     ----------
@@ -1168,13 +1168,13 @@ def load_half_life_obach(
 
     This dataset is a part of "excretion" subset of ADME tasks.
 
-    ==================   =================
-    Tasks                                1
-    Task type                   regression
-    Total samples                      667
-    Recommended split             scaffold
-    Recommended metric            SPEARMAN
-    ==================   =================
+    ==================  ====================
+    Tasks                                  1
+    Task type                     regression
+    Total samples                        667
+    Recommended split               scaffold
+    Recommended metric  Spearman correlation
+    ==================  ====================
 
     Parameters
     ----------
@@ -1819,13 +1819,13 @@ def load_vdss_lombardo(
 
     This dataset is a part of "distribution" subset of ADME tasks.
 
-    ==================   =================
-    Tasks                                1
-    Task type                   regression
-    Total samples                     1130
-    Recommended split             scaffold
-    Recommended metric            SPEARMAN
-    ==================   =================
+    ==================  ====================
+    Tasks                                  1
+    Task type                     regression
+    Total samples                       1130
+    Recommended split               scaffold
+    Recommended metric  Spearman correlation
+    ==================  ====================
 
     Parameters
     ----------
