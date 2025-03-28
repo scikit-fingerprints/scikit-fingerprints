@@ -346,7 +346,7 @@ def load_clearance_hepatocyte_az(
     Task type                   regression
     Total samples                     1213
     Recommended split             scaffold
-    Recommended metric                 MAE
+    Recommended metric            SPEARMAN
     ==================   =================
 
     Parameters
@@ -428,7 +428,7 @@ def load_clearance_microsome_az(
     Task type                   regression
     Total samples                     1102
     Recommended split             scaffold
-    Recommended metric                 MAE
+    Recommended metric            SPEARMAN
     ==================   =================
 
     Parameters
@@ -518,7 +518,7 @@ def load_cyp1a2_veith(
     Task type               classification
     Total samples                    12579
     Recommended split             scaffold
-    Recommended metric               AUROC
+    Recommended metric               AUPRC
     ==================   =================
 
     Parameters
@@ -596,7 +596,7 @@ def load_cyp2c9_substrate_carbonmangels(
     Task type               classification
     Total samples                      669
     Recommended split             scaffold
-    Recommended metric               AUROC
+    Recommended metric               AUPRC
     ==================   =================
 
     Parameters
@@ -683,7 +683,7 @@ def load_cyp2c9_veith(
     Task type               classification
     Total samples                    12092
     Recommended split             scaffold
-    Recommended metric               AUROC
+    Recommended metric               AUPRC
     ==================   =================
 
     Parameters
@@ -765,7 +765,7 @@ def load_cyp2c19_veith(
     Task type               classification
     Total samples                    12665
     Recommended split             scaffold
-    Recommended metric               AUROC
+    Recommended metric               AUPRC
     ==================   =================
 
     Parameters
@@ -844,7 +844,7 @@ def load_cyp2d6_substrate_carbonmangels(
     Task type               classification
     Total samples                      667
     Recommended split             scaffold
-    Recommended metric               AUROC
+    Recommended metric               AUPRC
     ==================   =================
 
     Parameters
@@ -932,7 +932,7 @@ def load_cyp2d6_veith(
     Task type               classification
     Total samples                    13130
     Recommended split             scaffold
-    Recommended metric               AUROC
+    Recommended metric               AUPRC
     ==================   =================
 
     Parameters
@@ -1101,7 +1101,7 @@ def load_cyp3a4_veith(
     Task type               classification
     Total samples                    12328
     Recommended split             scaffold
-    Recommended metric               AUROC
+    Recommended metric               AUPRC
     ==================   =================
 
     Parameters
@@ -1173,7 +1173,7 @@ def load_half_life_obach(
     Task type                   regression
     Total samples                      667
     Recommended split             scaffold
-    Recommended metric                 MAE
+    Recommended metric            SPEARMAN
     ==================   =================
 
     Parameters
@@ -1824,7 +1824,7 @@ def load_vdss_lombardo(
     Task type                   regression
     Total samples                     1130
     Recommended split             scaffold
-    Recommended metric                 MAE
+    Recommended metric            SPEARMAN
     ==================   =================
 
     Parameters
