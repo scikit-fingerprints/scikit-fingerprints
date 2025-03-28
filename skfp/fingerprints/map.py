@@ -20,13 +20,13 @@ class MAPFingerprint(BaseFingerprintTransformer):
     """
     MinHashed Atom Pair fingerprint (MAP).
 
-    Implementation is based on the official MAP4 paper and code [1]_ [2]_. This is a
+    Implementation is based on the MAP4 and MAP4C papers [1]_ [2]_. This is a
     hashed fingerprint, using the ideas from Atom Pair and SECFP fingerprints.
 
-    It computes fragments based on pairs of atoms, using circular
-    substructures around each atom represented with SMILES (like SECFP) and length
-    of shortest path between them (like Atom Pair), and then hashes the resulting
-    triplet using MinHash fingerprint.
+    It computes fragments based on pairs of atoms, using circular substructures
+    around each atom represented with SMILES (like SECFP) and length of shortest
+    path between them (like Atom Pair), and then hashes the resulting triplet
+    using MinHash algorithm into a resulting fingerprint.
 
     Subgraphs are created around each atom with increasing radius, starting
     with just an atom itself. It is then transformed into a canonical SMILES.
@@ -36,6 +36,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
     each radius from 1 up to the given maximal radius, the triplet is created:
     (atom 1 SMILES, shortest path length, atom 2 SMILES). They are then hashed
     using MinHash algorithm.
+
+    See also original MAP [3]_ and MAPC [4]_ implementations.
 
     Parameters
     ----------
@@ -49,6 +51,10 @@ class MAPFingerprint(BaseFingerprintTransformer):
 
     include_duplicated_shingles : bool, default=False
         Whether to include duplicated shingles in the final fingerprint.
+
+    include_chirality : bool, default=False
+        Whether to include chirality information when computing atom types. This is
+        also known as MAPC fingerprint [3]_ [4]_.
 
     count : bool, default=False
         Whether to return binary (bit) features, or their counts.
@@ -89,12 +95,19 @@ class MAPFingerprint(BaseFingerprintTransformer):
 
     References
     ----------
-    .. [1] `Alice Capecchi, Daniel Probst and Jean-Louis Reymond
+    .. [1] `Alice Capecchi, Daniel Probst, Jean-Louis Reymond
         "One molecular fingerprint to rule them all: drugs, biomolecules, and the metabolome"
         J Cheminform 12, 43 (2020)
         <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-020-00445-4>`_
 
-    .. [2] `https://github.com/reymond-group/map4`
+    .. [2] `Markus Orsi, Jean-Louis Reymond
+        "One chiral fingerprint to find them all"
+        J Cheminform 16, 53 (2024)
+        <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-024-00849-6>`_
+
+    .. [3] `https://github.com/reymond-group/map4`
+
+    .. [4] `https://github.com/markusorsi/mapchiral/tree/main`
 
     Examples
     --------
@@ -115,8 +128,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
         **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "radius": [Interval(Integral, 0, None, closed="left")],
-        "include_duplicated_shingles": [bool],
-        "count": [bool],
+        "include_duplicated_shingles": ["boolean"],
+        "include_chirality": ["boolean"],
     }
 
     def __init__(
@@ -124,6 +137,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         fp_size: int = 1024,
         radius: int = 2,
         include_duplicated_shingles: bool = False,
+        include_chirality: bool = False,
         count: bool = False,
         sparse: bool = False,
         n_jobs: Optional[int] = None,
@@ -133,6 +147,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
     ):
         super().__init__(
             n_features_out=fp_size,
+            count=count,
             sparse=sparse,
             n_jobs=n_jobs,
             batch_size=batch_size,
@@ -142,7 +157,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         self.fp_size = fp_size
         self.radius = radius
         self.include_duplicated_shingles = include_duplicated_shingles
-        self.count = count
+        self.include_chirality = include_chirality
 
     def transform(
         self, X: Sequence[Union[str, Mol]], copy: bool = False
@@ -177,6 +192,11 @@ class MAPFingerprint(BaseFingerprintTransformer):
         return csr_array(X) if self.sparse else np.array(X)
 
     def _calculate_single_mol_fingerprint(self, mol: Mol) -> np.ndarray:
+        from rdkit.Chem.rdCIPLabeler import AssignCIPLabels
+
+        if self.include_chirality:
+            AssignCIPLabels(mol)
+
         atoms_envs = self._get_atom_envs(mol)
         shinglings = self._get_atom_pair_shingles(mol, atoms_envs)
 
@@ -189,8 +209,30 @@ class MAPFingerprint(BaseFingerprintTransformer):
                 folded[hashed % self.fp_size] = 1
         return folded
 
-    @classmethod
-    def _find_env(cls, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
+    def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
+        from rdkit.Chem import FindMolChiralCenters
+
+        # for each atom get its environment, i.e. radius-hop neighborhood.
+        atom_envs: dict[int, list[Optional[str]]] = defaultdict(list)
+
+        for atom in mol.GetAtoms():
+            atom_idx = atom.GetIdx()
+            for radius in range(1, self.radius + 1):
+                atom_env = self._find_env(mol, atom_idx, radius)
+                atom_envs[atom_idx].append(atom_env)
+
+        # in chiral MAP, Cahn-Ingold-Prelog (CIP) descriptor between $ signs replaces
+        # the first (chiral center) atom identifier for largest radius in SMILES string
+        if self.include_chirality:
+            chiral_centers = FindMolChiralCenters(mol, includeUnassigned=True)
+            for atom_idx, cip_label in chiral_centers:
+                max_radius_smiles = atom_envs[atom_idx][-1]
+                if max_radius_smiles:
+                    atom_envs[atom_idx][-1] = f"${cip_label}${max_radius_smiles[1:]}"
+
+        return atom_envs
+
+    def _find_env(self, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
         # get SMILES of atom environment at given radius
         atom_identifiers_within_radius: list[int] = FindAtomEnvironmentOfRadiusN(
             mol=mol, radius=radius, rootedAtAtom=atom_identifier
@@ -203,25 +245,18 @@ class MAPFingerprint(BaseFingerprintTransformer):
         if atom_identifier not in atom_map:
             return None
 
-        smiles = MolToSmiles(
-            sub_molecule,
-            rootedAtAtom=atom_map[atom_identifier],
-            # From the original implementation, which does not use isomeric SMILES.
-            isomericSmiles=False,
-        )
-        return smiles
+        if self.include_chirality:
+            smiles = MolToSmiles(mol, isomericSmiles=True, canonical=True)
+            # preserve E/Z isomerism, remove chirality
+            smiles = smiles.replace("[C@H]", "C").replace("[C@@H]", "C")
+        else:
+            smiles = MolToSmiles(
+                sub_molecule,
+                rootedAtAtom=atom_map[atom_identifier],
+                isomericSmiles=False,  # following original MAP code
+            )
 
-    def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
-        """
-        For each atom get its environment, i.e. radius-hop neighborhood.
-        """
-        atoms_env: dict[int, list[Optional[str]]] = defaultdict(list)
-        for atom in mol.GetAtoms():
-            atom_identifier = atom.GetIdx()
-            for radius in range(1, self.radius + 1):
-                atom_env = MAPFingerprint._find_env(mol, atom_identifier, radius)
-                atoms_env[atom_identifier].append(atom_env)
-        return atoms_env
+        return smiles
 
     def _get_atom_pair_shingles(self, mol: Mol, atoms_envs: dict) -> set[bytes]:
         # get a list of atom shingles as SMILES, i.e. circular structures

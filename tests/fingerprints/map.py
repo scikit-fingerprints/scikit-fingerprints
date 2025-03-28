@@ -126,3 +126,9 @@ def test_map_sparse_raw_hashes_fingerprint(smallest_smiles_list, smallest_mols_l
     assert np.array_equal(X_skfp.data, X_map.data)
     assert X_skfp.shape == (len(smallest_smiles_list), map_fp.fp_size)
     assert np.issubdtype(X_skfp.dtype, np.integer)
+
+
+def test_map_chirality(smallest_mols_list):
+    # smoke test, this should not throw an error
+    map_fp = MAPFingerprint(include_chirality=True, n_jobs=-1)
+    map_fp.transform(smallest_mols_list)
