@@ -173,10 +173,10 @@ def load_lrgb_mol_dataset(
 
     References
     ----------
-    .. [1] `Zhenqin Wu et al.
-        "MoleculeNet: a benchmark for molecular machine learning"
-        Chem. Sci., 2018,9, 513-530
-        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+    .. [1] `Dwivedi, Vijay Prakash, et al.
+        "Long Range Graph Benchmark"
+        Advances in Neural Information Processing Systems 35 (2022): 22326-22340
+        <https://proceedings.neurips.cc/paper_files/paper/2022/hash/8c3c666820ea055a77726d66fc7d447f-Abstract-Datasets_and_Benchmarks.html>`_
 
     Examples
     --------

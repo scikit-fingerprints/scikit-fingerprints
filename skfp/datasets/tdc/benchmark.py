@@ -214,7 +214,7 @@ def load_tdc_benchmark(
 
     Parameters
     ----------
-    subset : {None, "ADME", "HTX", "Toxicity"}, default=None
+    subset : {None, "ADME", "HTS", "Toxicity"}, default=None
         If ``None``, returns all datasets. String loads only a given subset of all
         datasets. Alternatively the subset can contain names of individual datasets.
         List of strings loads only datasets with given names.
@@ -395,7 +395,7 @@ def load_tdc_splits(
 
 
 def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
-    # map given subset (e.g. "ADME", "HTX" or "Toxicity") to list of dataset names
+    # map given subset (e.g. "ADME", "HTS" or "Toxicity") to list of dataset names
     # for appropriate TDC datasets
 
     adme_names = [
