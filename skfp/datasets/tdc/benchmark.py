@@ -157,7 +157,7 @@ def load_tdc_benchmark(
     """
     Load the TDC benchmark datasets.
 
-    Datasets have varied molecular property prediction tasks. Scaffold split is
+    TDC [1]_ datasets are varied molecular property prediction tasks. Scaffold split is
     recommended for all of them. The tasks are split into 3 different groups:
 
     - ADME - absorbtion, distribution, metabolism, excertion
