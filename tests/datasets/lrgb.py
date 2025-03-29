@@ -2,6 +2,7 @@ import pytest
 
 from skfp.datasets.lrgb import (
     load_lrgb_mol_benchmark,
+    load_lrgb_mol_dataset,
     load_lrgb_mol_splits,
     load_peptides_func,
     load_peptides_struct,
@@ -74,7 +75,8 @@ def test_load_dataset_smiles(
     dataset_name, load_func, expected_length, num_tasks, task_type
 ):
     smiles_list, y = load_func()
-    df = load_func(as_frame=True)
+    # load with load_lrgb_mol_dataset, to test it simultaneously
+    df = load_lrgb_mol_dataset(dataset_name, as_frame=True)
     run_basic_dataset_checks(
         smiles_list,
         y,

@@ -28,6 +28,7 @@ from skfp.datasets.tdc.adme import (
     load_solubility_aqsoldb,
     load_vdss_lombardo,
 )
+from skfp.datasets.tdc.benchmark import TDC_DATASET_NAMES, load_tdc_dataset
 from skfp.datasets.tdc.hts import (
     load_sarscov2_3clpro_diamond,
     load_sarscov2_vitro_touret,
@@ -47,55 +48,10 @@ from skfp.datasets.tdc.tox import (
 from tests.datasets.test_utils import run_basic_dataset_checks
 
 
-def get_dataset_names() -> list[str]:
-    return [
-        # adme
-        "b3db_classification",
-        "b3db_regression",
-        "bioavailability_ma",
-        "caco2_wang",
-        "clearance_hepatocyte_az",
-        "clearance_microsome_az",
-        "cyp1a2_veith",
-        "cyp2c19_veith",
-        "cyp2c9_substrate_carbonmangels",
-        "cyp2c9_veith",
-        "cyp2d6_substrate_carbonmangels",
-        "cyp2d6_veith",
-        "cyp3a4_substrate_carbonmangels",
-        "cyp3a4_veith",
-        "half_life_obach",
-        "hia_hou",
-        "hlm",
-        "pampa_approved_drugs",
-        "pampa_ncats",
-        "pgp_broccatelli",
-        "ppbr_az",
-        "rlm",
-        "solubility_aqsoldb",
-        "vdss_lombardo",
-        # hts
-        "sarscov2_3clpro_diamond",
-        "sarscov2_vitro_touret",
-        # tdc
-        "ames",
-        "carcinogens_lagunin",
-        "dili",
-        "herg",
-        "herg_central_at_10um",
-        "herg_central_at_1um",
-        "herg_central_inhib",
-        "herg_karim",
-        "ld50_zhu",
-        "skin_reaction",
-    ]
-
-
 def test_load_tdc_benchmark():
-    dataset_names = get_dataset_names()
     benchmark_full = load_tdc_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
-    assert benchmark_names == dataset_names
+    assert benchmark_names == TDC_DATASET_NAMES
 
 
 def test_load_tdc_benchmark_subset():
@@ -113,7 +69,7 @@ def test_load_tdc_benchmark_wrong_subset():
     assert "Dataset name 'Nonexistent' not recognized" in str(exc_info)
 
 
-@pytest.mark.parametrize("dataset_name", get_dataset_names())
+@pytest.mark.parametrize("dataset_name", TDC_DATASET_NAMES)
 def test_load_tdc_splits(dataset_name):
     train, valid, test = load_tdc_splits(dataset_name)
     assert isinstance(train, list)
@@ -132,7 +88,7 @@ def test_load_tdc_splits(dataset_name):
     assert len(train) > len(test)
 
 
-@pytest.mark.parametrize("dataset_name", get_dataset_names())
+@pytest.mark.parametrize("dataset_name", TDC_DATASET_NAMES)
 def test_load_ogb_splits_as_dict(dataset_name):
     train, valid, test = load_tdc_splits(dataset_name)
     split_idxs = load_tdc_splits(dataset_name, as_dict=True)
@@ -310,7 +266,8 @@ def test_load_tdc_splits_nonexistent_dataset():
 )
 def test_load_dataset(dataset_name, load_func, expected_length, num_tasks, task_type):
     smiles_list, y = load_func()
-    df = load_func(as_frame=True)
+    # load with load_tdc_dataset, to test it simultaneously
+    df = load_tdc_dataset(dataset_name, as_frame=True)
     run_basic_dataset_checks(
         smiles_list,
         y,

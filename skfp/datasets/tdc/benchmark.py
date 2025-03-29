@@ -48,12 +48,96 @@ from .tox import (
     load_skin_reaction,
 )
 
+TDC_DATASET_NAMES = [
+    # ADME
+    "b3db_classification",
+    "b3db_regression",
+    "bioavailability_ma",
+    "caco2_wang",
+    "clearance_hepatocyte_az",
+    "clearance_microsome_az",
+    "cyp1a2_veith",
+    "cyp2c19_veith",
+    "cyp2c9_substrate_carbonmangels",
+    "cyp2c9_veith",
+    "cyp2d6_substrate_carbonmangels",
+    "cyp2d6_veith",
+    "cyp3a4_substrate_carbonmangels",
+    "cyp3a4_veith",
+    "half_life_obach",
+    "hia_hou",
+    "hlm",
+    "pampa_ncats",
+    "pampa_approved_drugs",
+    "pgp_broccatelli",
+    "ppbr_az",
+    "rlm",
+    "solubility_aqsoldb",
+    "vdss_lombardo",
+    # HTS
+    "sarscov2_3clpro_diamond",
+    "sarscov2_vitro_touret",
+    # Toxicity
+    "ames",
+    "carcinogens_lagunin",
+    "dili",
+    "herg",
+    "herg_central_at_10um",
+    "herg_central_at_1um",
+    "herg_central_inhib",
+    "herg_karim",
+    "ld50_zhu",
+    "skin_reaction",
+]
+
+TDC_DATASET_NAME_TO_LOADER_FUNC = {
+    # ADME
+    "b3db_classification": load_b3db_classification,
+    "b3db_regression": load_b3db_regression,
+    "bioavailability_ma": load_bioavailability_ma,
+    "caco2_wang": load_caco2_wang,
+    "clearance_hepatocyte_az": load_clearance_hepatocyte_az,
+    "clearance_microsome_az": load_clearance_microsome_az,
+    "cyp1a2_veith": load_cyp1a2_veith,
+    "cyp2c19_veith": load_cyp2c19_veith,
+    "cyp2c9_substrate_carbonmangels": load_cyp2c9_substrate_carbonmangels,
+    "cyp2c9_veith": load_cyp2c9_veith,
+    "cyp2d6_substrate_carbonmangels": load_cyp2d6_substrate_carbonmangels,
+    "cyp2d6_veith": load_cyp2d6_veith,
+    "cyp3a4_substrate_carbonmangels": load_cyp3a4_substrate_carbonmangels,
+    "cyp3a4_veith": load_cyp3a4_veith,
+    "half_life_obach": load_half_life_obach,
+    "hia_hou": load_hia_hou,
+    "hlm": load_hlm,
+    "pampa_approved_drugs": load_pampa_approved_drugs,
+    "pampa_ncats": load_pampa_ncats,
+    "pgp_broccatelli": load_pgp_broccatelli,
+    "ppbr_az": load_ppbr_az,
+    "rlm": load_rlm,
+    "solubility_aqsoldb": load_solubility_aqsoldb,
+    "vdss_lombardo": load_vdss_lombardo,
+    # HTS
+    "sarscov2_3clpro_diamond": load_sarscov2_3clpro_diamond,
+    "sarscov2_vitro_touret": load_sarscov2_vitro_touret,
+    # Toxicity
+    "ames": load_ames,
+    "carcinogens_lagunin": load_carcinogens_lagunin,
+    "dili": load_dili,
+    "herg": load_herg,
+    "herg_central_at_10um": load_herg_central_at_10um,
+    "herg_central_at_1um": load_herg_central_at_1um,
+    "herg_central_inhib": load_herg_central_inhib,
+    "herg_karim": load_herg_karim,
+    "ld50_zhu": load_ld50_zhu,
+    "skin_reaction": load_skin_reaction,
+}
+
 
 @validate_params(
     {
         "subset": [
             None,
-            StrOptions({"adme", "hts", "tox"}),
+            StrOptions({"ADME", "HTS", "Toxicity"}),
             list,
         ],
         "data_dir": [None, str, os.PathLike],
@@ -73,20 +157,64 @@ def load_tdc_benchmark(
     """
     Load the TDC benchmark datasets.
 
-    Datasets have varied molecular property prediction tasks.
-    Scaffold split is recommended for all of them.
-    The tasks are split into 3 different groups:
-    - ADME (absorbtion, distribution, metabolism, excertion)
+    Datasets have varied molecular property prediction tasks. Scaffold split is
+    recommended for all of them. The tasks are split into 3 different groups:
+
+    - ADME - absorbtion, distribution, metabolism, excertion
     - HTS - high-throughput screening
-    - Tox - toxicity
+    - Toxicity - toxicity
 
-    For more details, see loading functions for particular datasets [1]_.
+    For more details, see loading functions for particular datasets. Allowed individual
+    dataset names are listed below. Dataset names are also returned (case-sensitive).
 
-    Dataset names are also returned (case-sensitive).
+    ADME group:
+
+    - "b3db_classification"
+    - "b3db_regression"
+    - "bioavailability_ma"
+    - "caco2_wang"
+    - "clearance_hepatocyte_az"
+    - "clearance_microsome_az"
+    - "cyp1a2_veith"
+    - "cyp2c19_veith"
+    - "cyp2c9_substrate_carbonmangels"
+    - "cyp2c9_veith"
+    - "cyp2d6_substrate_carbonmangels"
+    - "cyp2d6_veith"
+    - "cyp3a4_substrate_carbonmangels"
+    - "cyp3a4_veith"
+    - "half_life_obach"
+    - "hia_hou"
+    - "hlm"
+    - "pampa_ncats"
+    - "pampa_approved_drugs"
+    - "pgp_broccatelli"
+    - "ppbr_az"
+    - "rlm"
+    - "solubility_aqsoldb"
+    - "vdss_lombardo"
+
+    High throughput screening (HTS) group:
+
+    - "sarscov2_3clpro_diamond"
+    - "sarscov2_vitro_touret"
+
+    Toxicity group:
+
+    - "ames"
+    - "carcinogens_lagunin"
+    - "dili"
+    - "herg"
+    - "herg_central_at_10um"
+    - "herg_central_at_1um"
+    - "herg_central_inhib"
+    - "herg_karim"
+    - "ld50_zhu"
+    - "skin_reaction"
 
     Parameters
     ----------
-    subset : {None, "adme", "hts", "tox"}, default=None
+    subset : {None, "ADME", "HTX", "Toxicity"}, default=None
         If ``None``, returns all datasets. String loads only a given subset of all
         datasets. Alternatively the subset can contain names of individual datasets.
         List of strings loads only datasets with given names.
@@ -119,48 +247,9 @@ def load_tdc_benchmark(
     """
     dataset_names = _subset_to_dataset_names(subset)
 
-    dataset_name_to_func = {
-        "b3db_classification": load_b3db_classification,
-        "b3db_regression": load_b3db_regression,
-        "bioavailability_ma": load_bioavailability_ma,
-        "caco2_wang": load_caco2_wang,
-        "clearance_hepatocyte_az": load_clearance_hepatocyte_az,
-        "clearance_microsome_az": load_clearance_microsome_az,
-        "cyp1a2_veith": load_cyp1a2_veith,
-        "cyp2c19_veith": load_cyp2c19_veith,
-        "cyp2c9_substrate_carbonmangels": load_cyp2c9_substrate_carbonmangels,
-        "cyp2c9_veith": load_cyp2c9_veith,
-        "cyp2d6_substrate_carbonmangels": load_cyp2d6_substrate_carbonmangels,
-        "cyp2d6_veith": load_cyp2d6_veith,
-        "cyp3a4_substrate_carbonmangels": load_cyp3a4_substrate_carbonmangels,
-        "cyp3a4_veith": load_cyp3a4_veith,
-        "half_life_obach": load_half_life_obach,
-        "hia_hou": load_hia_hou,
-        "hlm": load_hlm,
-        "pampa_approved_drugs": load_pampa_approved_drugs,
-        "pampa_ncats": load_pampa_ncats,
-        "pgp_broccatelli": load_pgp_broccatelli,
-        "ppbr_az": load_ppbr_az,
-        "rlm": load_rlm,
-        "solubility_aqsoldb": load_solubility_aqsoldb,
-        "vdss_lombardo": load_vdss_lombardo,
-        # hts
-        "sarscov2_3clpro_diamond": load_sarscov2_3clpro_diamond,
-        "sarscov2_vitro_touret": load_sarscov2_vitro_touret,
-        # tox
-        "ames": load_ames,
-        "carcinogens_lagunin": load_carcinogens_lagunin,
-        "dili": load_dili,
-        "herg": load_herg,
-        "herg_central_at_10um": load_herg_central_at_10um,
-        "herg_central_at_1um": load_herg_central_at_1um,
-        "herg_central_inhib": load_herg_central_inhib,
-        "herg_karim": load_herg_karim,
-        "ld50_zhu": load_ld50_zhu,
-        "skin_reaction": load_skin_reaction,
-    }
-
-    dataset_functions = [dataset_name_to_func[name] for name in dataset_names]
+    dataset_functions = [
+        TDC_DATASET_NAME_TO_LOADER_FUNC[name] for name in dataset_names
+    ]
 
     if as_frames:
         # generator of tuples (dataset_name, DataFrame)
@@ -180,50 +269,66 @@ def load_tdc_benchmark(
 
 @validate_params(
     {
-        "dataset_name": [
-            StrOptions(
-                {
-                    "b3db_classification",
-                    "b3db_regression",
-                    "bioavailability_ma",
-                    "caco2_wang",
-                    "clearance_hepatocyte_az",
-                    "clearance_microsome_az",
-                    "cyp1a2_veith",
-                    "cyp2c19_veith",
-                    "cyp2c9_substrate_carbonmangels",
-                    "cyp2c9_veith",
-                    "cyp2d6_substrate_carbonmangels",
-                    "cyp2d6_veith",
-                    "cyp3a4_substrate_carbonmangels",
-                    "cyp3a4_veith",
-                    "half_life_obach",
-                    "hia_hou",
-                    "hlm",
-                    "pampa_ncats",
-                    "pampa_approved_drugs",
-                    "pgp_broccatelli",
-                    "ppbr_az",
-                    "rlm",
-                    "solubility_aqsoldb",
-                    "vdss_lombardo",
-                    # hts
-                    "sarscov2_3clpro_diamond",
-                    "sarscov2_vitro_touret",
-                    # tox
-                    "ames",
-                    "carcinogens_lagunin",
-                    "dili",
-                    "herg",
-                    "herg_central_at_10um",
-                    "herg_central_at_1um",
-                    "herg_central_inhib",
-                    "herg_karim",
-                    "ld50_zhu",
-                    "skin_reaction",
-                }
-            )
-        ],
+        "dataset_name": [StrOptions(set(TDC_DATASET_NAMES))],
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_tdc_dataset(
+    dataset_name: str,
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    as_frame: bool = False,
+    verbose: bool = False,
+) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load TDC dataset by name.
+
+    Loads a given dataset from TDC [1]_ benchmark by its name. This is a proxy for
+    easier benchmarking, that avoids looking for individual functions.
+
+    Dataset names here are the same as returned by `load_tdc_benchmark` function,
+    and are case-sensitive.
+
+    Parameters
+    ----------
+    dataset_name : str
+        Name of the dataset to load.
+
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and labels
+        (dataset-dependent). Otherwise, returns SMILES as list of strings, and
+        labels as a NumPy array (shape and type are dataset-dependent).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the ``as_frame`` argument, one of:
+        - Pandas DataFrame with columns depending on the dataset
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Huang, Kexin, et al.
+        "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development"
+        Proceedings of Neural Information Processing Systems, NeurIPS Datasets and Benchmarks, 2021
+        <https://openreview.net/forum?id=8nvgnORnoWr>`_
+    """
+    loader_func = TDC_DATASET_NAME_TO_LOADER_FUNC[dataset_name]
+    return loader_func(data_dir, as_frame, verbose)
+
+
+@validate_params(
+    {
+        "dataset_name": [StrOptions(set(TDC_DATASET_NAMES))],
         "data_dir": [None, str, os.PathLike],
         "as_frame": ["boolean"],
         "verbose": ["boolean"],
@@ -290,7 +395,7 @@ def load_tdc_splits(
 
 
 def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
-    # map given subset (e.g. "adme", "hts" or "tox") to list of dataset names
+    # map given subset (e.g. "ADME", "HTX" or "Toxicity") to list of dataset names
     # for appropriate TDC datasets
 
     adme_names = [
@@ -342,11 +447,11 @@ def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
 
     if subset is None:
         dataset_names = all_dataset_names
-    elif subset == "adme":
+    elif subset == "ADME":
         dataset_names = adme_names
-    elif subset == "hts":
+    elif subset == "HTS":
         dataset_names = hts_names
-    elif subset == "tox":
+    elif subset == "Toxicity":
         dataset_names = tox_names
     elif isinstance(subset, (list, set, tuple)):
         for name in subset:

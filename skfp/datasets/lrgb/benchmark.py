@@ -39,7 +39,7 @@ def load_lrgb_mol_benchmark(
     both, following LRGB [1]_. See paper for details on stratification. AUPRC metric
     is recommended for Peptides-func, and MAE for Peptides-struct.
 
-    Dataset names are also returned (case-sensitive): "Peptides-func" and "Peptides-struct".
+    Dataset names are also returned (case-sensitive): "Peptides-func", "Peptides-struct".
 
     Parameters
     ----------
@@ -109,6 +109,98 @@ def load_lrgb_mol_benchmark(
         )
 
     return datasets_gen
+
+
+@validate_params(
+    {
+        "dataset_name": [StrOptions({"Peptides-func", "Peptides-struct"})],
+        "data_dir": [None, str, os.PathLike],
+        "mol_type": [StrOptions({"SMILES", "aminoseq"})],
+        "standardize_labels": ["boolean"],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_lrgb_mol_dataset(
+    dataset_name: str,
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    mol_type: str = "SMILES",
+    standardize_labels: bool = True,
+    as_frame: bool = False,
+    verbose: bool = False,
+) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load LRGB molecular dataset by name.
+
+    Loads a given dataset from LRGB benchmark by its name. This is a proxy for
+    easier benchmarking, that avoids looking for individual functions.
+
+    Dataset names are (case-sensitive): "Peptides-func", "Peptides-struct".
+
+    Parameters
+    ----------
+    dataset_name : {"Peptides-func", "Peptides-struct"}
+        Name of the dataset to load.
+
+    mol_type : {"SMILES", "aminoseq"}, default="SMILES"
+        Which molecule representation to return, either SMILES strings or aminoacid
+        sequences.
+
+    standardize_labels : bool, default=True
+        Whether to standardize labels to mean 0 and standard deviation 1 for
+        Peptides-struct, following the recommendation from the original paper [1]_.
+        Otherwise, the raw property values are returned.
+
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and labels
+        (dataset-dependent). Otherwise, returns SMILES as list of strings, and
+        labels as a NumPy array (shape and type are dataset-dependent).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the ``as_frame`` argument, one of:
+        - Pandas DataFrame with columns depending on the dataset
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.lrgb import load_lrgb_mol_dataset
+    >>> dataset = load_lrgb_mol_dataset("Peptides-func")
+    >>> dataset  # doctest: +SKIP
+    (['[Cl].CC(C)NCC(O)COc1cccc2ccccc12', ..., '[N+](=NCC(=O)N[C@@H]([C@H](O)C1=CC=C([N+]([O-])=O)C=C1)CO)=[N-]'], \
+array([1, 1, 1, ..., 1, 1, 1]))
+
+    >>> dataset = load_lrgb_mol_dataset("Peptides-func", as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                  SMILES  label
+    0                   [Cl].CC(C)NCC(O)COc1cccc2ccccc12      1
+    1           C(=O)(OC(C)(C)C)CCCc1ccc(cc1)N(CCCl)CCCl      1
+    2  c12c3c(N4CCN(C)CC4)c(F)cc1c(c(C(O)=O)cn2C(C)CO...      1
+    3                   C1CCN(CC1)Cc1cccc(c1)OCCCNC(=O)C      1
+    4  Cc1onc(c2ccccc2Cl)c1C(=O)N[C@H]3[C@H]4SC(C)(C)...      1
+    """
+    if dataset_name == "Peptides-func":
+        return load_peptides_func(data_dir, mol_type, as_frame, verbose)
+    else:
+        return load_peptides_struct(
+            data_dir, mol_type, standardize_labels, as_frame, verbose
+        )
 
 
 @validate_params(
