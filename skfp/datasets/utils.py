@@ -81,7 +81,6 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
             repo_type="dataset",
             local_dir=data_home_dir,
             cache_dir=data_home_dir,
-            resume_download=True,
         )
     finally:
         if not pbar_was_disabled:

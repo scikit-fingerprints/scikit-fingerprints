@@ -10,6 +10,7 @@ from skfp.datasets.moleculenet import (
     load_hiv,
     load_lipophilicity,
     load_moleculenet_benchmark,
+    load_moleculenet_dataset,
     load_muv,
     load_ogb_splits,
     load_pcba,
@@ -17,31 +18,14 @@ from skfp.datasets.moleculenet import (
     load_tox21,
     load_toxcast,
 )
+from skfp.datasets.moleculenet.benchmark import MOLECULENET_DATASET_NAMES
 from tests.datasets.test_utils import run_basic_dataset_checks
 
 
-def get_dataset_names() -> list[str]:
-    return [
-        "ESOL",
-        "FreeSolv",
-        "Lipophilicity",
-        "BACE",
-        "BBBP",
-        "HIV",
-        "ClinTox",
-        "MUV",
-        "SIDER",
-        "Tox21",
-        "ToxCast",
-        "PCBA",
-    ]
-
-
 def test_load_moleculenet_benchmark():
-    dataset_names = get_dataset_names()
     benchmark_full = load_moleculenet_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
-    assert benchmark_names == dataset_names
+    assert benchmark_names == MOLECULENET_DATASET_NAMES
 
 
 def test_load_moleculenet_benchmark_subset():
@@ -59,7 +43,7 @@ def test_load_moleculenet_benchmark_wrong_subset():
     assert "Dataset name 'Nonexistent' not recognized" in str(exc_info)
 
 
-@pytest.mark.parametrize("dataset_name", get_dataset_names())
+@pytest.mark.parametrize("dataset_name", MOLECULENET_DATASET_NAMES)
 def test_load_ogb_splits(dataset_name):
     train, valid, test = load_ogb_splits(dataset_name)
     assert isinstance(train, list)
@@ -78,7 +62,7 @@ def test_load_ogb_splits(dataset_name):
     assert len(train) > len(test)
 
 
-@pytest.mark.parametrize("dataset_name", get_dataset_names())
+@pytest.mark.parametrize("dataset_name", MOLECULENET_DATASET_NAMES)
 def test_load_ogb_splits_as_dict(dataset_name):
     train, valid, test = load_ogb_splits(dataset_name)
     split_idxs = load_ogb_splits(dataset_name, as_dict=True)
@@ -140,7 +124,8 @@ def test_load_ogb_splits_nonexistent_dataset():
 )
 def test_load_dataset(dataset_name, load_func, expected_length, num_tasks, task_type):
     smiles_list, y = load_func()
-    df = load_func(as_frame=True)
+    # load with load_moleculenet_dataset, to test it simultaneously
+    df = load_moleculenet_dataset(dataset_name, as_frame=True)
     run_basic_dataset_checks(
         smiles_list,
         y,
