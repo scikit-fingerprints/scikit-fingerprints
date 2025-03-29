@@ -123,7 +123,7 @@ def test_load_ogb_splits_nonexistent_dataset():
     ],
 )
 def test_load_dataset(dataset_name, load_func, expected_length, num_tasks, task_type):
-    smiles_list, y = load_func(dataset_name)
+    smiles_list, y = load_func()
     # load with load_moleculenet_dataset, to test it simultaneously
     df = load_moleculenet_dataset(dataset_name, as_frame=True)
     run_basic_dataset_checks(
