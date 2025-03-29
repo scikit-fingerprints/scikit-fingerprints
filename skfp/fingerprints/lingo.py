@@ -85,7 +85,6 @@ class LingoFingerprint(BaseFingerprintTransformer):
         **BaseFingerprintTransformer._parameter_constraints,
         "fp_size": [Interval(Integral, 1, None, closed="left")],
         "substring_length": [Interval(Integral, 1, None, closed="left")],
-        "count": ["boolean"],
     }
 
     def __init__(

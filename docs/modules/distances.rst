@@ -28,6 +28,7 @@ Single vectors:
     harris_lahey_binary_distance
     kulczynski_binary_distance
     mcconnaughey_binary_distance
+    mcs_distance
     rand_binary_distance
     rogot_goldberg_binary_distance
     russell_binary_distance
@@ -51,6 +52,7 @@ Bulk functions for matrices (pairwise distances):
     bulk_harris_lahey_binary_distance
     bulk_kulczynski_binary_distance
     bulk_mcconnaughey_binary_distance
+    bulk_mcs_distance
     bulk_rand_binary_distance
     bulk_rogot_goldberg_binary_distance
     bulk_russell_binary_distance
@@ -77,6 +79,7 @@ Single vectors:
     harris_lahey_binary_similarity
     kulczynski_binary_similarity
     mcconnaughey_binary_similarity
+    mcs_similarity
     rand_binary_similarity
     rogot_goldberg_binary_similarity
     russell_binary_similarity
@@ -100,6 +103,7 @@ Bulk functions for matrices (pairwise similarities):
     bulk_harris_lahey_binary_similarity
     bulk_kulczynski_binary_similarity
     bulk_mcconnaughey_binary_similarity
+    bulk_mcs_similarity
     bulk_rand_binary_similarity
     bulk_russell_binary_similarity
     bulk_rogot_goldberg_binary_similarity
