@@ -10,12 +10,12 @@ from rdkit.Chem.PropertyMol import PropertyMol
 
 from skfp.preprocessing import ConformerGenerator
 
-# set longer timeouts for HuggingFace
-hf_constants.DEFAULT_DOWNLOAD_TIMEOUT = 120
-hf_constants.DEFAULT_ETAG_TIMEOUT = 120
-hf_constants.DEFAULT_REQUEST_TIMEOUT = 120
-hf_constants.HF_HUB_DOWNLOAD_TIMEOUT = 120
-hf_constants.HF_HUB_ETAG_TIMEOUT = 120
+# set long timeouts for HuggingFace for GitHub Actions CI
+hf_constants.DEFAULT_DOWNLOAD_TIMEOUT = 600
+hf_constants.DEFAULT_ETAG_TIMEOUT = 600
+hf_constants.DEFAULT_REQUEST_TIMEOUT = 600
+hf_constants.HF_HUB_DOWNLOAD_TIMEOUT = 600
+hf_constants.HF_HUB_ETAG_TIMEOUT = 600
 
 
 @pytest.fixture(scope="session")
