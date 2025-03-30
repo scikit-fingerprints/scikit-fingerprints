@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-import huggingface_hub
+import huggingface_hub.constants as hf_constants
 import pandas as pd
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -10,12 +10,12 @@ from rdkit.Chem.PropertyMol import PropertyMol
 
 from skfp.preprocessing import ConformerGenerator
 
-# set longer timeouts for HuggingFace Hub
-huggingface_hub.constants.DEFAULT_DOWNLOAD_TIMEOUT = 120
-huggingface_hub.constants.DEFAULT_ETAG_TIMEOUT = 120
-huggingface_hub.constants.DEFAULT_REQUEST_TIMEOUT = 120
-huggingface_hub.constants.HF_HUB_DOWNLOAD_TIMEOUT = 120
-huggingface_hub.constants.HF_HUB_ETAG_TIMEOUT = 120
+# set longer timeouts for HuggingFace
+hf_constants.DEFAULT_DOWNLOAD_TIMEOUT = 120
+hf_constants.DEFAULT_ETAG_TIMEOUT = 120
+hf_constants.DEFAULT_REQUEST_TIMEOUT = 120
+hf_constants.HF_HUB_DOWNLOAD_TIMEOUT = 120
+hf_constants.HF_HUB_ETAG_TIMEOUT = 120
 
 
 @pytest.fixture(scope="session")
