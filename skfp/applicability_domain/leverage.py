@@ -73,7 +73,7 @@ class LeverageADChecker(BaseADChecker):
     >>> import numpy as np
     >>> from skfp.applicability_domain import LeverageADChecker
     >>> X_train = np.array([[0.0, 1.0], [0.0, 3.0], [3.0, 1.0]])
-    >>> X_test = np.array([[1.0, 1.0], [1.0, 2.0], [2.0, 3.0]])
+    >>> X_test = np.array([[1.0, 1.0], [1.0, 2.0], [20.0, 3.0]])
     >>> leverage_ad_checker = LeverageADChecker()
     >>> leverage_ad_checker
     LeverageADChecker()
