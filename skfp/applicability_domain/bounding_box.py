@@ -89,12 +89,10 @@ class BoundingBoxADChecker(BaseADChecker):
         percentile_upper: Union[float, str] = 100,
         num_allowed_violations: Optional[int] = 0,
         n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
-            batch_size=batch_size,
             verbose=verbose,
         )
         self.percentile_lower = percentile_lower
@@ -129,7 +127,7 @@ class BoundingBoxADChecker(BaseADChecker):
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
         check_is_fitted(self)
-        X = validate_data(self, X, reset=False)
+        X = validate_data(self, X=X, reset=False)
 
         outside_range = (self.lower_bounds_ > X) | (self.upper_bounds_ < X)
         violations = np.sum(outside_range, axis=1)
@@ -154,7 +152,7 @@ class BoundingBoxADChecker(BaseADChecker):
             Applicability domain scores of samples.
         """
         check_is_fitted(self)
-        X = validate_data(self, X, reset=False)
+        X = validate_data(self, X=X, reset=False)
 
         inside_range = (self.lower_bounds_ <= X) & (self.upper_bounds_ >= X)
         scores = np.sum(inside_range, axis=1)

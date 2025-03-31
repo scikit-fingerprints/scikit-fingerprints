@@ -85,12 +85,10 @@ class ConvexHullADChecker(BaseADChecker):
     def __init__(
         self,
         n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
-            batch_size=batch_size,
             verbose=verbose,
         )
 
@@ -105,7 +103,7 @@ class ConvexHullADChecker(BaseADChecker):
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
         check_is_fitted(self)
-        X = validate_data(self, X, reset=False)
+        X = validate_data(self, X=X, reset=False)
 
         # solution source: https://stackoverflow.com/a/43564754/9472066
         n_points = self.points_.shape[0]
