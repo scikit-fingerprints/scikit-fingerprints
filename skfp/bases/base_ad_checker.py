@@ -27,15 +27,17 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
       saved as object attributes
     - ``.predict()` - checks if molecules are in AD or not, and outputs a vector
       of booleans (True - in AD)
-    - ``.score_samples()` - applicability domain score of molecules, lower values
-      mean they are more likely outside AD
+    - ``.score_samples()` - applicability domain score of molecules
 
-    Note that score values differ by method, but always should approach zero (at
-    least in the limit) if the point is surely outside AD. It can be e.g. number
-    of violations or distance to AD.
+    Note that score nature depends on the particular method. In some cases it is
+    straight AD score (larger = better), which measures how firmly a molecule lies
+    inside applicability domain. For other methods this is an outlier score (lower =
+    better), which checks how far a new sample is from training data.
 
     Sparse arrays are not supported, as most methods rely on inherently dense
-    physicochemical descriptors.
+    physicochemical descriptors and also do not scale well with number of features.
+    High-dimensional spaces also tend to break down AD checking methods due to curse
+    of dimensionality.
 
     Parameters
     ----------
@@ -44,10 +46,6 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
         unless in a :obj:`joblib.parallel_backend` context. ``-1`` means using all
         processors. See scikit-learn documentation on ``n_jobs`` for more details.
-
-    batch_size : int, default=None
-        Number of inputs processed in each batch. ``None`` divides input data into
-        equal-sized parts, as many as ``n_jobs``.
 
     verbose : int or dict, default=0
         Controls the verbosity when computing applicability domain statistics.
@@ -65,11 +63,9 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
     def __init__(
         self,
         n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
         self.n_jobs = n_jobs
-        self.batch_size = batch_size
         self.verbose = verbose
 
     @abstractmethod

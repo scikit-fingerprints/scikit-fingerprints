@@ -4,7 +4,7 @@ from skfp.applicability_domain import BoundingBoxADChecker
 from tests.applicability_domain.utils import get_data_inside_ad, get_data_outside_ad
 
 
-def test_inside_ad():
+def test_inside_bounding_box_ad():
     X_train, X_test = get_data_inside_ad()
 
     ad_checker = BoundingBoxADChecker()
@@ -20,7 +20,7 @@ def test_inside_ad():
     assert np.all(preds == 1)
 
 
-def test_mols_outside_ad():
+def test_outside_bounding_box_ad():
     X_train, X_test = get_data_outside_ad()
 
     ad_checker = BoundingBoxADChecker()
@@ -36,7 +36,7 @@ def test_mols_outside_ad():
     assert np.all(preds == 0)
 
 
-def test_three_sigma():
+def test_bounding_box_three_sigma():
     X_train, X_test = get_data_inside_ad()
     ad_checker = BoundingBoxADChecker(
         percentile_lower="three_sigma", percentile_upper="three_sigma"
@@ -46,7 +46,7 @@ def test_three_sigma():
     assert np.all(preds == 1)
 
 
-def test_lower_percentages():
+def test_bounding_box_lower_percentages():
     X_train, _ = get_data_inside_ad()
     X_test = X_train + 10
 
@@ -64,7 +64,7 @@ def test_lower_percentages():
     assert avg_score_0 > avg_score_25
 
 
-def test_num_allowed_violations():
+def test_bounding_box_num_allowed_violations():
     X_train, X_test = get_data_inside_ad(n_train=100, n_test=100)
     X_test += 25
 
@@ -79,7 +79,7 @@ def test_num_allowed_violations():
     assert np.all(preds == 1)
 
 
-def test_pass_y_train():
+def test_bounding_box_pass_y_train():
     # smoke test, should not throw errors
     X_train = np.vstack((np.zeros((10, 5)), np.ones((10, 5))))
     y_train = np.zeros(10)
