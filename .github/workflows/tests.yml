@@ -47,7 +47,7 @@ jobs:
         name: Cache datasets
         with:
           path: ~/scikit_learn_data
-          key: ${{ hashFiles('~/scikit-learn-data/**.csv') }}
+          key: datasets-${{ hashFiles('~/scikit-learn-data/**.csv') }}
 
       - name: Install the project dependencies
         run: poetry sync --with test
@@ -91,7 +91,7 @@ jobs:
         name: Cache datasets
         with:
           path: ~/scikit_learn_data
-          key: ${{ hashFiles('~/scikit-learn-data/**.csv') }}
+          key: datasets-${{ hashFiles('~/scikit-learn-data/**.csv') }}
 
       - name: Build documentation
         run: poetry run make doctest
