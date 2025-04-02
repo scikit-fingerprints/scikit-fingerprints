@@ -22,7 +22,7 @@ doctest: docs ## Run documentation tests
 test: ## Run tests
 	poetry run ruff check
 	# reruns due to HuggingFace API rate limiting
-	poetry run pytest --reruns 10 --reruns-delay 2 --only-rerun '(HTTPError|LocalEntryNotFoundError)' tests
+	poetry run pytest --reruns 20 --reruns-delay 2 --only-rerun '(HTTPError|LocalEntryNotFoundError)' tests
 
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files
