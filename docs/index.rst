@@ -5,7 +5,7 @@ A scikit-learn compatible library for efficient computation of molecular fingerp
 
 .. image:: logos/skfp-logo-text-white.png
    :align: center
-   :width: 60%
+   :width: 45%
 
 
 
