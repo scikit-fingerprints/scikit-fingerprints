@@ -41,13 +41,13 @@ jobs:
           key: ${{ matrix.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Debug
-        run: echo $HOME
+        run: ls $HOME/scikit_learn_data
 
       - uses: actions/cache@v4
         name: Cache datasets
         with:
           path: ~/scikit_learn_data
-          key: datasets-${{ hashFiles('~/scikit-learn-data/**.csv') }}
+          key: datasets-${{ hashFiles('~/scikit_learn_data/**.csv') }}
 
       - name: Install the project dependencies
         run: poetry sync --with test
@@ -62,7 +62,7 @@ jobs:
         run: poetry run make test
 
       - name: Debug
-        run: ls $HOME
+        run: ls $HOME/scikit_learn_data
 
   ci-docs:
     runs-on: ubuntu-latest
@@ -85,16 +85,16 @@ jobs:
         uses: r-lib/actions/setup-pandoc@v2
 
       - name: Debug
-        run: echo $HOME
+        run: ls $HOME/scikit_learn_data
 
       - uses: actions/cache@v4
         name: Cache datasets
         with:
           path: ~/scikit_learn_data
-          key: datasets-${{ hashFiles('~/scikit-learn-data/**.csv') }}
+          key: datasets-${{ hashFiles('~/scikit_learn_data/**.csv') }}
 
       - name: Build documentation
         run: poetry run make doctest
 
       - name: Debug
-        run: ls $HOME
+        run: ls $HOME/scikit_learn_data
