@@ -70,6 +70,7 @@ mypy = "*"
 pip-audit = "*"
 pre-commit = "*"
 pytest = "*"
+pytest-rerunfailures = "*"
 ruff = "*"
 xenon = "*"
 

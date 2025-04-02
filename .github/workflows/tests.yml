@@ -40,9 +40,6 @@ jobs:
           path: ./.venv
           key: ${{ matrix.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
-      - name: Debug
-        run: ls $HOME
-
       - uses: actions/cache@v4
         name: Cache datasets
         with:
@@ -81,9 +78,6 @@ jobs:
       - name: Install Pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Debug
-        run: ls $HOME
-
       - uses: actions/cache@v4
         name: Cache datasets
         with:
@@ -92,6 +86,3 @@ jobs:
 
       - name: Build documentation
         run: poetry run make doctest
-
-      - name: Debug
-        run: ls $HOME/scikit_learn_data
