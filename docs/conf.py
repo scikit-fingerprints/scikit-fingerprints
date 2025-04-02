@@ -53,7 +53,15 @@ html_theme_options = {
             "icon": "fa-brands fa-github",
         },
     ],
+    "logo": {
+        "alt_text": "scikit-fingerprints logo",
+        "image_relative": "logos/skfp-logo-no-text.png",
+        "image_light": "logos/skfp-logo-horizontal-text-black.png",
+        "image_dark": "logos/skfp-logo-horizontal-text-white.png",
+    },
 }
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 # Sphinx cannot reach outside to parallel dirs, so we copy "examples" directory
 # we copy "examples" directory from project root to docs/examples

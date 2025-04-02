@@ -11,6 +11,12 @@
 [scikit-fingerprints](https://scikit-fingerprints.github.io/scikit-fingerprints/) is a Python library for efficient
 computation of molecular fingerprints.
 
+---
+
+![logo](docs/logos/skfp-logo-horizontal-text-white.png)
+
+---
+
 ## Table of Contents
 
 - [Description](#description)

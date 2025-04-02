@@ -3,6 +3,12 @@ Welcome to scikit-fingerprints documentation!
 
 A scikit-learn compatible library for efficient computation of molecular fingerprints.
 
+.. image:: logos/skfp-logo-text-white.png
+   :align: center
+   :width: 60%
+
+
+
 Main features:
 
 - scikit-learn compatible
