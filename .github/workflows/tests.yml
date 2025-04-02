@@ -35,10 +35,19 @@ jobs:
           poetry config virtualenvs.in-project true --local
 
       - uses: actions/cache@v3
-        name: Define a venv cache
+        name: Cache venv
         with:
           path: ./.venv
           key: ${{ matrix.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Debug
+        run: echo $HOME
+
+      - uses: actions/cache@v3
+        name: Cache datasets
+        with:
+          path: ~/scikit_learn_data
+          key: ${{ hashFiles('~/scikit-learn-data/**.csv') }}
 
       - name: Install the project dependencies
         run: poetry sync --with test
