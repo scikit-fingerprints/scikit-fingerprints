@@ -8,6 +8,12 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/scikit-fingerprints.svg)](https://pypi.org/project/scikit-fingerprints/)
 [![Contributors](https://img.shields.io/github/contributors/scikit-fingerprints/scikit-fingerprints)](https://github.com/scikit-fingerprints/scikit-fingerprints/graphs/contributors)
 
+--- 
+
+![logo](docs/logos/skfp-logo-horizontal-text-white.png)
+
+---
+
 [scikit-fingerprints](https://scikit-fingerprints.github.io/scikit-fingerprints/) is a Python library for efficient
 computation of molecular fingerprints.
 

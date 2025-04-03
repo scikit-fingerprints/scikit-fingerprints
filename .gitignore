@@ -10,7 +10,7 @@ __pycache__
 *.csv
 benchmarking/**/*.npy
 dist/
-
+!docs/logos/*
 
 docs/**/generated/
 docs/_build/
