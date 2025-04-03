@@ -21,6 +21,35 @@ from .sider import load_sider
 from .tox21 import load_tox21
 from .toxcast import load_toxcast
 
+MOLECULENET_DATASET_NAMES = [
+    "ESOL",
+    "FreeSolv",
+    "Lipophilicity",
+    "BACE",
+    "BBBP",
+    "HIV",
+    "ClinTox",
+    "MUV",
+    "SIDER",
+    "Tox21",
+    "ToxCast",
+    "PCBA",
+]
+MOLECULENET_DATASET_NAME_TO_LOADER_FUNC = {
+    "ESOL": load_esol,
+    "FreeSolv": load_freesolv,
+    "Lipophilicity": load_lipophilicity,
+    "BACE": load_bace,
+    "BBBP": load_bbbp,
+    "HIV": load_hiv,
+    "ClinTox": load_clintox,
+    "MUV": load_muv,
+    "SIDER": load_sider,
+    "Tox21": load_tox21,
+    "ToxCast": load_toxcast,
+    "PCBA": load_pcba,
+}
+
 
 @validate_params(
     {
@@ -104,22 +133,9 @@ def load_moleculenet_benchmark(
     """
     dataset_names = _subset_to_dataset_names(subset)
 
-    dataset_name_to_func = {
-        "ESOL": load_esol,
-        "FreeSolv": load_freesolv,
-        "Lipophilicity": load_lipophilicity,
-        "BACE": load_bace,
-        "BBBP": load_bbbp,
-        "HIV": load_hiv,
-        "ClinTox": load_clintox,
-        "MUV": load_muv,
-        "SIDER": load_sider,
-        "Tox21": load_tox21,
-        "ToxCast": load_toxcast,
-        "PCBA": load_pcba,
-    }
-
-    dataset_functions = [dataset_name_to_func[name] for name in dataset_names]
+    dataset_functions = [
+        MOLECULENET_DATASET_NAME_TO_LOADER_FUNC[name] for name in dataset_names
+    ]
 
     if as_frames:
         # generator of tuples (dataset_name, DataFrame)
@@ -139,24 +155,84 @@ def load_moleculenet_benchmark(
 
 @validate_params(
     {
-        "dataset_name": [
-            StrOptions(
-                {
-                    "ESOL",
-                    "FreeSolv",
-                    "Lipophilicity",
-                    "BACE",
-                    "BBBP",
-                    "HIV",
-                    "ClinTox",
-                    "MUV",
-                    "SIDER",
-                    "Tox21",
-                    "ToxCast",
-                    "PCBA",
-                }
-            )
-        ],
+        "dataset_name": [StrOptions(set(MOLECULENET_DATASET_NAMES))],
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_moleculenet_dataset(
+    dataset_name: str,
+    data_dir: Optional[Union[str, os.PathLike]] = None,
+    as_frame: bool = False,
+    verbose: bool = False,
+) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+    """
+    Load MoleculeNet dataset by name.
+
+    Loads a given dataset from MoleculeNet [1]_ benchmark by its name. This is a proxy
+    for easier benchmarking, that avoids looking for individual functions.
+
+    Dataset names here are the same as returned by `load_moleculenet_benchmark` function,
+    and are case-sensitive.
+
+    Parameters
+    ----------
+    dataset_name : {"ESOL", "FreeSolv", "Lipophilicity","BACE", "BBBP", "HIV", "ClinTox",
+        "MUV", "SIDER", "Tox21", "ToxCast", "PCBA"}
+        Name of the dataset to load.
+
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_frame : bool, default=False
+        If True, returns the raw DataFrame with columns "SMILES" and labels
+        (dataset-dependent). Otherwise, returns SMILES as list of strings, and
+        labels as a NumPy array (shape and type are dataset-dependent).
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : pd.DataFrame or tuple(list[str], np.ndarray)
+        Depending on the ``as_frame`` argument, one of:
+        - Pandas DataFrame with columns depending on the dataset
+        - tuple of: list of strings (SMILES), NumPy array (labels)
+
+    References
+    ----------
+    .. [1] `Zhenqin Wu et al.
+        "MoleculeNet: a benchmark for molecular machine learning"
+        Chem. Sci., 2018,9, 513-530
+        <https://pubs.rsc.org/en/content/articlelanding/2018/sc/c7sc02664a>`_
+
+    Examples
+    --------
+    >>> from skfp.datasets.moleculenet import load_moleculenet_dataset
+    >>> dataset = load_moleculenet_dataset("BBBP")
+    >>> dataset  # doctest: +SKIP
+    (['[Cl].CC(C)NCC(O)COc1cccc2ccccc12', ..., '[N+](=NCC(=O)N[C@@H]([C@H](O)C1=CC=C([N+]([O-])=O)C=C1)CO)=[N-]'], \
+array([1, 1, 1, ..., 1, 1, 1]))
+
+    >>> dataset = load_moleculenet_dataset("BBBP", as_frame=True)
+    >>> dataset.head() # doctest: +NORMALIZE_WHITESPACE
+                                                  SMILES  label
+    0                   [Cl].CC(C)NCC(O)COc1cccc2ccccc12      1
+    1           C(=O)(OC(C)(C)C)CCCc1ccc(cc1)N(CCCl)CCCl      1
+    2  c12c3c(N4CCN(C)CC4)c(F)cc1c(c(C(O)=O)cn2C(C)CO...      1
+    3                   C1CCN(CC1)Cc1cccc(c1)OCCCNC(=O)C      1
+    4  Cc1onc(c2ccccc2Cl)c1C(=O)N[C@H]3[C@H]4SC(C)(C)...      1
+    """
+    loader_func = MOLECULENET_DATASET_NAME_TO_LOADER_FUNC[dataset_name]
+    return loader_func(data_dir, as_frame, verbose)
+
+
+@validate_params(
+    {
+        "dataset_name": [StrOptions(set(MOLECULENET_DATASET_NAMES))],
         "data_dir": [None, str, os.PathLike],
         "as_frame": ["boolean"],
         "verbose": ["boolean"],
