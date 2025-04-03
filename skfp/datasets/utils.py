@@ -76,11 +76,16 @@ def hf_hub_download(data_home_dir: str, dataset_name: str, verbose: bool) -> str
         if not verbose:
             disable_progress_bars()
 
+        # use token if it's available, for internal usage during tests on CI
+        # all datasets are public, but this increases API rate limits if set
+        token = os.getenv("HF_TOKEN", default=None)
+
         return snapshot_download(
             f"scikit-fingerprints/{dataset_name}",
             repo_type="dataset",
             local_dir=data_home_dir,
             cache_dir=data_home_dir,
+            token=token,
         )
     finally:
         if not pbar_was_disabled:

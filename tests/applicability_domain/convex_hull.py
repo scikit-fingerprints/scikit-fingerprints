@@ -4,7 +4,7 @@ from skfp.applicability_domain import ConvexHullADChecker
 from tests.applicability_domain.utils import get_data_inside_ad, get_data_outside_ad
 
 
-def test_inside_ad():
+def test_inside_convex_hull_ad():
     X_train, X_test = get_data_inside_ad(n_train=100, n_test=10)
 
     ad_checker = ConvexHullADChecker()
@@ -20,7 +20,7 @@ def test_inside_ad():
     assert np.all(preds == 1)
 
 
-def test_mols_outside_ad():
+def test_outside_convex_hull_ad():
     X_train, X_test = get_data_outside_ad(n_train=100, n_test=10)
 
     ad_checker = ConvexHullADChecker()
@@ -36,7 +36,7 @@ def test_mols_outside_ad():
     assert np.all(preds == 0)
 
 
-def test_pass_y_train():
+def test_convex_hull_pass_y_train():
     # smoke test, should not throw errors
     X_train = np.vstack((np.zeros((10, 5)), np.ones((10, 5))))
     y_train = np.zeros(10)

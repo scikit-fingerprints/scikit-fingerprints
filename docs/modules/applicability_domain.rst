@@ -16,3 +16,4 @@ Classes for checking applicability domain.
 
     BoundingBoxADChecker
     ConvexHullADChecker
+    LeverageADChecker
