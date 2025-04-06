@@ -56,7 +56,6 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
     # parameters common for all filters
     _parameter_constraints: dict = {
         "n_jobs": [Integral, None],
-        "batch_size": [Integral, None],
         "verbose": ["verbose", dict],
     }
 

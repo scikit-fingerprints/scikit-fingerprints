@@ -127,7 +127,7 @@ class ConvexHullADChecker(BaseADChecker):
     def score_samples(self, X: np.ndarray) -> np.ndarray:
         """
         Calculate the applicability domain score of samples. It is simply a 0/1
-        decision equal to ``.predict()``, since no convex hull is explicitly computed.
+        decision equal to ``.predict()``.
 
         Parameters
         ----------
