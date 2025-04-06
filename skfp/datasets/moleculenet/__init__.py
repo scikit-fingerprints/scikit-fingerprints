@@ -1,6 +1,10 @@
 from .bace import load_bace
 from .bbbp import load_bbbp
-from .benchmark import load_moleculenet_benchmark, load_ogb_splits
+from .benchmark import (
+    load_moleculenet_benchmark,
+    load_moleculenet_dataset,
+    load_ogb_splits,
+)
 from .clintox import load_clintox
 from .esol import load_esol
 from .freesolv import load_freesolv

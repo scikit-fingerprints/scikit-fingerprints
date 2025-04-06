@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import huggingface_hub.constants as hf_constants
 import pandas as pd
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -8,6 +9,13 @@ from rdkit.Chem import Mol, MolFromSmiles
 from rdkit.Chem.PropertyMol import PropertyMol
 
 from skfp.preprocessing import ConformerGenerator
+
+# set long timeouts for HuggingFace for GitHub Actions CI
+hf_constants.DEFAULT_DOWNLOAD_TIMEOUT = 600
+hf_constants.DEFAULT_ETAG_TIMEOUT = 600
+hf_constants.DEFAULT_REQUEST_TIMEOUT = 600
+hf_constants.HF_HUB_DOWNLOAD_TIMEOUT = 600
+hf_constants.HF_HUB_ETAG_TIMEOUT = 600
 
 
 @pytest.fixture(scope="session")
