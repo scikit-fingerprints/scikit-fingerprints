@@ -10,7 +10,11 @@
 
 --- 
 
-![logo](docs/logos/skfp-logo-horizontal-text-white.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/logos/skfp-logo-horizontal-text-white.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/logos/skfp-logo-horizontal-text-black.png">
+  <img alt="change image for different github color schemes" src="docs/logos/skfp-logo-no-text.png"> 
+</picture>
 
 ---
 
