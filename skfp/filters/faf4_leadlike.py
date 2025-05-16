@@ -31,8 +31,8 @@ class FAF4LeadlikeFilter(BaseFilter):
     Designed as a part of FAFDrugs4 software [1]_ [2]_. Based on literature describing
     physico-chemical properties of lead drugs. Designed to keep starting point molecules
     that can be further optimized, i.e. relatively small, with low logP, and that can
-    be "decorated" further to increase affinity and or selectivity without becoming
-    very ADMET unfriendly).
+    be "decorated" further to increase affinity and/or selectivity, without becoming
+    very ADMET unfriendly.
 
     Basically a more restrictive variant of FAFDrugs4 Drug-Like Soft filter.
 
@@ -56,7 +56,7 @@ class FAF4LeadlikeFilter(BaseFilter):
 
     Note that the FAF4Drugs uses ChemAxon for determining functional groups. We use
     their publicly available CXSMARTS list of functional groups [3]_. Phosphine and
-    sulfoxide patterns could not be parsed by RDKit, so we manually fixed them.
+    sulfoxide patterns could not be parsed by RDKit, so they were fixed appropriately.
 
     Parameters
     ----------
