@@ -22,12 +22,22 @@ from skfp.datasets.moleculenet.benchmark import MOLECULENET_DATASET_NAMES
 from tests.datasets.test_utils import run_basic_dataset_checks
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 def test_load_moleculenet_benchmark():
     benchmark_full = load_moleculenet_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
     assert benchmark_names == MOLECULENET_DATASET_NAMES
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 def test_load_moleculenet_benchmark_subset():
     dataset_names = ["ESOL", "SIDER", "BACE"]
     benchmark_full = load_moleculenet_benchmark(subset=dataset_names, as_frames=True)
@@ -35,6 +45,11 @@ def test_load_moleculenet_benchmark_subset():
     assert benchmark_names == dataset_names
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 def test_load_moleculenet_benchmark_wrong_subset():
     dataset_names = ["ESOL", "Nonexistent"]
     with pytest.raises(ValueError) as exc_info:
@@ -43,6 +58,11 @@ def test_load_moleculenet_benchmark_wrong_subset():
     assert "Dataset name 'Nonexistent' not recognized" in str(exc_info)
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize("dataset_name", MOLECULENET_DATASET_NAMES)
 def test_load_ogb_splits(dataset_name):
     train, valid, test = load_ogb_splits(dataset_name)
@@ -62,6 +82,11 @@ def test_load_ogb_splits(dataset_name):
     assert len(train) > len(test)
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize("dataset_name", MOLECULENET_DATASET_NAMES)
 def test_load_ogb_splits_as_dict(dataset_name):
     train, valid, test = load_ogb_splits(dataset_name)
@@ -73,6 +98,11 @@ def test_load_ogb_splits_as_dict(dataset_name):
     assert split_idxs["test"] == test
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize(
     "dataset_name, dataset_length",
     [
@@ -96,6 +126,11 @@ def test_load_ogb_splits_lengths(dataset_name, dataset_length):
     assert loaded_length == dataset_length
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 def test_load_ogb_splits_nonexistent_dataset():
     with pytest.raises(InvalidParameterError) as error:
         load_ogb_splits("nonexistent")
@@ -105,6 +140,11 @@ def test_load_ogb_splits_nonexistent_dataset():
     )
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize(
     "dataset_name, load_func, expected_length, num_tasks, task_type",
     [

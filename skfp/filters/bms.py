@@ -11,7 +11,7 @@ class BMSFilter(BaseFilter):
     BMS filter.
 
     Designed at BMS (Bristol-Myers Squibb) for filtering HTS decks in primary screening.
-    Aims to remove molecules containing certin functional groups to filter out random
+    Aims to remove molecules containing certain functional groups to filter out random
     noise, “promiscuous” compounds, and frequent hitters.
 
     Selected functional groups for filtering are divided in the paper into "exclusion
@@ -19,7 +19,7 @@ class BMSFilter(BaseFilter):
     from the paper, so this is a best-effort approximation from RDKit.
 
     Rule definitions are available in the supplementary material of the original
-    publication [1]_ and in RDKit code [2]_. Note that
+    publication [1]_ and in RDKit code [2]_.
 
     Parameters
     ----------

@@ -13,7 +13,7 @@ class GlaxoFilter(BaseFilter):
     Designed at Glaxo Wellcome (currently GSK) to filter out molecules with reactive
     functional groups, unsuitable leads (i.e. compounds which would not be initially
     followed up), and unsuitable natural products (i.e., derivatives of natural product
-    compounds known to interfere with to interfere with common assay procedures).
+    compounds known to interfere with common assay procedures).
 
     Rule definitions are available in the supplementary material of the original
     publication [1]_ and in RDKit code [2]_.
