@@ -49,17 +49,17 @@ class HotellingT2TestADChecker(BaseADChecker):
     Examples
     --------
     >>> import numpy as np
-    >>> from skfp.applicability_domain import PCABoundingBoxADChecker
+    >>> from skfp.applicability_domain import HotellingT2TestADChecker
     >>> X_train = np.array([[0.0, 1.0], [0.0, 3.0], [3.0, 1.0]])
     >>> X_test = np.array([[1.0, 1.0], [1.0, 2.0], [20.0, 3.0]])
-    >>> pca_bb_ad_checker = PCABoundingBoxADChecker()
-    >>> pca_bb_ad_checker
-    PCABoundingBoxADChecker()
+    >>> hotelling_t2_test_ad_checker = HotellingT2TestADChecker()
+    >>> hotelling_t2_test_ad_checker
+    HotellingT2TestADChecker()
 
-    >>> pca_bb_ad_checker.fit(X_train)
-    PCABoundingBoxADChecker()
+    >>> hotelling_t2_test_ad_checker.fit(X_train)
+    HotellingT2TestADChecker()
 
-    >>> pca_bb_ad_checker.predict(X_test)
+    >>> hotelling_t2_test_ad_checker.predict(X_test)
     array([ True,  True, False])
     """
 

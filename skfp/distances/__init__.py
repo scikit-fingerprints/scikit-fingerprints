@@ -1,3 +1,6 @@
+import inspect
+import sys
+
 from .braun_blanquet import (
     braun_blanquet_binary_distance,
     braun_blanquet_binary_similarity,
@@ -94,3 +97,34 @@ from .tanimoto import (
     tanimoto_count_distance,
     tanimoto_count_similarity,
 )
+
+_functions = inspect.getmembers(sys.modules[__name__], inspect.isfunction)
+
+
+_METRICS = {
+    name: func
+    for name, func in _functions
+    if not name.startswith("bulk_") and name.endswith("_distance")
+}
+_METRIC_NAMES = set(_METRICS.keys())
+
+_SIMILARITIES = {
+    name: func
+    for name, func in _functions
+    if not name.startswith("bulk_") and name.endswith("_similarity")
+}
+_SIMILARITY_NAMES = set(_SIMILARITIES.keys())
+
+_BULK_METRICS = {
+    name: func
+    for name, func in _functions
+    if name.startswith("bulk_") and name.endswith("_distance")
+}
+_BULK_METRIC_NAMES = set(_BULK_METRICS.keys())
+
+_BULK_SIMILARITIES = {
+    name: func
+    for name, func in _functions
+    if name.startswith("bulk_") and name.endswith("_similarity")
+}
+_BULK_SIMILARITY_NAMES = set(_BULK_SIMILARITIES.keys())
