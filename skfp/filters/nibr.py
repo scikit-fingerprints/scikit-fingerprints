@@ -20,6 +20,9 @@ class NIBRFilter(BaseFilter):
     rules are not used. Note that some rules may need to be fulfilled many times to
     fulfill the condition.
 
+    Note that this filter can be considerably slower than others due to a large
+    number of rules checked with SMARTS patterns.
+
     Parameter
     ----------
     allow_one_violation : bool, default=False

@@ -14,6 +14,11 @@ def get_dataset_names() -> list[str]:
     return ["Peptides-func", "Peptides-struct"]
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 def test_load_lrgb_benchmark():
     dataset_names = get_dataset_names()
     benchmark_full = load_lrgb_mol_benchmark(as_frames=True)
@@ -21,6 +26,11 @@ def test_load_lrgb_benchmark():
     assert benchmark_names == dataset_names
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize("dataset_name", get_dataset_names())
 def test_load_lrgb_splits(dataset_name):
     train, valid, test = load_lrgb_mol_splits(dataset_name)
@@ -40,6 +50,11 @@ def test_load_lrgb_splits(dataset_name):
     assert len(train) > len(test)
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize("dataset_name", get_dataset_names())
 def test_load_lrgb_splits_as_dict(dataset_name):
     train, valid, test = load_lrgb_mol_splits(dataset_name)
@@ -51,6 +66,11 @@ def test_load_lrgb_splits_as_dict(dataset_name):
     assert split_idxs["test"] == test
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize(
     "dataset_name, dataset_length",
     [
@@ -64,6 +84,11 @@ def test_load_lrgb_splits_lengths(dataset_name, dataset_length):
     assert loaded_length == dataset_length
 
 
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
 @pytest.mark.parametrize(
     "dataset_name, load_func, expected_length, num_tasks, task_type",
     [

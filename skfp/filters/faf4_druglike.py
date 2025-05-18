@@ -55,7 +55,7 @@ class FAF4DruglikeFilter(BaseFilter):
 
     Note that the FAFDrugs4 uses ChemAxon for determining functional groups. We use
     their publicly available CXSMARTS list of functional groups [3]_. Phosphine and
-    sulfoxide patterns could not be parsed by RDKit, so we manually fixed them.
+    sulfoxide patterns could not be parsed by RDKit, so they were fixed appropriately.
 
     Parameters
     ----------

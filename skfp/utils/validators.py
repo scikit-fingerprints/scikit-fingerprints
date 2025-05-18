@@ -16,8 +16,7 @@ def ensure_mols(X: Sequence[Any]) -> list[Mol]:
     if not all(isinstance(x, (Mol, PropertyMol, str)) for x in X):
         types = {type(x) for x in X}
         raise ValueError(
-            f"Passed values must be RDKit Mol objects or SMILES strings,"
-            f"got types: {types}"
+            f"Passed values must be RDKit Mol objects or SMILES strings, got types: {types}"
         )
 
     mols = [MolFromSmiles(x) if isinstance(x, str) else x for x in X]
@@ -83,7 +82,8 @@ def require_strings(X: Sequence[Any]) -> None:
 def require_atoms(min_atoms: int = 1) -> Callable:
     """
     Decorator for functions operating on single molecule. Ensures it is
-    nonempty (by default) or has at least the specified number of atoms, raises ValueError otherwise.
+    nonempty (by default) or has at least the specified number of atoms,
+    raises ValueError otherwise.
     """  # noqa: D401
 
     def decorator(func: Callable) -> Callable:
@@ -91,7 +91,8 @@ def require_atoms(min_atoms: int = 1) -> Callable:
         def wrapper(mol: Mol, *args, **kwargs):
             if mol.GetNumAtoms() < min_atoms:
                 raise ValueError(
-                    f"The molecule must have at least {min_atoms} atom(s), {func.__name__} cannot be calculated."
+                    f"The molecule must have at least {min_atoms} atom(s), "
+                    f"{func.__name__} cannot be calculated."
                 )
             return func(mol, *args, **kwargs)
 
