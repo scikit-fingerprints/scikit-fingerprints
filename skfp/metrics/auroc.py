@@ -1,5 +1,4 @@
 import warnings
-from typing import Union
 
 import numpy as np
 from sklearn.exceptions import UndefinedMetricWarning
@@ -31,10 +30,10 @@ from sklearn.utils._param_validation import (
     prefer_skip_nested_validation=True,
 )
 def auroc_score(
-    y_true: Union[np.ndarray, list[float]],
-    y_score: Union[np.ndarray, list[float]],
+    y_true: np.ndarray | list[float],
+    y_score: np.ndarray | list[float],
     *args,
-    constant_target_behavior: Union[str, float] = np.nan,
+    constant_target_behavior: str | float = np.nan,
     **kwargs,
 ) -> float:
     """

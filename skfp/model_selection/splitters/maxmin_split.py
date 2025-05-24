@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Any, Optional, Union
+from typing import Any
 
 from rdkit.Chem import Mol
 from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
@@ -36,19 +36,17 @@ from skfp.utils.validators import ensure_mols
     prefer_skip_nested_validation=True,
 )
 def maxmin_train_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    test_size: float | None = None,
     return_indices: bool = False,
     random_state: int = 0,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int]],
-]:
+) -> (
+    tuple[Sequence[str | Mol], Sequence[str | Mol], Sequence[Sequence[Any]]]
+    | tuple[Sequence, ...]
+    | tuple[Sequence[int], Sequence[int]]
+):
     """
     Split using MaxMin algorithm.
 
@@ -175,20 +173,18 @@ def maxmin_train_test_split(
     prefer_skip_nested_validation=True,
 )
 def maxmin_train_valid_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    valid_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    valid_size: float | None = None,
+    test_size: float | None = None,
     return_indices: bool = False,
     random_state: int = 0,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int]],
-]:
+) -> (
+    tuple[Sequence[str | Mol], Sequence[str | Mol], Sequence[Sequence[Any]]]
+    | tuple[Sequence, ...]
+    | tuple[Sequence[int], Sequence[int]]
+):
     """
     Split using MaxMin algorithm.
 

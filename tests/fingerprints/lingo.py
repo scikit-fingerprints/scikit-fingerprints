@@ -1,5 +1,4 @@
 import os
-from typing import Union
 
 import numpy as np
 from scipy.sparse import csr_array, load_npz
@@ -96,7 +95,7 @@ def test_lingo_fingerprint_count_sparse():
     assert np.all(X_skfp.data > 0)
 
 
-def _load_lingo_data_file(count: bool, sparse: bool) -> Union[np.ndarray, csr_array]:
+def _load_lingo_data_file(count: bool, sparse: bool) -> np.ndarray | csr_array:
     count_str = "count" if count else "bit"
     sparse_str = "sparse" if sparse else "fp"
     extension = "npz" if sparse else "npy"

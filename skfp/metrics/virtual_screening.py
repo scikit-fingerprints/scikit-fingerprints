@@ -1,5 +1,4 @@
 from numbers import Real
-from typing import Union
 
 import numpy as np
 from rdkit.ML.Scoring.Scoring import CalcBEDROC, CalcEnrichment, CalcRIE
@@ -17,8 +16,8 @@ from sklearn.utils.multiclass import type_of_target
     prefer_skip_nested_validation=True,
 )
 def enrichment_factor(
-    y_true: Union[np.ndarray, list[int]],
-    y_score: Union[np.ndarray, list[float]],
+    y_true: np.ndarray | list[int],
+    y_score: np.ndarray | list[float],
     fraction: float = 0.05,
 ) -> float:
     r"""
@@ -87,7 +86,7 @@ def enrichment_factor(
     y_score = check_array(y_score, ensure_2d=False)
     check_consistent_length(y_true, y_score)
 
-    scores = sorted(zip(y_score, y_true), reverse=True)
+    scores = sorted(zip(y_score, y_true, strict=False), reverse=True)
 
     # RDKit returns a list, we have to extract the actual float
     # it can sometimes return an empty list, so we catch that and return 0.0 then, see:
@@ -105,8 +104,8 @@ def enrichment_factor(
     prefer_skip_nested_validation=True,
 )
 def rie_score(
-    y_true: Union[np.ndarray, list[int]],
-    y_score: Union[np.ndarray, list[float]],
+    y_true: np.ndarray | list[int],
+    y_score: np.ndarray | list[float],
     alpha: float = 20,
 ) -> float:
     r"""
@@ -185,7 +184,7 @@ def rie_score(
     y_score = check_array(y_score, ensure_2d=False)
     check_consistent_length(y_true, y_score)
 
-    scores = sorted(zip(y_score, y_true), reverse=True)
+    scores = sorted(zip(y_score, y_true, strict=False), reverse=True)
     return CalcRIE(scores, col=1, alpha=alpha)
 
 
@@ -198,8 +197,8 @@ def rie_score(
     prefer_skip_nested_validation=True,
 )
 def bedroc_score(
-    y_true: Union[np.ndarray, list[int]],
-    y_score: Union[np.ndarray, list[float]],
+    y_true: np.ndarray | list[int],
+    y_score: np.ndarray | list[float],
     alpha: float = 20,
 ) -> float:
     r"""
@@ -262,5 +261,5 @@ def bedroc_score(
     y_score = check_array(y_score, ensure_2d=False)
     check_consistent_length(y_true, y_score)
 
-    scores = sorted(zip(y_score, y_true), reverse=True)
+    scores = sorted(zip(y_score, y_true, strict=False), reverse=True)
     return CalcBEDROC(scores, col=1, alpha=alpha)

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from sklearn.base import BaseEstimator, OutlierMixin
@@ -61,14 +60,14 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
 
     def __init__(
         self,
-        n_jobs: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        verbose: int | dict = 0,
     ):
         self.n_jobs = n_jobs
         self.verbose = verbose
 
     @abstractmethod
-    def fit(self, X: np.ndarray, y: Optional[np.ndarray] = None):
+    def fit(self, X: np.ndarray, y: np.ndarray | None = None):
         """
         Fit applicability domain estimator.
 

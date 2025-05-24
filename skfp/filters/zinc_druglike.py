@@ -1,5 +1,3 @@
-from typing import Optional
-
 from rdkit.Chem import GetFormalCharge, Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
@@ -96,8 +94,8 @@ class ZINCDruglikeFilter(BaseFilter):
         self,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
         verbose: int = 0,
     ):
         super().__init__(

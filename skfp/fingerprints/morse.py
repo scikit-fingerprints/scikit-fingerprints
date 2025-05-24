@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -128,9 +127,9 @@ class MORSEFingerprint(BaseFingerprintTransformer):
     def __init__(
         self,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=224,
@@ -172,8 +171,8 @@ class MORSEFingerprint(BaseFingerprintTransformer):
         return np.asarray(feature_names, dtype=object)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute MORSE fingerprints.
 
@@ -193,7 +192,7 @@ class MORSEFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy=copy)
 
-    def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem.rdMolDescriptors import CalcMORSE
 
         X = require_mols_with_conf_ids(X)

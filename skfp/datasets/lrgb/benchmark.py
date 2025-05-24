@@ -1,7 +1,6 @@
 import os
 from collections.abc import Iterator
 from functools import partial
-from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -23,14 +22,12 @@ from skfp.datasets.utils import fetch_splits
     prefer_skip_nested_validation=True,
 )
 def load_lrgb_mol_benchmark(
-    data_dir: Optional[Union[str, os.PathLike]] = None,
+    data_dir: str | os.PathLike | None = None,
     mol_type: str = "SMILES",
     standardize_labels: bool = True,
     as_frames: bool = False,
     verbose: bool = False,
-) -> Union[
-    Iterator[tuple[str, pd.DataFrame]], Iterator[tuple[str, list[str], np.ndarray]]
-]:
+) -> Iterator[tuple[str, pd.DataFrame]] | Iterator[tuple[str, list[str], np.ndarray]]:
     """
     Load the LRGB molecular datasets.
 
@@ -124,12 +121,12 @@ def load_lrgb_mol_benchmark(
 )
 def load_lrgb_mol_dataset(
     dataset_name: str,
-    data_dir: Optional[Union[str, os.PathLike]] = None,
+    data_dir: str | os.PathLike | None = None,
     mol_type: str = "SMILES",
     standardize_labels: bool = True,
     as_frame: bool = False,
     verbose: bool = False,
-) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
     """
     Load LRGB molecular dataset by name.
 
@@ -214,10 +211,10 @@ array([1, 1, 1, ..., 1, 1, 1]))
 )
 def load_lrgb_mol_splits(
     dataset_name: str,
-    data_dir: Optional[Union[str, os.PathLike]] = None,
+    data_dir: str | os.PathLike | None = None,
     as_dict: bool = False,
     verbose: bool = False,
-) -> Union[tuple[list[int], list[int], list[int]], dict[str, list[int]]]:
+) -> tuple[list[int], list[int], list[int]] | dict[str, list[int]]:
     """
     Load the official LRGB splits for molecular datasets.
 

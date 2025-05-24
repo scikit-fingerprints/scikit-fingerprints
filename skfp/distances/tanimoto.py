@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import numba
 import numpy as np
 from scipy.sparse import csr_array
@@ -14,8 +12,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def tanimoto_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     r"""
     Tanimoto similarity for vectors of binary values.
@@ -94,8 +92,8 @@ def tanimoto_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def tanimoto_binary_distance(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     """
     Tanimoto distance for vectors of binary values.
@@ -160,8 +158,8 @@ def tanimoto_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def tanimoto_count_similarity(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     r"""
     Tanimoto similarity for vectors of count values.
@@ -243,8 +241,8 @@ def tanimoto_count_similarity(
     prefer_skip_nested_validation=True,
 )
 def tanimoto_count_distance(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     """
     Tanimoto distance for vectors of count values.
@@ -305,7 +303,7 @@ def tanimoto_count_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_binary_similarity(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto similarity for binary matrices.
@@ -392,7 +390,7 @@ def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.nda
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_binary_distance(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of binary values.
@@ -448,7 +446,7 @@ def bulk_tanimoto_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_count_similarity(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto similarity for count matrices.
@@ -556,7 +554,7 @@ def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_count_distance(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of count values.

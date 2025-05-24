@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from numbers import Real
-from typing import Callable, Optional, Union
 
 import numpy as np
 from scipy.sparse import csr_array
@@ -137,10 +137,10 @@ class DistanceToCentroidADChecker(BaseADChecker):
 
     def __init__(
         self,
-        threshold: Union[float, str] = "auto",
-        metric: Union[str, Callable] = "euclidean",
-        n_jobs: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        threshold: float | str = "auto",
+        metric: str | Callable = "euclidean",
+        n_jobs: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -167,7 +167,7 @@ class DistanceToCentroidADChecker(BaseADChecker):
     def fit(  # noqa: D102
         self,
         X: np.ndarray,
-        y: Optional[np.ndarray] = None,  # noqa: ARG002
+        y: np.ndarray | None = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
 
@@ -192,7 +192,7 @@ class DistanceToCentroidADChecker(BaseADChecker):
 
         return self
 
-    def predict(self, X: Union[np.ndarray, csr_array]) -> np.ndarray:  # noqa: D102
+    def predict(self, X: np.ndarray | csr_array) -> np.ndarray:  # noqa: D102
         centroid_dists = self.score_samples(X)
         return centroid_dists <= self.threshold_
 

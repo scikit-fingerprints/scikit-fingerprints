@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import numpy as np
 from scipy.sparse import csr_array
 from scipy.stats import f as f_dist
@@ -79,8 +77,8 @@ class HotellingT2TestADChecker(BaseADChecker):
     def __init__(
         self,
         alpha: float = 0.1,
-        n_jobs: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -91,7 +89,7 @@ class HotellingT2TestADChecker(BaseADChecker):
     def fit(  # noqa: D102
         self,
         X: np.ndarray,
-        y: Optional[np.ndarray] = None,  # noqa: ARG002
+        y: np.ndarray | None = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
 
@@ -106,7 +104,7 @@ class HotellingT2TestADChecker(BaseADChecker):
         f_val = f_dist.ppf(self.alpha, p, n - p)
         self.threshold_ = p * (n - 1) * (n + 1) / (n * (n - p)) * f_val
 
-    def predict(self, X: Union[np.ndarray, csr_array]) -> np.ndarray:  # noqa: D102
+    def predict(self, X: np.ndarray | csr_array) -> np.ndarray:  # noqa: D102
         t2_values = self.score_samples(X)
         passed = t2_values <= self.threshold_
         return passed

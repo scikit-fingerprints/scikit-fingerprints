@@ -1,5 +1,4 @@
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from scipy.sparse import csr_array
@@ -91,10 +90,10 @@ class PCABoundingBoxADChecker(BaseADChecker):
 
     def __init__(
         self,
-        n_components: Union[int, float, str, None] = None,
+        n_components: int | float | str | None = None,
         whiten: bool = False,
-        n_jobs: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -106,7 +105,7 @@ class PCABoundingBoxADChecker(BaseADChecker):
     def fit(  # noqa: D102
         self,
         X: np.ndarray,
-        y: Optional[np.ndarray] = None,  # noqa: ARG002
+        y: np.ndarray | None = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
 
@@ -123,7 +122,7 @@ class PCABoundingBoxADChecker(BaseADChecker):
 
         return self
 
-    def predict(self, X: Union[np.ndarray, csr_array]) -> np.ndarray:  # noqa: D102
+    def predict(self, X: np.ndarray | csr_array) -> np.ndarray:  # noqa: D102
         check_is_fitted(self)
         X = validate_data(self, X=X, reset=False)
 

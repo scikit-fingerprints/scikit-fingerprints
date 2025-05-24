@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 import scipy.sparse
@@ -101,10 +101,10 @@ class BaseFingerprintTransformer(
         requires_conformers: bool = False,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
-        random_state: Optional[int] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
+        random_state: int | None = 0,
     ):
         self.count = count
         self.sparse = sparse
@@ -138,7 +138,7 @@ class BaseFingerprintTransformer(
             self.requires_conformers = self.use_3D
         return self
 
-    def fit(self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params):
+    def fit(self, X: Sequence[str | Mol], y: Any | None = None, **fit_params):
         """
         Unused, kept for scikit-learn compatibility.
 
@@ -160,9 +160,7 @@ class BaseFingerprintTransformer(
         self._validate_params()
         return self
 
-    def fit_transform(
-        self, X: Sequence[Union[str, Mol]], y: Optional[Any] = None, **fit_params
-    ):
+    def fit_transform(self, X: Sequence[str | Mol], y: Any | None = None, **fit_params):
         """
         The same as ``.transform()`` method, kept for scikit-learn compatibility.
 
@@ -185,8 +183,8 @@ class BaseFingerprintTransformer(
         return self.transform(X)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute fingerprints. Output shape depends on the inheriting class.
 
@@ -231,9 +229,7 @@ class BaseFingerprintTransformer(
             return scipy.sparse.vstack(results) if self.sparse else np.vstack(results)
 
     @abstractmethod
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         """
         Calculate fingerprints for a given input batch.
 
@@ -252,18 +248,16 @@ class BaseFingerprintTransformer(
     @staticmethod
     def _hash_fingerprint_bits(
         X: list[
-            Union[
-                IntSparseIntVect,
-                LongSparseIntVect,
-                SparseBitVect,
-                UIntSparseIntVect,
-                ULongSparseIntVect,
-            ]
+            IntSparseIntVect
+            | LongSparseIntVect
+            | SparseBitVect
+            | UIntSparseIntVect
+            | ULongSparseIntVect
         ],
         fp_size: int,
         count: bool,
         sparse: bool,
-    ) -> Union[np.ndarray, csr_array]:
+    ) -> np.ndarray | csr_array:
         rdkit_vec_types = (
             IntSparseIntVect,
             LongSparseIntVect,

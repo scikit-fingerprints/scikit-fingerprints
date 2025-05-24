@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import numba
 import numpy as np
 from scipy.sparse import csr_array
@@ -14,8 +12,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def braun_blanquet_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     r"""
     Braun-Blanquet similarity for vectors of binary values.
@@ -100,7 +98,7 @@ def braun_blanquet_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def braun_blanquet_binary_distance(
-    vec_a: Union[np.ndarray, csr_array], vec_b: Union[np.ndarray, csr_array]
+    vec_a: np.ndarray | csr_array, vec_b: np.ndarray | csr_array
 ) -> float:
     """
     Braun-Blanquet distance for vectors of binary values.
@@ -169,7 +167,7 @@ def braun_blanquet_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_braun_blanquet_binary_similarity(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Braun-Blanquet similarity for binary matrices.
@@ -262,7 +260,7 @@ def _bulk_braun_blanquet_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_braun_blanquet_binary_distance(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Braun-Blanquet distance for vectors of binary values.
