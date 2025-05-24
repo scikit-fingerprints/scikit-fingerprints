@@ -1,7 +1,7 @@
 from collections import defaultdict
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -43,21 +43,19 @@ from skfp.utils.validators import ensure_mols
     prefer_skip_nested_validation=True,
 )
 def butina_train_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    test_size: float | None = None,
     threshold: float = 0.65,
     approximate: bool = False,
     return_indices: bool = False,
-    n_jobs: Optional[int] = None,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int]],
-]:
+    n_jobs: int | None = None,
+) -> (
+    tuple[Sequence[str | Mol], Sequence[str | Mol], Sequence[Sequence[Any]]]
+    | tuple[Sequence, ...]
+    | tuple[Sequence[int], Sequence[int]]
+):
     """
     Split using Taylor-Butina clustering.
 
@@ -216,25 +214,25 @@ def butina_train_test_split(
     prefer_skip_nested_validation=True,
 )
 def butina_train_valid_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    valid_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    valid_size: float | None = None,
+    test_size: float | None = None,
     threshold: float = 0.65,
     approximate: bool = False,
     return_indices: bool = False,
-    n_jobs: Optional[int] = None,
-) -> Union[
+    n_jobs: int | None = None,
+) -> (
     tuple[
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
+        Sequence[str | Mol],
+        Sequence[str | Mol],
+        Sequence[str | Mol],
         Sequence[Sequence[Any]],
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int], Sequence[int]],
-]:
+    ]
+    | tuple[Sequence, ...]
+    | tuple[Sequence[int], Sequence[int], Sequence[int]]
+):
     """
     Split using Taylor-Butina clustering.
 
@@ -381,10 +379,10 @@ def butina_train_valid_test_split(
 
 
 def _create_clusters(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     threshold: float = 0.65,
     approximate: bool = False,
-    n_jobs: Optional[int] = None,
+    n_jobs: int | None = None,
 ) -> list[list[int]]:
     """
     Generate Taylor-Butina clusters for a list of SMILES strings or RDKit ``Mol`` objects.
@@ -441,7 +439,9 @@ def _create_clusters(
 
     # assign rest of points to nearest neighbor clusters
     nearest_cluster_idxs = nearest_cluster_idxs.ravel()
-    for mol_idx, cluster_idx in zip(non_centroid_idxs, nearest_cluster_idxs):
+    for mol_idx, cluster_idx in zip(
+        non_centroid_idxs, nearest_cluster_idxs, strict=False
+    ):
         clustering[cluster_idx].append(mol_idx)
 
     clusters = list(clustering.values())

@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 from rdkit.Chem import Mol
 from rdkit.Chem.Descriptors import MolWt
 from rdkit.Chem.rdMolDescriptors import CalcNumRings, CalcNumRotatableBonds
@@ -37,7 +35,7 @@ def average_molecular_weight(mol: Mol) -> float:
     return MolWt(mol) / mol.GetNumAtoms()
 
 
-def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
+def bond_count(mol: Mol, bond_type: str | None = None) -> int:
     """
     Bond count.
 
@@ -77,7 +75,7 @@ def bond_count(mol: Mol, bond_type: Optional[str] = None) -> int:
     return mol.GetNumBonds()
 
 
-def element_atom_count(mol: Mol, atom_id: Union[int, str]) -> int:
+def element_atom_count(mol: Mol, atom_id: int | str) -> int:
     """
     Element atom count.
 

@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Real
-from typing import Optional, Union
 
 import numpy as np
 from numpy.linalg import norm
@@ -135,9 +134,9 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         charge_scaling_factor: float = 25.0,
         charge_errors: str = "raise",
         errors: str = "raise",
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=15,
@@ -152,8 +151,8 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         self.errors = errors
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute ElectroShape fingerprints.
 
@@ -177,7 +176,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
     def transform_x_y(
         self, X: Sequence[Mol], y: np.ndarray, copy: bool = False
-    ) -> tuple[Union[np.ndarray, csr_array], np.ndarray]:
+    ) -> tuple[np.ndarray | csr_array, np.ndarray]:
         """
         Compute ElectroShape fingerprints. The returned values for X and y are
         properly synchronized.
@@ -216,7 +215,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
         return X, y
 
-    def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[Mol]) -> np.ndarray | csr_array:
         mols = require_mols_with_conf_ids(X)
 
         if self.errors == "raise":

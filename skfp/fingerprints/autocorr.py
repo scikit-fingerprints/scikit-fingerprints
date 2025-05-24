@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -114,9 +113,9 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
     def __init__(
         self,
         use_3D: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         n_features_out = 80 if use_3D else 192
         super().__init__(
@@ -184,8 +183,8 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
         return np.asarray(feature_names, dtype=object)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute Autocorrelation fingerprints. Output shape depends on ``use_3D``
         parameter.
@@ -207,9 +206,7 @@ class AutocorrFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem.rdMolDescriptors import CalcAUTOCORR2D, CalcAUTOCORR3D
 
         if not self.use_3D:

@@ -10,7 +10,6 @@
 # source: https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/MACCSkeys.py
 
 from collections.abc import Sequence
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, MolToSmiles
@@ -102,9 +101,9 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         self,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         n_features_out = 158 if count else 166
         super().__init__(
@@ -466,8 +465,8 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         return np.asarray(feature_names, dtype=object)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute MACCS fingerprints. Output shape depends on ``count``
         parameter.
@@ -487,9 +486,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem.rdMolDescriptors import GetMACCSKeysFingerprint
 
         X = ensure_mols(X)
@@ -689,7 +686,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         return counts
 
     def _get_smarts_match_counts(
-        self, mol: Mol, smarts_list: list[Optional[str]]
+        self, mol: Mol, smarts_list: list[str | None]
     ) -> list[int]:
         from rdkit.Chem import MolFromSmarts
 

@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from joblib import effective_n_jobs
@@ -71,9 +70,9 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         self,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         self.allow_one_violation = allow_one_violation
         self.return_indicators = return_indicators
@@ -88,7 +87,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         """
         return True
 
-    def fit(self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None):
+    def fit(self, X: Sequence[str | Mol], y: np.ndarray | None = None):
         """Unused, kept for scikit-learn compatibility.
 
         Parameters
@@ -107,7 +106,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         return self
 
     def fit_transform(
-        self, X: Sequence[Union[str, Mol]], y: Optional[np.ndarray] = None, **fit_params
+        self, X: Sequence[str | Mol], y: np.ndarray | None = None, **fit_params
     ):
         """
         The same as ``.transform()`` method, kept for scikit-learn compatibility.
@@ -131,8 +130,8 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         return self.transform(X)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[list[Union[str, Mol]], np.ndarray]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> list[str | Mol] | np.ndarray:
         """
         Apply a filter to input molecules. Output depends on ``return_indicators``
         attribute.
@@ -158,8 +157,8 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
             return [mol for idx, mol in enumerate(X) if filter_ind[idx]]
 
     def transform_x_y(
-        self, X: Sequence[Union[str, Mol]], y: np.ndarray, copy: bool = False
-    ) -> Union[tuple[list[Union[str, Mol]], np.ndarray], tuple[np.ndarray, np.ndarray]]:
+        self, X: Sequence[str | Mol], y: np.ndarray, copy: bool = False
+    ) -> tuple[list[str | Mol], np.ndarray] | tuple[np.ndarray, np.ndarray]:
         """
         Apply a filter to input molecules. Output depends on ``return_indicators``
         attribute.
@@ -193,7 +192,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
             return mols, y
 
     def _get_filter_indicators(
-        self, mols: Sequence[Union[str, Mol]], copy: bool
+        self, mols: Sequence[str | Mol], copy: bool
     ) -> np.ndarray:
         self._validate_params()
         mols = deepcopy(mols) if copy else mols

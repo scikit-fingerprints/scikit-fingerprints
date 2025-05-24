@@ -1,6 +1,5 @@
 import itertools
-from collections.abc import Sequence
-from typing import Callable, Optional, Union
+from collections.abc import Callable, Sequence
 
 from joblib import effective_n_jobs
 from sklearn.utils.parallel import Parallel, delayed
@@ -17,7 +16,7 @@ class ProgressParallel(Parallel):
         Settings to use for the ``tqdm()`` progress bar.
     """
 
-    def __init__(self, *args, tqdm_settings: Optional[dict] = None, **kwargs):
+    def __init__(self, *args, tqdm_settings: dict | None = None, **kwargs):
         super().__init__(*args, **kwargs)
         if tqdm_settings is None:
             tqdm_settings = {}
@@ -35,11 +34,11 @@ class ProgressParallel(Parallel):
 def run_in_parallel(
     func: Callable,
     data: Sequence,
-    n_jobs: Optional[int] = None,
-    batch_size: Optional[int] = None,
+    n_jobs: int | None = None,
+    batch_size: int | None = None,
     single_element_func: bool = False,
     flatten_results: bool = False,
-    verbose: Union[int, dict] = 0,
+    verbose: int | dict = 0,
     **kwargs,
 ) -> list:
     """

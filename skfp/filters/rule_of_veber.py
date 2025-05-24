@@ -1,5 +1,3 @@
-from typing import Union
-
 from rdkit.Chem import Mol, rdMolDescriptors
 
 from skfp.bases.base_filter import BaseFilter
@@ -66,9 +64,9 @@ class RuleOfVeberFilter(BaseFilter):
         self,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
-        n_jobs: Union[int, None] = None,
-        batch_size: Union[int, None] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             allow_one_violation, return_indicators, n_jobs, batch_size, verbose

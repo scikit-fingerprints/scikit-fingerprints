@@ -4,7 +4,6 @@ from collections import defaultdict
 from collections.abc import Sequence
 from hashlib import sha256
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, MolToSmiles, PathToSubmol
@@ -121,7 +120,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
     array([[0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+           [0, 0, 0, ..., 0, 0, 0]], shape=(4, 1024), dtype=uint8)
     """
 
     _parameter_constraints: dict = {
@@ -140,10 +139,10 @@ class MAPFingerprint(BaseFingerprintTransformer):
         include_chirality: bool = False,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
-        random_state: Optional[int] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
+        random_state: int | None = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
@@ -160,8 +159,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
         self.include_chirality = include_chirality
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute MAP fingerprints.
 
@@ -180,9 +179,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy=copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         X = ensure_mols(X)
         X = np.stack(
             [self._calculate_single_mol_fingerprint(mol) for mol in X],
@@ -209,11 +206,11 @@ class MAPFingerprint(BaseFingerprintTransformer):
                 folded[hashed % self.fp_size] = 1
         return folded
 
-    def _get_atom_envs(self, mol: Mol) -> dict[int, list[Optional[str]]]:
+    def _get_atom_envs(self, mol: Mol) -> dict[int, list[str | None]]:
         from rdkit.Chem import FindMolChiralCenters
 
         # for each atom get its environment, i.e. radius-hop neighborhood.
-        atom_envs: dict[int, list[Optional[str]]] = defaultdict(list)
+        atom_envs: dict[int, list[str | None]] = defaultdict(list)
 
         for atom in mol.GetAtoms():
             atom_idx = atom.GetIdx()
@@ -232,7 +229,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
 
         return atom_envs
 
-    def _find_env(self, mol: Mol, atom_identifier: int, radius: int) -> Optional[str]:
+    def _find_env(self, mol: Mol, atom_identifier: int, radius: int) -> str | None:
         # get SMILES of atom environment at given radius
         atom_identifiers_within_radius: list[int] = FindAtomEnvironmentOfRadiusN(
             mol=mol, radius=radius, rootedAtAtom=atom_identifier
@@ -271,8 +268,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
             dist = int(distance_matrix[idx1][idx2])
 
             for i in range(self.radius):
-                env_a: Optional[str] = atoms_envs[idx1][i]
-                env_b: Optional[str] = atoms_envs[idx2][i]
+                env_a: str | None = atoms_envs[idx1][i]
+                env_b: str | None = atoms_envs[idx2][i]
 
                 shingle = self._make_shingle(env_a, env_b, dist)
 
@@ -285,7 +282,7 @@ class MAPFingerprint(BaseFingerprintTransformer):
         return atom_pairs
 
     @staticmethod
-    def _make_shingle(env_a: Optional[str], env_b: Optional[str], distance: int) -> str:
+    def _make_shingle(env_a: str | None, env_b: str | None, distance: int) -> str:
         env_a = env_a if env_a else ""
         env_b = env_b if env_b else ""
 

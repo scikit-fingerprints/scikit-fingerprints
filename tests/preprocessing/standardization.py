@@ -11,7 +11,7 @@ def test_mol_standardizer(smiles_list):
     mols_parallel = standardizer_parallel.transform(smiles_list)
 
     assert len(mols) == len(mols_parallel)
-    for mol, mol_2 in zip(mols, mols_parallel):
+    for mol, mol_2 in zip(mols, mols_parallel, strict=False):
         assert MolToSmiles(mol) == MolToSmiles(mol_2)
 
 

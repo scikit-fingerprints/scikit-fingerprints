@@ -1,5 +1,4 @@
 from collections import Counter
-from typing import Optional
 
 import numpy as np
 from rdkit.Chem import BondType, GetDistanceMatrix, Mol
@@ -9,9 +8,7 @@ from skfp.utils.validators import require_atoms
 
 
 @require_atoms(min_atoms=2)
-def average_wiener_index(
-    mol: Mol, distance_matrix: Optional[np.ndarray] = None
-) -> float:
+def average_wiener_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> float:
     """
     Average Wiener Index (AW).
 
@@ -49,7 +46,7 @@ def average_wiener_index(
     return (2 * wiener_idx) / (num_atoms * (num_atoms - 1))
 
 
-def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
+def balaban_j_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> float:
     r"""
     Balaban's J Index.
 
@@ -94,7 +91,7 @@ def balaban_j_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
     return BalabanJ(mol=mol, dMat=distance_matrix)
 
 
-def burden_matrix(mol: Mol, descriptors: Optional[np.ndarray] = None) -> np.ndarray:
+def burden_matrix(mol: Mol, descriptors: np.ndarray | None = None) -> np.ndarray:
     """
     Burden matrix.
 
@@ -181,7 +178,7 @@ def burden_matrix(mol: Mol, descriptors: Optional[np.ndarray] = None) -> np.ndar
     return matrix
 
 
-def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
+def diameter(mol: Mol, distance_matrix: np.ndarray | None = None) -> int:
     """
     Diameter.
 
@@ -219,7 +216,7 @@ def diameter(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     return int(np.max(eccentricities))
 
 
-def graph_distance_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
+def graph_distance_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> int:
     r"""
     Graph Distance Index (GDI).
 
@@ -305,7 +302,7 @@ def hall_kier_alpha(mol: Mol) -> float:
     return HallKierAlpha(mol)
 
 
-def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> float:
+def petitjean_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> float:
     r"""
     Petitjean Index.
 
@@ -352,7 +349,7 @@ def petitjean_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> f
 
 
 def polarity_number(
-    mol: Mol, distance_matrix: Optional[np.ndarray] = None, carbon_only: bool = False
+    mol: Mol, distance_matrix: np.ndarray | None = None, carbon_only: bool = False
 ) -> int:
     """
     Polarity Number.
@@ -536,7 +533,7 @@ def kappa3_index(mol: Mol) -> float:
     return Kappa3(mol)
 
 
-def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
+def radius(mol: Mol, distance_matrix: np.ndarray | None = None) -> int:
     """
     Radius.
 
@@ -574,7 +571,7 @@ def radius(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
     return int(np.min(eccentricities))
 
 
-def wiener_index(mol: Mol, distance_matrix: Optional[np.ndarray] = None) -> int:
+def wiener_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> int:
     """
     Wiener Index (W).
 

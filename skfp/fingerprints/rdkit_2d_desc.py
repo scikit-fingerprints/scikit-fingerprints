@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from numbers import Real
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -103,9 +102,9 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         normalized: bool = False,
         clip_val: float = 2147483647,  # max int32 value
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=200,
@@ -143,8 +142,8 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         return np.asarray(feature_names, dtype=object)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute fingerprints consisting of all RDKit 2D descriptors.
 
@@ -163,9 +162,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         from descriptastorus.descriptors.rdDescriptors import RDKit2D
         from descriptastorus.descriptors.rdNormalizedDescriptors import (
             RDKit2DNormalized,
@@ -178,7 +175,10 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         # and generates a lot of warnings
         with no_rdkit_logs():
             gen = RDKit2DNormalized() if self.normalized else RDKit2D()
-            X = [np.array(gen.calculateMol(mol, smi)) for mol, smi in zip(mols, smiles)]
+            X = [
+                np.array(gen.calculateMol(mol, smi))
+                for mol, smi in zip(mols, smiles, strict=False)
+            ]
 
         # clip values to float32 range
         X = [np.clip(x, -self.clip_val, self.clip_val) for x in X]

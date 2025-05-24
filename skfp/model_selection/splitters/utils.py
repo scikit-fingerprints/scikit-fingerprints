@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from itertools import chain
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 from sklearn.model_selection._split import _validate_shuffle_split
@@ -31,8 +31,8 @@ def split_additional_data(
 
 
 def validate_train_test_split_sizes(
-    train_size: Optional[Union[float, int]],
-    test_size: Optional[Union[float, int]],
+    train_size: float | int | None,
+    test_size: float | int | None,
     n_samples: int,
 ) -> tuple[int, int]:
     """
@@ -45,9 +45,9 @@ def validate_train_test_split_sizes(
 
 
 def validate_train_valid_test_split_sizes(
-    train_size: Optional[Union[float, int]],
-    valid_size: Optional[Union[float, int]],
-    test_size: Optional[Union[float, int]],
+    train_size: float | int | None,
+    valid_size: float | int | None,
+    test_size: float | int | None,
     n_samples: int,
 ) -> tuple[int, int, int]:
     """
@@ -67,9 +67,9 @@ def validate_train_valid_test_split_sizes(
     valid_size_type = np.asarray(valid_size).dtype.kind
     train_size_type = np.asarray(train_size).dtype.kind
 
-    train_size: Union[int, float]
-    valid_size: Union[int, float]
-    test_size: Union[int, float]
+    train_size: int | float
+    valid_size: int | float
+    test_size: int | float
 
     _check_subset_size(train_size, n_samples, "train")
     _check_subset_size(valid_size, n_samples, "valid")
@@ -109,7 +109,7 @@ def validate_train_valid_test_split_sizes(
     return int(n_train), int(n_valid), int(n_test)
 
 
-def _check_subset_size(size: Union[float, int], n_samples: int, subset: str) -> None:
+def _check_subset_size(size: float | int, n_samples: int, subset: str) -> None:
     size_type = np.asarray(size).dtype.kind
     subset_size_str = f"{subset}_size"  # e.g. "train_size", "test_size"
 

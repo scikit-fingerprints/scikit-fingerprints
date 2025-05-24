@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from copy import deepcopy
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -109,9 +108,9 @@ class USRCATFingerprint(BaseFingerprintTransformer):
     def __init__(
         self,
         errors: str = "raise",
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=60,
@@ -123,8 +122,8 @@ class USRCATFingerprint(BaseFingerprintTransformer):
         self.errors = errors
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute USRCAT fingerprints. If ``errors`` is set to ``"ignore"``, then in
         case of errors less than n_samples values may be returned.
@@ -149,7 +148,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
 
     def transform_x_y(
         self, X: Sequence[Mol], y: np.ndarray, copy: bool = False
-    ) -> tuple[Union[np.ndarray, csr_array], np.ndarray]:
+    ) -> tuple[np.ndarray | csr_array, np.ndarray]:
         """
         Compute USRCAT fingerprints. If ``errors`` is set to ``"ignore"``, then in
         case of errors less than n_samples values may be returned. The returned
@@ -189,7 +188,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
 
         return X, y
 
-    def _calculate_fingerprint(self, X: Sequence[Mol]) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem.rdMolDescriptors import GetUSRCAT
 
         X = require_mols_with_conf_ids(X)

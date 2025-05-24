@@ -1,7 +1,6 @@
 import json
 import os
 from pathlib import Path
-from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -15,7 +14,7 @@ from sklearn.datasets import get_data_home as get_sklearn_data_home
 
 
 def fetch_dataset(
-    data_dir: Optional[Union[str, os.PathLike]],
+    data_dir: str | os.PathLike | None,
     dataset_name: str,
     filename: str,
     verbose: bool = False,
@@ -30,7 +29,7 @@ def fetch_dataset(
 
 
 def fetch_splits(
-    data_dir: Optional[Union[str, os.PathLike]],
+    data_dir: str | os.PathLike | None,
     dataset_name: str,
     filename: str,
     verbose: bool = False,
@@ -48,9 +47,7 @@ def fetch_splits(
         return json.load(file)
 
 
-def get_data_home_dir(
-    data_dir: Optional[Union[str, os.PathLike]], dataset_name: str
-) -> str:
+def get_data_home_dir(data_dir: str | os.PathLike | None, dataset_name: str) -> str:
     """
     Get the data home directory. If valid dataset path is provided, first
     ensures it exists (and all directories in the path). Otherwise, it uses the

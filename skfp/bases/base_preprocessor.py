@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Integral
-from typing import Optional, Union
 
 from joblib import effective_n_jobs
 from rdkit.Chem import Mol
@@ -52,10 +51,10 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
         suppress_warnings: bool = False,
-        verbose: Union[int, dict] = 0,
+        verbose: int | dict = 0,
     ):
         self.n_jobs = n_jobs
         self.batch_size = batch_size
@@ -113,7 +112,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         """
         return self.transform(X)
 
-    def transform(self, X: Sequence[Union[str, Mol]], copy: bool = False):
+    def transform(self, X: Sequence[str | Mol], copy: bool = False):
         """
         Transform inputs. Output type depends on the inheriting class, but should
         be a sequence with the same length as input.

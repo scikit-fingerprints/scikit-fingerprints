@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import numba
 import numpy as np
 from scipy.sparse import csr_array
@@ -14,8 +12,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def dice_binary_similarity(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     r"""
     Dice similarity for vectors of binary values.
@@ -103,8 +101,8 @@ def dice_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def dice_binary_distance(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     """
     Dice distance for vectors of binary values.
@@ -180,8 +178,8 @@ def dice_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def dice_count_similarity(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     r"""
     Dice similarity for vectors of count values.
@@ -273,8 +271,8 @@ def dice_count_similarity(
     prefer_skip_nested_validation=True,
 )
 def dice_count_distance(
-    vec_a: Union[np.ndarray, csr_array],
-    vec_b: Union[np.ndarray, csr_array],
+    vec_a: np.ndarray | csr_array,
+    vec_b: np.ndarray | csr_array,
 ) -> float:
     """
     Dice distance for vectors of count values.
@@ -347,7 +345,7 @@ def dice_count_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_binary_similarity(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice similarity for binary matrices.
@@ -438,9 +436,7 @@ def _bulk_dice_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray
     },
     prefer_skip_nested_validation=True,
 )
-def bulk_dice_binary_distance(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
-) -> np.ndarray:
+def bulk_dice_binary_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
     r"""
     Bulk Dice distance for vectors of binary values.
 
@@ -495,7 +491,7 @@ def bulk_dice_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_count_similarity(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
+    X: np.ndarray, Y: np.ndarray | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice similarity for count matrices.
@@ -598,9 +594,7 @@ def _bulk_dice_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     },
     prefer_skip_nested_validation=True,
 )
-def bulk_dice_count_distance(
-    X: np.ndarray, Y: Optional[np.ndarray] = None
-) -> np.ndarray:
+def bulk_dice_count_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
     r"""
     Bulk Dice distance for vectors of count values.
 

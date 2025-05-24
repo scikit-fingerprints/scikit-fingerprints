@@ -4,7 +4,7 @@ import time
 import warnings
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Any, Optional, Union
+from typing import Any
 from urllib.parse import quote
 
 import requests
@@ -49,22 +49,20 @@ from skfp.utils.validators import ensure_smiles
     prefer_skip_nested_validation=True,
 )
 def pubchem_train_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    test_size: float | None = None,
     not_found_behavior: str = "test",
     return_indices: bool = False,
     n_jobs: int = 5,
     n_retries: int = 3,
     verbose: int = 0,
-) -> Union[
-    tuple[
-        Sequence[Union[str, Mol]], Sequence[Union[str, Mol]], Sequence[Sequence[Any]]
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int]],
-]:
+) -> (
+    tuple[Sequence[str | Mol], Sequence[str | Mol], Sequence[Sequence[Any]]]
+    | tuple[Sequence, ...]
+    | tuple[Sequence[int], Sequence[int]]
+):
     """
     Split using PubChem literature data.
 
@@ -198,26 +196,26 @@ def pubchem_train_test_split(
     prefer_skip_nested_validation=True,
 )
 def pubchem_train_valid_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    valid_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    valid_size: float | None = None,
+    test_size: float | None = None,
     not_found_behavior: str = "test",
     return_indices: bool = False,
     n_retries: int = 3,
     n_jobs: int = 5,
     verbose: int = 1,
-) -> Union[
+) -> (
     tuple[
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
-        Sequence[Union[str, Mol]],
+        Sequence[str | Mol],
+        Sequence[str | Mol],
+        Sequence[str | Mol],
         Sequence[Sequence[Any]],
-    ],
-    tuple[Sequence, ...],
-    tuple[Sequence[int], Sequence[int], Sequence[int]],
-]:
+    ]
+    | tuple[Sequence, ...]
+    | tuple[Sequence[int], Sequence[int], Sequence[int]]
+):
     """
     Split using PubChem literature data.
 
@@ -343,8 +341,8 @@ def pubchem_train_valid_test_split(
 
 
 def _get_pubchem_years(
-    data: Sequence[Union[str, Mol]], n_jobs: int, n_retries: int, verbosity: int
-) -> list[Optional[int]]:
+    data: Sequence[str | Mol], n_jobs: int, n_retries: int, verbosity: int
+) -> list[int | None]:
     """
     Get first literature publication year from PubChem for a list of molecules, either
     as SMILES strings or RDKit Mol objects.
@@ -379,7 +377,7 @@ def _get_pubchem_years(
     return years
 
 
-def _get_cid_for_smiles(smiles: str, n_retries: int, verbosity: int) -> Optional[str]:
+def _get_cid_for_smiles(smiles: str, n_retries: int, verbosity: int) -> str | None:
     """
     Get PubChem CID from SMILES, or None if molecule cannot be found.
     """
@@ -413,7 +411,7 @@ def _get_cid_for_smiles(smiles: str, n_retries: int, verbosity: int) -> Optional
     raise RuntimeError("CID could not be downloaded in {n_retries} retries")
 
 
-def _get_earliest_publication_date(cid: Optional[str], n_retries: int) -> Optional[int]:
+def _get_earliest_publication_date(cid: str | None, n_retries: int) -> int | None:
     """
     Get the date of the earliest publication from PubChem where a given molecule appears.
     There are molecules without publications, for which we return None.
@@ -434,7 +432,7 @@ def _get_earliest_publication_date(cid: Optional[str], n_retries: int) -> Option
     base_url = "https://pubchem.ncbi.nlm.nih.gov/sdq/sdqagent.cgi"
     params = {"infmt": "json", "outfmt": "json", "query": json.dumps(query)}
 
-    def get_publication_date(response: list[dict]) -> Optional[int]:
+    def get_publication_date(response: list[dict]) -> int | None:
         article_pub_date = None
         for entry in response:
             if "articlepubdate" in entry:

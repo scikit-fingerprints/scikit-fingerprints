@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 from rdkit.Chem import FilterCatalog, Mol
 from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 
@@ -73,9 +71,9 @@ class SureChEMBLFilter(BaseFilter):
         self,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,

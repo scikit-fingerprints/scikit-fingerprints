@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -110,7 +109,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     array([[0, 0, 0, ..., 0, 0, 1],
            [0, 1, 0, ..., 0, 0, 1],
            [1, 1, 0, ..., 1, 1, 0],
-           [0, 0, 1, ..., 1, 0, 1]], dtype=uint8)
+           [0, 0, 1, ..., 1, 0, 1]], shape=(4, 2048), dtype=uint8)
     """
 
     _parameter_constraints: dict = {
@@ -134,9 +133,9 @@ class MHFPFingerprint(BaseFingerprintTransformer):
         kekulize: bool = True,
         variant: str = "bit",
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
@@ -163,8 +162,8 @@ class MHFPFingerprint(BaseFingerprintTransformer):
             )
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute MHFP fingerprints.
 
@@ -183,9 +182,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy=copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 
         X = ensure_smiles(X)

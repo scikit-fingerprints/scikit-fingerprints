@@ -1,5 +1,4 @@
 from numbers import Integral
-from typing import Optional
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -171,7 +170,7 @@ def mcs_distance(mol_a: Mol, mol_b: Mol, timeout: int = 3600) -> float:
     prefer_skip_nested_validation=True,
 )
 def bulk_mcs_similarity(
-    X: list[Mol], Y: Optional[list[Mol]] = None, timeout: int = 3600
+    X: list[Mol], Y: list[Mol] | None = None, timeout: int = 3600
 ) -> np.ndarray:
     r"""
     Bulk MCS similarity.
@@ -236,7 +235,7 @@ def bulk_mcs_similarity(
     prefer_skip_nested_validation=True,
 )
 def bulk_mcs_distance(
-    X: list[Mol], Y: Optional[list[Mol]] = None, timeout: int = 3600
+    X: list[Mol], Y: list[Mol] | None = None, timeout: int = 3600
 ) -> np.ndarray:
     r"""
     Bulk MCS distance.

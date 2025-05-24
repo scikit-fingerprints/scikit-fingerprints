@@ -35,7 +35,7 @@ def test_usr_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
 
     X_rdkit = []
     y_rdkit = []
-    for mol, y in zip(mols_conformers_3_plus_atoms, labels):
+    for mol, y in zip(mols_conformers_3_plus_atoms, labels, strict=False):
         mol_fp = GetUSR(mol, confId=mol.GetIntProp("conf_id"))
         X_rdkit.append(mol_fp)
         y_rdkit.append(y)

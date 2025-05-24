@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 from numpy.random import Generator, RandomState
@@ -38,13 +38,13 @@ from skfp.utils.functions import get_data_from_indices
     prefer_skip_nested_validation=True,
 )
 def randomized_scaffold_train_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    test_size: float | None = None,
     use_csk: bool = False,
     return_indices: bool = False,
-    random_state: Optional[Union[int, RandomState, Generator]] = None,
+    random_state: int | RandomState | Generator | None = None,
 ):
     """
     Split using randomized groups of Bemis-Murcko scaffolds.
@@ -192,14 +192,14 @@ def randomized_scaffold_train_test_split(
     prefer_skip_nested_validation=True,
 )
 def randomized_scaffold_train_valid_test_split(
-    data: Sequence[Union[str, Mol]],
+    data: Sequence[str | Mol],
     *additional_data: Sequence,
-    train_size: Optional[float] = None,
-    valid_size: Optional[float] = None,
-    test_size: Optional[float] = None,
+    train_size: float | None = None,
+    valid_size: float | None = None,
+    test_size: float | None = None,
     use_csk: bool = False,
     return_indices: bool = False,
-    random_state: Optional[Union[int, RandomState, Generator]] = None,
+    random_state: int | RandomState | Generator | None = None,
 ):
     """
     Split using randomized groups of Bemis-Murcko scaffolds.

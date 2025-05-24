@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 import numpy as np
 import scipy
 from sklearn.utils.validation import check_is_fitted, validate_data
@@ -11,7 +9,7 @@ class ConvexHullADChecker(BaseADChecker):
     r"""
     Convex hull method.
 
-    Defined applicability domain based on the convex hull spanned by the training data.
+    Defines applicability domain based on the convex hull spanned by the training data.
     New molecules should lie inside this space.
 
     The problem is solved with linear programming formulation [1]_. Problem is reduced to
@@ -84,8 +82,8 @@ class ConvexHullADChecker(BaseADChecker):
 
     def __init__(
         self,
-        n_jobs: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -95,7 +93,7 @@ class ConvexHullADChecker(BaseADChecker):
     def fit(  # noqa: D102
         self,
         X: np.ndarray,
-        y: Optional[np.ndarray] = None,  # noqa: ARG002
+        y: np.ndarray | None = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
         self.points_ = X
@@ -127,7 +125,7 @@ class ConvexHullADChecker(BaseADChecker):
     def score_samples(self, X: np.ndarray) -> np.ndarray:
         """
         Calculate the applicability domain score of samples. It is simply a 0/1
-        decision equal to ``.predict()``, since no convex hull is explicitly computed.
+        decision equal to ``.predict()``.
 
         Parameters
         ----------
