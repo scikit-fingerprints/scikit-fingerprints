@@ -98,7 +98,12 @@ from .tanimoto import (
     tanimoto_count_similarity,
 )
 
-_functions = inspect.getmembers(sys.modules[__name__], inspect.isfunction)
+# exclude Fraggle and MCS, which operate on molecules
+_functions = [
+    (name, func)
+    for name, func in inspect.getmembers(sys.modules[__name__], inspect.isfunction)
+    if "fraggle" not in name and "mcs" not in name
+]
 
 
 _METRICS = {

@@ -13,7 +13,7 @@ class LeverageADChecker(BaseADChecker):
     r"""
     Leverage method.
 
-    Defined applicability domain based on the leverage statistic [1]_ [2]_ [3]_, which
+    Defines applicability domain based on the leverage statistic [1]_ [2]_ [3]_, which
     is a general distance of new point from the space of training data. Leverage is
     defined using the hat (projection / influence) matrix, and its formula is:
 

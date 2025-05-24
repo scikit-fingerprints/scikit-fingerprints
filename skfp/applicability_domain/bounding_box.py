@@ -12,7 +12,7 @@ class BoundingBoxADChecker(BaseADChecker):
     """
     Bounding box method.
 
-    Defined applicability domain based on feature ranges in the training data.
+    Defines applicability domain based on feature ranges in the training data.
     This creates a "bounding box" using their extreme values, and new molecules
     should lie in this distribution, i.e. have properties in the same ranges.
 
@@ -27,8 +27,7 @@ class BoundingBoxADChecker(BaseADChecker):
     extremely low or large values, respectively. For looser check, use ``num_allowed_violations``
     to allow a number of desrciptors to lie outside the given ranges.
 
-    This method scales great with both number of samples and features. It's arguably the
-    fastest and most scalable AD checker.
+    This method scales very well with both number of samples and features.
 
     Parameters
     ----------

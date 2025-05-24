@@ -11,7 +11,7 @@ class ConvexHullADChecker(BaseADChecker):
     r"""
     Convex hull method.
 
-    Defined applicability domain based on the convex hull spanned by the training data.
+    Defines applicability domain based on the convex hull spanned by the training data.
     New molecules should lie inside this space.
 
     The problem is solved with linear programming formulation [1]_. Problem is reduced to

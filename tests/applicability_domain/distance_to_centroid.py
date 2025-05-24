@@ -1,9 +1,17 @@
 import numpy as np
 import pytest
-from scipy.spatial.distance import euclidean
 
 from skfp.applicability_domain import DistanceToCentroidADChecker
-from skfp.distances import ct4_count_distance
+from skfp.applicability_domain.distance_to_centroid import SCIPY_METRIC_NAMES
+from skfp.distances import (
+    _BULK_METRIC_NAMES as SKFP_BULK_METRIC_NAMES,
+)
+from skfp.distances import (
+    _METRIC_NAMES as SKFP_METRIC_NAMES,
+)
+from skfp.distances import (
+    _METRICS as SKFP_METRICS,
+)
 from tests.applicability_domain.utils import get_data_inside_ad, get_data_outside_ad
 
 
@@ -39,21 +47,36 @@ def test_outside_distance_to_centroid_ad():
     assert np.all(preds == 0)
 
 
+def test_knn_lower_distance():
+    X_train, _ = get_data_inside_ad()
+    X_test = X_train + 10
+
+    # looser check, AD is larger
+    ad_checker = DistanceToCentroidADChecker(threshold=100)
+    ad_checker.fit(X_train)
+    passed_dist_100 = ad_checker.predict(X_test).sum()
+
+    # stricter check, AD is smaller
+    ad_checker = DistanceToCentroidADChecker(threshold=10)
+    ad_checker.fit(X_train)
+    passed_dist_10 = ad_checker.predict(X_test).sum()
+
+    # larger distance = larger AD = more pased points
+    assert passed_dist_100 > passed_dist_10
+
+
 @pytest.mark.parametrize(
-    "distance",
-    [
-        "euclidean",
-        euclidean,
-        "ct4_count_distance",
-        ct4_count_distance,
-        "bulk_ct4_count_distance",
-    ],
+    "metric",
+    list(SCIPY_METRIC_NAMES)
+    + list(SKFP_BULK_METRIC_NAMES)
+    + list(SKFP_METRIC_NAMES)
+    + list(SKFP_METRICS.values()),
 )
-def test_distance_functions(distance):
+def test_knn_different_metrics(metric):
     X_train, X_test = get_data_inside_ad()
 
     # smoke test, should not throw errors
-    ad_checker = DistanceToCentroidADChecker(distance=distance)
+    ad_checker = DistanceToCentroidADChecker(metric=metric)
     ad_checker.fit(X_train)
     ad_checker.predict(X_test)
 

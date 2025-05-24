@@ -13,9 +13,10 @@ class HotellingT2TestADChecker(BaseADChecker):
     r"""
     Hotelling's T^2 test method.
 
-    TODO description
-    This approach measures the Mahalanobis distance of a new sample from the mean
-    of the training data, scaled by the covariance structure of the training data.
+    Applicability domain is defined by the Hotelling's T^2 statistical test, which
+    is a multidimensional generalization of Student's t-test [1]_. It measures the
+    Mahalanobis distance of a new sample from the mean of the training data, scaled
+    by the covariance structure of the training data.
 
     Typically, physicochemical properties (continous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
@@ -23,7 +24,9 @@ class HotellingT2TestADChecker(BaseADChecker):
     of Hotelling's T^2 test, using PCA beforehand to obtain orthogonal features is
     particularly beneficial.
 
-    TODO scaling
+    This method scales relatively well with number of samples, but not the number of
+    features, as it requires computing the pseudoinverse of the covariance matrix,
+    which scales as :math:`O(d^3)`.
 
     Parameters
     ----------
@@ -44,7 +47,12 @@ class HotellingT2TestADChecker(BaseADChecker):
 
     References
     ----------
-    .. [1]
+    .. [1] `Kar, S., Roy, K., Leszczynski, J.
+        "Applicability Domain: A Step Toward Confident Predictions and Decidability
+        for QSAR Modeling."
+        Nicolotti, O. (eds) Computational Toxicology. Methods in Molecular Biology, vol 1800.
+        Humana Press, New York, NY
+        <https://doi.org/10.1007/978-1-4939-7899-1_6>`_
 
     Examples
     --------

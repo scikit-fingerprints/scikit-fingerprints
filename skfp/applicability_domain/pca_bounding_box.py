@@ -14,19 +14,33 @@ class PCABoundingBoxADChecker(BaseADChecker):
     r"""
     PCA bounding box method.
 
-    TODO description
+    Defines the applicability domain using coordinate axes found by Principal Component
+    Analysis (PCA) [1]_. AD is a hyperrectangle, with thresholds defined as minimal and
+    maximal values from the training set on PCA axes.
 
     Typically, physicochemical properties (continous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``.
 
-    TODO scaling
+    This method scales very well with both number of samples and features, but doesn't
+    work well for highly sparse input features (e.g. many molecular fingerprints),
+    since PCA centers the data.
 
     Parameters
     ----------
-    threshold: float or "auto", default="auto"
-        Maximal leverage allowed for applicability domain. New points with larger
-        leverage, i.e. distance to training set, are assumed to lie outside AD.
+    n_components: int, float or "mle", default=None
+        Number of PCA dimensions (components) used, passed to underlying scikit-learn
+        PCA instance. `scikit-learn PCA documentation <https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html>`_
+        for more information.
+
+    whiten: bool, default=False
+        When True (False by default) the `components_` vectors are multiplied by the
+        square root of `n_samples` and then divided by the singular values to ensure
+        uncorrelated outputs with unit component-wise variances.
+
+        Whitening will remove some information from the transformed signal (the relative
+        variance scales of the components), but this can sometimes improve the robustness
+        of applicability domain.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -41,7 +55,11 @@ class PCABoundingBoxADChecker(BaseADChecker):
 
     References
     ----------
-    .. [1]
+    .. [1] `Jaworska J, Nikolova-Jeliazkova N, Aldenberg T.
+        "QSAR Applicability Domain Estimation by Projection of the Training Set
+        in Descriptor Space: A Review"
+        Alternatives to Laboratory Animals. 2005;33(5):445-459
+        <https://journals.sagepub.com/doi/10.1177/026119290503300508>`_
 
     Examples
     --------
@@ -69,14 +87,12 @@ class PCABoundingBoxADChecker(BaseADChecker):
             None,
         ],
         "whiten": ["boolean"],
-        "random_state": ["random_state"],
     }
 
     def __init__(
         self,
         n_components: Union[int, float, str, None] = None,
         whiten: bool = False,
-        random_state: Optional[int] = None,
         n_jobs: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
@@ -86,7 +102,6 @@ class PCABoundingBoxADChecker(BaseADChecker):
         )
         self.n_components = n_components
         self.whiten = whiten
-        self.random_state = random_state
 
     def fit(  # noqa: D102
         self,
@@ -98,7 +113,7 @@ class PCABoundingBoxADChecker(BaseADChecker):
         self.pca_ = PCA(
             n_components=self.n_components,
             whiten=self.whiten,
-            random_state=self.random_state,
+            random_state=0,
         )
         self.pca_.fit(X)
 

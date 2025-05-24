@@ -59,12 +59,21 @@ class DistanceToCentroidADChecker(BaseADChecker):
     r"""
     Distance to centroid method.
 
-    TODO description
+    Defines applicability domain based on range from the point to the training
+    data centroid, i.e. the average (middle) point [1]_. New molecules should lie
+    inside the hypersphere of a given radius (distance) from that centroid.
+
     Typically, physicochemical properties (continous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``.
 
-    TODO scaling
+    Note that as this method directly uses distances between points, it is highly
+    recommended to scale the features to have the same value range. Having too high
+    dimensionality, particularly with Euclidean distance, may deteriorate performance
+    due to the curse of dimensionality.
+
+    This method scales very well with number of samples, but high number of features
+    risks adverse effects of the curse of dimensionality for many metrics.
 
     Parameters
     ----------
@@ -76,8 +85,10 @@ class DistanceToCentroidADChecker(BaseADChecker):
 
     metric: str or callable, default="euclidean"
         Metric to use for distance computation. Default is Euclidean distance.
-        You can use any scikit-fingerprints distance here, but using bulk variants
-        will be faster.
+        You can use any scikit-fingerprints distance for vectors here, but using bulk
+        variants will be faster. Strings are mapped to functions for two vectors,
+        for binary vectors if both binary and count variants are available, e.g.
+        `"tanimoto"` maps to `tanimoto_binary_distance`.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -92,33 +103,26 @@ class DistanceToCentroidADChecker(BaseADChecker):
 
     References
     ----------
-    .. [1] `Supratik Kar, Kunal Roy & Jerzy Leszczynski
-        "Applicability Domain: A Step Toward Confident Predictions and Decidability for QSAR Modeling"
-        In: Nicolotti, O. (eds) Computational Toxicology. Methods in Molecular Biology, vol 1800. Humana Press, New York, NY
-        <https://doi.org/10.1007/978-1-4939-7899-1_6>`_
-
-    .. [2] `Paola Gramatica
-        "Principles of QSAR models validation: internal and external"
-        QSAR & Combinatorial Science 26.5 (2007): 694-701
-        <https://doi.org/10.1002/qsar.200610151>`_
-
-    .. [3] `Leverage (statistics) on Wikipedia
-        <https://en.wikipedia.org/wiki/Leverage_(statistics)>`_
+    .. [1] `Schultz, T., Hewitt, M., Netzeva, T. and Cronin, M.
+        "Assessing Applicability Domains of Toxicological QSARs: Definition,
+        Confidence in Predicted Values, and the Role of Mechanisms of Action."
+        QSAR Comb. Sci., 26: 238-254
+        <https://doi.org/10.1002/qsar.200630020>`_
 
     Examples
     --------
     >>> import numpy as np
-    >>> from skfp.applicability_domain import LeverageADChecker
+    >>> from skfp.applicability_domain import DistanceToCentroidADChecker
     >>> X_train = np.array([[0.0, 1.0], [0.0, 3.0], [3.0, 1.0]])
     >>> X_test = np.array([[1.0, 1.0], [1.0, 2.0], [20.0, 3.0]])
-    >>> leverage_ad_checker = LeverageADChecker()
-    >>> leverage_ad_checker
-    LeverageADChecker()
+    >>> centroid_dist_ad_checker = DistanceToCentroidADChecker()
+    >>> centroid_dist_ad_checker
+    DistanceToCentroidADChecker()
 
-    >>> leverage_ad_checker.fit(X_train)
-    LeverageADChecker()
+    >>> centroid_dist_ad_checker.fit(X_train)
+    DistanceToCentroidADChecker()
 
-    >>> leverage_ad_checker.predict(X_test)
+    >>> centroid_dist_ad_checker.predict(X_test)
     array([ True,  True, False])
     """
 
@@ -134,7 +138,7 @@ class DistanceToCentroidADChecker(BaseADChecker):
     def __init__(
         self,
         threshold: Union[float, str] = "auto",
-        distance: Union[str, Callable] = "euclidean",
+        metric: Union[str, Callable] = "euclidean",
         n_jobs: Optional[int] = None,
         verbose: Union[int, dict] = 0,
     ):
@@ -143,13 +147,13 @@ class DistanceToCentroidADChecker(BaseADChecker):
             verbose=verbose,
         )
         self.threshold = threshold
-        self.distance = distance
+        self.metric = metric
 
     def _validate_params(self) -> None:
         super()._validate_params()
         if (
-            isinstance(self.distance, str)
-            and self.distance
+            isinstance(self.metric, str)
+            and self.metric
             not in SCIPY_METRIC_NAMES | SKFP_METRIC_NAMES | SKFP_BULK_METRIC_NAMES
         ):
             raise InvalidParameterError(
@@ -157,7 +161,7 @@ class DistanceToCentroidADChecker(BaseADChecker):
                 f"or scikit-fingerprints metrics. "
                 f"SciPy metric names: {SCIPY_METRIC_NAMES}. "
                 f"scikit-fingerprints metric names: {SKFP_METRIC_NAMES | SKFP_BULK_METRIC_NAMES}. "
-                f"Got: {self.distance}"
+                f"Got: {self.metric}"
             )
 
     def fit(  # noqa: D102
@@ -169,16 +173,16 @@ class DistanceToCentroidADChecker(BaseADChecker):
 
         self.centroid_ = np.mean(X, axis=0).reshape((1, -1))
 
-        if callable(self.distance):
-            self.dist_ = lambda arr: cdist(arr, self.centroid_, metric=self.distance)
-        elif self.distance in SCIPY_METRIC_NAMES:
-            distance = SCIPY_METRICS[self.distance]
+        if callable(self.metric):
+            self.dist_ = lambda arr: cdist(arr, self.centroid_, metric=self.metric)
+        elif self.metric in SCIPY_METRIC_NAMES:
+            distance = SCIPY_METRICS[self.metric]
             self.dist_ = lambda arr: cdist(arr, self.centroid_, metric=distance)
-        elif self.distance in SKFP_METRIC_NAMES:
-            distance = SKFP_METRICS[self.distance]
+        elif self.metric in SKFP_METRIC_NAMES:
+            distance = SKFP_METRICS[self.metric]
             self.dist_ = lambda arr: cdist(arr, self.centroid_, metric=distance)
         else:
-            self.dist_ = SKFP_BULK_METRICS[self.distance]
+            self.dist_ = SKFP_BULK_METRICS[self.metric]
 
         if self.threshold == "auto":
             centroid_dists = self.dist_(X)
