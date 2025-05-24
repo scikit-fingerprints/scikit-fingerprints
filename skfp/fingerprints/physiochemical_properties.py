@@ -87,7 +87,7 @@ class PhysiochemicalPropertiesFingerprint(BaseFingerprintTransformer):
     array([[0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+           [0, 0, 0, ..., 0, 0, 0]], shape=(4, 2048), dtype=uint8)
     """
 
     _parameter_constraints: dict = {

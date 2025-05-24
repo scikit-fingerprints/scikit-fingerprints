@@ -109,7 +109,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
     array([[0, 0, 0, ..., 0, 0, 1],
            [0, 1, 0, ..., 0, 0, 1],
            [1, 1, 0, ..., 1, 1, 0],
-           [0, 0, 1, ..., 1, 0, 1]], dtype=uint8)
+           [0, 0, 1, ..., 1, 0, 1]], shape=(4, 2048), dtype=uint8)
     """
 
     _parameter_constraints: dict = {

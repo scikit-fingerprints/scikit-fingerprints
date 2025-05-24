@@ -134,7 +134,7 @@ class ERGFingerprint(BaseFingerprintTransformer):
     array([[0., 0., 0., ..., 0., 0., 0.],
            [0., 0., 0., ..., 0., 0., 0.],
            [0., 0., 0., ..., 0., 0., 0.],
-           [0., 0., 0., ..., 0., 0., 0.]])
+           [0., 0., 0., ..., 0., 0., 0.]], shape=(4, 315))
     """
 
     _parameter_constraints: dict = {

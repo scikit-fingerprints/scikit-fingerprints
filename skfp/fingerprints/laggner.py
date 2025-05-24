@@ -74,7 +74,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
     array([[0, 0, 0, ..., 0, 0, 0],
            [1, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
-           [1, 0, 0, ..., 1, 0, 1]], dtype=uint8)
+           [1, 0, 0, ..., 1, 0, 1]], shape=(4, 307), dtype=uint8)
     """
 
     def __init__(

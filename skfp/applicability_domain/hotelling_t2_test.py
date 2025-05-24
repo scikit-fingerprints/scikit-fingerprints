@@ -104,6 +104,8 @@ class HotellingT2TestADChecker(BaseADChecker):
         f_val = f_dist.ppf(self.alpha, p, n - p)
         self.threshold_ = p * (n - 1) * (n + 1) / (n * (n - p)) * f_val
 
+        return self
+
     def predict(self, X: np.ndarray | csr_array) -> np.ndarray:  # noqa: D102
         t2_values = self.score_samples(X)
         passed = t2_values <= self.threshold_
