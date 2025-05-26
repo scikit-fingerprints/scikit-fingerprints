@@ -4,9 +4,10 @@ from skfp.fingerprints import AtomPairFingerprint
 from skfp.utils.validators import (
     ensure_mols,
     ensure_smiles,
+    require_atoms,
     require_mols,
     require_mols_with_conf_ids,
-    require_strings,
+    require_strings
 )
 
 
@@ -60,3 +61,57 @@ def test_require_mols_with_conf_ids(mols_conformers_list, mols_list):
     with pytest.raises(TypeError) as exc_info:
         require_mols_with_conf_ids(mols_conformers_list + mols_list)
     assert "each must have conf_id property set" in str(exc_info)
+
+@pytest.mark.parametrize(
+    "min_atoms, only_explicit, expected_message",
+    [
+        (1, True, None),  # Basic case: 1 atom required, water has 1 explicit atom
+        (
+            2,
+            True,
+            "The molecule must have at least 2 atom(s)",
+        ),  # Failure case: water has only 1 explicit atom
+        (
+            2,
+            False,
+            None,
+        ),  # Special case: water has 3 atoms when counting implicit hydrogens
+    ],
+)
+
+
+def test_require_atoms_decorator(min_atoms, only_explicit, expected_message):
+    """Test the require_atoms decorator with different configurations.
+
+    The test uses a water molecule ('O') which has:
+    - 1 explicit atom (oxygen)
+    - 2 implicit hydrogen atoms
+
+    Parameters
+    ----------
+    min_atoms : int
+        Minimum number of atoms required by the decorator
+    only_explicit : bool
+        Whether to count only explicit atoms or include implicit hydrogens
+    should_raise : bool
+        Whether the decorated function should raise a ValueError
+    expected_message : str or None
+        Expected error message if should_raise is True, None otherwise
+    """
+
+    # Create a decorated test function
+    @require_atoms(min_atoms=min_atoms, only_explicit=only_explicit)
+    def test_function(molecule):
+        return True
+
+    # Create a water molecule (O with 2 implicit hydrogens)
+    water_molecule = ensure_mols(["O"])[0]
+
+    if expected_message is not None:
+        # Test that the function raises the expected error
+        with pytest.raises(ValueError) as exc_info:
+            test_function(water_molecule)
+        assert expected_message in str(exc_info.value)
+    else:
+        # Test that the function runs without error
+        assert test_function(water_molecule) is True
