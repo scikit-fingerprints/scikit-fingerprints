@@ -1,5 +1,4 @@
 import os
-from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -17,10 +16,10 @@ from skfp.datasets.utils import fetch_dataset, get_mol_strings_and_labels
     prefer_skip_nested_validation=True,
 )
 def load_bace(
-    data_dir: Optional[Union[str, os.PathLike]] = None,
+    data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
     """
     Load the BACE dataset.
 

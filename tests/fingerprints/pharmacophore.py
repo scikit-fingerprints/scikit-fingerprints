@@ -257,6 +257,6 @@ def _get_rdkit_pharmacophore_fp(
     ]
     X = [
         Gen2DFingerprint(mol, factory, dMat=dists_3d)
-        for mol, dists_3d in zip(mols, dists_3d_list)
+        for mol, dists_3d in zip(mols, dists_3d_list, strict=False)
     ]
     return X

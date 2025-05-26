@@ -154,7 +154,8 @@ def test_atom_pair_hac_scaling(smiles_list, mols_list):
     fp_gen = GetAtomPairGenerator()
     X_rdkit = np.array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
     X_rdkit_scaled = [
-        (100 * fp) / mol.GetNumHeavyAtoms() for fp, mol in zip(X_rdkit, mols_list)
+        (100 * fp) / mol.GetNumHeavyAtoms()
+        for fp, mol in zip(X_rdkit, mols_list, strict=False)
     ]
 
     assert np.allclose(X_skfp, X_rdkit_scaled)
@@ -170,7 +171,7 @@ def test_atom_pair_squared_hac_scaling(smiles_list, mols_list):
     X_rdkit = np.array([fp_gen.GetCountFingerprintAsNumPy(mol) for mol in mols_list])
     X_rdkit_scaled = [
         (100 * fp) / (mol.GetNumHeavyAtoms() ** 2)
-        for fp, mol in zip(X_rdkit, mols_list)
+        for fp, mol in zip(X_rdkit, mols_list, strict=False)
     ]
 
     assert np.allclose(X_skfp, X_rdkit_scaled)

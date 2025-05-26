@@ -1,6 +1,6 @@
 import functools
-from collections.abc import Sequence
-from typing import Any, Callable
+from collections.abc import Callable, Sequence
+from typing import Any
 
 from rdkit.Chem import Mol, MolFromSmiles, MolToSmiles
 from rdkit.Chem.PropertyMol import PropertyMol

@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from contextlib import nullcontext
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, MolFromInchi, MolToInchi
@@ -82,10 +81,10 @@ class MolFromInchiTransformer(BasePreprocessor):
         sanitize: bool = True,
         remove_hydrogens: bool = True,
         valid_only: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
         suppress_warnings: bool = False,
-        verbose: Union[int, dict] = 0,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -208,9 +207,9 @@ class MolToInchiTransformer(BasePreprocessor):
 
     def __init__(
         self,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,

@@ -1,5 +1,3 @@
-from typing import Union
-
 from rdkit.Chem import GetFormalCharge, Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
@@ -97,8 +95,8 @@ class ValenceDiscoveryFilter(BaseFilter):
         self,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
-        n_jobs: Union[int, None] = None,
-        batch_size: Union[int, None] = None,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
         verbose: int = 0,
     ):
         super().__init__(

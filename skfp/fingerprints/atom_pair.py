@@ -1,7 +1,6 @@
 import warnings
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, MolToSmiles
@@ -168,12 +167,12 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         include_chirality: bool = False,
         use_3D: bool = False,
         count_simulation: bool = True,
-        scale_by_hac: Union[bool, int] = False,
+        scale_by_hac: bool | int = False,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
@@ -203,8 +202,8 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
             )
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute Atom Pair fingerprints.
 
@@ -225,9 +224,7 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem.rdFingerprintGenerator import (
             GetAtomPairGenerator,
             GetMorganFeatureAtomInvGen,
@@ -257,17 +254,19 @@ class AtomPairFingerprint(BaseFingerprintTransformer):
         if self.count:
             fps = [
                 gen.GetCountFingerprintAsNumPy(mol, confId=conf_id)
-                for mol, conf_id in zip(X, conf_ids)
+                for mol, conf_id in zip(X, conf_ids, strict=False)
             ]
         else:
             fps = [
                 gen.GetFingerprintAsNumPy(mol, confId=conf_id)
-                for mol, conf_id in zip(X, conf_ids)
+                for mol, conf_id in zip(X, conf_ids, strict=False)
             ]
 
         if self.scale_by_hac:
             if self.count:
-                fps = [self._scale_by_hac(fp, mol) for fp, mol in zip(fps, X)]
+                fps = [
+                    self._scale_by_hac(fp, mol) for fp, mol in zip(fps, X, strict=False)
+                ]
             else:
                 warnings.warn(
                     "Scaling by HAC can only be applied to count vectors. "

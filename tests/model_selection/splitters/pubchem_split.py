@@ -1,4 +1,3 @@
-from typing import Union
 from unittest.mock import patch
 
 import pytest
@@ -35,7 +34,7 @@ def varied_mols() -> list[str]:
 
 
 @pytest.fixture
-def varied_mols_years() -> list[Union[int, None]]:
+def varied_mols_years() -> list[int | None]:
     return [1860, 1985, 1851, 1851, None, 1983, 1863, 1979, 1882, 1983]
 
 

@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -76,9 +75,9 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         self,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         # note that those patterns were released as public domain:
         # https://github.com/cdk/cdk/blob/main/descriptor/fingerprint/src/main/java/org/openscience/cdk/fingerprint/KlekotaRothFingerprinter.java
@@ -4972,8 +4971,8 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         return np.asarray(self._feature_names, dtype=object)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute Klekota-Roth fingerprints.
 

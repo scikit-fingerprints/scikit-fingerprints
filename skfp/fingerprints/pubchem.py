@@ -1,6 +1,5 @@
 from collections import defaultdict
 from collections.abc import Sequence
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import GetSymmSSSR, Mol
@@ -89,9 +88,9 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         self,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         n_features_out = 757 if count else 881
         super().__init__(
@@ -104,8 +103,8 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         )
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute PubChem fingerprints. Output shape depends on ``count``
         parameter.
@@ -125,15 +124,13 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         X = ensure_mols(X)
 
         X = [self._get_pubchem_fingerprint(mol) for mol in X]
         return csr_array(X) if self.sparse else np.vstack(X)
 
-    def _get_pubchem_fingerprint(self, mol: Mol) -> Union[np.ndarray, csr_array]:
+    def _get_pubchem_fingerprint(self, mol: Mol) -> np.ndarray | csr_array:
         atom_counts = self._get_atom_counts(mol)
         ring_counts = self._get_ESSSR_ring_counts(mol)
         atom_pair_counts = self._get_atom_pair_counts(mol)
@@ -409,9 +406,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
 
         return counts
 
-    def _get_ring_stats(
-        self, mol: Mol, ring: tuple[int]
-    ) -> dict[str, Union[int, bool]]:
+    def _get_ring_stats(self, mol: Mol, ring: tuple[int]) -> dict[str, int | bool]:
         from rdkit.Chem import BondType
 
         stats = {
