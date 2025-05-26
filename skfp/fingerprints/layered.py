@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -101,7 +100,7 @@ class LayeredFingerprint(BaseFingerprintTransformer):
     array([[0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
-           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+           [0, 0, 0, ..., 0, 0, 0]], shape=(4, 2048), dtype=uint8)
     """
 
     _parameter_constraints: dict = {
@@ -119,9 +118,9 @@ class LayeredFingerprint(BaseFingerprintTransformer):
         max_path: int = 7,
         linear_paths_only: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
@@ -145,8 +144,8 @@ class LayeredFingerprint(BaseFingerprintTransformer):
             )
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute Layered fingerprints.
 
@@ -165,9 +164,7 @@ class LayeredFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy=copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem.rdmolops import LayeredFingerprint as RDKitLayeredFingerprint
 
         X = ensure_mols(X)

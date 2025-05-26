@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol, MolFromSmarts
@@ -68,10 +67,10 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
         patterns: Sequence[str],
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
-        random_state: Optional[int] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
+        random_state: int | None = 0,
     ):
         super().__init__(
             n_features_out=len(patterns),
@@ -107,9 +106,7 @@ class BaseSubstructureFingerprint(BaseFingerprintTransformer):
 
         return compiled_patterns
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         X = ensure_mols(X)
 
         X = [

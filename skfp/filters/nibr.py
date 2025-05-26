@@ -1,5 +1,3 @@
-from typing import Optional
-
 from rdkit.Chem import Mol, MolFromSmarts
 
 from skfp.bases.base_filter import BaseFilter
@@ -78,8 +76,8 @@ class NIBRFilter(BaseFilter):
         allow_one_violation: bool = False,
         severity: int = 10,
         return_indicators: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
         verbose: int = 0,
     ):
         super().__init__(

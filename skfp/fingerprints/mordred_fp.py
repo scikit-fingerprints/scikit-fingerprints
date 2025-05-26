@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import Optional, Union
 
 import numpy as np
 from mordred import Calculator, descriptors
@@ -83,7 +82,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
            [0.       , 0.       , 1.       , ..., 1.       , 2.       ,
             1.       ],
            [1.4142135, 1.4142135, 0.       , ..., 4.       , 2.25     ,
-            1.       ]], dtype=float32)
+            1.       ]], shape=(4, 1613), dtype=float32)
     """
 
     _parameter_constraints: dict = {
@@ -95,9 +94,9 @@ class MordredFingerprint(BaseFingerprintTransformer):
         self,
         use_3D: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         n_features_out = 1826 if use_3D else 1613
         super().__init__(
@@ -133,8 +132,8 @@ class MordredFingerprint(BaseFingerprintTransformer):
         return np.asarray(feature_names, dtype=object)
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute Mordred fingerprints.
 
@@ -153,9 +152,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         X = ensure_mols(X)
 
         calc = Calculator(descriptors, ignore_3D=not self.use_3D)

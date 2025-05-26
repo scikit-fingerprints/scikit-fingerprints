@@ -1,5 +1,4 @@
 from numbers import Integral, Real
-from typing import Optional, Union
 
 import numpy as np
 from sklearn.utils._param_validation import Interval
@@ -12,7 +11,7 @@ class BoundingBoxADChecker(BaseADChecker):
     """
     Bounding box method.
 
-    Defined applicability domain based on feature ranges in the training data.
+    Defines applicability domain based on feature ranges in the training data.
     This creates a "bounding box" using their extreme values, and new molecules
     should lie in this distribution, i.e. have properties in the same ranges.
 
@@ -27,8 +26,7 @@ class BoundingBoxADChecker(BaseADChecker):
     extremely low or large values, respectively. For looser check, use ``num_allowed_violations``
     to allow a number of desrciptors to lie outside the given ranges.
 
-    This method scales great with both number of samples and features. It's arguably the
-    fastest and most scalable AD checker.
+    This method scales very well with both number of samples and features.
 
     Parameters
     ----------
@@ -85,11 +83,11 @@ class BoundingBoxADChecker(BaseADChecker):
 
     def __init__(
         self,
-        percentile_lower: Union[float, str] = 0,
-        percentile_upper: Union[float, str] = 100,
-        num_allowed_violations: Optional[int] = 0,
-        n_jobs: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        percentile_lower: float | str = 0,
+        percentile_upper: float | str = 100,
+        num_allowed_violations: int | None = 0,
+        n_jobs: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
@@ -102,7 +100,7 @@ class BoundingBoxADChecker(BaseADChecker):
     def fit(  # noqa: D102
         self,
         X: np.ndarray,
-        y: Optional[np.ndarray] = None,  # noqa: ARG002
+        y: np.ndarray | None = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
 

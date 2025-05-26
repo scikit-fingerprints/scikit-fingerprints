@@ -1,6 +1,5 @@
 import os
 from collections.abc import Iterator
-from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -147,13 +146,11 @@ TDC_DATASET_NAME_TO_LOADER_FUNC = {
     prefer_skip_nested_validation=True,
 )
 def load_tdc_benchmark(
-    subset: Optional[Union[str, list[str]]] = None,
-    data_dir: Optional[Union[str, os.PathLike]] = None,
+    subset: str | list[str] | None = None,
+    data_dir: str | os.PathLike | None = None,
     as_frames: bool = False,
     verbose: bool = False,
-) -> Union[
-    Iterator[tuple[str, pd.DataFrame]], Iterator[tuple[str, list[str], np.ndarray]]
-]:
+) -> Iterator[tuple[str, pd.DataFrame]] | Iterator[tuple[str, list[str], np.ndarray]]:
     """
     Load the TDC benchmark datasets.
 
@@ -255,13 +252,17 @@ def load_tdc_benchmark(
         # generator of tuples (dataset_name, DataFrame)
         datasets = (
             (dataset_name, load_function(data_dir, as_frame=True, verbose=verbose))
-            for dataset_name, load_function in zip(dataset_names, dataset_functions)
+            for dataset_name, load_function in zip(
+                dataset_names, dataset_functions, strict=False
+            )
         )
     else:
         # generator of tuples (dataset_name, SMILES, y)
         datasets = (
             (dataset_name, *load_function(data_dir, as_frame=False, verbose=verbose))
-            for dataset_name, load_function in zip(dataset_names, dataset_functions)
+            for dataset_name, load_function in zip(
+                dataset_names, dataset_functions, strict=False
+            )
         )
 
     return datasets
@@ -278,10 +279,10 @@ def load_tdc_benchmark(
 )
 def load_tdc_dataset(
     dataset_name: str,
-    data_dir: Optional[Union[str, os.PathLike]] = None,
+    data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> Union[pd.DataFrame, tuple[list[str]], np.ndarray]:
+) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
     """
     Load TDC dataset by name.
 
@@ -337,10 +338,10 @@ def load_tdc_dataset(
 )
 def load_tdc_splits(
     dataset_name: str,
-    data_dir: Optional[Union[str, os.PathLike]] = None,
+    data_dir: str | os.PathLike | None = None,
     as_dict: bool = False,
     verbose: bool = False,
-) -> Union[tuple[list[int], list[int], list[int]], dict[str, list[int]]]:
+) -> tuple[list[int], list[int], list[int]] | dict[str, list[int]]:
     """
     Load pre-generated dataset splits from the TDC benchmark.
 
@@ -394,7 +395,7 @@ def load_tdc_splits(
         return splits["train"], splits["valid"], splits["test"]
 
 
-def _subset_to_dataset_names(subset: Union[str, list[str], None]) -> list[str]:
+def _subset_to_dataset_names(subset: str | list[str] | None) -> list[str]:
     # map given subset (e.g. "ADME", "HTS" or "Toxicity") to list of dataset names
     # for appropriate TDC datasets
 

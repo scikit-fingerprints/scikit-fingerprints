@@ -2,7 +2,6 @@ from collections.abc import Sequence
 from copy import deepcopy
 from functools import partial
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import AddHs, Mol, MolToSmiles, RemoveHs, SanitizeMol
@@ -147,13 +146,13 @@ class ConformerGenerator(BasePreprocessor):
         self,
         num_conformers: int = 1,
         max_gen_attempts: int = 1000,
-        optimize_force_field: Optional[str] = None,
-        multiple_confs_select: Optional[str] = "min_energy",
+        optimize_force_field: str | None = None,
+        multiple_confs_select: str | None = "min_energy",
         errors: str = "raise",
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
-        random_state: Optional[int] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
+        random_state: int | None = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,

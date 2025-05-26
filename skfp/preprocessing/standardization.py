@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from contextlib import nullcontext
 from numbers import Integral
-from typing import Optional, Union
 
 from rdkit.Chem import Mol, SanitizeMol
 from rdkit.Chem.MolStandardize.rdMolStandardize import (
@@ -94,7 +93,7 @@ class MolStandardizer(BasePreprocessor):
     def __init__(
         self,
         largest_fragment_only: bool = False,
-        n_jobs: Optional[int] = None,
+        n_jobs: int | None = None,
         verbose: int = 0,
     ):
         super().__init__()
@@ -102,7 +101,7 @@ class MolStandardizer(BasePreprocessor):
         self.n_jobs = n_jobs
         self.verbose = verbose
 
-    def transform(self, X: Sequence[Union[str, Mol]], copy: bool = True) -> list[Mol]:
+    def transform(self, X: Sequence[str | Mol], copy: bool = True) -> list[Mol]:
         """
         Standardize molecule structures.
 
@@ -122,7 +121,7 @@ class MolStandardizer(BasePreprocessor):
         """
         return super().transform(X, copy)
 
-    def _transform_batch(self, X: Sequence[Union[str, Mol]]) -> list[Mol]:
+    def _transform_batch(self, X: Sequence[str | Mol]) -> list[Mol]:
         # if SMILES is provided, MolFromSmiles also includes sanitization
         mols = ensure_mols(X)
 

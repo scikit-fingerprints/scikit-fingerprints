@@ -1,5 +1,3 @@
-from typing import Union
-
 import pytest
 
 from skfp.model_selection.splitters.utils import (
@@ -17,7 +15,7 @@ def smiles_data() -> list[str]:
 
 
 @pytest.fixture
-def additional_data() -> list[list[Union[str, int, bool]]]:
+def additional_data() -> list[list[str | int | bool]]:
     return [["a", "b", "c", "d"], [1, 2, 3, 4], [True, False, True, False]]
 
 

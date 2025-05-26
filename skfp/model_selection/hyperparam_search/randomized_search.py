@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from numbers import Integral
 from time import time
-from typing import Optional, Union
 
 import joblib
 import numpy as np
@@ -148,13 +147,13 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
     def __init__(
         self,
         fingerprint: BaseFingerprintTransformer,
-        fp_param_distributions: Union[dict, list[dict]],
+        fp_param_distributions: dict | list[dict],
         estimator_cv: BaseSearchCV,
         greater_is_better: bool = True,
         n_iter: int = 10,
         cache_best_fp_array: bool = False,
-        verbose: Union[int, dict] = 0,
-        random_state: Optional[int] = 0,
+        verbose: int | dict = 0,
+        random_state: int | None = 0,
     ):
         self.fingerprint = fingerprint
         self.fp_param_distributions = fp_param_distributions
@@ -171,7 +170,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
             raise InvalidParameterError("fp_param_distributions cannot not be empty")
 
     @_fit_context(prefer_skip_nested_validation=False)
-    def fit(self, X: Sequence[Union[str, Mol]], y=None, **params):
+    def fit(self, X: Sequence[str | Mol], y=None, **params):
         """
         Run fit with all sets of parameters.
 
@@ -253,7 +252,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
 
         return self
 
-    def predict(self, X: Sequence[Union[str, Mol]]) -> np.ndarray:
+    def predict(self, X: Sequence[str | Mol]) -> np.ndarray:
         """
         Compute fingerprints and then call ``.predict()`` on the estimator
         with the best found parameters. Only available if the underlying
@@ -276,7 +275,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         X_fp = self.best_fp_.transform(X)
         return self.best_estimator_cv_.predict(X_fp)
 
-    def predict_proba(self, X: Sequence[Union[str, Mol]]) -> np.ndarray:
+    def predict_proba(self, X: Sequence[str | Mol]) -> np.ndarray:
         """
         Compute fingerprints and then call ``.predict_proba()`` on the estimator
         with the best found parameters. Only available if the underlying
@@ -300,7 +299,7 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
         X_fp = self.best_fp_.transform(X)
         return self.best_estimator_cv_.predict_proba(X_fp)
 
-    def transform(self, X: Sequence[Union[str, Mol]]) -> Union[np.ndarray, csr_array]:
+    def transform(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         r"""
         Compute fingerprints with the best found parameters. Requires
         fitting, even if the underlying fingerprint does not.

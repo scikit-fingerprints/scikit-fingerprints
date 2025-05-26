@@ -1,5 +1,3 @@
-from typing import Union
-
 import numpy as np
 from sklearn.utils._param_validation import validate_params
 
@@ -8,7 +6,7 @@ from sklearn.utils._param_validation import validate_params
     {"predictions": ["array-like"]},
     prefer_skip_nested_validation=True,
 )
-def extract_pos_proba(predictions: Union[np.ndarray, list[np.ndarray]]) -> np.ndarray:
+def extract_pos_proba(predictions: np.ndarray | list[np.ndarray]) -> np.ndarray:
     """
     Extract positive class probabilities (``y-score``).
 

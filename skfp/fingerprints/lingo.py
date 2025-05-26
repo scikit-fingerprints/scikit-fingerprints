@@ -3,7 +3,6 @@ import re
 from collections import defaultdict
 from collections.abc import Sequence
 from numbers import Integral
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -78,7 +77,7 @@ class LingoFingerprint(BaseFingerprintTransformer):
     LingoFingerprint()
     >>> fp.transform(smiles)
     array([[0, 0, 0, ..., 0, 0, 0],
-           [0, 1, 0, ..., 0, 0, 0]], dtype=uint8)
+           [0, 1, 0, ..., 0, 0, 0]], shape=(2, 1024), dtype=uint8)
     """
 
     _parameter_constraints: dict = {
@@ -93,9 +92,9 @@ class LingoFingerprint(BaseFingerprintTransformer):
         substring_length: int = 4,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         super().__init__(
             n_features_out=fp_size,
@@ -109,8 +108,8 @@ class LingoFingerprint(BaseFingerprintTransformer):
         self.substring_length = substring_length
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute Lingo fingerprints.
 
@@ -129,7 +128,7 @@ class LingoFingerprint(BaseFingerprintTransformer):
         """
         return super().transform(X, copy)
 
-    def smiles_to_dicts(self, X: Sequence[Union[str, Mol]]) -> list[dict[str, int]]:
+    def smiles_to_dicts(self, X: Sequence[str | Mol]) -> list[dict[str, int]]:
         """
         Convert SMILES strings to dictionaries of substring counts.
 
@@ -160,9 +159,7 @@ class LingoFingerprint(BaseFingerprintTransformer):
 
         return result
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         X = self.smiles_to_dicts(X)
         X = self._dicts_to_array(X)
         return csr_array(X) if self.sparse else X

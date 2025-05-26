@@ -20,7 +20,6 @@ def smiles_passing_faf4_druglike() -> list[str]:
 
 @pytest.fixture
 def smiles_failing_faf4_druglike() -> list[str]:
-    # flake8: noqa: E501
     return [
         # Rinfampin
         r"CN1CCN(CC1)/N=C/c2c(O)c3c5C(=O)[C@@]4(C)O/C=C/[C@H](OC)[C@@H](C)[C@@H](OC(C)=O)[C@H](C)[C@H](O)[C@H](C)[C@@H](O)[C@@H](C)\C=C\C=C(\C)C(=O)Nc2c(O)c3c(O)c(C)c5O4",
@@ -29,7 +28,6 @@ def smiles_failing_faf4_druglike() -> list[str]:
         # Kanamycin
         "O([C@@H]2[C@@H](O)[C@H](O[C@H]1O[C@H](CN)[C@@H](O)[C@H](O)[C@H]1O)[C@@H](N)C[C@H]2N)[C@H]3O[C@@H]([C@@H](O)[C@H](N)[C@H]3O)CO",
     ]
-    # flake8: noqa
 
 
 @pytest.fixture

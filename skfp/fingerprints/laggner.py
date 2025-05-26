@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Optional, Union
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -75,16 +74,16 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
     array([[0, 0, 0, ..., 0, 0, 0],
            [1, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0],
-           [1, 0, 0, ..., 1, 0, 1]], dtype=uint8)
+           [1, 0, 0, ..., 1, 0, 1]], shape=(4, 307), dtype=uint8)
     """
 
     def __init__(
         self,
         count: bool = False,
         sparse: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
-        verbose: Union[int, dict] = 0,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
+        verbose: int | dict = 0,
     ):
         feature_names, patterns = self._load_patterns()
         self._feature_names = self._fix_feature_names(feature_names)
@@ -132,8 +131,8 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         return self._feature_names
 
     def transform(
-        self, X: Sequence[Union[str, Mol]], copy: bool = False
-    ) -> Union[np.ndarray, csr_array]:
+        self, X: Sequence[str | Mol], copy: bool = False
+    ) -> np.ndarray | csr_array:
         """
         Compute Laggner fingerprints.
 
@@ -152,9 +151,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
         """
         return super().transform(X, copy)
 
-    def _calculate_fingerprint(
-        self, X: Sequence[Union[str, Mol]]
-    ) -> Union[np.ndarray, csr_array]:
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         from rdkit.Chem import GetMolFrags
 
         X = ensure_mols(X)

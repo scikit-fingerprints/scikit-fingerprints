@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from contextlib import nullcontext
-from typing import Optional
 
 import numpy as np
 from rdkit.Chem import Mol, MolFromFASTA
@@ -87,8 +86,8 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         sanitize: bool = True,
         flavor: int = 0,
         valid_only: bool = False,
-        n_jobs: Optional[int] = None,
-        batch_size: Optional[int] = None,
+        n_jobs: int | None = None,
+        batch_size: int | None = None,
         suppress_warnings: bool = False,
         verbose: int = 0,
     ):

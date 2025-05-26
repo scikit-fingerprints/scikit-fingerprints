@@ -1,5 +1,4 @@
 from numbers import Real
-from typing import Optional
 
 import numpy as np
 from rdkit.Chem import Mol
@@ -171,7 +170,7 @@ def fraggle_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_fraggle_similarity(
-    X: list[Mol], Y: Optional[list[Mol]] = None, tversky_threshold: float = 0.8
+    X: list[Mol], Y: list[Mol] | None = None, tversky_threshold: float = 0.8
 ) -> np.ndarray:
     r"""
     Bulk Fraggle similarity.
@@ -236,7 +235,7 @@ def bulk_fraggle_similarity(
     prefer_skip_nested_validation=True,
 )
 def bulk_fraggle_distance(
-    X: list[Mol], Y: Optional[list[Mol]] = None, tversky_threshold: float = 0.8
+    X: list[Mol], Y: list[Mol] | None = None, tversky_threshold: float = 0.8
 ) -> np.ndarray:
     r"""
     Bulk Fraggle distance.
