@@ -9,3 +9,13 @@ exclude_also =
     # functions used in parallel with Joblib
     def __init__
     def _calculate_fingerprint
+
+    # it also has problems with Numba JIT functions
+    def _bulk_
+
+    # base classes
+    raise NotImplementedError
+    @(abc\.)?abstractmethod
+
+    # always called implicitly by scikit-learn
+    def _validate_params

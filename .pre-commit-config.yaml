@@ -13,7 +13,12 @@ repos:
     rev: v2.9.0
     hooks:
       - id: pip-audit
-        args: [--vulnerability-service, "pypi", --cache-dir, ".pip_audit_cache"]
+        args: [
+          --vulnerability-service, "pypi",
+          --cache-dir, ".pip_audit_cache",
+          # false alert for setuptools, we have much newer version
+          --ignore-vuln, "GHSA-5rjg-fvgr-3xxf"
+        ]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.11

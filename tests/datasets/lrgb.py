@@ -21,8 +21,12 @@ def get_dataset_names() -> list[str]:
 )
 def test_load_lrgb_benchmark():
     dataset_names = get_dataset_names()
-    benchmark_full = load_lrgb_mol_benchmark(as_frames=True)
-    benchmark_names = [name for name, df in benchmark_full]
+    benchmark_full_dfs = load_lrgb_mol_benchmark(as_frames=True)
+    benchmark_names = [name for name, df in benchmark_full_dfs]
+    assert benchmark_names == dataset_names
+
+    benchmark_full_tuples = load_lrgb_mol_benchmark(as_frames=False)
+    benchmark_names = [name for name, smiles, y in benchmark_full_tuples]
     assert benchmark_names == dataset_names
 
 

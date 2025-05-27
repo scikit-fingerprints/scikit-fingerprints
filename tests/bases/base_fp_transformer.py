@@ -10,7 +10,7 @@ from rdkit.DataStructs import (
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.bases.base_fp_transformer import BaseFingerprintTransformer
-from skfp.fingerprints import AtomPairFingerprint, MACCSFingerprint
+from skfp.fingerprints import AtomPairFingerprint, ECFPFingerprint, MACCSFingerprint
 
 """
 We cannot test most of BaseFingerprintTransformer directly, as it is an abstract base class (ABC),
@@ -35,6 +35,16 @@ def test_base_invalid_params(smiles_list):
     maccs_fp = MACCSFingerprint(sparse=None)  # type: ignore
     with pytest.raises(InvalidParameterError):
         maccs_fp.transform(smiles_list)
+
+
+@pytest.mark.parametrize("n_jobs", [1, 2])
+def test_base_verbose(n_jobs, smiles_list, capsys):
+    ecfp_fp = ECFPFingerprint(n_jobs=n_jobs, verbose=True)
+    ecfp_fp.transform(smiles_list)
+
+    output = capsys.readouterr().err
+    assert "100%" in output
+    assert "it/s" in output
 
 
 def test_base_hash_fingerprint_bits_right_types():
