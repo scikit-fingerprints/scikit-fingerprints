@@ -105,3 +105,23 @@ def test_valence_discovery_parallel(smiles_list):
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
+
+
+def test_valence_discovery_transform_x_y(
+    smiles_passing_valence_discovery, smiles_failing_valence_discovery
+):
+    all_smiles = smiles_passing_valence_discovery + smiles_failing_valence_discovery
+    labels = np.array(
+        [1] * len(smiles_passing_valence_discovery)
+        + [0] * len(smiles_failing_valence_discovery)
+    )
+
+    filt = ValenceDiscoveryFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_valence_discovery)
+    assert np.all(labels_filt == 1)
+
+    filt = ValenceDiscoveryFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_valence_discovery)
+    assert np.array_equal(indicators, labels_filt)

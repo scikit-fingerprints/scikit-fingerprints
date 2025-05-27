@@ -101,3 +101,24 @@ def test_faf4_druglike_parallel(smiles_list):
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
+
+
+def test_faf4_druglike_transform_x_y(
+    smiles_passing_faf4_druglike,
+    smiles_failing_faf4_druglike,
+):
+    all_smiles = smiles_passing_faf4_druglike + smiles_failing_faf4_druglike
+    labels = np.array(
+        [1] * len(smiles_passing_faf4_druglike)
+        + [0] * len(smiles_failing_faf4_druglike)
+    )
+
+    filt = FAF4DruglikeFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_faf4_druglike)
+    assert np.all(labels_filt == 1)
+
+    filt = FAF4DruglikeFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_faf4_druglike)
+    assert np.array_equal(indicators, labels_filt)

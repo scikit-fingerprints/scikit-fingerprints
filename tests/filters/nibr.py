@@ -82,3 +82,18 @@ def test_nibr_return_indicators(smiles_passing_nibr, smiles_failing_nibr):
     assert isinstance(filter_indicators, np.ndarray)
     assert np.issubdtype(filter_indicators.dtype, bool)
     assert np.all(np.isin(filter_indicators, [0, 1]))
+
+
+def test_nibr_transform_x_y(smiles_passing_nibr, smiles_failing_nibr):
+    all_smiles = smiles_passing_nibr + smiles_failing_nibr
+    labels = np.array([1] * len(smiles_passing_nibr) + [0] * len(smiles_failing_nibr))
+
+    filt = NIBRFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_nibr)
+    assert np.all(labels_filt == 1)
+
+    filt = NIBRFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_nibr)
+    assert np.array_equal(indicators, labels_filt)

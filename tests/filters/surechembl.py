@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import Mol
 
 from skfp.filters import SureChEMBLFilter
@@ -29,3 +30,11 @@ def test_surechembl_allowing_one_violation(mols_list):
 
     assert len(mols_filtered) <= len(mols_filtered_loose)
     assert len(mols_filtered_loose) <= len(mols_list)
+
+
+def test_surechembl_transform_x_y(mols_list):
+    labels = np.ones(len(mols_list))
+
+    filt = SureChEMBLFilter()
+    mols_filtered, labels_filt = filt.transform_x_y(mols_list, labels)
+    assert len(mols_filtered) == len(labels_filt)

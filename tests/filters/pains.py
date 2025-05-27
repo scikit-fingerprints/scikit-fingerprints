@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from rdkit.Chem import Mol
 
@@ -50,3 +51,11 @@ def test_pains_wrong_variant():
         PAINSFilter(variant="D")
 
     assert 'PAINS variant must be "A", "B" or "C", got' in str(exc_info)
+
+
+def test_pains_transform_x_y(mols_list):
+    labels = np.ones(len(mols_list))
+
+    filt = PAINSFilter()
+    mols_filtered, labels_filt = filt.transform_x_y(mols_list, labels)
+    assert len(mols_filtered) == len(labels_filt)
