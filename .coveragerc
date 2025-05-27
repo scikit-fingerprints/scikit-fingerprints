@@ -18,4 +18,4 @@ exclude_also =
     @(abc\.)?abstractmethod
 
     # always called implicitly by scikit-learn
-    def _validate_params
+    _validate_params

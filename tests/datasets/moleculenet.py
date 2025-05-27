@@ -18,7 +18,10 @@ from skfp.datasets.moleculenet import (
     load_tox21,
     load_toxcast,
 )
-from skfp.datasets.moleculenet.benchmark import MOLECULENET_DATASET_NAMES
+from skfp.datasets.moleculenet.benchmark import (
+    MOLECULENET_DATASET_NAMES,
+    _subset_to_dataset_names,
+)
 from tests.datasets.test_utils import run_basic_dataset_checks
 
 
@@ -30,6 +33,10 @@ from tests.datasets.test_utils import run_basic_dataset_checks
 def test_load_moleculenet_benchmark():
     benchmark_full = load_moleculenet_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
+    assert benchmark_names == MOLECULENET_DATASET_NAMES
+
+    benchmark_full_tuples = load_moleculenet_benchmark(as_frames=False)
+    benchmark_names = [name for name, smiles, y in benchmark_full_tuples]
     assert benchmark_names == MOLECULENET_DATASET_NAMES
 
 
@@ -174,3 +181,29 @@ def test_load_dataset(dataset_name, load_func, expected_length, num_tasks, task_
         num_tasks=num_tasks,
         task_type=task_type,
     )
+
+
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
+@pytest.mark.parametrize(
+    "subset_name, expected_num_datasets",
+    [
+        (None, 12),
+        ("classification", 9),
+        ("classification_single_task", 3),
+        ("classification_multitask", 5),
+        ("classification_no_pcba", 8),
+        ("regression", 3),
+    ],
+)
+def test_subset_to_dataset_names(subset_name, expected_num_datasets):
+    subset_datasets = _subset_to_dataset_names(subset_name)
+    assert len(subset_datasets) == expected_num_datasets
+
+
+def test_nonexistent_subset_name():
+    with pytest.raises(ValueError, match="subset not recognized"):
+        _subset_to_dataset_names("nonexistent")

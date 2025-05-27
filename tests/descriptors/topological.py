@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 from rdkit.Chem import GetDistanceMatrix, Mol, MolFromSmiles
 
+from skfp.descriptors import burden_matrix
 from skfp.descriptors import topological as top
 
 
@@ -105,6 +106,22 @@ def test_balaban_j_index(mol_name, expected_value, input_mols):
 
     assert round(result, 3) == expected_value
     assert round(result_no_dist_matrix, 3) == expected_value
+
+
+def test_burden_wrong_descriptors():
+    mol = MolFromSmiles("O")
+    descriptors = np.array([1, 1, 1])
+    with pytest.raises(
+        ValueError, match="Number of descriptors 3 does not match number of atoms 1"
+    ):
+        burden_matrix(mol, descriptors)
+
+
+def test_burden_quadruple_bond_error():
+    # molecule from https://github.com/rdkit/rdkit/issues/4842
+    mol = MolFromSmiles("[Rh-](Cl)(Cl)(Cl)(Cl)$[Rh-](Cl)(Cl)(Cl)Cl")
+    with pytest.raises(ValueError, match="must be single, double, triple, or aromatic"):
+        burden_matrix(mol)
 
 
 @pytest.mark.parametrize(

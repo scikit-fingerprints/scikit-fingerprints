@@ -12,7 +12,7 @@
 from collections.abc import Sequence
 
 import numpy as np
-from rdkit.Chem import Mol, MolToSmiles
+from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseFingerprintTransformer
@@ -105,7 +105,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
-        n_features_out = 158 if count else 166
+        n_features_out = 157 if count else 166
         super().__init__(
             n_features_out=n_features_out,
             count=count,
@@ -304,7 +304,6 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         else:
             feature_names = [
                 "fragments",
-                "atomic num >103",
                 "N",
                 "O",
                 "F",
@@ -501,9 +500,10 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)
 
     def _get_maccs_patterns_counts(self, mol: Mol) -> list[int]:
+        from rdkit.Chem import GetMolFrags
+
         smarts_list = [
             None,  # fragments
-            None,  # atomic num >103
             "[#7]",  # N
             "[#8]",  # O
             "[#9]",  # F
@@ -669,10 +669,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
         # here we fix positions that can't be easily written as SMARTS
 
         # number of fragments
-        counts[0] = MolToSmiles(mol).count(".") + 1
-
-        # atomic number over 103
-        counts[1] = sum(atom.GetAtomicNum() > 103 for atom in mol.GetAtoms())
+        counts[0] = len(GetMolFrags(mol, sanitizeFrags=False))
 
         # aromatic rings
         counts[28] = sum(

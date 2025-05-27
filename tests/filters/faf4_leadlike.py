@@ -70,6 +70,16 @@ def test_faf4_leadlike_parallel(smiles_list):
     assert mols_filtered_sequential == mols_filtered_parallel
 
 
+def test_faf4_leadlike_allow_one_violation(smiles_failing_faf4_leadlike):
+    mol_filter = FAF4LeadlikeFilter()
+    mols_filtered = mol_filter.transform(smiles_failing_faf4_leadlike)
+
+    mol_filter = FAF4LeadlikeFilter(allow_one_violation=True)
+    mols_filtered_one_violation = mol_filter.transform(smiles_failing_faf4_leadlike)
+
+    assert mols_filtered == mols_filtered_one_violation
+
+
 def test_faf4_leadlike_transform_x_y(
     smiles_passing_faf4_leadlike,
     smiles_failing_faf4_leadlike,

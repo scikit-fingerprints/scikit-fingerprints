@@ -151,7 +151,7 @@ class VSAFingerprint(BaseFingerprintTransformer):
         try:
             return n_features_out[variant]
         except KeyError as err:
-            raise ValueError(f'Variant "{variant} not recognized"') from err
+            raise ValueError(f'Variant "{variant}" not recognized"') from err
 
     def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """

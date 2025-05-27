@@ -191,7 +191,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
             Array with labels for molecules.
 
         copy : bool, default=False
-            Copy the inputs X and y or not.
+            Copy the input labels y or not.
 
         Returns
         -------
@@ -202,7 +202,6 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
             Array with labels for molecules.
         """
         if copy:
-            X = deepcopy(X)
             y = deepcopy(y)
 
         X = super().transform(X)
@@ -237,9 +236,9 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         charges = atomic_partial_charges(
             mol, self.partial_charge_model, self.charge_errors
         )
-        if self.errors == "ignore":
+        if self.charge_errors == "ignore":
             charges = charges[~np.isnan(charges)]
-        elif self.errors == "zero":
+        elif self.charge_errors == "zero":
             charges = np.nan_to_num(charges, nan=0)
 
         charges *= self.charge_scaling_factor

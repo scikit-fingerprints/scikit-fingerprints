@@ -170,7 +170,7 @@ def burden_matrix(mol: Mol, descriptors: np.ndarray | None = None) -> np.ndarray
             value = 0.8164965809277261  # 1/sqrt(1.5)
         else:
             raise ValueError(
-                "Bond order for Burden matrix must be single, double, triple or aromatic"
+                "Bond order for Burden matrix must be single, double, triple, or aromatic"
             )
 
         matrix[i, j] = matrix[j, i] = value

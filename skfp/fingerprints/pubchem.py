@@ -493,7 +493,7 @@ class PubChemFingerprint(BaseFingerprintTransformer):
         return features
 
     def _get_ring_count_features(self, ring_counts: dict[str, int]) -> list[int]:
-        # for each ring size, we count all
+        # for each ring size, we count all ring features
         features = []
 
         num_aromatic_rings = 0

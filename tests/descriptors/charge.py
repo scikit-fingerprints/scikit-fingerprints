@@ -64,3 +64,13 @@ def test_atomic_partial_charges_ignore_error():
         )
         for mol in mols
     ]
+
+
+def test_wrong_charge_model(mols_list):
+    with pytest.raises(
+        ValueError, match='Partial charge model "nonexistent" is not supported'
+    ):
+        [
+            atomic_partial_charges(mol, partial_charge_model="nonexistent")
+            for mol in mols_list
+        ]
