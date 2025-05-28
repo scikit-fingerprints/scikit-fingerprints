@@ -1,4 +1,5 @@
 import pytest
+from rdkit.Chem import MolFromSmiles
 
 from skfp.fingerprints import AtomPairFingerprint
 from skfp.utils.validators import (
@@ -81,37 +82,18 @@ def test_require_mols_with_conf_ids(mols_conformers_list, mols_list):
 
 
 def test_require_atoms_decorator(min_atoms, only_explicit, expected_message):
-    """Test the require_atoms decorator with different configurations.
-
-    The test uses a water molecule ('O') which has:
-    - 1 explicit atom (oxygen)
-    - 2 implicit hydrogen atoms
-
-    Parameters
-    ----------
-    min_atoms : int
-        Minimum number of atoms required by the decorator
-    only_explicit : bool
-        Whether to count only explicit atoms or include implicit hydrogens
-    should_raise : bool
-        Whether the decorated function should raise a ValueError
-    expected_message : str or None
-        Expected error message if should_raise is True, None otherwise
-    """
+    """Test the require_atoms decorator with different configurations."""
 
     # Create a decorated test function
     @require_atoms(min_atoms=min_atoms, only_explicit=only_explicit)
     def test_function(molecule):
         return True
 
-    # Create a water molecule (O with 2 implicit hydrogens)
-    water_molecule = ensure_mols(["O"])[0]
+    water_molecule = MolFromSmiles("O")
 
-    if expected_message is not None:
-        # Test that the function raises the expected error
+    if expected_message:
         with pytest.raises(ValueError) as exc_info:
             test_function(water_molecule)
         assert expected_message in str(exc_info.value)
     else:
-        # Test that the function runs without error
         assert test_function(water_molecule) is True
