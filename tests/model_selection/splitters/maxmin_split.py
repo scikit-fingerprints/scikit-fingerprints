@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
@@ -131,3 +132,26 @@ def test_maxmin_train_valid_test_split_returns_indices(all_molecules):
     assert all(isinstance(train, int) for train in train_set)
     assert all(isinstance(valid, int) for valid in valid_set)
     assert all(isinstance(test, int) for test in test_set)
+
+
+def test_maxmin_train_test_split_with_additional_data(all_molecules):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
+    labels = np.ones(len(all_molecules))
+    train_mols, test_mols, train_labels, test_labels = maxmin_train_test_split(
+        mols, labels
+    )
+
+    assert len(train_mols) == len(train_labels)
+    assert len(test_mols) == len(test_labels)
+
+
+def test_maxmin_train_valid_test_split_with_additional_data(all_molecules):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in all_molecules]
+    labels = np.ones(len(all_molecules))
+    train_mols, valid_mols, test_mols, train_labels, valid_labels, test_labels = (
+        maxmin_train_valid_test_split(mols, labels)
+    )
+
+    assert len(train_mols) == len(train_labels)
+    assert len(valid_mols) == len(valid_labels)
+    assert len(test_mols) == len(test_labels)
