@@ -324,6 +324,8 @@ class FingerprintEstimatorRandomizedSearch(BaseEstimator):
             return self.verbose > 0
         elif isinstance(self.verbose, dict):
             return len(self.verbose) > 0
+        else:
+            return False
 
     def _print_start_msg(self, curr_idx: int, curr_params: dict) -> None:
         progress_msg = f"{curr_idx}/{self.n_iter}"
