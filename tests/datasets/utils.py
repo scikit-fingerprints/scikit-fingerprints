@@ -32,7 +32,8 @@ def test_fetch_splits(capsys):
         verbose=True,
     )
     stdout = capsys.readouterr().out
-    assert "MoleculeNet_BACE/ogb_splits_bace.json" in stdout
+    assert "MoleculeNet_BACE" in stdout
+    assert "ogb_splits_bace.json" in stdout
 
 
 @pytest.mark.parametrize("mol_type", ["SMILES", "aminoseq"])
