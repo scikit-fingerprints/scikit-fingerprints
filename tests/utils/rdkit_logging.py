@@ -16,3 +16,9 @@ def test_no_rdkit_logs(capsys):
 
     assert capsys.readouterr().err == ""
     assert capsys.readouterr().out == ""
+
+    with no_rdkit_logs(suppress_warnings=True):
+        MolFromSmiles("CH")
+
+    assert capsys.readouterr().err == ""
+    assert capsys.readouterr().out == ""

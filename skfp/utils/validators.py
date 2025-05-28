@@ -15,7 +15,7 @@ def ensure_mols(X: Sequence[Any]) -> list[Mol]:
     """
     if not all(isinstance(x, (Mol, PropertyMol, str)) for x in X):
         types = {type(x) for x in X}
-        raise ValueError(
+        raise TypeError(
             f"Passed values must be RDKit Mol objects or SMILES strings, got types: {types}"
         )
 
@@ -23,7 +23,7 @@ def ensure_mols(X: Sequence[Any]) -> list[Mol]:
 
     if any(x is None for x in mols):
         idx = mols.index(None)
-        raise ValueError(f"Could not parse '{X[idx]}' at index {idx} as molecule")
+        raise TypeError(f"Could not parse '{X[idx]}' at index {idx} as molecule")
 
     return mols
 
@@ -36,7 +36,7 @@ def ensure_smiles(X: Sequence[Any]) -> list[str]:
     """
     if not all(isinstance(x, (Mol, PropertyMol, str)) for x in X):
         types = {type(x) for x in X}
-        raise ValueError(f"Passed values must be SMILES strings, got types: {types}")
+        raise TypeError(f"Passed values must be SMILES strings, got types: {types}")
 
     X = [MolToSmiles(x) if isinstance(x, Mol) else x for x in X]
     return X
@@ -49,7 +49,7 @@ def require_mols(X: Sequence[Any]) -> None:
     for idx, x in enumerate(X):
         if not isinstance(x, (Mol, PropertyMol)):
             raise TypeError(
-                f"Passed values must be RDKit ``Mol`` objects, got type {type(x)} at index {idx}"
+                f"Passed values must be RDKit Mol objects, got type {type(x)} at index {idx}"
             )
 
 

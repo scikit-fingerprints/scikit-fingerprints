@@ -61,3 +61,13 @@ def test_run_in_parallel_single_element_func():
     result_parallel = run_in_parallel(func, data, n_jobs=-1, single_element_func=True)
     expected_result = list(range(1, 101))
     assert result_parallel == expected_result
+
+
+def test_run_in_parallel_verbose_dict(capsys):
+    func = lambda x: x + 1
+    data = list(range(100))
+    run_in_parallel(func, data, n_jobs=-1, single_element_func=True, verbose={})
+    stderr = capsys.readouterr().err  # tqdm outputs to stderr
+
+    assert "100%" in stderr
+    assert "100/100" in stderr

@@ -117,9 +117,8 @@ class MolFromSmilesTransformer(BasePreprocessor):
         X : list of shape (n_samples_conf_gen,)
             List with RDKit ``Mol`` objects.
         """
-        X = super().transform(X, copy)
-        if self.valid_only:
-            X = [mol for mol in X if mol is not None]
+        y = np.empty(len(X))
+        X, _ = self.transform_x_y(X, y, copy=copy)
         return X
 
     def transform_x_y(self, X, y, copy: bool = False) -> tuple[list[Mol], np.ndarray]:
