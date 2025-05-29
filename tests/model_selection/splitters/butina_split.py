@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
@@ -145,6 +146,29 @@ def test_butina_train_valid_test_split_return_indices(varied_mols):
     assert all(isinstance(idx, int) for idx in train_idxs)
     assert all(isinstance(idx, int) for idx in valid_idxs)
     assert all(isinstance(idx, int) for idx in test_idxs)
+
+
+def test_butina_train_test_split_with_additional_data(varied_mols):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in varied_mols]
+    labels = np.ones(len(varied_mols))
+    train_mols, test_mols, train_labels, test_labels = butina_train_test_split(
+        mols, labels
+    )
+
+    assert len(train_mols) == len(train_labels)
+    assert len(test_mols) == len(test_labels)
+
+
+def test_butina_train_valid_test_split_with_additional_data(varied_mols):
+    mols = [Chem.MolFromSmiles(smiles) for smiles in varied_mols]
+    labels = np.ones(len(varied_mols))
+    train_mols, valid_mols, test_mols, train_labels, valid_labels, test_labels = (
+        butina_train_valid_test_split(mols, labels)
+    )
+
+    assert len(train_mols) == len(train_labels)
+    assert len(valid_mols) == len(valid_labels)
+    assert len(test_mols) == len(test_labels)
 
 
 def test_empty_train_subset_raises_an_error_train_test():

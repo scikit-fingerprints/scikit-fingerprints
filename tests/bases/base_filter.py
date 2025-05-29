@@ -26,3 +26,13 @@ def test_base_invalid_params(smiles_list):
     filt = LipinskiFilter(allow_one_violation=2)  # type: ignore
     with pytest.raises(InvalidParameterError):
         filt.transform(smiles_list)
+
+
+@pytest.mark.parametrize("n_jobs", [1, 2])
+def test_base_verbose(n_jobs, smiles_list, capsys):
+    filt = LipinskiFilter(n_jobs=n_jobs, verbose=True)
+    filt.transform(smiles_list)
+
+    output = capsys.readouterr().err
+    assert "100%" in output
+    assert "it/s" in output

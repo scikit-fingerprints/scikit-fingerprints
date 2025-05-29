@@ -54,6 +54,25 @@ def test_bcut2d_ignore_errors(mols_list, gasteiger_allowed_mols):
     assert np.allclose(X_skfp, X_skfp_gasteiger)
 
 
+def test_bcut2d_zero_errors(mols_list):
+    bcut2d_fp = BCUT2DFingerprint(
+        partial_charge_model="Gasteiger", charge_errors="zero", n_jobs=-1
+    )
+    X_skfp = bcut2d_fp.transform(mols_list)
+
+    assert len(X_skfp) == len(mols_list)
+
+
+def test_bcut2d_transform_x_y(mols_list):
+    labels = np.ones(len(mols_list))
+
+    bcut2d_fp = BCUT2DFingerprint(n_jobs=-1)
+    X_skfp, y_skfp = bcut2d_fp.transform_x_y(mols_list, labels, copy=True)
+
+    assert len(X_skfp) == len(y_skfp)
+    assert np.all(y_skfp == 1)
+
+
 def test_bcut2d_feature_names():
     bcut2d_fp = BCUT2DFingerprint()
     feature_names = bcut2d_fp.get_feature_names_out()

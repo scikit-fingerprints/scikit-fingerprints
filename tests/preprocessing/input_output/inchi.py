@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from rdkit.Chem import Mol, MolFromSmiles, MolToInchi
 
@@ -62,3 +63,13 @@ def test_from_invalid_inchi(inchi_list):
 
     assert len(mols_list) == len(inchi_list) + len(invalid_inchi_list)
     assert len(mols_list_2) == len(inchi_list)
+
+
+def test_inchi_transform_x_y(inchi_list):
+    labels = np.ones(len(inchi_list))
+
+    mol_from_inchi = MolFromInchiTransformer(valid_only=True)
+    mols, labels = mol_from_inchi.transform_x_y(inchi_list, labels)
+
+    assert len(mols) == len(inchi_list)
+    assert len(labels) == len(inchi_list)

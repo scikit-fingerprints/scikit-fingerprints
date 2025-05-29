@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import numpy as np
 import pytest
 from rdkit import Chem
 from rdkit.Chem import Mol
@@ -230,3 +231,32 @@ def test_pubchem_train_valid_test_split_not_found_behaviour_remove(
     assert len(train_set) == 6
     assert len(valid_set) == 2
     assert len(test_set) == 1
+
+
+@patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
+def test_pubchem_train_test_split_with_additional_data(
+    mock, varied_mols_years, varied_mols
+):
+    mock.return_value = varied_mols_years
+    labels = np.ones(len(varied_mols))
+    train_mols, test_mols, train_labels, test_labels = pubchem_train_test_split(
+        varied_mols, labels
+    )
+
+    assert len(train_mols) == len(train_labels)
+    assert len(test_mols) == len(test_labels)
+
+
+@patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
+def test_pubchem_train_valid_test_split_with_additional_data(
+    mock, varied_mols_years, varied_mols
+):
+    mock.return_value = varied_mols_years
+    labels = np.ones(len(varied_mols))
+    train_mols, valid_mols, test_mols, train_labels, valid_labels, test_labels = (
+        pubchem_train_valid_test_split(varied_mols, labels)
+    )
+
+    assert len(train_mols) == len(train_labels)
+    assert len(valid_mols) == len(valid_labels)
+    assert len(test_mols) == len(test_labels)

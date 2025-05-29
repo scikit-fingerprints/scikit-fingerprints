@@ -58,8 +58,9 @@ pip-audit = "*"
 pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
+pytest-rerunfailures = "*"
 ruff = "*"
-setuptools = "*"  # to avoid PyCharm errors
+setuptools = ">=80.*"  # to avoid PyCharm errors
 xenon = "*"
 
 [tool.poetry.group.test]
@@ -94,6 +95,15 @@ matplotlib = "*"
 [tool.pytest.ini_options]
 python_files = "*.py"
 addopts = "--assert=plain"
+filterwarnings = [
+    # known and expected warnings in tests
+    "ignore:.*shared_ptr<RDKit.*already registered.*:RuntimeWarning",
+    "ignore:.*SciPy.*sokalmichener.*:DeprecationWarning",
+    "ignore:A worker stopped.*:UserWarning",
+    "ignore:Precision loss occurred.*:RuntimeWarning",
+    "ignore:The total space of parameters.*:UserWarning",
+    "ignore:Function auroc_score.*:FutureWarning"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

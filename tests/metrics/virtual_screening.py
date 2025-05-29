@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from skfp.metrics import bedroc_score, enrichment_factor, rie_score
 
@@ -71,3 +72,11 @@ def test_max_bedroc_score():
     y_score = [0] * 90 + [1] * 10
     bedroc = bedroc_score(y_test, y_score)
     assert np.isclose(bedroc, 1)
+
+
+@pytest.mark.parametrize("metric_func", [enrichment_factor, rie_score, bedroc_score])
+def test_multiclass_inputs(metric_func):
+    y_test = [0] * 80 + [1] * 10 + [2] * 10
+    y_score = [0] * 80 + [1] * 10 + [2] * 10
+    with pytest.raises(ValueError, match="defined for binary y_true"):
+        metric_func(y_test, y_score)

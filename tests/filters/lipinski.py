@@ -132,3 +132,20 @@ def test_lipinski_return_indicators(
         dtype=bool,
     )
     assert np.array_equal(filter_indicators, expected_indicators)
+
+
+def test_lipinski_transform_x_y(smiles_passing_lipinski, smiles_failing_lipinski):
+    all_smiles = smiles_passing_lipinski + smiles_failing_lipinski
+    labels = np.array(
+        [1] * len(smiles_passing_lipinski) + [0] * len(smiles_failing_lipinski)
+    )
+
+    filt = LipinskiFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_lipinski)
+    assert np.all(labels_filt == 1)
+
+    filt = LipinskiFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_lipinski)
+    assert np.array_equal(indicators, labels_filt)

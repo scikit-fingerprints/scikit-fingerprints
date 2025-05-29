@@ -184,11 +184,11 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
             Array with labels for molecules.
         """
         filter_ind = self._get_filter_indicators(X, copy)
-        mols = [mol for idx, mol in enumerate(X) if filter_ind[idx]]
-        y = y[filter_ind]
         if self.return_indicators:
             return filter_ind, y
         else:
+            mols = [mol for idx, mol in enumerate(X) if filter_ind[idx]]
+            y = y[filter_ind]
             return mols, y
 
     def _get_filter_indicators(

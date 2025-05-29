@@ -966,21 +966,18 @@ def _ensure_proper_shapes(
     if y_true.shape != y_pred.shape:
         raise ValueError(
             f"Both true labels and predictions must have the same shape, got: "
-            f"true labels {y_true.ndim}, predictions {y_pred.shape}"
+            f"true labels {y_true.shape}, predictions {y_pred.shape}"
+        )
+    if y_true.ndim > 2:
+        raise ValueError(
+            f"Both true labels and predictions must have 1 or 2 dimensions, got: "
+            f"true labels {y_true.ndim}, predictions {y_pred.ndim}"
         )
 
     if y_true.ndim == 1:
         y_true = y_true.reshape(-1, 1)
-    elif y_true.ndim > 2:
-        raise ValueError(
-            f"True labels must have 1 or 2 dimensions, got shape {y_true.shape}"
-        )
 
     if y_pred.ndim == 1:
         y_pred = y_pred.reshape(-1, 1)
-    elif y_pred.ndim > 2:
-        raise ValueError(
-            f"Predictions must have 1 or 2 dimensions, got shape {y_true.shape}"
-        )
 
     return y_true, y_pred

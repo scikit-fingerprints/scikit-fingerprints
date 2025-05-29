@@ -42,6 +42,21 @@ def smiles_beyond_ro5() -> list[str]:
     ]
 
 
+@pytest.fixture
+def smiles_failing_beyond_ro5() -> list[str]:
+    # Liraglutide peptide
+    return [
+        "CCCCCCCCCCCCCCCC(=O)N[C@@H](CCC(=O)NCCCC[C@H](NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)"
+        "[C@H](CCC(N)=O)NC(=O)CNC(=O)[C@H](CCC(O)=O)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC1=CC=C(O)C=C1)"
+        "NC(=O)[C@H](CO)NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@H](CC(O)=O)NC(=O)[C@H](CO)NC(=O)"
+        "[C@@H](NC(=O)[C@H](CC1=CC=CC=C1)NC(=O)[C@@H](NC(=O)CNC(=O)[C@H](CCC(O)=O)NC(=O)[C@H]"
+        "(C)NC(=O)[C@@H](N)CC1=CN=CN1)[C@@H](C)O)[C@@H](C)O)C(C)C)C(=O)N[C@@H](CCC(O)=O)C(=O)N"
+        "[C@@H](CC1=CC=CC=C1)C(=O)N[C@@H]([C@@H](C)CC)C(=O)N[C@@H](C)C(=O)N[C@@H](CC1=CNC2=CC=CC=C12)"
+        "C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](C(C)C)C(=O)N[C@@H](CCCNC(N)=N)C(=O)NCC(=O)N[C@@H]"
+        "(CCCNC(N)=N)C(=O)NCC(O)=O)C(O)=O"
+    ]
+
+
 def test_mols_passing_bro5(smiles_passing_ro5, smiles_failing_ro5, smiles_beyond_ro5):
     filt = BeyondRo5Filter()
 
@@ -116,3 +131,20 @@ def test_bro5_return_indicators(
     assert isinstance(filter_indicators, np.ndarray)
     assert np.issubdtype(filter_indicators.dtype, bool)
     assert np.all(np.isin(filter_indicators, [0, 1]))
+
+
+def test_bro5_transform_x_y(smiles_passing_ro5, smiles_failing_beyond_ro5):
+    all_smiles = smiles_passing_ro5 + smiles_failing_beyond_ro5
+    labels = np.array(
+        [1] * len(smiles_passing_ro5) + [0] * len(smiles_failing_beyond_ro5)
+    )
+
+    filt = BeyondRo5Filter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_ro5)
+    assert np.all(labels_filt == 1)
+
+    filt = BeyondRo5Filter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_ro5)
+    assert np.array_equal(indicators, labels_filt)

@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from rdkit.Chem import AddHs
+from rdkit.Chem import AddHs, MolFromSmiles
 
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
@@ -86,3 +86,13 @@ def test_conformer_generator_error_handling(smallest_mols_list):
     assert mols_conf[-1].GetIntProp("conf_id") == -1
     assert len(mols_conf) == len(y_conf)
     assert len(mols_conf) == len(mols)
+
+
+def test_conformer_generator_copy_y():
+    mols = [MolFromSmiles("O")]
+    labels = np.array([1])
+    conf_gen = ConformerGenerator()
+    mols_out, labels_out = conf_gen.transform_x_y(mols, labels, copy=True)
+
+    assert np.array_equal(labels_out, labels)
+    assert labels_out is not labels

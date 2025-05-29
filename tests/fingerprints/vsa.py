@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from rdkit.Chem.EState.EState_VSA import EState_VSA_
 from rdkit.Chem.rdMolDescriptors import PEOE_VSA_, SMR_VSA_, SlogP_VSA_
 from scipy.sparse import csr_array
@@ -126,3 +127,25 @@ def test_vsa_estate_feature_names():
     assert feature_names[1] == "-0.39 <= EState < 0.29"
     assert feature_names[-2] == "9.17 <= EState < 15.0"
     assert feature_names[-1] == "EState >= 15.0"
+
+
+def test_vsa_all_feature_names():
+    vsa_fp = VSAFingerprint(variant="all", n_jobs=-1)
+    feature_names = vsa_fp.get_feature_names_out()
+
+    assert len(feature_names) == vsa_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
+
+    assert all("SlogP" in name for name in feature_names[0:12])
+    assert all("SMR" in name for name in feature_names[12:22])
+    assert all("PEOE" in name for name in feature_names[22:36])
+    assert all("EState" in name for name in feature_names[36:47])
+
+
+def test_vsa_variants():
+    # proper variants, should just work
+    for variant in ["SlogP", "SMR", "PEOE", "EState", "all_original", "all"]:
+        VSAFingerprint(variant=variant)
+
+    with pytest.raises(ValueError, match='Variant "nonexistent" not recognized'):
+        VSAFingerprint(variant="nonexistent")

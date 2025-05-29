@@ -99,3 +99,23 @@ def test_tice_herbicides_parallel(smiles_list):
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
+
+
+def test_tice_transform_x_y(
+    smiles_passing_tice_herbicides, smiles_failing_tice_herbicides
+):
+    all_smiles = smiles_passing_tice_herbicides + smiles_failing_tice_herbicides
+    labels = np.array(
+        [1] * len(smiles_passing_tice_herbicides)
+        + [0] * len(smiles_failing_tice_herbicides)
+    )
+
+    filt = TiceHerbicidesFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_tice_herbicides)
+    assert np.all(labels_filt == 1)
+
+    filt = TiceHerbicidesFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_tice_herbicides)
+    assert np.array_equal(indicators, labels_filt)

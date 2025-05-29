@@ -50,8 +50,21 @@ def test_usrcat_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
 
 
 def test_usrcat_ignore_errors(mols_conformers_list, mols_conformers_3_plus_atoms):
-    usr_fp = USRCATFingerprint(errors="ignore", n_jobs=-1)
-    X_skfp = usr_fp.transform(mols_conformers_list)
-    X_skfp_3_plus_atoms = usr_fp.transform(mols_conformers_3_plus_atoms)
+    usrcat_fp = USRCATFingerprint(errors="ignore", n_jobs=-1)
+    X_skfp = usrcat_fp.transform(mols_conformers_list)
+    X_skfp_3_plus_atoms = usrcat_fp.transform(mols_conformers_3_plus_atoms)
 
     assert np.allclose(X_skfp, X_skfp_3_plus_atoms)
+
+
+def test_usrcat_copy(mols_conformers_3_plus_atoms):
+    # smoke test, should not throw an error
+    labels = np.ones(len(mols_conformers_3_plus_atoms))
+
+    usrcat_fp = USRCATFingerprint(errors="ignore", n_jobs=-1)
+    fps, labels_out = usrcat_fp.transform_x_y(
+        mols_conformers_3_plus_atoms, labels, copy=True
+    )
+
+    assert np.array_equal(labels, labels_out)
+    assert labels is not labels_out

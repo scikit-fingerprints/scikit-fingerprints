@@ -97,3 +97,18 @@ def test_ghose_parallel(smiles_list):
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
+
+
+def test_ghose_transform_x_y(smiles_passing_ghose, smiles_failing_ghose):
+    all_smiles = smiles_passing_ghose + smiles_failing_ghose
+    labels = np.array([1] * len(smiles_passing_ghose) + [0] * len(smiles_failing_ghose))
+
+    filt = GhoseFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_ghose)
+    assert np.all(labels_filt == 1)
+
+    filt = GhoseFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_ghose)
+    assert np.array_equal(indicators, labels_filt)

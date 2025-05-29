@@ -318,6 +318,8 @@ class FingerprintEstimatorGridSearch(BaseEstimator):
             return self.verbose > 0
         elif isinstance(self.verbose, dict):
             return len(self.verbose) > 0
+        else:
+            return False
 
     def _print_start_msg(
         self, curr_idx: int, grid_size: int, curr_params: dict

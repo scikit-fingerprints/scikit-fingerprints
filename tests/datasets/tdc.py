@@ -28,7 +28,11 @@ from skfp.datasets.tdc.adme import (
     load_solubility_aqsoldb,
     load_vdss_lombardo,
 )
-from skfp.datasets.tdc.benchmark import TDC_DATASET_NAMES, load_tdc_dataset
+from skfp.datasets.tdc.benchmark import (
+    TDC_DATASET_NAMES,
+    _subset_to_dataset_names,
+    load_tdc_dataset,
+)
 from skfp.datasets.tdc.hts import (
     load_sarscov2_3clpro_diamond,
     load_sarscov2_vitro_touret,
@@ -56,6 +60,10 @@ from tests.datasets.test_utils import run_basic_dataset_checks
 def test_load_tdc_benchmark():
     benchmark_full = load_tdc_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
+    assert benchmark_names == TDC_DATASET_NAMES
+
+    benchmark_full_tuples = load_tdc_benchmark(as_frames=False)
+    benchmark_names = [name for name, smiles, y in benchmark_full_tuples]
     assert benchmark_names == TDC_DATASET_NAMES
 
 
@@ -316,3 +324,27 @@ def test_load_dataset(dataset_name, load_func, expected_length, num_tasks, task_
         num_tasks=num_tasks,
         task_type=task_type,
     )
+
+
+@pytest.mark.flaky(
+    reruns=100,
+    reruns_delay=5,
+    only_rerun=["LocalEntryNotFoundError", "FileNotFoundError"],
+)
+@pytest.mark.parametrize(
+    "subset_name, expected_num_datasets",
+    [
+        (None, 36),
+        ("ADME", 24),
+        ("HTS", 2),
+        ("Toxicity", 10),
+    ],
+)
+def test_subset_to_dataset_names(subset_name, expected_num_datasets):
+    subset_datasets = _subset_to_dataset_names(subset_name)
+    assert len(subset_datasets) == expected_num_datasets
+
+
+def test_nonexistent_subset_name():
+    with pytest.raises(ValueError, match="subset not recognized"):
+        _subset_to_dataset_names("nonexistent")

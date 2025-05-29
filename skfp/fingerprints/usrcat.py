@@ -164,7 +164,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
             Array with labels for molecules.
 
         copy : bool, default=False
-            Copy the inputs X and y or not.
+            Copy the input labels y or not.
 
         Returns
         -------
@@ -175,7 +175,6 @@ class USRCATFingerprint(BaseFingerprintTransformer):
             Array with labels for molecules.
         """
         if copy:
-            X = deepcopy(X)
             y = deepcopy(y)
 
         X = super().transform(X)

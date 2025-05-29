@@ -37,6 +37,7 @@ from skfp.metrics import (
     multioutput_spearman_correlation,
     spearman_correlation,
 )
+from skfp.metrics.multioutput import _safe_multioutput_metric
 
 
 def get_all_metrics() -> list[tuple[str, Callable, Callable]]:
@@ -244,3 +245,55 @@ def test_multioutput_metrics_grid_search_compatible(
         scoring=scorer,
     )
     cv.fit(X, y)
+
+
+def test_list_conversion():
+    # should convert internally and not throw any errors
+    _safe_multioutput_metric(mean_squared_error, y_true=[1, 2, 3], y_pred=[1, 2, 3])
+
+
+def test_skip_all_nan_column():
+    # should ignore all-NaN column
+    y_true = np.array(
+        [
+            [1, np.nan, 1],
+            [2, np.nan, 1],
+            [3, np.nan, 2],
+        ]
+    )
+    y_pred = np.array(
+        [
+            [1, 2, 3],
+            [1, 3, 4],
+            [1, 3, 2],
+        ]
+    )
+    score_with_nan = _safe_multioutput_metric(mean_squared_error, y_true, y_pred)
+    score_without_nan = _safe_multioutput_metric(
+        mean_squared_error, y_true[:, [0, 2]], y_pred[:, [0, 2]]
+    )
+    assert np.isclose(score_with_nan, score_without_nan)
+
+
+def test_metrics_inputs_shapes():
+    # 1D and 2D should simply work
+    _safe_multioutput_metric(mean_squared_error, y_true=[1, 2, 3], y_pred=[1, 2, 3])
+    _safe_multioutput_metric(mean_squared_error, y_true=[[1, 2, 3]], y_pred=[[1, 2, 3]])
+
+    # different dimensions should throw an error
+    with pytest.raises(ValueError) as error:
+        _safe_multioutput_metric(
+            mean_squared_error, y_true=[[[1, 2, 3]]], y_pred=[1, 2, 3]
+        )
+
+    assert "Both true labels and predictions must have the same shape" in str(error)
+    assert "true labels (1, 1, 3), predictions (3,)" in str(error)
+
+    # over 2 dimensions should throw an error
+    with pytest.raises(ValueError) as error:
+        _safe_multioutput_metric(
+            mean_squared_error, y_true=[[[1, 2, 3]]], y_pred=[[[1, 2, 3]]]
+        )
+
+    assert "Both true labels and predictions must have 1 or 2 dimensions" in str(error)
+    assert "true labels 3, predictions 3" in str(error)

@@ -179,3 +179,18 @@ def test_mol_weight_wrong_min_max_thresholds(smiles_list):
         "greater or equal to min_weight, got:"
     )
     assert expected_msg in str(exc_info)
+
+
+def test_mol_weight_transform_x_y(smiles_light_mols, smiles_heavy_mols):
+    all_smiles = smiles_light_mols + smiles_heavy_mols
+    labels = np.array([1] * len(smiles_light_mols) + [0] * len(smiles_heavy_mols))
+
+    filt = MolecularWeightFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_light_mols)
+    assert np.all(labels_filt == 1)
+
+    filt = MolecularWeightFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_light_mols)
+    assert np.array_equal(indicators, labels_filt)

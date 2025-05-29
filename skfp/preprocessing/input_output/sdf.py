@@ -1,7 +1,6 @@
 import os.path
 import warnings
 from collections.abc import Sequence
-from copy import deepcopy
 
 from rdkit.Chem import Mol, SDMolSupplier, SDWriter
 from rdkit.Chem.PropertyMol import PropertyMol
@@ -160,7 +159,7 @@ class MolToSDFTransformer(BasePreprocessor):
         self.kekulize = kekulize
         self.force_V3000 = force_V3000
 
-    def transform(self, X: Sequence[Mol], copy: bool = False) -> None:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> None:  # noqa: ARG002
         """
         Write RDKit ``Mol`` objects to SDF file at location given by
         ``filepath`` parameter. File is created if necessary, and overwritten
@@ -180,9 +179,6 @@ class MolToSDFTransformer(BasePreprocessor):
         """
         self._validate_params()
         require_mols(X)
-
-        if copy:
-            X = deepcopy(X)
 
         with open(self.filepath, "w") as file:
             writer = SDWriter(file)

@@ -82,3 +82,13 @@ def test_electroshape_ignore_errors():
     X_skfp = electroshape_fp.transform(all_mols)
 
     assert len(X_skfp) == len(all_mols)
+
+
+def test_electroshape_transform_x_y(mols_conformers_3_plus_atoms):
+    labels = np.ones(len(mols_conformers_3_plus_atoms))
+
+    electroshape_fp = ElectroShapeFingerprint(n_jobs=-1)
+    X_skfp, y_skfp = electroshape_fp.transform_x_y(mols_conformers_3_plus_atoms, labels)
+
+    assert len(X_skfp) == len(y_skfp)
+    assert np.all(y_skfp == 1)

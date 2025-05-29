@@ -89,3 +89,22 @@ def test_rule_of_two_parallel(smiles_list):
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
     assert mols_filtered_sequential == mols_filtered_parallel
+
+
+def test_rule_of_two_transform_x_y(
+    smiles_passing_rule_of_two, smiles_failing_rule_of_two
+):
+    all_smiles = smiles_passing_rule_of_two + smiles_failing_rule_of_two
+    labels = np.array(
+        [1] * len(smiles_passing_rule_of_two) + [0] * len(smiles_failing_rule_of_two)
+    )
+
+    filt = RuleOfTwoFilter()
+    mols, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert len(mols) == len(smiles_passing_rule_of_two)
+    assert np.all(labels_filt == 1)
+
+    filt = RuleOfTwoFilter(return_indicators=True)
+    indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
+    assert np.sum(indicators) == len(smiles_passing_rule_of_two)
+    assert np.array_equal(indicators, labels_filt)

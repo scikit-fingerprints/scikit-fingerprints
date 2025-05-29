@@ -1,6 +1,7 @@
 import pytest
 
 from skfp.model_selection.splitters.utils import (
+    _check_subset_size,
     ensure_nonempty_subset,
     split_additional_data,
     validate_train_test_split_sizes,
@@ -170,3 +171,14 @@ def test_validate_train_valid_test_split_sizes_sum_not_equal_data_length_incorre
         match="The sum of train, valid and test sizes must be equal to the n_samples=13",
     ):
         validate_train_valid_test_split_sizes(5, 3, 4, 13)
+
+
+@pytest.mark.parametrize("size", [0, 0.0])
+def test_zero_size(size):
+    with pytest.raises(ValueError, match="should be either positive and smaller than"):
+        _check_subset_size(size, n_samples=10, subset="train")
+
+
+def test_wrong_size_type():
+    with pytest.raises(ValueError, match="Invalid value for train_size"):
+        _check_subset_size(size="str", n_samples=10, subset="train")  # type: ignore
