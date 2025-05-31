@@ -8,7 +8,7 @@ from skfp.utils.validators import (
     require_atoms,
     require_mols,
     require_mols_with_conf_ids,
-    require_strings
+    require_strings,
 )
 
 
@@ -63,6 +63,7 @@ def test_require_mols_with_conf_ids(mols_conformers_list, mols_list):
         require_mols_with_conf_ids(mols_conformers_list + mols_list)
     assert "each must have conf_id property set" in str(exc_info)
 
+
 @pytest.mark.parametrize(
     "min_atoms, only_explicit, expected_message",
     [
@@ -79,8 +80,6 @@ def test_require_mols_with_conf_ids(mols_conformers_list, mols_list):
         ),  # Special case: water has 3 atoms when counting implicit hydrogens
     ],
 )
-
-
 def test_require_atoms_decorator(min_atoms, only_explicit, expected_message):
     """Test the require_atoms decorator with different configurations."""
 
