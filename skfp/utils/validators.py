@@ -79,7 +79,7 @@ def require_strings(X: Sequence[Any]) -> None:
             )
 
 
-def require_atoms(min_atoms: int = 1) -> Callable:
+def require_atoms(min_atoms: int = 1, only_explicit=True) -> Callable:
     """
     Decorator for functions operating on single molecule. Ensures it is
     nonempty (by default) or has at least the specified number of atoms,
@@ -89,7 +89,7 @@ def require_atoms(min_atoms: int = 1) -> Callable:
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(mol: Mol, *args, **kwargs):
-            if mol.GetNumAtoms() < min_atoms:
+            if mol.GetNumAtoms(onlyExplicit=only_explicit) < min_atoms:
                 raise ValueError(
                     f"The molecule must have at least {min_atoms} atom(s), "
                     f"{func.__name__} cannot be calculated."
