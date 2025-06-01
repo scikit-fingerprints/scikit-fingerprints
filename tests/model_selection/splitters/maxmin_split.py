@@ -214,6 +214,40 @@ def test_maxmin_stratified_train_valid_test_split(mols_list):
     assert len(np.concatenate((y_train, y_valid, y_test))) == len(mols_list)
 
 
+def test_maxmin_stratified_train_test_split_return_indices(mols_list):
+    labels = [0] * int(0.5 * len(mols_list)) + [1] * int(0.5 * len(mols_list))
+
+    train_set, test_set, train_labels, test_labels = maxmin_stratified_train_test_split(
+        mols_list, labels, train_size=0.7, test_size=0.3, return_indices=True
+    )
+
+    assert all(isinstance(train, int) for train in train_set)
+    assert all(isinstance(test, int) for test in test_set)
+
+    assert len(set(train_set) | set(test_set)) == len(mols_list)
+
+
+def test_maxmin_stratified_train_valid_test_split_returns_indices(mols_list):
+    labels = [0] * int(0.5 * len(mols_list)) + [1] * int(0.5 * len(mols_list))
+
+    train_set, valid_set, test_set, train_labels, valid_labels, test_labels = (
+        maxmin_stratified_train_valid_test_split(
+            mols_list,
+            labels,
+            train_size=0.7,
+            test_size=0.2,
+            valid_size=0.1,
+            return_indices=True,
+        )
+    )
+
+    assert all(isinstance(train, int) for train in train_set)
+    assert all(isinstance(valid, int) for valid in valid_set)
+    assert all(isinstance(test, int) for test in test_set)
+
+    assert len(set(train_set) | set(valid_set) | set(test_set)) == len(mols_list)
+
+
 def test_maxmin_stratified_train_test_split_with_additional_data(mols_list):
     labels = [0] * int(0.5 * len(mols_list)) + [1] * int(0.5 * len(mols_list))
     additional_data = ["a"] * len(mols_list)
