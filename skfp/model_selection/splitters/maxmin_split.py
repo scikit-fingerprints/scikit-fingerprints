@@ -351,8 +351,9 @@ def maxmin_stratified_train_test_split(
     Split using MaxMin algorithm with stratification.
 
     A variant of MaxMin split (see :py:func:`maxmin_train_test_split`), modified to
-    split each class separately. This preserves the relative class proportions in the
-    resulting train and test splits.
+    split each class separately. The goal is to preserve the class distribution in
+    the resulting train and test splits, while also distributing points in each subset
+    across the chemical space.
 
     Note that results may differ quite strongly from regular MaxMin split, as here
     classes are treated independently of each other. While the distances between
@@ -496,9 +497,10 @@ def maxmin_stratified_train_valid_test_split(
     """
     Split using MaxMin algorithm with stratification.
 
-    A variant of MaxMin split (see :py:func:`maxmin_train_valid_test_split`), modified to
-    split each class separately. This preserves the relative class proportions in the
-    resulting train, valid, and test splits.
+    A variant of MaxMin split (see :py:func:`maxmin_train_valid_test_split`), modified
+    to split each class separately. The goal is to preserve the class distribution in
+    the resulting train, valid, and test splits, while also distributing points in each
+    subset across the chemical space.
 
     Note that results may differ quite strongly from regular MaxMin split, as here
     classes are treated independently of each other. While the distances between
