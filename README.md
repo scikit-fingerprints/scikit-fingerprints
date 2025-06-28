@@ -155,6 +155,7 @@ Examples and tutorials:
 6. [Dataset splits](examples/06_dataset_splits.ipynb)
 7. [Datasets and benchmarking](examples/07_datasets_and_benchmarking.ipynb)
 8. [Similarity and distance metrics](examples/08_similarity_and_distance_metrics.ipynb)
+9. [Molecular filters](examples/09_molecular_filters.ipynb)
 
 ## Project overview
 
