@@ -76,11 +76,11 @@ def spearman_correlation(
     -1.0
     """
     if _get_sklearn_version() < 1.7:
-        y_type, y_true, y_pred, multioutput = _check_reg_targets(
+        y_data_type, y_true, y_pred, multioutput = _check_reg_targets(
             y_true, y_pred, multioutput=None
         )
     else:
-        y_type, y_true, y_pred, multioutput = _check_reg_targets(
+        y_data_type, y_true, y_pred, sample_weight, multioutput = _check_reg_targets(
             y_true, y_pred, sample_weight=None, multioutput=None
         )
 
