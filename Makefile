@@ -2,30 +2,30 @@
 .DEFAULT_GOAL := help
 
 setup: ## Install development dependencies
-	@# check if poetry is installed
-	@poetry --version >/dev/null 2>&1 || (echo "Poetry is not installed, please install it" && exit 1)
+	@# check if uv is installed
+	@uv --version >/dev/null 2>&1 || (echo "uv is not installed, please install it" && exit 1)
 
 	@# check if pandoc (for docs) is installed
 	@pandoc --version >/dev/null 2>&1 || (echo "Pandoc is not installed. Please install it from https://pandoc.org/" && exit 1)
 
 	@# install dependencies
-	poetry sync --with dev,docs
-	poetry run pre-commit install
+	uv sync --group dev --group docs
+	uv run pre-commit install
 
 docs: ## Re-generate documentation
 	-rm -r docs/modules/generated
-	poetry run $(MAKE) -C docs clean html
+	uv run $(MAKE) -C docs clean html
 
 doctest: docs ## Run documentation tests
-	poetry run $(MAKE) -C docs doctest
+	uv run $(MAKE) -C docs doctest
 
 test: ## Run tests
-	poetry run ruff check
-	poetry run pytest tests
+	uv run ruff check
+	uv run pytest tests
 
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files
-	poetry run pytest --cov=skfp tests
+	uv run pytest --cov=skfp tests
 	-rm -rf .tmp_coverage_files
 
 help:
