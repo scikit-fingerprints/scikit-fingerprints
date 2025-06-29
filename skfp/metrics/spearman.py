@@ -26,7 +26,7 @@ def spearman_correlation(
 
     Calculates Spearman's rank correlation coefficient (rho). It is a nonparametric
     measure of rank correlation. High value means that values of two variables change
-    with monotonic relationship.
+    with a monotonic relationship.
 
     For constant inputs, i.e. exactly the same ``y_true`` and ``y_pred``, 1.0 is returned.
     This differs from SciPy behavior, which returns NaN in that situation. This can be
@@ -74,7 +74,10 @@ def spearman_correlation(
     -1.0
     """
     y_type, y_true, y_pred, multioutput = _check_reg_targets(
-        y_true, y_pred, multioutput=None
+        y_true,
+        y_pred,
+        sample_weight=None,
+        multioutput=None,
     )
 
     if np.all(np.isclose(y_true, y_pred)):
