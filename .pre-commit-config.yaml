@@ -5,7 +5,7 @@ repos:
       # and have all dependencies
       - id: mypy
         name: mypy
-        entry: poetry run mypy --package skfp --package tests
+        entry: uv run mypy --package skfp --package tests
         language: system
         pass_filenames: false
 
@@ -16,7 +16,7 @@ repos:
         args: [
           --vulnerability-service, "pypi",
           --cache-dir, ".pip_audit_cache",
-          # false alert for setuptools, we have much newer version
+          # false alert for setuptools, we have a much newer version
           --ignore-vuln, "GHSA-5rjg-fvgr-3xxf"
         ]
 

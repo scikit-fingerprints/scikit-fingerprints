@@ -1,6 +1,5 @@
 import warnings
 from collections.abc import Callable
-from importlib.metadata import version
 
 import numpy as np
 from sklearn.metrics import (
@@ -21,6 +20,7 @@ from sklearn.utils._param_validation import validate_params
 
 from skfp.metrics.auroc import auroc_score
 from skfp.metrics.spearman import spearman_correlation
+from skfp.utils.functions import _get_sklearn_version
 
 
 @validate_params(
@@ -154,9 +154,7 @@ def multioutput_auroc_score(
     >>> multioutput_auroc_score(y_true, y_score)
     0.5
     """
-    sklearn_ver = version("scikit-learn")  # e.g. 1.6.0
-    sklearn_ver = ".".join(sklearn_ver.split(".")[:-1])  # e.g. 1.6
-    if float(sklearn_ver) < 1.6:
+    if _get_sklearn_version() < 1.6:
         func = auroc_score
     else:
         func = roc_auc_score

@@ -15,7 +15,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
-    "sphinx.ext.duration",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",

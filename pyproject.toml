@@ -1,10 +1,10 @@
 [project]
 name = "scikit-fingerprints"
-version = "0.0.0"  # we set version dynamically in GitHub Actions from Git tags
+version = "0.0.0"  # version set dynamically in GitHub Actions from Git tags
 description = "Library for effective molecular fingerprints calculation"
 authors = [{ name = "AGH ML & Chemoinformatics Group", email = "jadamczy@agh.edu.pl" }]
 keywords = ["molecular fingerprints", "molecular descriptors", "chemoinformatics", "chemistry", "machine learning"]
-license = "MIT"
+license = { text = "MIT" }
 readme = "README.md"
 classifiers = [
     "Intended Audience :: Information Technology",
@@ -21,8 +21,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
-requires-python = ">=3.10,<3.14"
 
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "descriptastorus>=2.0.0,<3",
     "e3fp>=1.2.6,<2",
@@ -35,7 +35,7 @@ dependencies = [
     "rdkit<=2024.9.5",
     "scikit-learn>=1.0.0,<2",
     "scipy>=1.0.0,<2",
-    "tqdm>=4.0.0,<5",
+    "tqdm>=4.0.0,<5"
 ]
 
 [project.urls]
@@ -44,59 +44,48 @@ repository = "https://github.com/scikit-fingerprints/scikit-fingerprints"
 documentation = "https://scikit-fingerprints.github.io/scikit-fingerprints"
 "Bug Tracker" = "https://github.com/scikit-fingerprints/scikit-fingerprints/issues"
 
-[tool.poetry]
-packages = [{ include = "skfp" }]
+[dependency-groups]
+dev = [
+    "coverage",
+    "jupyter",
+    "mypy",
+    "pip-audit",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "pytest-rerunfailures",
+    "ruff",
+    "setuptools>=80",
+    "xenon"
+]
 
-[tool.poetry.group.dev]
-optional = true
+test = [
+    "mypy",
+    "ruff",
+    "xenon",
+    "pip-audit",
+    "pre-commit",
+    "pytest",
+    "pytest-rerunfailures"
+]
 
-[tool.poetry.group.dev.dependencies]
-coverage = "*"
-jupyter = "*"
-mypy = "*"
-pip-audit = "*"
-pre-commit = "*"
-pytest = "*"
-pytest-cov = "*"
-pytest-rerunfailures = "*"
-ruff = "*"
-setuptools = ">=80.*"  # to avoid PyCharm errors
-xenon = "*"
+docs = [
+  "ipython",
+  "nbsphinx",
+  "pydata-sphinx-theme",
+  "sphinx",
+  "sphinx-copybutton"
+]
 
-[tool.poetry.group.test]
-optional = true
-
-[tool.poetry.group.test.dependencies]
-mypy = "*"
-pip-audit = "*"
-pre-commit = "*"
-pytest = "*"
-pytest-rerunfailures = "*"
-ruff = "*"
-xenon = "*"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-ipython = "*"
-nbsphinx = "*"
-pydata-sphinx-theme = "*"
-sphinx = "*"
-sphinx-copybutton = "*"
-
-[tool.poetry.group.eval]
-optional = true
-
-[tool.poetry.group.eval.dependencies]
-lightgbm = "*"
-matplotlib = "*"
+eval = [
+    "lightgbm",
+    "matplotlib",
+]
 
 [tool.pytest.ini_options]
 python_files = "*.py"
 addopts = "--assert=plain"
 filterwarnings = [
-    # known and expected warnings in tests
     "ignore:.*shared_ptr<RDKit.*already registered.*:RuntimeWarning",
     "ignore:.*SciPy.*sokalmichener.*:DeprecationWarning",
     "ignore:A worker stopped.*:UserWarning",
@@ -105,6 +94,16 @@ filterwarnings = [
     "ignore:Function auroc_score.*:FutureWarning"
 ]
 
+[tool.uv.build-backend]
+module-name = "skfp"
+module-root = ""
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build"]
+build-backend = "uv_build"
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true

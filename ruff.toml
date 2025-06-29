@@ -45,6 +45,7 @@ ignore = [
     "TRY003",   # long error messages
     "PD901",    # df variable for DataFrames
     "PGH003",   # ignore types where necessary
+    "PLC0415",  # imports inside functions/methods
     "PLR2004",  # numerical constants
     "PLR0913",  # many arguments
     "PLW2901",  # overwrite loop variable for readability

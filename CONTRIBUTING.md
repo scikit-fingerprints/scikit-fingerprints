@@ -44,7 +44,7 @@ Prerequisites:
 
 - Git
 - Python 3.10 or higher
-- Poetry
+- uv
 - Pandoc
 
 To set up the development environment, follow these steps:
@@ -60,11 +60,11 @@ To set up the development environment, follow these steps:
    make setup
    ```
    This command will set up a virtual environment and install all the necessary dependencies.
-5. That's it! You're ready to start developing. For more convenience, you can run 
-   the following command to activate the virtual environment:
+5. Activate the virtual environment. On Linux, it is:
    ```bash
-   poetry shell
+   source .venv/bin/activate
    ```
+6. That's it! You're ready to start developing.
 
 If you are using PyCharm, then mark `tests` directory as tests sources root. Also make sure that
 PyTest is configured as the default test runner. This will make running them easier from UI.
