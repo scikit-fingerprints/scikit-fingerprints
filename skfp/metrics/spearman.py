@@ -3,6 +3,8 @@ from scipy.stats import spearmanr
 from sklearn.metrics._regression import _check_reg_targets
 from sklearn.utils._param_validation import StrOptions, validate_params
 
+from skfp.utils.functions import _get_sklearn_version
+
 
 @validate_params(
     {
@@ -73,12 +75,14 @@ def spearman_correlation(
     >>> spearman_correlation(y_true, y_pred)  # doctest: +SKIP
     -1.0
     """
-    y_type, y_true, y_pred, multioutput = _check_reg_targets(
-        y_true,
-        y_pred,
-        sample_weight=None,
-        multioutput=None,
-    )
+    if _get_sklearn_version() < 1.7:
+        y_type, y_true, y_pred, multioutput = _check_reg_targets(
+            y_true, y_pred, multioutput=None
+        )
+    else:
+        y_type, y_true, y_pred, multioutput = _check_reg_targets(
+            y_true, y_pred, sample_weight=None, multioutput=None
+        )
 
     if np.all(np.isclose(y_true, y_pred)):
         return equal_values_result
