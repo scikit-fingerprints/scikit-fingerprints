@@ -68,6 +68,7 @@ ignore = [
 ]
 
 "examples/**" = [
+    "D101",  # no docstrings in examples
     "D103",  # no docstrings in examples
 ]
 
