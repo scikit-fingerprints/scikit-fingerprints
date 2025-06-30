@@ -20,3 +20,4 @@ docs/examples/
 tests/preprocessing/input_output/data/mol_out.sdf
 
 .pip_audit_cache
+.python-version

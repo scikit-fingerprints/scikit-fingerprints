@@ -31,8 +31,8 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install Poetry
-        run: pipx install poetry --python python3.10
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
       # set version (e.g. 1.2.3) from the latest Git tag on master branch
       - name: Set package release version
@@ -40,15 +40,10 @@ jobs:
         # timestamp "YYYYMMDDHHMMSS" is added at the end
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0)
-          poetry version ${LATEST_TAG:1}.$(date +'%Y%m%d%H%M%S')
+          uv version ${LATEST_TAG:1}.$(date +'%Y%m%d%H%M%S')
         shell: bash
-
-      - name: Configure Poetry for TestPyPI
-        run: >-
-          poetry config repositories.test-pypi https://test.pypi.org/legacy/
-          && poetry config pypi-token.test-pypi ${{ secrets.TEST_PYPI_API_TOKEN }}
 
       - name: Build and publish to TestPyPI
         run: >-
-          poetry build
-          && poetry publish --repository=test-pypi
+          uv build
+          && uv publish --index testpypi --token ${{ secrets.TEST_PYPI_API_TOKEN }}
