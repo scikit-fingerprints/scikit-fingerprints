@@ -5,6 +5,9 @@ import sys
 
 # make sure that the project source directory is in path
 sys.path.insert(0, os.path.abspath("../skfp"))
+print(os.listdir())
+print("...")
+print(os.listdir(".."))
 
 # -- Project information -----------------------------------------------------
 
