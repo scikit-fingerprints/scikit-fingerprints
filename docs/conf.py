@@ -3,11 +3,8 @@ import os
 import shutil
 import sys
 
-# make sure that the project source directory is in path
-sys.path.insert(0, os.path.abspath("../skfp"))
-print(os.listdir())
-print("...")
-print(os.listdir(".."))
+# make sure that the project root directory is in path
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
