@@ -15,7 +15,9 @@ build:
        - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --frozen --group docs
     build:
       html:
-        - ls -al
+        - echo $READTHEDOCS_OUTPUT/html/
         - mkdir -p $READTHEDOCS_OUTPUT/html/
         - make -C docs html
         - cp -r docs/_build/html $READTHEDOCS_OUTPUT/html/
+        - ls -al
+        - ls -al $READTHEDOCS_OUTPUT/html/
