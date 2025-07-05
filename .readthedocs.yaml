@@ -18,6 +18,6 @@ build:
         - echo $READTHEDOCS_OUTPUT/html/
         - mkdir -p $READTHEDOCS_OUTPUT/html/
         - make -C docs html
-        - cp -r docs/_build/html $READTHEDOCS_OUTPUT/html/
+        - cp -r docs/_build/html $READTHEDOCS_OUTPUT
         - ls -al
         - ls -al $READTHEDOCS_OUTPUT/html/
