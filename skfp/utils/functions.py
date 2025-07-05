@@ -18,5 +18,5 @@ def get_data_from_indices(data: Sequence, indices: Sequence[int]) -> list:
 
 def _get_sklearn_version():
     sklearn_ver = version("scikit-learn")  # e.g. 1.6.0
-    sklearn_ver = ".".join(sklearn_ver.split(".")[:-1])  # e.g. 1.6
+    sklearn_ver = ".".join(sklearn_ver.split(".")[:2])  # e.g. 1.6
     return float(sklearn_ver)

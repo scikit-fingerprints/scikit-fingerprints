@@ -1,6 +1,10 @@
 import datetime
 import os
 import shutil
+import sys
+
+# make sure that the project root directory is in path
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
