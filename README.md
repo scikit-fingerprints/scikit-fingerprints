@@ -18,7 +18,7 @@
 
 ---
 
-[scikit-fingerprints](https://scikit-fingerprints.github.io/scikit-fingerprints/) is a Python library for efficient
+[scikit-fingerprints](https://scikit-fingerprints.readthedocs.io/latest/) is a Python library for efficient
 computation of molecular fingerprints.
 
 ## Table of Contents
@@ -40,7 +40,7 @@ chemical analysis. However, existing Python libraries for computing molecular fi
 user-friendliness, and support for modern programming standards. This project aims to address these shortcomings by
 creating an efficient and accessible Python library for molecular fingerprint computation.
 
-See [the documentation and API reference](https://scikit-fingerprints.readthedocs.io/en/latest/) for details.
+See [the documentation and API reference](https://scikit-fingerprints.readthedocs.io/latest/) for details.
 
 Main features:
 - scikit-learn compatible
@@ -143,7 +143,7 @@ print(f"AUROC: {auroc:.2%}")
 
 ## Examples
 
-You can find Jupyter Notebooks with examples and tutorials [in documentation](https://scikit-fingerprints.readthedocs.io/en/latest/examples.html),
+You can find Jupyter Notebooks with examples and tutorials [in documentation](https://scikit-fingerprints.readthedocs.io/latest/examples.html),
 as well as in the ["examples" directory](https://github.com/scikit-fingerprints/scikit-fingerprints/tree/master/examples).
 
 Examples and tutorials:
