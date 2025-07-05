@@ -40,7 +40,7 @@ chemical analysis. However, existing Python libraries for computing molecular fi
 user-friendliness, and support for modern programming standards. This project aims to address these shortcomings by
 creating an efficient and accessible Python library for molecular fingerprint computation.
 
-See [the documentation and API reference](https://scikit-fingerprints.github.io/scikit-fingerprints/) for details.
+See [the documentation and API reference](https://scikit-fingerprints.readthedocs.io/en/latest/) for details.
 
 Main features:
 - scikit-learn compatible
@@ -143,7 +143,7 @@ print(f"AUROC: {auroc:.2%}")
 
 ## Examples
 
-You can find Jupyter Notebooks with examples and tutorials [in documentation](https://scikit-fingerprints.github.io/scikit-fingerprints/examples.html),
+You can find Jupyter Notebooks with examples and tutorials [in documentation](https://scikit-fingerprints.readthedocs.io/en/latest/examples.html),
 as well as in the ["examples" directory](https://github.com/scikit-fingerprints/scikit-fingerprints/tree/master/examples).
 
 Examples and tutorials:
@@ -216,6 +216,8 @@ Publications using scikit-fingerprints:
 1. [J. Adamczyk, W. Czech "Molecular Topological Profile (MOLTOP) - Simple and Strong Baseline for Molecular Graph Classification" ECAI 2024](https://ebooks.iospress.nl/doi/10.3233/FAIA240663)
 2. [J. Adamczyk, P. Ludynia "Scikit-fingerprints: easy and efficient computation of molecular fingerprints in Python" SoftwareX](https://www.sciencedirect.com/science/article/pii/S2352711024003145)
 3. [J. Adamczyk, P. Ludynia, W. Czech "Molecular Fingerprints Are Strong Models for Peptide Function Prediction" ArXiv preprint](https://arxiv.org/abs/2501.17901)
+4. [M. Fitzner et al. "BayBE: a Bayesian Back End for experimental planning in the low-to-no-data regime" RSC Digital Discovery](https://pubs.rsc.org/en/content/articlehtml/2025/dd/d5dd00050e)
+5. [J. Xiong "Bridging 3D Molecular Structures and Artificial Intelligence by a Conformation Description Language"](https://www.biorxiv.org/content/10.1101/2025.05.07.652440v1.abstract)
 
 ## Contributing
 

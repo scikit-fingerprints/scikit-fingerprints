@@ -95,8 +95,8 @@ HTML files in the `docs/_build/html` directory.
 
 To view the documentation, open the `docs/_build/html/index.html` file in your browser.
 
-We care about quality of our documentation. Before merging your Pull Request, there must be no warning regarding docs.
-You can check for any with `make doctest` to check whole documentation or just `python3 -m doctest <PATH_TO_MODULE>` 
+We care about the quality of our documentation. Before merging your Pull Request, there must be no warning regarding docs.
+You can check for any with `make doctest` to check whole documentation or just `uv run python -m doctest <PATH_TO_MODULE>` 
 for specific file.
 
 ### Releasing
