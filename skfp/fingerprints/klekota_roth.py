@@ -1,10 +1,26 @@
+import re
 from collections.abc import Sequence
 
 import numpy as np
+from rdkit import Chem
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseSubstructureFingerprint
+from skfp.utils import ensure_mols
+
+TOKEN_PATTERN = re.compile(
+    r"""
+    \[[^\]]+\]
+    | \(|\)
+    | \d+
+    | Br|Cl
+    | [BCNOPSFHI]
+    | [bcnopsif]
+    | [-=#:~\\\/]
+""",
+    re.VERBOSE,
+)
 
 
 class KlekotaRothFingerprint(BaseSubstructureFingerprint):
@@ -56,7 +72,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
     .. [2] `Chemistry Development Kit (CDK) KlekotaRothFingerprinter
         <https://cdk.github.io/cdk/latest/docs/api/org/openscience/cdk/fingerprint/KlekotaRothFingerprinter.html>`_
 
-    Examples
+    Examplesklekota_roth.py
     --------
     >>> from skfp.fingerprints import KlekotaRothFingerprint
     >>> smiles = ["O", "CC", "[C-]#N", "CC=O"]
@@ -70,6 +86,15 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
            [0, 0, 0, ..., 0, 0, 0],
            [0, 0, 0, ..., 0, 0, 0]], shape=(4, 4860), dtype=uint8)
     """
+
+    class _PatternNode:
+        __slots__ = ("bit", "children", "is_terminal", "mol")
+
+        def __init__(self, mol=None):
+            self.mol = mol
+            self.children = {}
+            self.is_terminal = False
+            self.bit = None
 
     def __init__(
         self,
@@ -4944,6 +4969,8 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             "SCCS(=O)=O",
         ]
         self._feature_names = patterns
+        self._root = self._PatternNode()
+        self._build_tree()
         super().__init__(
             patterns=patterns,
             count=count,
@@ -4990,3 +5017,163 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             Array with fingerprints.
         """
         return super().transform(X, copy)
+
+    def _add_path(
+        self, root: _PatternNode, prefixes: list[tuple[str, Mol]], bit: int
+    ) -> None:
+        """
+        Add a path of SMARTS prefixes to the tree.
+        Mark the final node as terminal and assigns its bit index.
+        """
+        node = root
+        for p, mol in prefixes:
+            if p not in node.children:
+                node.children[p] = self._PatternNode()
+            node = node.children[p]
+            node.mol = mol
+
+        node.is_terminal = True
+        node.bit = bit
+
+    def _reduce_tree(self) -> None:
+        """
+        Reduce the prefix tree by merging nodes with a single child and no terminal flag.
+        Modify the tree in-place.
+        """
+        stack: list[KlekotaRothFingerprint._PatternNode] = list(
+            self._root.children.values()
+        )
+        while stack:
+            node = stack.pop()
+            while not node.is_terminal and len(node.children) == 1:
+                _key, child = next(iter(node.children.items()))
+                node.mol = child.mol
+                node.is_terminal = child.is_terminal
+                node.bit = child.bit
+                node.children = child.children
+
+            stack.extend(node.children.values())
+
+    def _build_tree(self) -> None:
+        """
+        Build and reduce the prefix tree for the SMARTS patterns.
+        Insert all feature patterns with their bit indices,
+        and perform tree reduction to minimize redundant nodes.
+        """
+        for bit, pattern in enumerate(self._feature_names):
+            prefixes = self._split_into_prefixes(pattern)
+            self._add_path(self._root, prefixes, bit)
+
+        self._reduce_tree()
+
+    def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
+        X = ensure_mols(X)
+
+        n_bits = self.n_features_out
+        bits = [
+            np.zeros(n_bits, dtype=np.uint32 if self.count else np.uint8) for _ in X
+        ]
+        root_children = self._root.children.values()
+
+        for i, mol in enumerate(X):
+            stack: list[KlekotaRothFingerprint._PatternNode] = list(root_children)
+            while stack:
+                node = stack.pop()
+                if node.mol and not mol.HasSubstructMatch(node.mol):
+                    continue
+
+                if node.is_terminal:
+                    if self.count:
+                        bits[i][node.bit] = len(mol.GetSubstructMatches(node.mol))
+                    else:
+                        bits[i][node.bit] = 1
+
+                stack.extend(node.children.values())
+
+        return csr_array(bits) if self.sparse else bits
+
+    @staticmethod
+    def _split_into_prefixes(smarts: str) -> list[tuple[str, Mol]]:
+        """
+        Generate all valid SMARTS prefixes of the given SMARTS string.
+        Return a list of (prefix, Mol) tuples for each syntactically valid prefix.
+        """
+        tokens = KlekotaRothFingerprint._tokenize_smarts(smarts)
+        prefixes = []
+        for i in range(1, len(tokens) + 1):
+            prefix = "".join(tokens[:i])
+            mol = Chem.MolFromSmarts(prefix)
+            if mol is not None:
+                prefixes.append((prefix, mol))
+            else:
+                print(f"Invalid prefix: {prefix}")
+        return prefixes
+
+    @staticmethod
+    def _tokenize_smarts(smarts: str) -> list[str]:
+        """
+        Tokenize a SMARTS string into a list of meaningful tokens.
+        Verify that the tokens reconstruct the original string.
+        """
+        tokens = TOKEN_PATTERN.findall(smarts)
+        KlekotaRothFingerprint._handle_rings_and_parens(tokens)
+        KlekotaRothFingerprint._handle_bonds(tokens)
+
+        if (joined := "".join(tokens)) != smarts:
+            diff_index = next(
+                i
+                for i in range(min(len(joined), len(smarts)))
+                if joined[i] != smarts[i]
+            )
+            raise ValueError(
+                f"Unrecognized token at position {diff_index}: '{smarts[diff_index]}'"
+            )
+        return tokens
+
+    @staticmethod
+    def _handle_rings_and_parens(tokens: list[str]) -> None:
+        """
+        Join consecutive tokens between parentheses or ring closure digits into a single token.
+        Modify the tokens list in-place.
+        """
+        rings = set()
+        parens_count = 0
+        start = 0
+        while start < len(tokens):
+            tok = tokens[start]
+            if tok == "(":
+                parens_count += 1
+            elif tok.isdigit():
+                rings.add(tok)
+
+            idx = start + 1
+            while idx < len(tokens) and (parens_count or rings):
+                next_tok = tokens[idx]
+                if next_tok == "(":
+                    parens_count += 1
+                elif next_tok == ")":
+                    parens_count -= 1
+                elif next_tok.isdigit():
+                    if next_tok not in rings:
+                        rings.add(next_tok)
+                    else:
+                        rings.remove(next_tok)
+                idx += 1
+
+            if idx > start + 1:
+                tokens[start:idx] = ["".join(tokens[start:idx])]
+            start += 1
+
+    @staticmethod
+    def _handle_bonds(tokens: list[str]) -> None:
+        """
+        Merge bonds and their adjacent atoms into single tokens.
+        Modify the tokens list in-place.
+        """
+        idx = 0
+        while idx < len(tokens):
+            if tokens[idx] in "-=#:~":
+                # merge bond with adjacent atoms
+                tokens[idx - 1 : idx + 2] = ["".join(tokens[idx - 1 : idx + 2])]
+                idx -= 1  # adjust for merged token
+            idx += 1
