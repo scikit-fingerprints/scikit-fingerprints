@@ -77,6 +77,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
         "sanitize": ["boolean"],
         "replacements": [dict, None],
         "valid_only": ["boolean"],
+        "suppress_warnings": ["boolean"],
     }
 
     def __init__(
@@ -202,6 +203,9 @@ class MolToSmilesTransformer(BasePreprocessor):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
+    suppress_warnings: bool, default=False
+        Whether to suppress warnings and errors on loading molecules.
+
     verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
         If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
@@ -234,6 +238,7 @@ class MolToSmilesTransformer(BasePreprocessor):
         "all_bonds_explicit": ["boolean"],
         "all_hs_explicit": ["boolean"],
         "do_random": ["boolean"],
+        "suppress_warnings": ["boolean"],
     }
 
     def __init__(
@@ -246,11 +251,13 @@ class MolToSmilesTransformer(BasePreprocessor):
         do_random: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
+        suppress_warnings: bool = False,
         verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
             batch_size=batch_size,
+            suppress_warnings=suppress_warnings,
             verbose=verbose,
         )
         self.isomeric_smiles = isomeric_smiles
@@ -261,16 +268,17 @@ class MolToSmilesTransformer(BasePreprocessor):
         self.do_random = do_random
 
     def _transform_batch(self, X: Sequence[Mol]) -> list[str]:
-        require_mols(X)
-        return [
-            MolToSmiles(
-                mol,
-                isomericSmiles=self.isomeric_smiles,
-                kekuleSmiles=self.kekule_smiles,
-                canonical=self.canonical,
-                allBondsExplicit=self.all_bonds_explicit,
-                allHsExplicit=self.all_hs_explicit,
-                doRandom=self.do_random,
-            )
-            for mol in X
-        ]
+        with no_rdkit_logs() if self.suppress_warnings else nullcontext():
+            require_mols(X)
+            return [
+                MolToSmiles(
+                    mol,
+                    isomericSmiles=self.isomeric_smiles,
+                    kekuleSmiles=self.kekule_smiles,
+                    canonical=self.canonical,
+                    allBondsExplicit=self.all_bonds_explicit,
+                    allHsExplicit=self.all_hs_explicit,
+                    doRandom=self.do_random,
+                )
+                for mol in X
+            ]

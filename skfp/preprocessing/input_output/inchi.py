@@ -74,6 +74,7 @@ class MolFromInchiTransformer(BasePreprocessor):
         "sanitize": ["boolean"],
         "remove_hydrogens": ["boolean"],
         "valid_only": ["boolean"],
+        "suppress_warnings": ["boolean"],
     }
 
     def __init__(
@@ -181,6 +182,9 @@ class MolToInchiTransformer(BasePreprocessor):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
+    suppress_warnings: bool, default=False
+        Whether to suppress warnings and errors on loading molecules.
+
     verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
         If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
@@ -205,18 +209,26 @@ class MolToInchiTransformer(BasePreprocessor):
     ['InChI=1S/H2O/h1H2', 'InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3']
     """
 
+    _parameter_constraints: dict = {
+        **BasePreprocessor._parameter_constraints,
+        "suppress_warnings": ["boolean"],
+    }
+
     def __init__(
         self,
         n_jobs: int | None = None,
         batch_size: int | None = None,
+        suppress_warnings: bool = False,
         verbose: int | dict = 0,
     ):
         super().__init__(
             n_jobs=n_jobs,
             batch_size=batch_size,
+            suppress_warnings=suppress_warnings,
             verbose=verbose,
         )
 
     def _transform_batch(self, X: Sequence[Mol]) -> list[str]:
-        require_mols(X)
-        return [MolToInchi(mol) for mol in X]
+        with no_rdkit_logs() if self.suppress_warnings else nullcontext():
+            require_mols(X)
+            return [MolToInchi(mol) for mol in X]
