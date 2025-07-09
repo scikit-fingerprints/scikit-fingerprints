@@ -79,6 +79,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
         "sanitize": ["boolean"],
         "flavor": [Options(int, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9})],
         "valid_only": ["boolean"],
+        "suppress_warnings": ["boolean"],
     }
 
     def __init__(
