@@ -1,3 +1,4 @@
+import itertools
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
@@ -141,6 +142,7 @@ class BasePreprocessor(ABC, BaseEstimator, TransformerMixin):
         if n_jobs == 1:
             if self.verbose:
                 results = [self._transform_batch([mol]) for mol in tqdm(X)]
+                results = list(itertools.chain.from_iterable(results))
             else:
                 results = self._transform_batch(X)
         else:
