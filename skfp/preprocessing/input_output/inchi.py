@@ -183,7 +183,7 @@ class MolToInchiTransformer(BasePreprocessor):
         equal-sized parts, as many as ``n_jobs``.
 
     suppress_warnings: bool, default=False
-        Whether to suppress warnings and errors on loading molecules.
+        Whether to suppress warnings and errors on saving molecules.
 
     verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
