@@ -18,6 +18,5 @@ Classes for checking applicability domain.
     ConvexHullADChecker
     DistanceToCentroidADChecker
     HotellingT2TestADChecker
-    KNNADChecker
     LeverageADChecker
     PCABoundingBoxADChecker
