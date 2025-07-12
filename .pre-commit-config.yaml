@@ -13,6 +13,7 @@ repos:
     rev: v2.9.0
     hooks:
       - id: pip-audit
+        entry: python -c "import sys; print('PYTHON:', sys.executable)" && pip-audit
         args: [
           --vulnerability-service, "pypi",
           --cache-dir, ".pip_audit_cache",
