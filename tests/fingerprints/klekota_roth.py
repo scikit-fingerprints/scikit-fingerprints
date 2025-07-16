@@ -1,4 +1,8 @@
+from pathlib import Path
+
 import numpy as np
+import pytest
+from rdkit import Chem
 from scipy.sparse import csr_array
 
 from skfp.fingerprints import KlekotaRothFingerprint
@@ -50,3 +54,30 @@ def test_klekota_roth_feature_names():
 
     assert len(feature_names) == kr_fp.n_features_out
     assert len(feature_names) == len(set(feature_names))
+
+
+@pytest.mark.parametrize("count", [True, False])
+@pytest.mark.parametrize("n_jobs", [-1, 1])
+def test_klekota_roth_result_correctness(smiles_list, count, n_jobs):
+    patterns_path = Path(__file__).parent / "data" / "klekota_roth_patterns.txt"
+    with patterns_path.open(encoding="utf-8") as f:
+        patterns = [line.strip() for line in f if line.strip()]
+
+    compiled_patterns = [Chem.MolFromSmarts(p) for p in patterns]
+
+    kr_fp = KlekotaRothFingerprint(count=count, n_jobs=n_jobs)
+    X = kr_fp.transform(smiles_list)
+
+    n_features = kr_fp.n_features_out
+
+    for i, smi in enumerate(smiles_list):
+        mol = Chem.MolFromSmiles(smi)
+        expected = np.zeros(n_features, dtype=X.dtype)
+
+        for j, patt in enumerate(compiled_patterns):
+            if count:
+                n_matches = len(mol.GetSubstructMatches(patt))
+                expected[j] = n_matches
+            elif mol.HasSubstructMatch(patt):
+                expected[j] = 1
+        assert np.array_equal(X[i], expected)
