@@ -1,60 +1,14 @@
-import json
-from collections import defaultdict, deque
+from collections import deque
 from collections.abc import Sequence
-from pathlib import Path
 
 import numpy as np
-from rdkit import Chem
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
 from skfp.bases import BaseSubstructureFingerprint
 from skfp.utils import ensure_mols
 
-_TREE_PATH = Path(__file__).parent / "data" / "tree.json"
-
-
-class _PatternNode:
-    """
-    Node in the SMARTS pattern tree.
-
-    Attributes
-    ----------
-    smarts : str = None
-        SMARTS string defining the pattern.
-
-    pattern_mol : Mol = None
-        RDKit Mol object of the pattern.
-
-    is_terminal : bool = False
-        Whether this node corresponds to a complete pattern or just a prefix.
-
-    feature_bit : int = None
-        Index of the corresponding fingerprint bit.
-
-    children : list[_PatternNode] = []
-        Child nodes.
-
-    atom_requirements : defaultdict[str, int]
-        Minimal atom requirements needed to match at this node.
-    """
-
-    __slots__ = (
-        "atom_requirements",
-        "children",
-        "feature_bit",
-        "is_terminal",
-        "pattern_mol",
-        "smarts",
-    )
-
-    def __init__(self):
-        self.smarts: str | None = None
-        self.pattern_mol: Mol | None = None
-        self.is_terminal: bool = False
-        self.feature_bit: int | None = None
-        self.atom_requirements: defaultdict[str, int] = defaultdict(int)
-        self.children: list[_PatternNode] = []
+from .smarts_tree import PatternNode, _load_tree
 
 
 class KlekotaRothFingerprint(BaseSubstructureFingerprint):
@@ -131,10 +85,11 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
     ):
         # note that those patterns were released as public domain:
         # https://github.com/cdk/cdk/blob/main/descriptor/fingerprint/src/main/java/org/openscience/cdk/fingerprint/KlekotaRothFingerprinter.java
-        self._feature_names: list[str] = []
-        self._pattern_atoms: dict[str, Mol] = {}
-        self._root: _PatternNode = _PatternNode()
-        self._load_tree()
+        self._feature_names: list[str]
+        self._pattern_atoms: dict[str, Mol]
+        self._root: PatternNode
+
+        self._root, self._feature_names, self._pattern_atoms = _load_tree()
         super().__init__(
             patterns=self._feature_names,
             count=count,
@@ -182,51 +137,6 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
         """
         return super().transform(X, copy)
 
-    def _dict_to_node(self, d: dict) -> _PatternNode:
-        """
-        Recursively convert a dict representation of a pattern tree
-        into a _PatternNode tree.
-        """
-        node = _PatternNode()
-        node.smarts = d.get("smarts")
-        node.pattern_mol = Chem.MolFromSmarts(node.smarts) if node.smarts else None
-        node.is_terminal = d.get("is_terminal", False)
-        node.feature_bit = d.get("feature_bit")
-        node.atom_requirements = defaultdict(int, d.get("atom_requirements", {}))
-        node.children = [
-            self._dict_to_node(node_dict) for node_dict in d.get("children", [])
-        ]
-
-        if (
-            node.is_terminal
-            and node.smarts is not None
-            and node.feature_bit is not None
-        ):
-            self._feature_names[int(node.feature_bit)] = node.smarts
-        return node
-
-    def _load_tree(self) -> None:
-        """
-        Load the pattern tree from a JSON file into internal representation.
-        """
-        file = _TREE_PATH
-        if not file.exists():
-            raise FileNotFoundError(f"Tree file not found: {file}")
-
-        with file.open("r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        for key in ("n_nodes", "atoms", "tree"):
-            if key not in data:
-                raise KeyError(f"Missing key {key} in tree file {file}")
-
-        self._feature_names = [""] * data["n_terminal_nodes"]
-        self._pattern_atoms = {key: Chem.MolFromSmarts(key) for key in data["atoms"]}
-        self._root = self._dict_to_node(data["tree"])
-
-        if any(f == "" for f in self._feature_names):
-            raise ValueError("SMARTS or feature_bit missing in terminal nodes")
-
     def _calculate_fingerprint(self, X: Sequence[str | Mol]) -> np.ndarray | csr_array:
         X = ensure_mols(X)
 
@@ -240,23 +150,64 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             set_value = lambda _mol, _pattern: 1
 
         for i, mol in enumerate(X):
-            stack: deque[_PatternNode] = deque(root_children)
-            atom_contents = defaultdict(int)
-            for key, atom in self._pattern_atoms.items():
-                atom_contents[key] = len(mol.GetSubstructMatches(atom))
+            stack: deque[PatternNode] = deque(root_children)
+            atom_contents = self._count_atom_patterns(mol)
             while stack:
                 node = stack.pop()
 
-                for key, val in node.atom_requirements.items():
-                    if atom_contents[key] < val:
-                        break
-                else:
-                    if not mol.HasSubstructMatch(node.pattern_mol):
-                        continue
+                if any(
+                    atom_contents[key] < val
+                    for key, val in node.atom_requirements.items()
+                ):
+                    continue
 
-                    if node.is_terminal:
-                        bits[i][node.feature_bit] = set_value(mol, node.pattern_mol)
+                if not mol.HasSubstructMatch(node.pattern_mol):
+                    continue
 
-                    stack.extend(node.children)
+                if node.is_terminal:
+                    bits[i][node.feature_bit] = set_value(mol, node.pattern_mol)
+
+                stack.extend(node.children)
 
         return csr_array(bits) if self.sparse else bits
+
+    def _count_atom_patterns(self, mol: Mol) -> dict[str, int]:
+        """
+        Count occurrences of atom-level patterns in a molecule.
+        """
+        atom_contents = dict.fromkeys(self._pattern_atoms, 0)
+        for atom in mol.GetAtoms():
+            symbol = atom.GetSymbol()
+            atomic_num = atom.GetAtomicNum()
+            hcount = atom.GetTotalNumHs()
+            charge = atom.GetFormalCharge()
+            aromatic = atom.GetIsAromatic()
+
+            symbol = symbol.lower() if aromatic else symbol
+
+            # plain element symbol
+            if symbol in atom_contents:
+                atom_contents[symbol] += 1
+
+            # atomic number pattern
+            key = f"[#{atomic_num}]"
+            if key in atom_contents:
+                atom_contents[key] += 1
+
+            # hydrogen count pattern
+            key = f"[{symbol}&H{hcount}]"
+            if key in atom_contents:
+                atom_contents[key] += 1
+
+            # charge pattern
+            if charge != 0:
+                sign = "+" if charge > 0 else "-"
+                key = f"[{symbol}&{sign}]"
+                if key in atom_contents:
+                    atom_contents[key] += 1
+
+            # negation of hydrogen
+            if atomic_num != 1:
+                atom_contents["[!#1]"] += 1
+
+        return atom_contents

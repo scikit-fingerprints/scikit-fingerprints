@@ -56,7 +56,7 @@ def test_klekota_roth_feature_names():
     assert len(feature_names) == len(set(feature_names))
 
 
-@pytest.mark.parametrize("count", [True, False])
+@pytest.mark.parametrize("count", [False, True])
 @pytest.mark.parametrize("n_jobs", [-1, 1])
 def test_klekota_roth_result_correctness(smiles_list, count, n_jobs):
     patterns_path = Path(__file__).parent / "data" / "klekota_roth_patterns.txt"
