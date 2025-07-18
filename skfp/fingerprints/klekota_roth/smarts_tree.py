@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 
 from rdkit import Chem
@@ -67,6 +68,7 @@ def _dict_to_node(d: dict, feature_names: list[str]) -> PatternNode:
     return node
 
 
+@lru_cache(maxsize=1)
 def _load_tree() -> tuple[PatternNode, list[str], dict[str, Mol]]:
     """
     Load the pattern tree from a JSON file into internal representation.
