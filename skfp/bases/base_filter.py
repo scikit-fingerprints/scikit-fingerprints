@@ -1,3 +1,4 @@
+import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
@@ -7,7 +8,7 @@ import numpy as np
 from joblib import effective_n_jobs
 from rdkit.Chem import Mol
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.utils._param_validation import InvalidParameterError
+from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 from tqdm import tqdm
 
 from skfp.utils import ensure_mols, run_in_parallel
@@ -37,9 +38,24 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
 
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
+
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
+
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -60,6 +76,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
     # parameters common for all filters
     _parameter_constraints: dict = {
         "allow_one_violation": ["boolean"],
+        "return_type": [StrOptions({"mol", "indicators", "condition_indicators"})],
         "return_indicators": ["boolean"],
         "n_jobs": [Integral, None],
         "batch_size": [Integral, None],
@@ -69,16 +86,24 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
     def __init__(
         self,
         allow_one_violation: bool = False,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
         self.allow_one_violation = allow_one_violation
+        self.return_type = return_type
         self.return_indicators = return_indicators
         self.n_jobs = n_jobs
         self.batch_size = batch_size
         self.verbose = verbose
+
+        if return_indicators:
+            warnings.warn(
+                "return_indicators is deprecated and will be removed in 2.0, "
+                "use return_type instead"
+            )
 
     def __sklearn_is_fitted__(self) -> bool:
         """
@@ -86,6 +111,29 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         transformers and always returns True.
         """
         return True
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+        """
+        Get filter condition names. They correspond to molecular descriptors (for
+        physicochemical filters) or SMARTS patterns (for substructural filters).
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            Filter condition names.
+        """
+        if not hasattr(self, "_condition_names"):
+            raise AttributeError(
+                f"Filter condition names not yet supported for "
+                f"{self.__class__.__name__}"
+            )
+
+        return np.array(self._condition_names)
 
     def fit(self, X: Sequence[str | Mol], y: np.ndarray | None = None):
         """Unused, kept for scikit-learn compatibility.
@@ -133,40 +181,43 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         self, X: Sequence[str | Mol], copy: bool = False
     ) -> list[str | Mol] | np.ndarray:
         """
-        Apply a filter to input molecules. Output depends on ``return_indicators``
+        Apply a filter to input molecules. Output depends on ``return_type``
         attribute.
 
         Parameters
         ----------
-        X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit ``Mol`` objects.
+        X : {sequence of str or Mol}
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         copy : bool, default=False
             Copy the input X or not.
 
         Returns
         -------
-        X : list of shape (n_samples_conf_gen,) or array of shape (n_samples,)
-            List with filtered molecules, or indicator vector which molecules
-            fulfill the filter rules.
+        X : list of shape (n_samples,) or array of shape (n_samples,)
+            or array of shape (n_samples, n_conditions)
+            List with filtered molecules or indicators.
         """
         filter_ind = self._get_filter_indicators(X, copy)
+
         if self.return_indicators:
             return filter_ind
-        else:
+        elif self.return_type == "mol":
             return [mol for idx, mol in enumerate(X) if filter_ind[idx]]
+        else:
+            return filter_ind
 
     def transform_x_y(
         self, X: Sequence[str | Mol], y: np.ndarray, copy: bool = False
     ) -> tuple[list[str | Mol], np.ndarray] | tuple[np.ndarray, np.ndarray]:
         """
-        Apply a filter to input molecules. Output depends on ``return_indicators``
+        Apply a filter to input molecules. Output depends on ``return_type``
         attribute.
 
         Parameters
         ----------
-        X : {sequence, array-like} of shape (n_samples,)
-            Sequence containing RDKit ``Mol`` objects.
+        X : {sequence of str or Mol}
+            Sequence containing SMILES strings or RDKit ``Mol`` objects.
 
         y : array-like of shape (n_samples,)
             Array with labels for molecules.
@@ -176,27 +227,29 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
 
         Returns
         -------
-        X : list of shape (n_samples_conf_gen,) or array of shape (n_samples,)
-            List with filtered molecules, or indicator vector which molecules
-            fulfill the filter rules.
+        X : list of shape (n_samples,) or array of shape (n_samples,)
+            or array of shape (n_samples, n_conditions)
+            List with filtered molecules or indicators.
 
-        y : np.ndarray of shape (n_samples_conf_gen,)
+        y : np.ndarray of shape (n_samples,)
             Array with labels for molecules.
         """
         filter_ind = self._get_filter_indicators(X, copy)
+
         if self.return_indicators:
             return filter_ind, y
-        else:
+        elif self.return_type == "mol":
             mols = [mol for idx, mol in enumerate(X) if filter_ind[idx]]
             y = y[filter_ind]
             return mols, y
+        else:
+            return filter_ind, y
 
     def _get_filter_indicators(
         self, mols: Sequence[str | Mol], copy: bool
     ) -> np.ndarray:
         self._validate_params()
         mols = deepcopy(mols) if copy else mols
-        mols = ensure_mols(mols)
 
         n_jobs = effective_n_jobs(self.n_jobs)
         if n_jobs == 1:
@@ -207,23 +260,38 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
             else:
                 filter_indicators = self._filter_mols_batch(mols)
         else:
+            flatten_results = self.return_type != "condition_indicators"
+
             filter_indicators = run_in_parallel(
                 self._filter_mols_batch,
                 data=mols,
                 n_jobs=n_jobs,
                 batch_size=self.batch_size,
-                flatten_results=True,
+                flatten_results=flatten_results,
                 verbose=self.verbose,
             )
 
+        if self.return_type == "condition_indicators":
+            filter_indicators = np.vstack(filter_indicators)
+
         return filter_indicators
 
-    def _filter_mols_batch(self, mols: list[Mol]) -> np.ndarray:
+    def _filter_mols_batch(self, mols: Sequence[str | Mol]) -> np.ndarray:
+        mols = ensure_mols(mols)
+
         filter_indicators = [self._apply_mol_filter(mol) for mol in mols]
-        return np.array(filter_indicators, dtype=bool)
+
+        if self.return_indicators:
+            filter_indicators = np.array(filter_indicators, dtype=bool)
+        elif self.return_type == "condition_indicators":
+            filter_indicators = np.vstack(filter_indicators)
+        else:
+            filter_indicators = np.array(filter_indicators, dtype=bool)
+
+        return filter_indicators
 
     @abstractmethod
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         pass
 
     def _validate_params(self) -> None:

@@ -1,5 +1,6 @@
 from numbers import Integral
 
+import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Descriptors import MolWt
 from sklearn.utils._param_validation import Interval, InvalidParameterError
@@ -11,20 +12,35 @@ class MolecularWeightFilter(BaseFilter):
     """
     Molecular weight filter.
 
-    Filters out molecules with mass in Daltons outside the given range. Provided
+    Filters out molecules with mass in daltons outside the given range. Provided
     ``min_weight`` and ``max_weight`` are inclusive on both sides.
 
     Parameters
     ----------
     min_weight : int, default=0
-        Minimal weight in Daltons.
+        Minimal weight in daltons.
 
     max_weight : int, default=1000
-        Maximal weight in Daltons.
+        Maximal weight in daltons.
+
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
 
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
+
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -65,11 +81,13 @@ class MolecularWeightFilter(BaseFilter):
         min_weight: int = 0,
         max_weight: int = 1000,
         return_indicators: bool = False,
+        return_type: str = "mol",
         n_jobs: int | None = None,
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
         super().__init__(
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
@@ -77,6 +95,7 @@ class MolecularWeightFilter(BaseFilter):
         )
         self.min_weight = min_weight
         self.max_weight = max_weight
+        self._condition_names = [f"{min_weight} <= MolWeight <= {max_weight}"]
 
     def _validate_params(self) -> None:
         super()._validate_params()
@@ -87,5 +106,10 @@ class MolecularWeightFilter(BaseFilter):
                 f"min_weight={self.min_weight}, max_weight={self.max_weight}"
             )
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
-        return self.min_weight <= MolWt(mol) <= self.max_weight
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
+        passed = self.min_weight <= MolWt(mol) <= self.max_weight
+
+        if self.return_type == "condition_indicators":
+            passed = np.array([passed], dtype=bool).reshape(-1, 1)
+
+        return passed

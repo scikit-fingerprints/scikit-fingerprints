@@ -74,7 +74,7 @@ def test_valence_discovery_return_indicators(
         + smiles_passing_one_violation_valence_discovery
     )
 
-    mol_filter = ValenceDiscoveryFilter(return_indicators=True)
+    mol_filter = ValenceDiscoveryFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_valence_discovery)
@@ -85,7 +85,7 @@ def test_valence_discovery_return_indicators(
     assert np.array_equal(filter_indicators, expected_indicators)
 
     mol_filter = ValenceDiscoveryFilter(
-        allow_one_violation=True, return_indicators=True
+        allow_one_violation=True, return_type="indicators"
     )
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
@@ -121,7 +121,48 @@ def test_valence_discovery_transform_x_y(
     assert len(mols) == len(smiles_passing_valence_discovery)
     assert np.all(labels_filt == 1)
 
-    filt = ValenceDiscoveryFilter(return_indicators=True)
+    filt = ValenceDiscoveryFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_valence_discovery)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_valence_discovery_condition_names():
+    filt = ValenceDiscoveryFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (16,)
+
+
+def test_valence_discovery_return_condition_indicators(
+    smiles_passing_valence_discovery, smiles_failing_valence_discovery
+):
+    all_smiles = smiles_passing_valence_discovery + smiles_failing_valence_discovery
+
+    filt = ValenceDiscoveryFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 16)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_valence_discovery_return_condition_indicators_transform_x_y(
+    smiles_passing_valence_discovery, smiles_failing_valence_discovery
+):
+    all_smiles = smiles_passing_valence_discovery + smiles_failing_valence_discovery
+    labels = np.array(
+        [1] * len(smiles_passing_valence_discovery)
+        + [0] * len(smiles_failing_valence_discovery)
+    )
+
+    filt = ValenceDiscoveryFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 16)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

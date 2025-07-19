@@ -38,3 +38,34 @@ def test_zinc_druglike_transform_x_y(mols_list):
     filt = ZINCDruglikeFilter()
     mols_filtered, labels_filt = filt.transform_x_y(mols_list, labels)
     assert len(mols_filtered) == len(labels_filt)
+
+
+def test_zinc_druglike_condition_names():
+    filt = ZINCDruglikeFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (13,)
+
+
+def test_zinc_druglike_return_condition_indicators(mols_list):
+    filt = ZINCDruglikeFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(mols_list)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(mols_list), 13)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_zinc_druglike_return_condition_indicators_transform_x_y(mols_list):
+    labels = np.ones(len(mols_list))
+
+    filt = ZINCDruglikeFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(mols_list, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(mols_list), 13)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

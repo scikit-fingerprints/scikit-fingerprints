@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
@@ -27,9 +28,21 @@ class TiceInsecticidesFilter(BaseFilter):
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
 
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result. "mol" returns list of
+        molecules passing the filter. "indicators" returns a binary vector with
+        indicators which molecules pass the filter. "condition_indicators" returns
+        a NumPy array with molecules in rows, filter conditions in columns, and
+        0/1 indicators whether a given condition was fulfilled by a given molecule.
+
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
+
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -70,6 +83,7 @@ class TiceInsecticidesFilter(BaseFilter):
         self,
         allow_one_violation: bool = False,
         return_indicators: bool = False,
+        return_type: str = "mol",
         n_jobs: int | None = None,
         batch_size: int | None = None,
         verbose: int | dict = 0,
@@ -77,12 +91,20 @@ class TiceInsecticidesFilter(BaseFilter):
         super().__init__(
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
+            return_type=return_type,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
+        self._condition_names = [
+            "150 <= MolWeight <= 500",
+            "0 <= logP <= 5",
+            "HBD <= 2",
+            "1 <= HBA <= 8",
+            "rotatable bonds <= 11",
+        ]
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [
             150 <= MolWt(mol) <= 500,
             0 <= MolLogP(mol) <= 5,
@@ -90,6 +112,9 @@ class TiceInsecticidesFilter(BaseFilter):
             1 <= CalcNumHBA(mol) <= 8,
             CalcNumRotatableBonds(mol) <= 11,
         ]
+
+        if self.return_type == "condition_indicators":
+            return np.array(rules, dtype=bool)
 
         passed_rules = sum(rules)
 

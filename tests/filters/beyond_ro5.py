@@ -124,7 +124,7 @@ def test_bro5_return_indicators(
 ):
     all_smiles = smiles_passing_ro5 + smiles_failing_ro5 + smiles_beyond_ro5
 
-    filt = BeyondRo5Filter(return_indicators=True)
+    filt = BeyondRo5Filter(return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
 
     assert len(filter_indicators) == len(all_smiles)
@@ -144,7 +144,47 @@ def test_bro5_transform_x_y(smiles_passing_ro5, smiles_failing_beyond_ro5):
     assert len(mols) == len(smiles_passing_ro5)
     assert np.all(labels_filt == 1)
 
-    filt = BeyondRo5Filter(return_indicators=True)
+    filt = BeyondRo5Filter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_ro5)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_bro5_condition_names():
+    filt = BeyondRo5Filter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (6,)
+
+
+def test_bro5_return_condition_indicators(
+    smiles_passing_ro5, smiles_failing_beyond_ro5
+):
+    all_smiles = smiles_passing_ro5 + smiles_failing_beyond_ro5
+
+    filt = BeyondRo5Filter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_bro5_return_condition_indicators_transform_x_y(
+    smiles_passing_ro5, smiles_failing_beyond_ro5
+):
+    all_smiles = smiles_passing_ro5 + smiles_failing_beyond_ro5
+    labels = np.array(
+        [1] * len(smiles_passing_ro5) + [0] * len(smiles_failing_beyond_ro5)
+    )
+
+    filt = BeyondRo5Filter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

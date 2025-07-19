@@ -70,7 +70,7 @@ def test_pfizer_return_indicators(
         + smiles_passing_one_violation_pfizer
     )
 
-    mol_filter = PfizerFilter(return_indicators=True)
+    mol_filter = PfizerFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_pfizer)
@@ -80,7 +80,7 @@ def test_pfizer_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = PfizerFilter(allow_one_violation=True, return_indicators=True)
+    mol_filter = PfizerFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_pfizer)
@@ -112,7 +112,47 @@ def test_pfizer_transform_x_y(smiles_passing_pfizer, smiles_failing_pfizer):
     assert len(mols) == len(smiles_passing_pfizer)
     assert np.all(labels_filt == 1)
 
-    filt = PfizerFilter(return_indicators=True)
+    filt = PfizerFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_pfizer)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_pfizer_condition_names():
+    filt = PfizerFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (2,)
+
+
+def test_pfizer_return_condition_indicators(
+    smiles_passing_pfizer, smiles_failing_pfizer
+):
+    all_smiles = smiles_passing_pfizer + smiles_failing_pfizer
+
+    filt = PfizerFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 2)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_pfizer_return_condition_indicators_transform_x_y(
+    smiles_passing_pfizer, smiles_failing_pfizer
+):
+    all_smiles = smiles_passing_pfizer + smiles_failing_pfizer
+    labels = np.array(
+        [1] * len(smiles_passing_pfizer) + [0] * len(smiles_failing_pfizer)
+    )
+
+    filt = PfizerFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 2)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

@@ -68,7 +68,7 @@ def test_hao_return_indicators(
         smiles_passing_hao + smiles_failing_hao + smiles_passing_one_violation_hao
     )
 
-    mol_filter = HaoFilter(return_indicators=True)
+    mol_filter = HaoFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_hao)
@@ -78,7 +78,7 @@ def test_hao_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = HaoFilter(allow_one_violation=True, return_indicators=True)
+    mol_filter = HaoFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_hao)
@@ -108,7 +108,43 @@ def test_hao_transform_x_y(smiles_passing_hao, smiles_failing_hao):
     assert len(mols) == len(smiles_passing_hao)
     assert np.all(labels_filt == 1)
 
-    filt = HaoFilter(return_indicators=True)
+    filt = HaoFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_hao)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_hao_condition_names():
+    filt = HaoFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (6,)
+
+
+def test_hao_return_condition_indicators(smiles_passing_hao, smiles_failing_hao):
+    all_smiles = smiles_passing_hao + smiles_failing_hao
+
+    filt = HaoFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_hao_return_condition_indicators_transform_x_y(
+    smiles_passing_hao, smiles_failing_hao
+):
+    all_smiles = smiles_passing_hao + smiles_failing_hao
+    labels = np.array([1] * len(smiles_passing_hao) + [0] * len(smiles_failing_hao))
+
+    filt = HaoFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

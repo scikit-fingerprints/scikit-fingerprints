@@ -58,7 +58,7 @@ def test_oprea_filter_return_indicators(
         smiles_passing_oprea + smiles_failing_oprea + smiles_passing_oprea_one_fail
     )
 
-    mol_filter = OpreaFilter(return_indicators=True)
+    mol_filter = OpreaFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_oprea)
@@ -68,7 +68,7 @@ def test_oprea_filter_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = OpreaFilter(allow_one_violation=True, return_indicators=True)
+    mol_filter = OpreaFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_oprea)
@@ -98,7 +98,43 @@ def test_oprea_transform_x_y(smiles_passing_oprea, smiles_failing_oprea):
     assert len(mols) == len(smiles_passing_oprea)
     assert np.all(labels_filt == 1)
 
-    filt = OpreaFilter(return_indicators=True)
+    filt = OpreaFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_oprea)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_oprea_condition_names():
+    filt = OpreaFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (4,)
+
+
+def test_oprea_return_condition_indicators(smiles_passing_oprea, smiles_failing_oprea):
+    all_smiles = smiles_passing_oprea + smiles_failing_oprea
+
+    filt = OpreaFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_oprea_return_condition_indicators_transform_x_y(
+    smiles_passing_oprea, smiles_failing_oprea
+):
+    all_smiles = smiles_passing_oprea + smiles_failing_oprea
+    labels = np.array([1] * len(smiles_passing_oprea) + [0] * len(smiles_failing_oprea))
+
+    filt = OpreaFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

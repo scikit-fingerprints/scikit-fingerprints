@@ -57,7 +57,7 @@ def test_reos_filter_return_indicators(
 ):
     all_smiles = smiles_passing_reos + smiles_failing_reos + smiles_passing_one_fail
 
-    mol_filter = REOSFilter(return_indicators=True)
+    mol_filter = REOSFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_reos)
@@ -67,7 +67,7 @@ def test_reos_filter_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = REOSFilter(allow_one_violation=True, return_indicators=True)
+    mol_filter = REOSFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_reos)
@@ -97,7 +97,43 @@ def test_reos_transform_x_y(smiles_passing_reos, smiles_failing_reos):
     assert len(mols) == len(smiles_passing_reos)
     assert np.all(labels_filt == 1)
 
-    filt = REOSFilter(return_indicators=True)
+    filt = REOSFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_reos)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_reos_condition_names():
+    filt = REOSFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (7,)
+
+
+def test_reos_return_condition_indicators(smiles_passing_reos, smiles_failing_reos):
+    all_smiles = smiles_passing_reos + smiles_failing_reos
+
+    filt = REOSFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 7)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_reos_return_condition_indicators_transform_x_y(
+    smiles_passing_reos, smiles_failing_reos
+):
+    all_smiles = smiles_passing_reos + smiles_failing_reos
+    labels = np.array([1] * len(smiles_passing_reos) + [0] * len(smiles_failing_reos))
+
+    filt = REOSFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 7)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)
