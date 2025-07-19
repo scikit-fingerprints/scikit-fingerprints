@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import AssignStereochemistry, GetFormalCharge, Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
@@ -109,6 +110,7 @@ class FAF4LeadlikeFilter(BaseFilter):
     def __init__(
         self,
         allow_one_violation: bool = False,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
@@ -116,13 +118,31 @@ class FAF4LeadlikeFilter(BaseFilter):
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
+        self._feature_names = [
+            "150 <= MolWeight <= 400",
+            "-3 <= logP <= 4",
+            "HBA <= 7",
+            "HBD <= 4",
+            "TPSA <= 160",
+            "rotatable bonds <= 9",
+            "rigid bonds <= 30",
+            "rings <= 4",
+            "max ring size <= 18",
+            "3 <= carbon atoms <= 35",
+            "1 <= heteroatoms <= 15",
+            "0.1 <= non-carbon-carbon ratio <= 1.1",
+            "charged functional groups <= 4",
+            "-4 <= formal charge <= 4",
+            "stereocenters <= 2",
+        ]
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         # explicit "copy" via SMILES due to RDKit bug
         # https://github.com/rdkit/rdkit/issues/7917
         from rdkit.Chem import MolFromSmiles, MolToSmiles
@@ -147,6 +167,10 @@ class FAF4LeadlikeFilter(BaseFilter):
             -4 <= GetFormalCharge(mol) <= 4,
             CalcNumAtomStereoCenters(mol) <= 2,
         ]
+
+        if self.return_type == "condition_indicators":
+            return np.array(rules, dtype=bool)
+
         passed_rules = sum(rules)
 
         if self.allow_one_violation:

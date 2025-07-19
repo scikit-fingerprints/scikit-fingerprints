@@ -50,7 +50,7 @@ def test_faf4_leadlike_return_indicators(
 ):
     all_smiles = smiles_passing_faf4_leadlike + smiles_failing_faf4_leadlike
 
-    mol_filter = FAF4LeadlikeFilter(return_indicators=True)
+    mol_filter = FAF4LeadlikeFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_faf4_leadlike)
@@ -95,7 +95,50 @@ def test_faf4_leadlike_transform_x_y(
     assert len(mols) == len(smiles_passing_faf4_leadlike)
     assert np.all(labels_filt == 1)
 
-    filt = FAF4LeadlikeFilter(return_indicators=True)
+    filt = FAF4LeadlikeFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_faf4_leadlike)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_faf4_leadlike_condition_names():
+    filt = FAF4LeadlikeFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (15,)
+
+
+def test_faf4_leadlike_return_condition_indicators(
+    smiles_passing_faf4_leadlike,
+    smiles_failing_faf4_leadlike,
+):
+    all_smiles = smiles_passing_faf4_leadlike + smiles_failing_faf4_leadlike
+
+    filt = FAF4LeadlikeFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 15)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_faf4_leadlike_return_condition_indicators_transform_x_y(
+    smiles_passing_faf4_leadlike,
+    smiles_failing_faf4_leadlike,
+):
+    all_smiles = smiles_passing_faf4_leadlike + smiles_failing_faf4_leadlike
+    labels = np.array(
+        [1] * len(smiles_passing_faf4_leadlike)
+        + [0] * len(smiles_failing_faf4_leadlike)
+    )
+
+    filt = FAF4LeadlikeFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 15)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)
