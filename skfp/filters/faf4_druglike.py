@@ -62,6 +62,13 @@ class FAF4DruglikeFilter(BaseFilter):
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
 
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result. `"mol"` returns list of
+        molecules passing the filter. `"indicators"` returns a binary vector with
+        indicators which molecules pass the filter. `"condition_indicators"` returns
+        a Pandas DataFrame with molecules in rows, filter conditions in columns, and
+        0/1 indicators whether a given condition was fulfilled by a given molecule.
+
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.

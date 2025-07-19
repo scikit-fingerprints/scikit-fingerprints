@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Descriptors import MolWt
 from rdkit.Chem.rdMolDescriptors import CalcCrippenDescriptors, CalcNumAtoms
@@ -23,6 +24,13 @@ class GhoseFilter(BaseFilter):
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
+
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result. `"mol"` returns list of
+        molecules passing the filter. `"indicators"` returns a binary vector with
+        indicators which molecules pass the filter. `"condition_indicators"` returns
+        a Pandas DataFrame with molecules in rows, filter conditions in columns, and
+        0/1 indicators whether a given condition was fulfilled by a given molecule.
 
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
@@ -67,6 +75,7 @@ class GhoseFilter(BaseFilter):
     def __init__(
         self,
         allow_one_violation: bool = False,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
@@ -74,20 +83,31 @@ class GhoseFilter(BaseFilter):
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
+        self._feature_names = [
+            "160 <= MolWeight <= 400",
+            "-0.4 <= logP <= 5.6",
+            "20 <= atoms <= 70",
+            "40 <= molar refractivity <= 130",
+        ]
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         logp, mr = CalcCrippenDescriptors(mol)
         rules = [
             160 <= MolWt(mol) <= 400,
-            40 <= mr <= 130,
-            20 <= CalcNumAtoms(mol) <= 70,
             -0.4 <= logp <= 5.6,
+            20 <= CalcNumAtoms(mol) <= 70,
+            40 <= mr <= 130,
         ]
+
+        if self.return_type == "condition_indicators":
+            return np.array(rules, dtype=bool)
+
         passed_rules = sum(rules)
 
         if self.allow_one_violation:

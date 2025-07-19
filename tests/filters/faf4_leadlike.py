@@ -81,8 +81,7 @@ def test_faf4_leadlike_allow_one_violation(smiles_failing_faf4_leadlike):
 
 
 def test_faf4_leadlike_transform_x_y(
-    smiles_passing_faf4_leadlike,
-    smiles_failing_faf4_leadlike,
+    smiles_passing_faf4_leadlike, smiles_failing_faf4_leadlike
 ):
     all_smiles = smiles_passing_faf4_leadlike + smiles_failing_faf4_leadlike
     labels = np.array(
@@ -110,8 +109,7 @@ def test_faf4_leadlike_condition_names():
 
 
 def test_faf4_leadlike_return_condition_indicators(
-    smiles_passing_faf4_leadlike,
-    smiles_failing_faf4_leadlike,
+    smiles_passing_faf4_leadlike, smiles_failing_faf4_leadlike
 ):
     all_smiles = smiles_passing_faf4_leadlike + smiles_failing_faf4_leadlike
 
@@ -125,8 +123,7 @@ def test_faf4_leadlike_return_condition_indicators(
 
 
 def test_faf4_leadlike_return_condition_indicators_transform_x_y(
-    smiles_passing_faf4_leadlike,
-    smiles_failing_faf4_leadlike,
+    smiles_passing_faf4_leadlike, smiles_failing_faf4_leadlike
 ):
     all_smiles = smiles_passing_faf4_leadlike + smiles_failing_faf4_leadlike
     labels = np.array(

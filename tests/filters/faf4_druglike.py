@@ -104,8 +104,7 @@ def test_faf4_druglike_parallel(smiles_list):
 
 
 def test_faf4_druglike_transform_x_y(
-    smiles_passing_faf4_druglike,
-    smiles_failing_faf4_druglike,
+    smiles_passing_faf4_druglike, smiles_failing_faf4_druglike
 ):
     all_smiles = smiles_passing_faf4_druglike + smiles_failing_faf4_druglike
     labels = np.array(
@@ -133,8 +132,7 @@ def test_faf4_druglike_condition_names():
 
 
 def test_faf4_druglike_return_condition_indicators(
-    smiles_passing_faf4_druglike,
-    smiles_failing_faf4_druglike,
+    smiles_passing_faf4_druglike, smiles_failing_faf4_druglike
 ):
     all_smiles = smiles_passing_faf4_druglike + smiles_failing_faf4_druglike
 
@@ -148,8 +146,7 @@ def test_faf4_druglike_return_condition_indicators(
 
 
 def test_faf4_druglike_return_condition_indicators_transform_x_y(
-    smiles_passing_faf4_druglike,
-    smiles_failing_faf4_druglike,
+    smiles_passing_faf4_druglike, smiles_failing_faf4_druglike
 ):
     all_smiles = smiles_passing_faf4_druglike + smiles_failing_faf4_druglike
     labels = np.array(
