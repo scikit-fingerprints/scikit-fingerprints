@@ -36,6 +36,11 @@ class GhoseFilter(BaseFilter):
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
 
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
@@ -89,7 +94,7 @@ class GhoseFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self._feature_names = [
+        self._condition_names = [
             "160 <= MolWeight <= 400",
             "-0.4 <= logP <= 5.6",
             "20 <= atoms <= 70",

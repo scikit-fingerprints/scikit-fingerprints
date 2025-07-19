@@ -74,6 +74,11 @@ class FAF4LeadlikeFilter(BaseFilter):
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
 
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
@@ -131,7 +136,7 @@ class FAF4LeadlikeFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self._feature_names = [
+        self._condition_names = [
             "150 <= MolWeight <= 400",
             "-3 <= logP <= 4",
             "HBA <= 7",
@@ -143,7 +148,7 @@ class FAF4LeadlikeFilter(BaseFilter):
             "max ring size <= 18",
             "3 <= carbon atoms <= 35",
             "1 <= heteroatoms <= 15",
-            "0.1 <= non-carbon-carbon ratio <= 1.1",
+            "0.1 <= non-carbon to carbon ratio <= 1.1",
             "charged functional groups <= 4",
             "-4 <= formal charge <= 4",
             "stereocenters <= 2",

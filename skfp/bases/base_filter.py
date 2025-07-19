@@ -124,13 +124,13 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         feature_names_out : ndarray of str objects
             Filter condition names.
         """
-        if not hasattr(self, "_feature_names"):
+        if not hasattr(self, "_condition_names"):
             raise AttributeError(
                 f"Filter condition names not yet supported for "
                 f"{self.__class__.__name__}"
             )
 
-        return np.array(self._feature_names)
+        return np.array(self._condition_names)
 
     def fit(self, X: Sequence[str | Mol], y: np.ndarray | None = None):
         """Unused, kept for scikit-learn compatibility.

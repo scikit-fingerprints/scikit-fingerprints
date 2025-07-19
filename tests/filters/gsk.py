@@ -101,3 +101,39 @@ def test_gsk_transform_x_y(smiles_passing_gsk, smiles_failing_gsk):
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_gsk)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_gsk_condition_names():
+    filt = GSKFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (2,)
+
+
+def test_gsk_return_condition_indicators(smiles_passing_gsk, smiles_failing_gsk):
+    all_smiles = smiles_passing_gsk + smiles_failing_gsk
+
+    filt = GSKFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 2)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_gsk_return_condition_indicators_transform_x_y(
+    smiles_passing_gsk, smiles_failing_gsk
+):
+    all_smiles = smiles_passing_gsk + smiles_failing_gsk
+    labels = np.array([1] * len(smiles_passing_gsk) + [0] * len(smiles_failing_gsk))
+
+    filt = GSKFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 2)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)
