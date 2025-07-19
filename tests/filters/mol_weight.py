@@ -112,7 +112,7 @@ def test_mol_weight_return_indicators(
 ):
     all_smiles = smiles_light_mols + smiles_medium_mols + smiles_heavy_mols
 
-    filt = MolecularWeightFilter(return_indicators=True)
+    filt = MolecularWeightFilter(return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_light_mols)
@@ -122,7 +122,7 @@ def test_mol_weight_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    filt = MolecularWeightFilter(max_weight=500, return_indicators=True)
+    filt = MolecularWeightFilter(max_weight=500, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_light_mols)
@@ -138,7 +138,7 @@ def test_mol_weight_min_max_thresholds(
 ):
     all_smiles = smiles_light_mols + smiles_medium_mols + smiles_heavy_mols
 
-    filt = MolecularWeightFilter(return_indicators=True)
+    filt = MolecularWeightFilter(return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_light_mols)
@@ -148,7 +148,7 @@ def test_mol_weight_min_max_thresholds(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    filt = MolecularWeightFilter(max_weight=500, return_indicators=True)
+    filt = MolecularWeightFilter(max_weight=500, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_light_mols)
@@ -158,7 +158,7 @@ def test_mol_weight_min_max_thresholds(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    filt = MolecularWeightFilter(min_weight=500, return_indicators=True)
+    filt = MolecularWeightFilter(min_weight=500, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
     expected_indicators = np.array(
         [False] * len(smiles_light_mols)
@@ -190,7 +190,43 @@ def test_mol_weight_transform_x_y(smiles_light_mols, smiles_heavy_mols):
     assert len(mols) == len(smiles_light_mols)
     assert np.all(labels_filt == 1)
 
-    filt = MolecularWeightFilter(return_indicators=True)
+    filt = MolecularWeightFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_light_mols)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_mol_weight_condition_names():
+    filt = MolecularWeightFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (1,)
+
+
+def test_mol_weight_return_condition_indicators(smiles_light_mols, smiles_heavy_mols):
+    all_smiles = smiles_light_mols + smiles_heavy_mols
+
+    filt = MolecularWeightFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 1)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_mol_weight_return_condition_indicators_transform_x_y(
+    smiles_light_mols, smiles_heavy_mols
+):
+    all_smiles = smiles_light_mols + smiles_heavy_mols
+    labels = np.array([1] * len(smiles_light_mols) + [0] * len(smiles_heavy_mols))
+
+    filt = MolecularWeightFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 1)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

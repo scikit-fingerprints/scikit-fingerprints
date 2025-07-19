@@ -57,7 +57,7 @@ def test_gsk_return_indicators(
 ):
     all_smiles = smiles_passing_gsk + smiles_failing_gsk + smiles_passing_one_fail
 
-    mol_filter = GSKFilter(return_indicators=True)
+    mol_filter = GSKFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_gsk)
@@ -67,7 +67,7 @@ def test_gsk_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = GSKFilter(allow_one_violation=True, return_indicators=True)
+    mol_filter = GSKFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_gsk)
@@ -97,7 +97,7 @@ def test_gsk_transform_x_y(smiles_passing_gsk, smiles_failing_gsk):
     assert len(mols) == len(smiles_passing_gsk)
     assert np.all(labels_filt == 1)
 
-    filt = GSKFilter(return_indicators=True)
+    filt = GSKFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_gsk)
     assert np.array_equal(indicators, labels_filt)
