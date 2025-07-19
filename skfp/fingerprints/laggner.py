@@ -96,7 +96,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
             verbose=verbose,
         )
 
-    def _fix_feature_names(self, feature_names: list[str]) -> np.array:
+    def _fix_feature_names(self, feature_names: list[str]) -> np.ndarray:
         # we modify a few names to make them all unique, since there are duplicates
         # in originals
         feature_names[16] = "Dialkylthioether (aliphatic O)"

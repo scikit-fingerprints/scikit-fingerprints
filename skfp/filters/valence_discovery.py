@@ -100,7 +100,11 @@ class ValenceDiscoveryFilter(BaseFilter):
         verbose: int = 0,
     ):
         super().__init__(
-            allow_one_violation, return_indicators, n_jobs, batch_size, verbose
+            allow_one_violation=allow_one_violation,
+            return_indicators=return_indicators,
+            n_jobs=n_jobs,
+            batch_size=batch_size,
+            verbose=verbose,
         )
 
     def _apply_mol_filter(self, mol: Mol) -> bool:

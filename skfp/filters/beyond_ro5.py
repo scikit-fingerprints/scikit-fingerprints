@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
@@ -36,6 +37,13 @@ class BeyondRo5Filter(BaseFilter):
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
+
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result. `"mol"` returns list of
+        molecules passing the filter. `"indicators"` returns a binary vector with
+        indicators which molecules pass the filter. `"condition_indicators"` returns
+        a Pandas DataFrame with molecules in rows, filter conditions in columns, and
+        0/1 indicators whether a given condition was fulfilled by a given molecule.
 
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
@@ -85,6 +93,7 @@ class BeyondRo5Filter(BaseFilter):
     def __init__(
         self,
         allow_one_violation: bool = False,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
@@ -92,13 +101,22 @@ class BeyondRo5Filter(BaseFilter):
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
+        self._feature_names = [
+            "MolWeight <= 1000",
+            "-2 <= logP <= 10",
+            "HBA <= 15",
+            "HBD <= 6",
+            "TPSA <= 250",
+            "NumRotatableBonds <= 6",
+        ]
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [
             MolWt(mol) <= 1000,
             -2 <= MolLogP(mol) <= 10,
@@ -107,6 +125,10 @@ class BeyondRo5Filter(BaseFilter):
             CalcTPSA(mol) <= 250,
             CalcNumRotatableBonds(mol) <= 20,
         ]
+
+        if self.return_type == "condition_indicators":
+            return np.array(rules, dtype=bool)
+
         passed_rules = sum(rules)
 
         if self.allow_one_violation:
