@@ -113,7 +113,7 @@ class BeyondRo5Filter(BaseFilter):
             "HBA <= 15",
             "HBD <= 6",
             "TPSA <= 250",
-            "NumRotatableBonds <= 6",
+            "rotatable bonds <= 6",
         ]
 
     def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:

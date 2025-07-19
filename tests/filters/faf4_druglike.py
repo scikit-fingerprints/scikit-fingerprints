@@ -72,7 +72,7 @@ def test_faf4_druglike_return_indicators(
         + smiles_passing_one_violation_faf4_druglike
     )
 
-    mol_filter = FAF4DruglikeFilter(return_indicators=True)
+    mol_filter = FAF4DruglikeFilter(return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_faf4_druglike)
@@ -82,7 +82,7 @@ def test_faf4_druglike_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    mol_filter = FAF4DruglikeFilter(allow_one_violation=True, return_indicators=True)
+    mol_filter = FAF4DruglikeFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_faf4_druglike)
@@ -118,7 +118,50 @@ def test_faf4_druglike_transform_x_y(
     assert len(mols) == len(smiles_passing_faf4_druglike)
     assert np.all(labels_filt == 1)
 
-    filt = FAF4DruglikeFilter(return_indicators=True)
+    filt = FAF4DruglikeFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_faf4_druglike)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_faf4_druglike_condition_names():
+    filt = FAF4DruglikeFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (14,)
+
+
+def test_faf4_druglike_return_condition_indicators(
+    smiles_passing_faf4_druglike,
+    smiles_failing_faf4_druglike,
+):
+    all_smiles = smiles_passing_faf4_druglike + smiles_failing_faf4_druglike
+
+    filt = FAF4DruglikeFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 14)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_faf4_druglike_return_condition_indicators_transform_x_y(
+    smiles_passing_faf4_druglike,
+    smiles_failing_faf4_druglike,
+):
+    all_smiles = smiles_passing_faf4_druglike + smiles_failing_faf4_druglike
+    labels = np.array(
+        [1] * len(smiles_passing_faf4_druglike)
+        + [0] * len(smiles_failing_faf4_druglike)
+    )
+
+    filt = FAF4DruglikeFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 14)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)

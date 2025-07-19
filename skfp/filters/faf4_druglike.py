@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import GetFormalCharge, Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
@@ -77,6 +78,8 @@ class FAF4DruglikeFilter(BaseFilter):
 
     verbose : int, default=0
         Controls the verbosity when filtering molecules.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     References
     ----------
@@ -108,6 +111,7 @@ class FAF4DruglikeFilter(BaseFilter):
     def __init__(
         self,
         allow_one_violation: bool = False,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
@@ -115,13 +119,30 @@ class FAF4DruglikeFilter(BaseFilter):
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
+        self._feature_names = [
+            "100 <= MolWeight <= 600",
+            "-3 <= logP <= 6",
+            "HBA <= 12",
+            "HBD <= 7",
+            "TPSA <= 180",
+            "rotatable bonds <= 11",
+            "rigid bonds <= 30",
+            "rings <= 6",
+            "max ring size <= 18",
+            "3 <= carbon atoms <= 35",
+            "1 <= heteroatoms <= 15",
+            "0.1 <= non-carbon-carbon ratio <= 1.1",
+            "charged functional groups <= 4",
+            "-4 <= formal charge <= 4",
+        ]
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [
             100 <= MolWt(mol) <= 600,
             -3 <= MolLogP(mol) <= 6,
@@ -138,6 +159,10 @@ class FAF4DruglikeFilter(BaseFilter):
             get_num_charged_functional_groups(mol) <= 4,
             -4 <= GetFormalCharge(mol) <= 4,
         ]
+
+        if self.return_type == "condition_indicators":
+            return np.array(rules, dtype=bool)
+
         passed_rules = sum(rules)
 
         if self.allow_one_violation:
