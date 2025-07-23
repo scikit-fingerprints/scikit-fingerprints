@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import Mol
 from rdkit.Chem.Crippen import MolLogP
 from rdkit.Chem.Descriptors import MolWt
@@ -16,7 +17,7 @@ class LipinskiFilter(BaseFilter):
 
     Molecule can violate at most one of the rules (conditions):
 
-    - molecular weight <= 500 daltons
+    - molecular weight <= 500
     - HBA <= 10
     - HBD <= 5
     - logP <= 5
@@ -31,9 +32,24 @@ class LipinskiFilter(BaseFilter):
         filter less restrictive, and is the part of the original definition of this
         filter.
 
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
+
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
+
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -74,6 +90,7 @@ class LipinskiFilter(BaseFilter):
     def __init__(
         self,
         allow_one_violation: bool = True,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
@@ -81,19 +98,30 @@ class LipinskiFilter(BaseFilter):
     ):
         super().__init__(
             allow_one_violation=allow_one_violation,
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
-
-    def _apply_mol_filter(self, mol: Mol) -> bool:
-        rules = [
-            MolWt(mol) <= 500,  # molecular weight
-            CalcNumLipinskiHBA(mol) <= 10,  # HBA
-            CalcNumLipinskiHBD(mol) <= 5,  # HBD
-            MolLogP(mol) <= 5,  # logP
+        self._condition_names = [
+            "MolWeight <= 500",
+            "HBA <= 10",
+            "HBD <= 5",
+            "logP <= 5",
         ]
+
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
+        rules = [
+            MolWt(mol) <= 500,
+            CalcNumLipinskiHBA(mol) <= 10,
+            CalcNumLipinskiHBD(mol) <= 5,
+            MolLogP(mol) <= 5,
+        ]
+
+        if self.return_type == "condition_indicators":
+            return np.array(rules, dtype=bool)
+
         passed_rules = sum(rules)
 
         if self.allow_one_violation:

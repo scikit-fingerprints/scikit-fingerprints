@@ -113,7 +113,7 @@ def test_lipinski_return_indicators(
         + smiles_one_lipinski_violation
     )
 
-    filt = LipinskiFilter(return_indicators=True)
+    filt = LipinskiFilter(return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_lipinski)
@@ -123,7 +123,7 @@ def test_lipinski_return_indicators(
     )
     assert np.array_equal(filter_indicators, expected_indicators)
 
-    filt = LipinskiFilter(allow_one_violation=False, return_indicators=True)
+    filt = LipinskiFilter(allow_one_violation=False, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
     expected_indicators = np.array(
         [True] * len(smiles_passing_lipinski)
@@ -145,7 +145,47 @@ def test_lipinski_transform_x_y(smiles_passing_lipinski, smiles_failing_lipinski
     assert len(mols) == len(smiles_passing_lipinski)
     assert np.all(labels_filt == 1)
 
-    filt = LipinskiFilter(return_indicators=True)
+    filt = LipinskiFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
     assert np.sum(indicators) == len(smiles_passing_lipinski)
     assert np.array_equal(indicators, labels_filt)
+
+
+def test_lipinski_condition_names():
+    filt = LipinskiFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (4,)
+
+
+def test_lipinski_return_condition_indicators(
+    smiles_passing_lipinski, smiles_failing_lipinski
+):
+    all_smiles = smiles_passing_lipinski + smiles_failing_lipinski
+
+    filt = LipinskiFilter(return_type="condition_indicators")
+    condition_indicators = filt.transform(all_smiles)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+
+
+def test_lipinski_return_condition_indicators_transform_x_y(
+    smiles_passing_lipinski, smiles_failing_lipinski
+):
+    all_smiles = smiles_passing_lipinski + smiles_failing_lipinski
+    labels = np.array(
+        [1] * len(smiles_passing_lipinski) + [0] * len(smiles_failing_lipinski)
+    )
+
+    filt = LipinskiFilter(return_type="condition_indicators")
+    condition_indicators, y = filt.transform_x_y(all_smiles, labels)
+
+    assert isinstance(condition_indicators, np.ndarray)
+    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert np.issubdtype(condition_indicators.dtype, bool)
+    assert np.all(np.isin(condition_indicators, [0, 1]))
+    assert len(condition_indicators) == len(y)
