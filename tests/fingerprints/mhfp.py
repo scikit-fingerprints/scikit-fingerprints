@@ -107,16 +107,13 @@ def test_mhfp_sparse_count_fingerprint(smiles_list, mols_list):
     assert np.all(X_skfp.data > 0)
 
 
-def test_mhfp_sparse_raw_hashes_fingerprint(smiles_list, mols_list):
+def test_mhfp_sparse_raw_hashes_fingerprint(smiles_list):
     mhfp_fp = MHFPFingerprint(variant="raw_hashes", sparse=True, n_jobs=-1)
     X_skfp = mhfp_fp.transform(smiles_list)
 
     encoder = MHFPEncoder(2048, 0)
-    X_rdkit = MHFPEncoder.EncodeMolsBulk(
-        encoder,
-        mols_list,
-    )
-    X_rdkit = csr_array(X_rdkit)
+    X_rdkit = encoder.EncodeSmilesBulk(smiles_list)
+    X_rdkit = csr_array(np.array(X_rdkit))
 
     assert np.array_equal(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), mhfp_fp.fp_size)

@@ -32,7 +32,7 @@ dependencies = [
     "numba<1",
     "numpy>=1.20.0,<3",
     "pandas<3",
-    "rdkit<=2024.9.5",
+    "rdkit<=2025.3.3",
     "scikit-learn>=1.0.0,<2",
     "scipy>=1.0.0,<2",
     "tqdm>=4.0.0,<5"
@@ -70,11 +70,12 @@ test = [
 ]
 
 docs = [
-  "ipython",
-  "nbsphinx",
-  "pydata-sphinx-theme",
-  "sphinx",
-  "sphinx-copybutton"
+    "ipython",
+    "nbsphinx",
+    "pydata-sphinx-theme",
+    "scikit-learn!=1.7.1",  # due to scikit-learn docs issue: https://github.com/microsoft/lightgbm/issues/6978
+    "sphinx",
+    "sphinx-copybutton"
 ]
 
 eval = [

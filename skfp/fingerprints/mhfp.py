@@ -189,8 +189,7 @@ class MHFPFingerprint(BaseFingerprintTransformer):
 
         # outputs raw hash values, not feature vectors!
         encoder = MHFPEncoder(self.fp_size, self.random_state)
-        X = MHFPEncoder.EncodeSmilesBulk(
-            encoder,
+        X = encoder.EncodeSmilesBulk(
             X,
             radius=self.radius,
             min_radius=self.min_radius,

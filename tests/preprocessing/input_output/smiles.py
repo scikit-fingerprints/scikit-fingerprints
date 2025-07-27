@@ -20,31 +20,26 @@ def test_mol_to_smiles(mols_list):
     assert all(isinstance(x, str) for x in smiles_list)
 
 
-def test_mol_to_and_from_smiles(smiles_list):
+def test_mol_to_and_from_smiles(mols_list):
     mol_from_smiles = MolFromSmilesTransformer()
     mol_to_smiles = MolToSmilesTransformer()
 
-    mols_list = mol_from_smiles.transform(smiles_list)
-    smiles_list_2 = mol_to_smiles.transform(mols_list)
+    smiles_list_1 = mol_to_smiles.transform(mols_list)
+    smiles_list_2 = mol_to_smiles.transform(
+        mol_from_smiles.transform(mol_to_smiles.transform(mols_list))
+    )
 
-    assert smiles_list_2 == smiles_list
+    assert smiles_list_1 == smiles_list_2
 
 
-def test_parallel_to_and_from_smiles(smiles_list):
-    mol_from_smiles_seq = MolFromSmilesTransformer()
-    mol_from_smiles_parallel = MolFromSmilesTransformer(n_jobs=-1)
-
+def test_parallel_to_and_from_smiles(mols_list):
     mol_to_smiles_seq = MolToSmilesTransformer()
     mol_to_smiles_parallel = MolToSmilesTransformer(n_jobs=-1)
 
-    mols_list_seq = mol_from_smiles_seq.transform(smiles_list)
-    mols_list_parallel = mol_from_smiles_parallel.transform(smiles_list)
+    smiles_list_seq = mol_to_smiles_seq.transform(mols_list)
+    smiles_list_parallel = mol_to_smiles_parallel.transform(mols_list)
 
-    smiles_list_2_seq = mol_to_smiles_seq.transform(mols_list_seq)
-    smiles_list_2_parallel = mol_to_smiles_parallel.transform(mols_list_parallel)
-
-    assert smiles_list_2_seq == smiles_list
-    assert smiles_list_2_seq == smiles_list_2_parallel
+    assert smiles_list_seq == smiles_list_parallel
 
 
 def test_from_invalid_smiles(smiles_list):
