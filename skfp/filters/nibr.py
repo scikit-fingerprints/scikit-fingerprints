@@ -96,6 +96,7 @@ class NIBRFilter(BaseFilter):
         # note that this is rejection filter, trying to return False and remove
         # molecule as fast as possible
 
+        # add condition indicators
         exclusions = 0
         flags_counter = 0
         for smarts, min_count, exclude in self._filters:

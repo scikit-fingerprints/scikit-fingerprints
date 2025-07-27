@@ -38,3 +38,11 @@ def test_bms_transform_x_y(mols_list):
     filt = BMSFilter()
     mols_filtered, labels_filt = filt.transform_x_y(mols_list, labels)
     assert len(mols_filtered) == len(labels_filt)
+
+
+def test_bro5_condition_names():
+    filt = BMSFilter()
+    condition_names = filt.get_feature_names_out()
+
+    assert isinstance(condition_names, np.ndarray)
+    assert condition_names.shape == (180,)
