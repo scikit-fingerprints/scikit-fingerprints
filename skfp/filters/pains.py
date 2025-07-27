@@ -1,11 +1,12 @@
-from rdkit.Chem import FilterCatalog, Mol
+from rdkit.Chem import FilterCatalog
 from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 from sklearn.utils._param_validation import StrOptions
 
 from skfp.bases.base_filter import BaseFilter
+from skfp.bases.base_substructure_filter import BaseSubstructureFilter
 
 
-class PAINSFilter(BaseFilter):
+class PAINSFilter(BaseSubstructureFilter):
     """
     Pan Assay Interference Compounds (PAINS) filter.
 
@@ -90,6 +91,7 @@ class PAINSFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
+        self.variant = variant
         super().__init__(
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
@@ -97,24 +99,20 @@ class PAINSFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self.variant = variant
-        self._filters = self._load_filters(variant)
 
-    def _load_filters(self, variant: str) -> FilterCatalog:
-        if variant == "A":
+    def _load_filters(self) -> FilterCatalog:
+        if self.variant == "A":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_A
-        elif variant == "B":
+        elif self.variant == "B":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_B
-        elif variant == "C":
+        elif self.variant == "C":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_C
         else:
-            raise ValueError(f'PAINS variant must be "A", "B" or "C", got {variant}')
+            raise ValueError(
+                f'PAINS variant must be "A", "B" or "C", got {self.variant}'
+            )
 
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)
         return filters
-
-    def _apply_mol_filter(self, mol: Mol) -> bool:
-        errors = len(self._filters.GetMatches(mol))
-        return not errors or (self.allow_one_violation and errors == 1)

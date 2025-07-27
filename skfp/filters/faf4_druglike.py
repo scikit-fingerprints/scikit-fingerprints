@@ -132,15 +132,7 @@ class FAF4DruglikeFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int = 0,
     ):
-        super().__init__(
-            allow_one_violation=allow_one_violation,
-            return_type=return_type,
-            return_indicators=return_indicators,
-            n_jobs=n_jobs,
-            batch_size=batch_size,
-            verbose=verbose,
-        )
-        self._condition_names = [
+        condition_names = [
             "100 <= MolWeight <= 600",
             "-3 <= logP <= 6",
             "HBA <= 12",
@@ -156,6 +148,15 @@ class FAF4DruglikeFilter(BaseFilter):
             "charged functional groups <= 4",
             "-4 <= formal charge <= 4",
         ]
+        super().__init__(
+            condition_names=condition_names,
+            allow_one_violation=allow_one_violation,
+            return_type=return_type,
+            return_indicators=return_indicators,
+            n_jobs=n_jobs,
+            batch_size=batch_size,
+            verbose=verbose,
+        )
 
     def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [

@@ -86,7 +86,9 @@ class MolecularWeightFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
+        condition_names = [f"{min_weight} <= MolWeight <= {max_weight}"]
         super().__init__(
+            condition_names=condition_names,
             return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
@@ -95,7 +97,6 @@ class MolecularWeightFilter(BaseFilter):
         )
         self.min_weight = min_weight
         self.max_weight = max_weight
-        self._condition_names = [f"{min_weight} <= MolWeight <= {max_weight}"]
 
     def _validate_params(self) -> None:
         super()._validate_params()

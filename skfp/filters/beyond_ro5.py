@@ -107,15 +107,7 @@ class BeyondRo5Filter(BaseFilter):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
-        super().__init__(
-            allow_one_violation=allow_one_violation,
-            return_type=return_type,
-            return_indicators=return_indicators,
-            n_jobs=n_jobs,
-            batch_size=batch_size,
-            verbose=verbose,
-        )
-        self._condition_names = [
+        condition_names = [
             "MolWeight <= 1000",
             "-2 <= logP <= 10",
             "HBA <= 15",
@@ -123,6 +115,15 @@ class BeyondRo5Filter(BaseFilter):
             "TPSA <= 250",
             "rotatable bonds <= 6",
         ]
+        super().__init__(
+            condition_names=condition_names,
+            allow_one_violation=allow_one_violation,
+            return_type=return_type,
+            return_indicators=return_indicators,
+            n_jobs=n_jobs,
+            batch_size=batch_size,
+            verbose=verbose,
+        )
 
     def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [

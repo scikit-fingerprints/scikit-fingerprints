@@ -1,41 +1,26 @@
+from abc import abstractmethod
+
+import numpy as np
 from rdkit.Chem import Mol
-from rdkit.Chem.Crippen import MolLogP
-from rdkit.Chem.Descriptors import MolWt
-from rdkit.Chem.rdMolDescriptors import (
-    CalcNumHBA,
-    CalcNumHBD,
-    CalcNumRotatableBonds,
-    CalcTPSA,
-)
+from rdkit.Chem.rdfiltercatalog import FilterCatalog
 
-from skfp.bases.base_filter import BaseFilter
+from skfp.bases import BaseFilter
 
 
-class RuleOfThreeFilter(BaseFilter):
+class BaseSubstructureFilter(BaseFilter):
     """
-    Rule of three (Ro3).
+    Base class for substructure molecular filters.
 
-    Rule optimised to search for fragment-based lead-like compounds with desired properties.
-    It was described in [1]_.
+    Substructure filters are defined using SMARTS patterns, which determine unwanted
+    functional groups and other subgraphs.
 
-    Molecule must fulfill conditions:
-
-    - molecular weight <= 300
-    - HBA <= 3
-    - HBD <= 3
-    - logP <= 3
-
-    Additionally, an extended version of this rule has been proposed, which adds two conditions:
-
-    - number of rotatable bonds <= 3
-    - TPSA <= 60
+    This class is not meant to be used directly. If you want to create custom
+    filters, inherit from this class and override the ``._load_filters()``
+    method. It registers and returns RDKit ``FilterCatalog``, see the RDKit
+    documentation for details.
 
     Parameters
     ----------
-    extended : bool, default=False
-        Whether to use an extended version of this rule, additionally including TPSA and
-        rotatable bonds conditions.
-
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
@@ -73,33 +58,10 @@ class RuleOfThreeFilter(BaseFilter):
         Controls the verbosity when filtering molecules.
         If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
         and can be used to control the progress bar.
-
-    References
-    ----------
-    .. [1] `Congreve, M., Carr, R., Murray, C., & Jhoti, H.
-        "A 'Rule of Three' for fragment-based lead discovery?"
-        Drug Discovery Today, 8(19), 876-877.
-        <https://doi.org/10.1016/S1359-6446(03)02831-9>`_
-
-    Examples
-    --------
-    >>> from skfp.filters import RuleOfThreeFilter
-    >>> smiles = ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
-    >>> filt = RuleOfThreeFilter()
-    >>> filt
-    RuleOfThreeFilter()
-    >>> filtered_mols = filt.transform(smiles)
-    >>> filtered_mols
-    ['C=CCNC(=S)NCc1ccccc1OC', 'C=CCOc1ccc(Br)cc1/C=N/O', 'C=CCNc1ncnc2ccccc12']
-    >>> filt = RuleOfThreeFilter(extended=True)
-    >>> filtered_mols = filt.transform(smiles)
-    >>> filtered_mols
-    ['C=CCNc1ncnc2ccccc12']
     """
 
     def __init__(
         self,
-        extended: bool = False,
         allow_one_violation: bool = False,
         return_type: str = "mol",
         return_indicators: bool = False,
@@ -107,17 +69,9 @@ class RuleOfThreeFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
-        condition_names = [
-            "MolWeight <= 300",
-            "HBA <= 3",
-            "HBD <= 3",
-            "logP <= 3",
-        ]
-        if extended:
-            condition_names += [
-                "rotatable bonds <= 3",
-                "TPSA <= 60",
-            ]
+        self._filters = self._load_filters()
+        condition_names, condition_name_to_idx = self._load_condition_names_and_map()
+        self._condition_name_to_idx = condition_name_to_idx
         super().__init__(
             condition_names=condition_names,
             allow_one_violation=allow_one_violation,
@@ -127,24 +81,29 @@ class RuleOfThreeFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self.extended = extended
 
-    def _apply_mol_filter(self, mol: Mol) -> bool | list[bool]:
-        rules = [
-            MolWt(mol) <= 300,
-            CalcNumHBA(mol) <= 3,
-            CalcNumHBD(mol) <= 3,
-            MolLogP(mol) <= 3,
+    @abstractmethod
+    def _load_filters(self) -> FilterCatalog:
+        raise NotImplementedError
+
+    def _load_condition_names_and_map(self) -> tuple[list[str], dict[str, int]]:
+        condition_names = [
+            self._filters.GetEntryWithIdx(i).GetDescription()
+            for i in range(self._filters.GetNumEntries())
         ]
-        if self.extended:
-            rules += [CalcNumRotatableBonds(mol) <= 3, CalcTPSA(mol) <= 60]
+        condition_name_to_idx = {name: idx for idx, name in enumerate(condition_names)}
+        return condition_names, condition_name_to_idx
+
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
+        matches = self._filters.GetMatches(mol)
 
         if self.return_type == "condition_indicators":
-            return rules
-
-        passed_rules = sum(rules)
-
-        if self.allow_one_violation:
-            return passed_rules >= len(rules) - 1
+            matched_conditions_idxs = [
+                self._condition_name_to_idx[match.GetDescription()] for match in matches
+            ]
+            result = np.zeros(len(self.condition_names), dtype=bool)
+            result[matched_conditions_idxs] = True
+            return result
         else:
-            return passed_rules == len(rules)
+            errors = len(matches)
+            return not errors or (self.allow_one_violation and errors == 1)

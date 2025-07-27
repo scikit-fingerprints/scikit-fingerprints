@@ -1,10 +1,10 @@
-from rdkit.Chem import FilterCatalog, Mol
+from rdkit.Chem import FilterCatalog
 from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 
-from skfp.bases.base_filter import BaseFilter
+from skfp.bases.base_substructure_filter import BaseSubstructureFilter
 
 
-class InpharmaticaFilter(BaseFilter):
+class InpharmaticaFilter(BaseSubstructureFilter):
     """
     Inpharmatica filter.
 
@@ -72,7 +72,6 @@ class InpharmaticaFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self._filters = self._load_filters()
 
     def _load_filters(self) -> FilterCatalog:
         filter_rules = FilterCatalogParams.FilterCatalogs.CHEMBL_Inpharmatica
@@ -80,7 +79,3 @@ class InpharmaticaFilter(BaseFilter):
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)
         return filters
-
-    def _apply_mol_filter(self, mol: Mol) -> bool:
-        errors = len(self._filters.GetMatches(mol))
-        return not errors or (self.allow_one_violation and errors == 1)

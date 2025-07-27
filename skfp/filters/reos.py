@@ -97,15 +97,7 @@ class REOSFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
-        super().__init__(
-            allow_one_violation=allow_one_violation,
-            return_type=return_type,
-            return_indicators=return_indicators,
-            n_jobs=n_jobs,
-            batch_size=batch_size,
-            verbose=verbose,
-        )
-        self._condition_names = [
+        condition_names = [
             "200 <= MolWeight <= 500",
             "-5 <= logP <= 5",
             "HBA <= 10",
@@ -114,6 +106,15 @@ class REOSFilter(BaseFilter):
             "rotatable bonds <= 8",
             "15 <= heavy atoms <= 50",
         ]
+        super().__init__(
+            condition_names=condition_names,
+            allow_one_violation=allow_one_violation,
+            return_type=return_type,
+            return_indicators=return_indicators,
+            n_jobs=n_jobs,
+            batch_size=batch_size,
+            verbose=verbose,
+        )
 
     def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [

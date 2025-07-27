@@ -80,7 +80,9 @@ class NIBRFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int = 0,
     ):
+        filters, condition_names = self._load_filters()
         super().__init__(
+            condition_names=condition_names,
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
@@ -88,7 +90,7 @@ class NIBRFilter(BaseFilter):
             verbose=verbose,
         )
         self.severity = severity
-        self._filters = self._load_filters()
+        self._filters = filters
 
     def _apply_mol_filter(self, mol: Mol) -> bool:
         # note that this is rejection filter, trying to return False and remove
@@ -111,7 +113,7 @@ class NIBRFilter(BaseFilter):
 
         return True
 
-    def _load_filters(self) -> list[tuple[str, int, bool]]:
+    def _load_filters(self) -> tuple[list[tuple[Mol, int, bool]], list[str]]:
         # SMARTS, minimal count, exclude (otherwise flag)
         filters = [
             ("S=S", 1, True),
@@ -996,8 +998,9 @@ class NIBRFilter(BaseFilter):
                 False,
             ),
         ]
+        condition_names = [smarts for smarts, min_count, exclude in filters]
         filters = [
             (MolFromSmarts(smarts), min_count, exclude)
             for smarts, min_count, exclude in filters
         ]
-        return filters
+        return filters, condition_names

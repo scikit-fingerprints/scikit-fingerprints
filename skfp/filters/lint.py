@@ -1,10 +1,10 @@
-from rdkit.Chem import FilterCatalog, Mol
+from rdkit.Chem import FilterCatalog
 from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
 
-from skfp.bases.base_filter import BaseFilter
+from skfp.bases.base_substructure_filter import BaseSubstructureFilter
 
 
-class LINTFilter(BaseFilter):
+class LINTFilter(BaseSubstructureFilter):
     """
     LINT filter.
 
@@ -79,7 +79,6 @@ class LINTFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self._filters = self._load_filters()
 
     def _load_filters(self) -> FilterCatalog:
         filter_rules = FilterCatalogParams.FilterCatalogs.CHEMBL_LINT
@@ -87,7 +86,3 @@ class LINTFilter(BaseFilter):
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)
         return filters
-
-    def _apply_mol_filter(self, mol: Mol) -> bool:
-        errors = len(self._filters.GetMatches(mol))
-        return not errors or (self.allow_one_violation and errors == 1)
