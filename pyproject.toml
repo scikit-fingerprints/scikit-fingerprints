@@ -73,7 +73,7 @@ docs = [
     "ipython",
     "nbsphinx",
     "pydata-sphinx-theme",
-    "scikit-learn!=1.7.1",
+    "scikit-learn!=1.7.1",  # due to scikit-learn docs issue: https://github.com/microsoft/lightgbm/issues/6978
     "sphinx",
     "sphinx-copybutton"
 ]
