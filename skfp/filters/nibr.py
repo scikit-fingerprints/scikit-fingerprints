@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import Mol, MolFromSmarts
 
 from skfp.bases.base_filter import BaseFilter
@@ -92,27 +93,39 @@ class NIBRFilter(BaseFilter):
         self.severity = severity
         self._filters = filters
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         # note that this is rejection filter, trying to return False and remove
         # molecule as fast as possible
 
         # add condition indicators
+        condition_indicators = np.zeros(len(self.condition_names), dtype=bool)
         exclusions = 0
         flags_counter = 0
-        for smarts, min_count, exclude in self._filters:
+        for idx, (smarts, min_count, exclude) in enumerate(self._filters):
             num_matches = len(mol.GetSubstructMatches(smarts, maxMatches=min_count))
             if num_matches < min_count:
                 continue
             elif exclude:
                 exclusions += 1
-                if exclusions >= self.allow_one_violation:
+                condition_indicators[idx] = True
+                if (
+                    exclusions >= self.allow_one_violation
+                    and self.return_type != "condition_indicators"
+                ):
                     return False
             else:  # flag
                 flags_counter += 1
-                if flags_counter >= self.severity:
+                condition_indicators[idx] = True
+                if (
+                    flags_counter >= self.severity
+                    and self.return_type != "condition_indicators"
+                ):
                     return False
 
-        return True
+        if self.return_type == "condition_indicators":
+            return condition_indicators
+        else:
+            return True
 
     def _load_filters(self) -> tuple[list[tuple[Mol, int, bool]], list[str]]:
         # SMARTS, minimal count, exclude (otherwise flag)
