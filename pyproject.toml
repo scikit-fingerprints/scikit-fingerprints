@@ -70,11 +70,12 @@ test = [
 ]
 
 docs = [
-  "ipython",
-  "nbsphinx",
-  "pydata-sphinx-theme",
-  "sphinx",
-  "sphinx-copybutton"
+    "ipython",
+    "nbsphinx",
+    "pydata-sphinx-theme",
+    "scikit-learn!=1.7.1",
+    "sphinx",
+    "sphinx-copybutton"
 ]
 
 eval = [
