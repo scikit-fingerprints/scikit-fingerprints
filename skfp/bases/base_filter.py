@@ -35,7 +35,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
     Parameters
     ----------
     condition_names : list[str]
-        Names of filters conditions, e.g. physicochemical properties and their limits,
+        Names of filter conditions, e.g. physicochemical properties and their limits,
         or SMARTS patterns.
 
     allow_one_violation : bool, default=False
