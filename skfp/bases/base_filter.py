@@ -34,6 +34,10 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
 
     Parameters
     ----------
+    condition_names : list[str]
+        Names of filter conditions, e.g. physicochemical properties and their limits,
+        or SMARTS patterns.
+
     allow_one_violation : bool, default=False
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
@@ -85,6 +89,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
+        condition_names: list[str],
         allow_one_violation: bool = False,
         return_type: str = "mol",
         return_indicators: bool = False,
@@ -92,6 +97,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
+        self.condition_names = condition_names
         self.allow_one_violation = allow_one_violation
         self.return_type = return_type
         self.return_indicators = return_indicators
@@ -127,13 +133,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
         feature_names_out : ndarray of str objects
             Filter condition names.
         """
-        if not hasattr(self, "_condition_names"):
-            raise AttributeError(
-                f"Filter condition names not yet supported for "
-                f"{self.__class__.__name__}"
-            )
-
-        return np.array(self._condition_names)
+        return np.array(self.condition_names)
 
     def fit(self, X: Sequence[str | Mol], y: np.ndarray | None = None):
         """Unused, kept for scikit-learn compatibility.

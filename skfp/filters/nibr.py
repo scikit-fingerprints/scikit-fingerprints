@@ -1,3 +1,4 @@
+import numpy as np
 from rdkit.Chem import Mol, MolFromSmarts
 
 from skfp.bases.base_filter import BaseFilter
@@ -31,9 +32,24 @@ class NIBRFilter(BaseFilter):
         Molecules with at least this much total severity from "flag" rules are removed.
         Lower value makes the filter more restrictive.
 
-    return_indicators: bool, default=False
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
+
+    return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
+
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -75,43 +91,60 @@ class NIBRFilter(BaseFilter):
         self,
         allow_one_violation: bool = False,
         severity: int = 10,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
         verbose: int = 0,
     ):
+        filters, condition_names = self._load_filters()
         super().__init__(
+            condition_names=condition_names,
             allow_one_violation=allow_one_violation,
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
         self.severity = severity
-        self._filters = self._load_filters()
+        self._filters = filters
 
-    def _apply_mol_filter(self, mol: Mol) -> bool:
+    def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         # note that this is rejection filter, trying to return False and remove
         # molecule as fast as possible
 
+        # add condition indicators
+        condition_indicators = np.zeros(len(self.condition_names), dtype=bool)
         exclusions = 0
         flags_counter = 0
-        for smarts, min_count, exclude in self._filters:
+        for idx, (smarts, min_count, exclude) in enumerate(self._filters):
             num_matches = len(mol.GetSubstructMatches(smarts, maxMatches=min_count))
             if num_matches < min_count:
                 continue
             elif exclude:
                 exclusions += 1
-                if exclusions >= self.allow_one_violation:
+                condition_indicators[idx] = True
+                if (
+                    exclusions >= self.allow_one_violation
+                    and self.return_type != "condition_indicators"
+                ):
                     return False
             else:  # flag
                 flags_counter += 1
-                if flags_counter >= self.severity:
+                condition_indicators[idx] = True
+                if (
+                    flags_counter >= self.severity
+                    and self.return_type != "condition_indicators"
+                ):
                     return False
 
-        return True
+        if self.return_type == "condition_indicators":
+            return condition_indicators
+        else:
+            return True
 
-    def _load_filters(self) -> list[tuple[str, int, bool]]:
+    def _load_filters(self) -> tuple[list[tuple[Mol, int, bool]], list[str]]:
         # SMARTS, minimal count, exclude (otherwise flag)
         filters = [
             ("S=S", 1, True),
@@ -996,8 +1029,9 @@ class NIBRFilter(BaseFilter):
                 False,
             ),
         ]
+        condition_names = [smarts for smarts, min_count, exclude in filters]
         filters = [
             (MolFromSmarts(smarts), min_count, exclude)
             for smarts, min_count, exclude in filters
         ]
-        return filters
+        return filters, condition_names

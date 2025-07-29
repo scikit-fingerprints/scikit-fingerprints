@@ -1,11 +1,12 @@
-from rdkit.Chem import FilterCatalog, Mol
+from rdkit.Chem import FilterCatalog
 from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
-from sklearn.utils._param_validation import StrOptions
+from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
 from skfp.bases.base_filter import BaseFilter
+from skfp.bases.base_substructure_filter import BaseSubstructureFilter
 
 
-class PAINSFilter(BaseFilter):
+class PAINSFilter(BaseSubstructureFilter):
     """
     Pan Assay Interference Compounds (PAINS) filter.
 
@@ -27,9 +28,24 @@ class PAINSFilter(BaseFilter):
         Whether to allow violating one of the rules for a molecule. This makes the
         filter less restrictive.
 
+    return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
+
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
+
+        .. deprecated:: 1.17
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -85,36 +101,35 @@ class PAINSFilter(BaseFilter):
         self,
         variant: str = "A",
         allow_one_violation: bool = False,
+        return_type: str = "mol",
         return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
+        self.variant = variant
         super().__init__(
             allow_one_violation=allow_one_violation,
+            return_type=return_type,
             return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,
         )
-        self.variant = variant
-        self._filters = self._load_filters(variant)
 
-    def _load_filters(self, variant: str) -> FilterCatalog:
-        if variant == "A":
+    def _load_filters(self) -> FilterCatalog:
+        if self.variant == "A":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_A
-        elif variant == "B":
+        elif self.variant == "B":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_B
-        elif variant == "C":
+        elif self.variant == "C":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_C
         else:
-            raise ValueError(f'PAINS variant must be "A", "B" or "C", got {variant}')
+            raise InvalidParameterError(
+                f'PAINS variant must be "A", "B" or "C", got {self.variant}'
+            )
 
         params = FilterCatalog.FilterCatalogParams()
         params.AddCatalog(filter_rules)
         filters = FilterCatalog.FilterCatalog(params)
         return filters
-
-    def _apply_mol_filter(self, mol: Mol) -> bool:
-        errors = len(self._filters.GetMatches(mol))
-        return not errors or (self.allow_one_violation and errors == 1)

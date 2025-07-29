@@ -88,7 +88,15 @@ class TiceInsecticidesFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int | dict = 0,
     ):
+        condition_names = [
+            "150 <= MolWeight <= 500",
+            "0 <= logP <= 5",
+            "HBD <= 2",
+            "1 <= HBA <= 8",
+            "rotatable bonds <= 11",
+        ]
         super().__init__(
+            condition_names=condition_names,
             allow_one_violation=allow_one_violation,
             return_indicators=return_indicators,
             return_type=return_type,
@@ -96,13 +104,6 @@ class TiceInsecticidesFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self._condition_names = [
-            "150 <= MolWeight <= 500",
-            "0 <= logP <= 5",
-            "HBD <= 2",
-            "1 <= HBA <= 8",
-            "rotatable bonds <= 11",
-        ]
 
     def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [

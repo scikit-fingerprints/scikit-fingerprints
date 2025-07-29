@@ -90,7 +90,14 @@ class OpreaFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int = 0,
     ):
+        condition_names = [
+            "HBD <= 2",
+            "2 <= HBA <= 9",
+            "2 <= rotatable bonds <= 8",
+            "1 <= rings <= 4",
+        ]
         super().__init__(
+            condition_names=condition_names,
             allow_one_violation=allow_one_violation,
             return_type=return_type,
             return_indicators=return_indicators,
@@ -98,12 +105,6 @@ class OpreaFilter(BaseFilter):
             batch_size=batch_size,
             verbose=verbose,
         )
-        self._condition_names = [
-            "HBD <= 2",
-            "2 <= HBA <= 9",
-            "2 <= rotatable bonds <= 8",
-            "1 <= rings <= 4",
-        ]
 
     def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [

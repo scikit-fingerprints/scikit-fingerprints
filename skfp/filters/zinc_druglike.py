@@ -112,15 +112,7 @@ class ZINCDruglikeFilter(BaseFilter):
         batch_size: int | None = None,
         verbose: int = 0,
     ):
-        super().__init__(
-            allow_one_violation=allow_one_violation,
-            return_type=return_type,
-            return_indicators=return_indicators,
-            n_jobs=n_jobs,
-            batch_size=batch_size,
-            verbose=verbose,
-        )
-        self._condition_names = [
+        condition_names = [
             "60 <= MolWeight <= 600",
             "-4 <= logP <= 6",
             "HBA <= 11",
@@ -135,6 +127,15 @@ class ZINCDruglikeFilter(BaseFilter):
             "charged functional groups <= 4",
             "-4 <= formal charge <= 4",
         ]
+        super().__init__(
+            condition_names=condition_names,
+            allow_one_violation=allow_one_violation,
+            return_type=return_type,
+            return_indicators=return_indicators,
+            n_jobs=n_jobs,
+            batch_size=batch_size,
+            verbose=verbose,
+        )
 
     def _apply_mol_filter(self, mol: Mol) -> bool | np.ndarray:
         rules = [
