@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from numbers import Integral
+from numbers import Integral, Real
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
@@ -8,33 +8,38 @@ from sklearn.utils.validation import check_is_fitted, validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
 from skfp.distances import (
-    tanimoto_binary_distance,
-    tanimoto_count_distance,
+    _BULK_METRIC_NAMES as SKFP_BULK_METRIC_NAMES,
+)
+from skfp.distances import (
+    _BULK_METRICS as SKFP_BULK_METRICS,
+)
+from skfp.distances import (
+    _METRIC_NAMES as SKFP_METRIC_NAMES,
+)
+from skfp.distances import (
+    _METRICS as SKFP_METRICS,
 )
 
-METRIC_FUNCTIONS = {
-    "tanimoto_binary": tanimoto_binary_distance,
-    "tanimoto_count": tanimoto_count_distance,
-}
+METRIC_FUNCTIONS = {**SKFP_METRICS, **SKFP_BULK_METRICS}
+METRIC_NAMES = set(SKFP_METRIC_NAMES) | set(SKFP_BULK_METRIC_NAMES)
 
 
 class KNNADChecker(BaseADChecker):
     r"""
-    k-Nearest Neighbor applicability domain checker.
+    k-Nearest Neighbors applicability domain checker.
 
     This method determines whether a query molecule falls within the applicability
-    domain by comparing its distance to k nearest neighbors [1]_ [2]_ in the training set,
+    domain by comparing its distance to k nearest neighbors [1]_ [2]_ [3]_ in the training set,
     using a threshold derived from the training data.
 
-    The applicability domain is defined as either:
+    The applicability domain is defined as one of:
      - the mean distance to k nearest neighbors,
-     - the max distance among the k nearest neighbors,
-     - the min [3]_ distance among the k nearest neighbors (effectively kNN with k of 1)
+     - the distance to k-th nearest neighbor (max distance),
+     - the distance to the closest neighbor from the training set (min distance)
 
-    for each training sample. A threshold is then set at the
-    95th percentile of these aggregated distances. Query molecules with an aggregated
-    distance to their k nearest neighbors below this threshold are considered within
-    the applicability domain.
+    A threshold is then set at the 95th percentile of these aggregated distances.
+    Query molecules with an aggregated distance to their k nearest neighbors below
+    this threshold are considered within the applicability domain.
 
     This implementation supports binary and count Tanimoto similarity metrics.
 
@@ -44,7 +49,7 @@ class KNNADChecker(BaseADChecker):
         Number of nearest neighbors to consider for distance calculations.
         Must be smaller than the number of training samples.
 
-    metric: {"tanimoto_binary", "tanimoto_count"}, default="tanimoto_binary"
+    metric: {"tanimoto_binary_distance", "tanimoto_count_distance"}, default="tanimoto_binary_distance"
         Distance metric to use.
 
     agg: {"mean", "max", "min"}, default="mean"
@@ -93,7 +98,7 @@ class KNNADChecker(BaseADChecker):
     ...     [0, 0, 1]
     ... ])
     >>> X_test_binary = 1 - X_train_binary
-    >>> knn_ad_checker_binary = KNNADChecker(k=2, metric="tanimoto_binary", agg="mean")
+    >>> knn_ad_checker_binary = KNNADChecker(k=2, metric="tanimoto_binary_distance", agg="mean")
     >>> knn_ad_checker_binary
     KNNADChecker()
 
@@ -109,7 +114,7 @@ class KNNADChecker(BaseADChecker):
     ...     [5.6, 6.7]
     ... ])
     >>> X_test_count = X_train_count + 10
-    >>> knn_ad_checker_count = KNNADChecker(k=2, metric="tanimoto_count", agg="min")
+    >>> knn_ad_checker_count = KNNADChecker(k=2, metric="tanimoto_count_distance", agg="min")
     >>> knn_ad_checker_count
     KNNADChecker()
 
@@ -126,15 +131,17 @@ class KNNADChecker(BaseADChecker):
         "k": [Interval(Integral, 1, None, closed="left")],
         "metric": [
             callable,
-            StrOptions(set(METRIC_FUNCTIONS.keys())),
+            StrOptions(METRIC_NAMES),
         ],
+        "threshold": [None, Interval(Real, 0, 1, closed="both")],
     }
 
     def __init__(
         self,
         k: int,
-        metric: str | Callable = "tanimoto_binary",
+        metric: str | Callable = "tanimoto_binary_distance",
         agg: str = "mean",
+        threshold: float = 0.95,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
     ):
@@ -142,17 +149,16 @@ class KNNADChecker(BaseADChecker):
             n_jobs=n_jobs,
             verbose=verbose,
         )
+        self.k = k
         self.metric = metric
         self.agg = agg
-        self.k = k
+        self.threshold = threshold
 
     def _validate_params(self) -> None:
         super()._validate_params()
         if isinstance(self.metric, str) and self.metric not in METRIC_FUNCTIONS:
             raise InvalidParameterError(
-                f"The metric parameter must be one of Tanimoto variants. "
-                f"Allowed Tanimoto metrics: {list(METRIC_FUNCTIONS.keys())}. "
-                f"Got: {self.metric}"
+                f"Allowed metrics: {METRIC_NAMES}. Got: {self.metric}"
             )
         if isinstance(self.agg, str) and self.agg not in ["mean", "max", "min"]:
             raise InvalidParameterError("Unknown aggregration method.")
@@ -163,52 +169,40 @@ class KNNADChecker(BaseADChecker):
         y: np.ndarray | None = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
-        if self.k >= X.shape[0]:
+        if self.k > X.shape[0]:
             raise ValueError(
-                f"k ({self.k}) must be smaller than the number of training samples ({X.shape[0]})"
+                f"k ({self.k}) must be smaller than or equal to the number of training samples ({X.shape[0]})"
             )
 
-        k_used = 1 if self.agg == "min" else self.k
+        self.X_train_ = X
+        self.k_used = 1 if self.agg == "min" else self.k
 
-        if callable(self.metric):
-            metric_func = self.metric
-        elif isinstance(self.metric, str) and self.metric in METRIC_FUNCTIONS:
-            metric_func = METRIC_FUNCTIONS[self.metric]
+        if isinstance(self.metric, str) and self.metric in SKFP_BULK_METRIC_NAMES:
+            bulk_func = SKFP_BULK_METRICS[self.metric]
+            dist_mat = bulk_func(X, X)
+            np.fill_diagonal(dist_mat, np.inf)
+            k_nearest = np.partition(dist_mat, self.k_used, axis=1)[:, : self.k_used]
         else:
-            raise InvalidParameterError(
-                f"Unknown metric: {self.metric}. Must be a callable or one of {list(METRIC_FUNCTIONS.keys())}"
+            if callable(self.metric):
+                metric_func = self.metric
+            elif isinstance(self.metric, str) and self.metric in METRIC_FUNCTIONS:
+                metric_func = METRIC_FUNCTIONS[self.metric]
+            else:
+                raise KeyError(
+                    f"Unknown metric: {self.metric}. Must be a callable or one of {list(METRIC_FUNCTIONS.keys())}"
+                )
+
+            self.knn_ = NearestNeighbors(
+                n_neighbors=self.k_used, metric=metric_func, n_jobs=self.n_jobs
             )
+            self.knn_.fit(X)
+            k_nearest, _ = self.knn_.kneighbors(X)
 
-        self.knn_ = NearestNeighbors(
-            n_neighbors=k_used, metric=metric_func, n_jobs=self.n_jobs
-        )
-        self.knn_.fit(X)
-
-        dists, _ = self.knn_.kneighbors(X)
-
-        if self.agg == "mean":
-            agg_dists = np.mean(dists, axis=1)
-        elif self.agg == "max":
-            agg_dists = np.max(dists, axis=1)
-        elif self.agg == "min":
-            agg_dists = np.min(dists, axis=1)
-
-        self.threshold_ = np.percentile(agg_dists, 95)
+        agg_dists = self._get_agg_dists(k_nearest)
+        self.threshold_ = np.percentile(agg_dists, self.threshold)
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
-        check_is_fitted(self)
-        X = validate_data(self, X=X, reset=False)
-
-        k_used = 1 if self.agg == "min" else self.k
-        dists, _ = self.knn_.kneighbors(X, n_neighbors=k_used)
-        if self.agg == "mean":
-            agg_dists = np.mean(dists, axis=1)
-        elif self.agg == "max":
-            agg_dists = np.max(dists, axis=1)
-        elif self.agg == "min":
-            agg_dists = np.min(dists, axis=1)
-
-        return agg_dists <= self.threshold_
+        return self.score_samples(X) <= self.threshold_
 
     def score_samples(self, X: np.ndarray) -> np.ndarray:
         """
@@ -225,4 +219,24 @@ class KNNADChecker(BaseADChecker):
         scores : ndarray of shape (n_samples,)
             Applicability domain scores of samples.
         """
-        return self.predict(X)
+        check_is_fitted(self)
+        X = validate_data(self, X=X, reset=False)
+
+        if isinstance(self.metric, str) and self.metric in SKFP_BULK_METRIC_NAMES:
+            bulk_func = SKFP_BULK_METRICS[self.metric]
+            dist_mat = bulk_func(X, self.X_train_)
+            k_nearest = np.partition(dist_mat, self.k_used, axis=1)[:, : self.k_used]
+        else:
+            k_nearest, _ = self.knn_.kneighbors(X, n_neighbors=self.k_used)
+
+        return self._get_agg_dists(k_nearest)
+
+    def _get_agg_dists(self, k_nearest) -> np.ndarray[float]:
+        if self.agg == "mean":
+            agg_dists = np.mean(k_nearest, axis=1)
+        elif self.agg == "max":
+            agg_dists = np.max(k_nearest, axis=1)
+        elif self.agg == "min":
+            agg_dists = np.min(k_nearest, axis=1)
+
+        return agg_dists

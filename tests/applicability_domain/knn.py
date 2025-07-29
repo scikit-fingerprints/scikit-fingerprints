@@ -5,8 +5,10 @@ from skfp.applicability_domain import KNNADChecker
 from tests.applicability_domain.utils import get_data_inside_ad, get_data_outside_ad
 
 ALLOWED_METRICS = [
-    "tanimoto_binary",
-    "tanimoto_count",
+    "tanimoto_binary_distance",
+    "tanimoto_count_distance",
+    "bulk_tanimoto_binary_distance",
+    "bulk_tanimoto_count_distance",
 ]
 
 ALLOWED_AGGS = ["mean", "max", "min"]
@@ -15,7 +17,7 @@ ALLOWED_AGGS = ["mean", "max", "min"]
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
 @pytest.mark.parametrize("agg", ALLOWED_AGGS)
 def test_inside_knn_ad(metric, agg):
-    if metric == "tanimoto_binary":
+    if "binary" in metric:
         X_train, X_test = get_data_inside_ad(binarize=True)
     else:
         X_train, X_test = get_data_inside_ad()
@@ -36,7 +38,7 @@ def test_inside_knn_ad(metric, agg):
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
 @pytest.mark.parametrize("agg", ALLOWED_AGGS)
 def test_outside_knn_ad(metric, agg):
-    if metric == "tanimoto_binary":
+    if "binary" in metric:
         X_train, X_test = get_data_outside_ad(binarize=True)
     else:
         X_train, X_test = get_data_outside_ad()
@@ -58,7 +60,7 @@ def test_outside_knn_ad(metric, agg):
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
 @pytest.mark.parametrize("agg", ALLOWED_AGGS)
 def test_knn_different_k_values(metric, agg):
-    if metric == "tanimoto_binary":
+    if "binary" in metric:
         X_train, X_test = get_data_inside_ad(binarize=True)
     else:
         X_train, X_test = get_data_inside_ad()
@@ -82,7 +84,7 @@ def test_knn_different_k_values(metric, agg):
 @pytest.mark.parametrize("agg", ALLOWED_AGGS)
 def test_knn_pass_y_train(metric, agg):
     # smoke test, should not throw errors
-    if metric == "tanimoto_binary":
+    if "binary" in metric:
         X_train, _ = get_data_inside_ad(binarize=True)
     else:
         X_train, _ = get_data_inside_ad()
@@ -92,19 +94,19 @@ def test_knn_pass_y_train(metric, agg):
     ad_checker.fit(X_train, y_train)
 
 
-@pytest.mark.parametrize("metric", ["mean", "max"])
+@pytest.mark.parametrize("metric", ALLOWED_METRICS)
 @pytest.mark.parametrize("agg", ALLOWED_AGGS)
 def test_knn_invalid_k(metric, agg):
-    if metric == "tanimoto_binary":
+    if "binary" in metric:
         X_train, _ = get_data_inside_ad(binarize=True)
     else:
         X_train, _ = get_data_inside_ad()
 
     with pytest.raises(
         ValueError,
-        match=r"k \(\d+\) must be smaller than the number of training samples \(\d+\)",
+        match=r"k \(\d+\) must be smaller than or equal to the number of training samples \(\d+\)",
     ):
-        ad_checker = KNNADChecker(k=len(X_train), metric=metric, agg=agg)
+        ad_checker = KNNADChecker(k=len(X_train) + 1, metric=metric, agg=agg)
         ad_checker.fit(X_train)
 
 
