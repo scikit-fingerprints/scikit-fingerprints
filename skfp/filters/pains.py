@@ -1,6 +1,6 @@
 from rdkit.Chem import FilterCatalog
 from rdkit.Chem.rdfiltercatalog import FilterCatalogParams
-from sklearn.utils._param_validation import StrOptions
+from sklearn.utils._param_validation import InvalidParameterError, StrOptions
 
 from skfp.bases.base_filter import BaseFilter
 from skfp.bases.base_substructure_filter import BaseSubstructureFilter
@@ -125,7 +125,7 @@ class PAINSFilter(BaseSubstructureFilter):
         elif self.variant == "C":
             filter_rules = FilterCatalogParams.FilterCatalogs.PAINS_C
         else:
-            raise ValueError(
+            raise InvalidParameterError(
                 f'PAINS variant must be "A", "B" or "C", got {self.variant}'
             )
 
