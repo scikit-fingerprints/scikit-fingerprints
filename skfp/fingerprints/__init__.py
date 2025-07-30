@@ -10,7 +10,7 @@ from .estate import EStateFingerprint
 from .functional_groups import FunctionalGroupsFingerprint
 from .getaway import GETAWAYFingerprint
 from .ghose_crippen import GhoseCrippenFingerprint
-from .klekota_roth.klekota_roth import KlekotaRothFingerprint
+from .klekota_roth import KlekotaRothFingerprint
 from .laggner import LaggnerFingerprint
 from .layered import LayeredFingerprint
 from .lingo import LingoFingerprint

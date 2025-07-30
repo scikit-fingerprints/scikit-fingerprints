@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from rdkit.Chem import MolFromSmiles
 
 from skfp.fingerprints import PubChemFingerprint
@@ -52,3 +53,13 @@ def test_pubchem_patterns():
 
     # no rings, no features other than Na and Cl
     assert counts.sum() == 2
+
+
+@pytest.mark.parametrize("fp", [PubChemFingerprint(), PubChemFingerprint(count=True)])
+def test_pubchem_feature_names(fp):
+    feature_names = fp.get_feature_names_out()
+    assert len(feature_names) == fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
+
+    assert feature_names[0].startswith("H")
+    assert feature_names[-1] == "Br[#6]1[#6](Br)[#6][#6][#6]1"
