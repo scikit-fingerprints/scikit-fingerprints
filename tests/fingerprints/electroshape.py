@@ -92,3 +92,14 @@ def test_electroshape_transform_x_y(mols_conformers_3_plus_atoms):
 
     assert len(X_skfp) == len(y_skfp)
     assert np.all(y_skfp == 1)
+
+
+def test_electroshape_feature_names():
+    electroshape_fp = ElectroShapeFingerprint()
+    feature_names = electroshape_fp.get_feature_names_out()
+
+    assert len(feature_names) == electroshape_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
+
+    assert feature_names[0] == "centroid_dists_mean"
+    assert feature_names[-1] == "centroid_lowest_partial_charge_skewness_cubic_root"

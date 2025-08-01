@@ -121,6 +121,51 @@ class USRCATFingerprint(BaseFingerprintTransformer):
         )
         self.errors = errors
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to aggregates
+        of atomic distances to 4 centroid-based points, for each of 5 atom
+        type subsets.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            USRCAT feature names.
+        """
+        base_feature_names = [
+            "centroid_dists_mean",
+            "centroid_dists_std",
+            "centroid_dists_skewness_cubic_root",
+            "closest_atom_to_centroid_mean",
+            "closest_atom_to_centroid_std",
+            "closest_atom_to_centroid_skewness_cubic_root",
+            "farthest_atom_from_centroid_mean",
+            "farthest_atom_from_centroid_std",
+            "farthest_atom_from_centroid_skewness_cubic_root",
+            "farthest_atom_from_farthest_to_centroid_mean",
+            "farthest_atom_from_farthest_to_centroid_std",
+            "farthest_atom_from_farthest_to_centroid_cubic_root",
+        ]
+        atom_types = [
+            "all",
+            "hydrophobic",
+            "aromatic",
+            "hydrogen_bond_donor",
+            "hydrogen_bond_acceptor",
+        ]
+        feature_names = [
+            f"{atom_type}_{base_feature_name}"
+            for atom_type in atom_types
+            for base_feature_name in base_feature_names
+        ]
+
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[str | Mol], copy: bool = False
     ) -> np.ndarray | csr_array:
