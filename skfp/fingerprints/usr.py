@@ -18,8 +18,8 @@ class USRFingerprint(BaseFingerprintTransformer):
     characterizes the shape of the molecule by encoding the relative positions of its
     atoms [1]_ [2]_.
 
-    Four points are considered: molecular centroid (ctd), the closest atom to centroid (cst),
-    the farthest atom from centroid (fct), and atom the fartest from fct (ftf). Distances
+    Four points are considered: molecular centroid (ctd), the closest atom to centroid (catc),
+    the farthest atom from centroid (fact), and atom the fartest from fct (fatf). Distances
     from all atoms to each of those four points are computed, and each of those distributions
     is summarized its first three moments: mean, variance, and skewness. Concretely, standard
     deviation and cubic root of skewness are used to keep the same unit. This results in
@@ -124,6 +124,37 @@ class USRFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
         self.errors = errors
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to aggregates
+        of atomic distances to 4 centroid-based points.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            USR feature names.
+        """
+        feature_names = [
+            "centroid_dists_mean",
+            "centroid_dists_std",
+            "centroid_dists_skewness_cubic_root",
+            "closest_atom_to_centroid_mean",
+            "closest_atom_to_centroid_std",
+            "closest_atom_to_centroid_skewness_cubic_root",
+            "farthest_atom_from_centroid_mean",
+            "farthest_atom_from_centroid_std",
+            "farthest_atom_from_centroid_skewness_cubic_root",
+            "farthest_atom_from_farthest_to_centroid_mean",
+            "farthest_atom_from_farthest_to_centroid_std",
+            "farthest_atom_from_farthest_to_centroid_cubic_root",
+        ]
+        return np.asarray(feature_names, dtype=object)
 
     def transform(
         self, X: Sequence[str | Mol], copy: bool = False

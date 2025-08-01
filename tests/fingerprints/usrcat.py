@@ -68,3 +68,35 @@ def test_usrcat_copy(mols_conformers_3_plus_atoms):
 
     assert np.array_equal(labels, labels_out)
     assert labels is not labels_out
+
+
+def test_usrcat_feature_names():
+    usrcat_fp = USRCATFingerprint()
+    feature_names = usrcat_fp.get_feature_names_out()
+
+    assert len(feature_names) == usrcat_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
+
+    assert feature_names[0] == "all_centroid_dists_mean"
+    assert feature_names[12] == "hydrophobic_centroid_dists_mean"
+    assert feature_names[24] == "aromatic_centroid_dists_mean"
+    assert feature_names[36] == "hydrogen_bond_donor_centroid_dists_mean"
+    assert feature_names[48] == "hydrogen_bond_acceptor_centroid_dists_mean"
+
+    assert feature_names[11] == "all_farthest_atom_from_farthest_to_centroid_cubic_root"
+    assert (
+        feature_names[23]
+        == "hydrophobic_farthest_atom_from_farthest_to_centroid_cubic_root"
+    )
+    assert (
+        feature_names[35]
+        == "aromatic_farthest_atom_from_farthest_to_centroid_cubic_root"
+    )
+    assert (
+        feature_names[47]
+        == "hydrogen_bond_donor_farthest_atom_from_farthest_to_centroid_cubic_root"
+    )
+    assert (
+        feature_names[59]
+        == "hydrogen_bond_acceptor_farthest_atom_from_farthest_to_centroid_cubic_root"
+    )

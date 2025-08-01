@@ -23,11 +23,12 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
 
     It first computes atomic partial charges, and then uses both conformational
     (spatial) structure, and this electric information, to compute reference
-    points (centroids). First three are like in USR, and last two
-    additionally use partial charge in distance calculation. See the original paper
-    [1]_ for details. For each centroid, the distribution of distances between atoms
-    and the centroid is aggregated using the first three moments (mean, standard
-    deviation, cubic root of skewness). This results in 15 features.
+    points (centroids). First three are similar to USR: centroid, atom farthest from
+    centroid, and atom farthest from that atom. The last two additionally use partial
+    charge in distance calculation. See the original paper [1]_ for details. For each
+    centroid, the distribution of distances between atoms and the centroid is aggregated
+    using the first three moments (mean, standard deviation, cubic root of skewness).
+    This results in 15 features.
 
     This is a 3D fingerprint, and requires molecules with ``conf_id`` integer property
     set. They can be generated with :class:`~skfp.preprocessing.ConformerGenerator`.
@@ -149,6 +150,40 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         self.charge_scaling_factor = charge_scaling_factor
         self.charge_errors = charge_errors
         self.errors = errors
+
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to aggregates
+        of atomic distances to 5 centroid-based points.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            ElectroShape feature names.
+        """
+        feature_names = [
+            "centroid_dists_mean",
+            "centroid_dists_std",
+            "centroid_dists_skewness_cubic_root",
+            "farthest_atom_from_centroid_mean",
+            "farthest_atom_from_centroid_std",
+            "farthest_atom_from_centroid_skewness_cubic_root",
+            "farthest_atom_from_farthest_to_centroid_mean",
+            "farthest_atom_from_farthest_to_centroid_std",
+            "farthest_atom_from_farthest_to_centroid_cubic_root",
+            "centroid_highest_partial_charge_mean",
+            "centroid_highest_partial_charge_std",
+            "centroid_highest_partial_charge_skewness_cubic_root",
+            "centroid_lowest_partial_charge_mean",
+            "centroid_lowest_partial_charge_std",
+            "centroid_lowest_partial_charge_skewness_cubic_root",
+        ]
+        return np.asarray(feature_names, dtype=object)
 
     def transform(
         self, X: Sequence[str | Mol], copy: bool = False
@@ -280,7 +315,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         else:
             vec_c = (norm(vec_a) / (2 * cross_ab_norm)) * cross_ab
 
-        # geometric mean centroid moved in the direction of smallest and largest charge
+        # geometric mean centroid moved in the direction of largest and smallest charge
         # note that charges were already scaled before
         c4 = np.append(c1[:3] + vec_c, np.max(charges))
         c5 = np.append(c1[:3] + vec_c, np.min(charges))

@@ -68,3 +68,14 @@ def test_usr_copy(mols_conformers_3_plus_atoms):
 
     assert np.array_equal(labels, labels_out)
     assert labels is not labels_out
+
+
+def test_usr_feature_names():
+    usr_fp = USRFingerprint()
+    feature_names = usr_fp.get_feature_names_out()
+
+    assert len(feature_names) == usr_fp.n_features_out
+    assert len(feature_names) == len(set(feature_names))
+
+    assert feature_names[0] == "centroid_dists_mean"
+    assert feature_names[-1] == "farthest_atom_from_farthest_to_centroid_cubic_root"
