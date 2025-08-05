@@ -4,3 +4,5 @@ from .distance_to_centroid import DistanceToCentroidADChecker
 from .hotelling_t2_test import HotellingT2TestADChecker
 from .leverage import LeverageADChecker
 from .pca_bounding_box import PCABoundingBoxADChecker
+from .response_variable_range import ResponseVariableRangeADChecker
+from .standard_deviation import StdEnsembleADChecker
