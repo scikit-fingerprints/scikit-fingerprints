@@ -20,3 +20,5 @@ Classes for checking applicability domain.
     HotellingT2TestADChecker
     LeverageADChecker
     PCABoundingBoxADChecker
+    ResponseVariableRangeADChecker
+    StdEnsembleADChecker

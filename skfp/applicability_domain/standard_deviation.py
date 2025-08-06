@@ -1,4 +1,7 @@
+from numbers import Real
+
 import numpy as np
+from sklearn.utils._param_validation import Interval
 from sklearn.utils.validation import validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
@@ -9,7 +12,7 @@ class StdEnsembleADChecker(BaseADChecker):
     Standard deviation ensemble method.
 
     Defines applicability domain based on the spread (standard deviation) of predictions
-    from individual estimators in an ensemble model. The method assumes that
+    from individual estimators in an ensemble model [1]_. The method assumes that
     if different estimators give similar predictions for a given molecule,
     the prediction is more likely to be reliable (i.e., in-domain).
 
@@ -48,6 +51,15 @@ class StdEnsembleADChecker(BaseADChecker):
         If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
         and can be used to control the progress bar.
 
+    References
+    ----------
+    .. [1] `Kar, S., Roy, K., Leszczynski, J.
+        "Applicability Domain: A Step Toward Confident Predictions and Decidability
+        for QSAR Modeling."
+        Nicolotti, O. (eds) Computational Toxicology. Methods in Molecular Biology, vol 1800.
+        Humana Press, New York, NY
+        <https://doi.org/10.1007/978-1-4939-7899-1_6>`_
+
     Examples
     --------
     >>> import numpy as np
@@ -66,6 +78,12 @@ class StdEnsembleADChecker(BaseADChecker):
     (100,)
     """
 
+    _parameter_constraints: dict = {
+        **BaseADChecker._parameter_constraints,
+        "model": [object],
+        "threshold": [Interval(Real, 0, None, closed="left")],
+    }
+
     def __init__(
         self,
         model,
@@ -82,10 +100,10 @@ class StdEnsembleADChecker(BaseADChecker):
 
     def fit(  # noqa: D102
         self,
-        X: np.ndarray,
-        y: np.ndarray | None = None,
+        X: np.ndarray,  # noqa: ARG002
+        y: np.ndarray | None = None,  # noqa: ARG002
     ):
-        pass  # unused
+        return self
 
     def _predict_all_estimators(self, X: np.ndarray) -> np.ndarray:
         preds = np.array([est.predict(X) for est in self.model.estimators_])

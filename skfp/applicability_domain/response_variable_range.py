@@ -9,7 +9,7 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     Response variable range method.
 
     Defines applicability domain based on the range of response values observed
-    in the training data. New predictions are considered inside the applicability
+    in the training data [1]_. New predictions are considered inside the applicability
     domain if they lie within the min-max range of training targets.
 
     Typically, this method is used after model prediction, and checks whether
@@ -18,7 +18,8 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     Note that this method does not consider molecular structure or descriptors.
     It operates purely in the output (target) space.
 
-    This method scales extremely well with both number of samples and features.
+    This method scales extremely well with the number of samples,
+    as it only operates in the 1D target space.
 
     Parameters
     ----------
@@ -32,6 +33,15 @@ class ResponseVariableRangeADChecker(BaseADChecker):
         Controls the verbosity when filtering molecules.
         If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
         and can be used to control the progress bar.
+
+    References
+    ----------
+    .. [1] `Kar, S., Roy, K., Leszczynski, J.
+        "Applicability Domain: A Step Toward Confident Predictions and Decidability
+        for QSAR Modeling."
+        Nicolotti, O. (eds) Computational Toxicology. Methods in Molecular Biology, vol 1800.
+        Humana Press, New York, NY
+        <https://doi.org/10.1007/978-1-4939-7899-1_6>`_
 
     Examples
     --------
@@ -60,12 +70,12 @@ class ResponseVariableRangeADChecker(BaseADChecker):
             verbose=verbose,
         )
 
-    def fit(  # noqa: D102
+    def fit(  # type: ignore[override]  # noqa: D102
         self,
-        X: np.ndarray,
-        y: np.ndarray | None = None,
+        y: np.ndarray,
+        X: np.ndarray | None = None,  # noqa: ARG002
     ):
-        y = validate_data(self, X=X, ensure_2d=False)
+        y = validate_data(self, X=y, ensure_2d=False)
         self.min_y_ = np.min(y)
         self.max_y_ = np.max(y)
         self.mean_y_ = np.mean(y)
