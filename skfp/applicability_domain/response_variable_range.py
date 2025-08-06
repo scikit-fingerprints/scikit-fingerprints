@@ -27,10 +27,12 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     Parameters
     ----------
     threshold : float, default=None
-        If None (default), use min and max of training targets as allowed range.
-        If a float is provided, defines a symmetric threshold around the mean:
-        [mean - threshold, mean + threshold]. Predictions outside this range are
-        considered out-of-domain.
+        Maximum allowed distance from the training response mean.
+        If float, defines a symmetric interval around the mean:
+         `[mean - threshold, mean + threshold]`, and predictions outside
+        this range are considered outside the applicability domain.
+        If ``None`` (default), the method uses the full min–max range
+        of training targets as bounds.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -125,7 +127,6 @@ class ResponseVariableRangeADChecker(BaseADChecker):
         -------
         scores : ndarray of shape (n_samples,)
             Applicability domain scores of samples.
-
         """
         y = validate_data(self, X=y, ensure_2d=False, reset=False)
         return np.abs(y - self.mean_y_)

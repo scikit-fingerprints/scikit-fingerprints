@@ -21,4 +21,4 @@ Classes for checking applicability domain.
     LeverageADChecker
     PCABoundingBoxADChecker
     ResponseVariableRangeADChecker
-    StdEnsembleADChecker
+    StandardDeviationADChecker
