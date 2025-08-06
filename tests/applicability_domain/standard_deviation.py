@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.datasets import make_regression
 from sklearn.ensemble import RandomForestRegressor
 
-from skfp.applicability_domain import StdEnsembleADChecker
+from skfp.applicability_domain import StandardDeviationADChecker
 
 
 def test_inside_std_ad():
@@ -14,7 +14,7 @@ def test_inside_std_ad():
     rf = RandomForestRegressor(n_estimators=5, random_state=42)
     rf.fit(X_train, y_train)
 
-    ad_checker = StdEnsembleADChecker(model=rf, threshold=10.0)
+    ad_checker = StandardDeviationADChecker(model=rf, threshold=10.0)
 
     scores = ad_checker.score_samples(X_test)
     assert np.all(scores >= 0)
@@ -35,7 +35,7 @@ def test_outside_std_ad():
     rf = RandomForestRegressor(n_estimators=5, random_state=42)
     rf.fit(X_train, y_train)
 
-    ad_checker = StdEnsembleADChecker(model=rf, threshold=1.0)
+    ad_checker = StandardDeviationADChecker(model=rf, threshold=1.0)
 
     scores = ad_checker.score_samples(X_test)
     assert np.all(scores >= 0)
@@ -56,5 +56,5 @@ def test_std_fit():
     rf = RandomForestRegressor(n_estimators=5, random_state=42)
     rf.fit(X_train, y_train)
 
-    ad_checker = StdEnsembleADChecker(model=rf)
+    ad_checker = StandardDeviationADChecker(model=rf)
     ad_checker.fit(X_train, y_train)

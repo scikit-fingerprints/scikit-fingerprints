@@ -1,4 +1,7 @@
+from numbers import Real
+
 import numpy as np
+from sklearn.utils._param_validation import Interval
 from sklearn.utils.validation import check_is_fitted, validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
@@ -23,6 +26,12 @@ class ResponseVariableRangeADChecker(BaseADChecker):
 
     Parameters
     ----------
+    threshold : float, default=None
+        If None (default), use min and max of training targets as allowed range.
+        If a float is provided, defines a symmetric threshold around the mean:
+        [mean - threshold, mean + threshold]. Predictions outside this range are
+        considered out-of-domain.
+
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
         :meth:`transform` are parallelized over the input molecules. ``None`` means 1
@@ -60,8 +69,14 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     array([ True, False, False])
     """
 
+    _parameter_constraints: dict = {
+        **BaseADChecker._parameter_constraints,
+        "threshold": [None, Interval(Real, 0, None, closed="left")],
+    }
+
     def __init__(
         self,
+        threshold: float | None = None,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
     ):
@@ -69,6 +84,7 @@ class ResponseVariableRangeADChecker(BaseADChecker):
             n_jobs=n_jobs,
             verbose=verbose,
         )
+        self.threshold = threshold
 
     def fit(  # type: ignore[override]  # noqa: D102
         self,
@@ -76,15 +92,22 @@ class ResponseVariableRangeADChecker(BaseADChecker):
         X: np.ndarray | None = None,  # noqa: ARG002
     ):
         y = validate_data(self, X=y, ensure_2d=False)
-        self.min_y_ = np.min(y)
-        self.max_y_ = np.max(y)
+
         self.mean_y_ = np.mean(y)
+
+        if self.threshold is None:
+            self.lower_bound_ = np.min(y)
+            self.upper_bound_ = np.max(y)
+        else:
+            self.lower_bound_ = self.mean_y_ - self.threshold
+            self.upper_bound_ = self.mean_y_ + self.threshold
+
         return self
 
     def predict(self, y: np.ndarray) -> np.ndarray:  # noqa: D102
         check_is_fitted(self)
         y = validate_data(self, X=y, ensure_2d=False, reset=False)
-        return (self.min_y_ <= y) & (self.max_y_ >= y)
+        return (self.lower_bound_ <= y) & (self.upper_bound_ >= y)
 
     def score_samples(self, y: np.ndarray) -> np.ndarray:
         """

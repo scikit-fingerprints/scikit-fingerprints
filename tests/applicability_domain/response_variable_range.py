@@ -40,6 +40,26 @@ def test_outside_response_range_ad():
     assert np.all(preds == 0)
 
 
+def test_response_range_with_threshold():
+    y_train = np.array([0.8, 0.9, 1.0, 1.1, 1.2])
+    y_test_in = np.array([0.95, 1.0, 1.05])
+    y_test_out = np.array([0.85, 1.15])
+
+    ad_checker = ResponseVariableRangeADChecker(threshold=0.1)
+    ad_checker.fit(y_train)
+
+    preds_in = ad_checker.predict(y_test_in)
+    preds_out = ad_checker.predict(y_test_out)
+
+    scores_in = ad_checker.score_samples(y_test_in)
+    scores_out = ad_checker.score_samples(y_test_out)
+    assert np.all(scores_in >= 0)
+    assert np.all(scores_out >= 0)
+
+    assert np.all(preds_in == 1)
+    assert np.all(preds_out == 0)
+
+
 def test_response_range_pass_y_train():
     # smoke test, should not throw errors
     X_train = np.vstack((np.zeros((10, 5)), np.ones((10, 5))))

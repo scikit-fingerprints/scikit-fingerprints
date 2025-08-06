@@ -7,34 +7,27 @@ from sklearn.utils.validation import validate_data
 from skfp.bases.base_ad_checker import BaseADChecker
 
 
-class StdEnsembleADChecker(BaseADChecker):
+class StandardDeviationADChecker(BaseADChecker):
     """
-    Standard deviation ensemble method.
+    Standard deviation method.
 
     Defines applicability domain based on the spread (standard deviation) of predictions
     from individual estimators in an ensemble model [1]_. The method assumes that
-    if different estimators give similar predictions for a given molecule,
-    the prediction is more likely to be reliable (i.e., in-domain).
+    greater consensus among estimators indicates higher prediction reliability,
+    which typically occurs in densely sampled regions of the training data.
 
     This approach requires an ensemble model exposing the ``estimators_``
     attribute (e.g., RandomForestRegressor), where each
-    sub-model must implement a ``predict(X)`` method. At prediction time,
+    sub-model must implement a ``.predict(X)`` method. At prediction time,
     each sample is passed to all estimators, and the standard deviation of
     their predictions is calculated. The sample is considered in-domain if
     the standard deviation is lower than or equal to the specified threshold.
-
-    Typically, physicochemical properties (continous features) are used as inputs.
-    Consider scaling, normalizing, or transforming them before computing AD to lessen
-    effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``.
-
-    This method is particularly useful in assessing uncertainty in ensemble
-    learning-based QSAR models.
 
     Parameters
     ----------
     model : object
         Fitted ensemble model with accessible ``estimators_`` attribute and
-        ``predict(X)`` method on each sub-estimator.
+        ``.predict(X)`` method on each sub-estimator.
 
     threshold : float, default=1.0
         Maximum allowed standard deviation of predictions. Samples with
@@ -64,14 +57,14 @@ class StdEnsembleADChecker(BaseADChecker):
     --------
     >>> import numpy as np
     >>> from sklearn.ensemble import RandomForestRegressor
-    >>> from skfp.applicability_domain import StdEnsembleADChecker
+    >>> from skfp.applicability_domain import StandardDeviationADChecker
     >>> X_train = np.random.uniform(0, 1, size=(1000, 5))
     >>> y_train = X_train.sum(axis=1)
     >>> model = RandomForestRegressor(n_estimators=5, random_state=0)
     >>> model.fit(X_train, y_train)
-    >>> std_ad_checker = StdEnsembleADChecker(model=model, threshold=0.5)
+    >>> std_ad_checker = StandardDeviationADChecker(model=model, threshold=0.5)
     >>> std_ad_checker
-    StdEnsembleADChecker()
+    StandardDeviationADChecker()
 
     >>> X_test = np.random.uniform(0, 1, size=(100, 5))
     >>> std_ad_checker.predict(X_test).shape
@@ -105,10 +98,6 @@ class StdEnsembleADChecker(BaseADChecker):
     ):
         return self
 
-    def _predict_all_estimators(self, X: np.ndarray) -> np.ndarray:
-        preds = np.array([est.predict(X) for est in self.model.estimators_])
-        return preds.T
-
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
         X = validate_data(self, X=X, reset=False)
 
@@ -116,6 +105,10 @@ class StdEnsembleADChecker(BaseADChecker):
         stds = np.std(preds, axis=1)
 
         return (stds <= self.threshold).astype(bool)
+
+    def _predict_all_estimators(self, X: np.ndarray) -> np.ndarray:
+        preds = np.array([est.predict(X) for est in self.model.estimators_])
+        return preds.T
 
     def score_samples(self, X: np.ndarray) -> np.ndarray:
         """
