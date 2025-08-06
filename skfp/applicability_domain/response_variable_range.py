@@ -29,7 +29,7 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     threshold : float, default=None
         Maximum allowed distance from the training response mean.
         If float, defines a symmetric interval around the mean:
-         `[mean - threshold, mean + threshold]`, and predictions outside
+        `[mean - threshold, mean + threshold]`, and predictions outside
         this range are considered outside the applicability domain.
         If ``None`` (default), the method uses the full min–max range
         of training targets as bounds.
