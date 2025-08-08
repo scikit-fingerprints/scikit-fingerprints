@@ -7,8 +7,6 @@ from tests.applicability_domain.utils import get_data_inside_ad, get_data_outsid
 ALLOWED_METRICS = [
     "tanimoto_binary_distance",
     "tanimoto_count_distance",
-    "bulk_tanimoto_binary_distance",
-    "bulk_tanimoto_count_distance",
 ]
 
 ALLOWED_AGGS = ["mean", "max", "min"]

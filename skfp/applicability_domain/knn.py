@@ -26,16 +26,17 @@ METRIC_NAMES = set(SKFP_METRIC_NAMES) | set(SKFP_BULK_METRIC_NAMES)
 
 class KNNADChecker(BaseADChecker):
     r"""
-    k-Nearest Neighbors applicability domain checker.
+    k-nearest neighbors applicability domain checker.
 
     This method determines whether a query molecule falls within the applicability
     domain by comparing its distance to k nearest neighbors [1]_ [2]_ [3]_ in the training set,
     using a threshold derived from the training data.
 
     The applicability domain is defined as one of:
-     - the mean distance to k nearest neighbors,
-     - the distance to k-th nearest neighbor (max distance),
-     - the distance to the closest neighbor from the training set (min distance)
+
+    - the mean distance to k nearest neighbors,
+    - the distance to k-th nearest neighbor (max distance),
+    - the distance to the closest neighbor from the training set (min distance)
 
     A threshold is then set at the 95th percentile of these aggregated distances.
     Query molecules with an aggregated distance to their k nearest neighbors below
@@ -45,14 +46,14 @@ class KNNADChecker(BaseADChecker):
 
     Parameters
     ----------
-    k : int
+    k : int, default=1
         Number of nearest neighbors to consider for distance calculations.
         Must be smaller than the number of training samples.
 
-    metric: {"tanimoto_binary_distance", "tanimoto_count_distance"}, default="tanimoto_binary_distance"
+    metric: Callable or string, default="tanimoto_binary_distance"
         Distance metric to use.
 
-    agg: {"mean", "max", "min"}, default="mean"
+    agg: "mean" or "max" or "min", default="mean"
         Aggregation method for distances to k nearest neigbors:
             - "mean": use the mean distance to k neighbors,
             - "max": use the maximum distance among k neighbors,
@@ -71,7 +72,6 @@ class KNNADChecker(BaseADChecker):
 
     References
     ----------
-
     .. [1] `Klingspohn, W., Mathea, M., ter Laak, A. et al.
         "Efficiency of different measures for defining the applicability domain of
         classification models."
@@ -108,37 +108,19 @@ class KNNADChecker(BaseADChecker):
     >>> knn_ad_checker_binary.predict(X_test_binary)
     array([False, False, False])
 
-    >>> X_train_count = np.array([
-    ...     [1.2, 2.3],
-    ...     [3.4, 4.5],
-    ...     [5.6, 6.7]
-    ... ])
-    >>> X_test_count = X_train_count + 10
-    >>> knn_ad_checker_count = KNNADChecker(k=2, metric="tanimoto_count_distance", agg="min")
-    >>> knn_ad_checker_count
-    KNNADChecker()
-
-    >>> knn_ad_checker_count.fit(X_train_count)
-    KNNADChecker()
-
-    >>> knn_ad_checker_count.predict(X_test_count)
-    array([False, False, False])
-
     """
 
     _parameter_constraints: dict = {
         **BaseADChecker._parameter_constraints,
         "k": [Interval(Integral, 1, None, closed="left")],
-        "metric": [
-            callable,
-            StrOptions(METRIC_NAMES),
-        ],
+        "metric": [callable, StrOptions(METRIC_NAMES)],
+        "agg": [StrOptions({"mean", "max", "min"})],
         "threshold": [None, Interval(Real, 0, 1, closed="both")],
     }
 
     def __init__(
         self,
-        k: int,
+        k: int = 1,
         metric: str | Callable = "tanimoto_binary_distance",
         agg: str = "mean",
         threshold: float = 0.95,
@@ -160,8 +142,6 @@ class KNNADChecker(BaseADChecker):
             raise InvalidParameterError(
                 f"Allowed metrics: {METRIC_NAMES}. Got: {self.metric}"
             )
-        if isinstance(self.agg, str) and self.agg not in ["mean", "max", "min"]:
-            raise InvalidParameterError("Unknown aggregration method.")
 
     def fit(  # noqa: D102
         self,
@@ -177,26 +157,20 @@ class KNNADChecker(BaseADChecker):
         self.X_train_ = X
         self.k_used = 1 if self.agg == "min" else self.k
 
-        if isinstance(self.metric, str) and self.metric in SKFP_BULK_METRIC_NAMES:
-            bulk_func = SKFP_BULK_METRICS[self.metric]
-            dist_mat = bulk_func(X, X)
-            np.fill_diagonal(dist_mat, np.inf)
-            k_nearest = np.partition(dist_mat, self.k_used, axis=1)[:, : self.k_used]
+        if callable(self.metric):
+            metric_func = self.metric
+        elif isinstance(self.metric, str) and self.metric in METRIC_FUNCTIONS:
+            metric_func = METRIC_FUNCTIONS[self.metric]
         else:
-            if callable(self.metric):
-                metric_func = self.metric
-            elif isinstance(self.metric, str) and self.metric in METRIC_FUNCTIONS:
-                metric_func = METRIC_FUNCTIONS[self.metric]
-            else:
-                raise KeyError(
-                    f"Unknown metric: {self.metric}. Must be a callable or one of {list(METRIC_FUNCTIONS.keys())}"
-                )
-
-            self.knn_ = NearestNeighbors(
-                n_neighbors=self.k_used, metric=metric_func, n_jobs=self.n_jobs
+            raise KeyError(
+                f"Unknown metric: {self.metric}. Must be a callable or one of {list(METRIC_FUNCTIONS.keys())}"
             )
-            self.knn_.fit(X)
-            k_nearest, _ = self.knn_.kneighbors(X)
+
+        self.knn_ = NearestNeighbors(
+            n_neighbors=self.k_used, metric=metric_func, n_jobs=self.n_jobs
+        )
+        self.knn_.fit(X)
+        k_nearest, _ = self.knn_.kneighbors(X)
 
         agg_dists = self._get_agg_dists(k_nearest)
         self.threshold_ = np.percentile(agg_dists, self.threshold)
@@ -221,13 +195,7 @@ class KNNADChecker(BaseADChecker):
         """
         check_is_fitted(self)
         X = validate_data(self, X=X, reset=False)
-
-        if isinstance(self.metric, str) and self.metric in SKFP_BULK_METRIC_NAMES:
-            bulk_func = SKFP_BULK_METRICS[self.metric]
-            dist_mat = bulk_func(X, self.X_train_)
-            k_nearest = np.partition(dist_mat, self.k_used, axis=1)[:, : self.k_used]
-        else:
-            k_nearest, _ = self.knn_.kneighbors(X, n_neighbors=self.k_used)
+        k_nearest, _ = self.knn_.kneighbors(X, n_neighbors=self.k_used)
 
         return self._get_agg_dists(k_nearest)
 
