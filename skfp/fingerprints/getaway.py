@@ -144,6 +144,80 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
         )
         self.clip_val = clip_val
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to various
+        descriptors derived from weighted Molecular Influence Matrix (MIM).
+        Definitions are complex and long, see references given in main body
+        for explanations, particularly Todeschini & Consonni book.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            GETAWAY feature names.
+        """
+        weighting_variants = [
+            "unweighted",
+            "atomic mass",
+            "van der Waals volume",
+            "electronegativity",
+            "polarizability",
+            "ion polarity",
+            "IState",
+        ]
+
+        feature_names = [
+            "total information content on the leverage equality (ITH)",
+            "standardized information content on the leverage equality (ISH)",
+            "mean information content on the leverage magnitude (HIC)",
+            "geometric mean of the leverage magnitude (HGM)",
+        ]
+
+        for weighting in weighting_variants:
+            h_indices = [f"{weighting} H index radius {radius}" for radius in range(9)]
+            total_h_index = f"{weighting} total H index"
+            feature_names.extend(h_indices)
+            feature_names.append(total_h_index)
+
+            hats_indices = [
+                f"{weighting} H matrix autocorrelation (HATS) radius {radius}"
+                for radius in range(9)
+            ]
+            total_hats_index = f"{weighting} total HATS index"
+            feature_names.extend(hats_indices)
+            feature_names.append(total_hats_index)
+
+        feature_names.extend(
+            [
+                "R-connectivity index (RCON)",
+                "average row sum of the influence/distance matrix (RARS",
+                "R-matrix leading eigenvalue (REIG)",
+            ]
+        )
+
+        for weighting in weighting_variants:
+            r_indices = [
+                f"{weighting} R index radius {radius}" for radius in range(1, 9)
+            ]
+            total_r_index = f"{weighting} R total index"
+            feature_names.extend(r_indices)
+            feature_names.append(total_r_index)
+
+            maximal_r_indices = [
+                f"{weighting} maximal R index (R+) radius {radius}"
+                for radius in range(1, 9)
+            ]
+            total_maximal_r_index = f"{weighting} maximal R total index"
+            feature_names.extend(maximal_r_indices)
+            feature_names.append(total_maximal_r_index)
+
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[str | Mol], copy: bool = False
     ) -> np.ndarray | csr_array:
