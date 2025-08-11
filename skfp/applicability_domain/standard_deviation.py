@@ -20,7 +20,7 @@ class StandardDeviationADChecker(BaseADChecker):
     This approach supports both regression models (using ``.predict(X)``) and
     binary classifiers (using ``.predict_proba(X)`` and the probability of the
     positive class). The ensemble model must expose the ``estimators_`` attribute.
-    If no model is provided, a default ``RandomForestRegressor`` is created and
+    If no model is provided, a default :class:`~sklearn.ensemble.RandomForestRegressor` is created and
     trained during :meth:`fit`.
 
     At prediction time, each sample is passed to all estimators, and the standard
@@ -33,7 +33,7 @@ class StandardDeviationADChecker(BaseADChecker):
     model : object, default=None
         Fitted ensemble model with accessible ``estimators_`` attribute and
         either ``.predict(X)`` or ``.predict_proba(X)`` method on each sub-estimator.
-        If not provided, a default RandomForestRegressor will be created.
+        If not provided, a default :class:`~sklearn.ensemble.RandomForestRegressor` will be created.
 
     threshold : float, default=1.0
         Maximum allowed standard deviation of predictions. Samples with
@@ -69,6 +69,7 @@ class StandardDeviationADChecker(BaseADChecker):
     >>> model = RandomForestRegressor(n_estimators=5, random_state=0)
     >>> model.fit(X_train, y_train)
     >>> std_ad_checker = StandardDeviationADChecker(model=model, threshold=0.5)
+    >>> std_ad_checker.fit()
     >>> std_ad_checker
     StandardDeviationADChecker()
 
@@ -99,37 +100,37 @@ class StandardDeviationADChecker(BaseADChecker):
 
     def fit(  # noqa: D102
         self,
-        X: np.ndarray,
+        X: np.ndarray | None = None,
         y: np.ndarray | None = None,
     ):
-        X = validate_data(self, X=X)
-        y = validate_data(self, X=y, ensure_2d=False)
-
         if self.model is None:
-            self.model = RandomForestRegressor(n_estimators=10, random_state=0)
+            X, y = validate_data(self, X, y, ensure_2d=False)
+            self.model_ = RandomForestRegressor(random_state=0)
+            self.model_.fit(X, y)  # type: ignore[union-attr]
+        else:
+            self.model_ = self.model
 
-        self.model.fit(X, y)  # type: ignore[union-attr]
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
         X = validate_data(self, X=X, reset=False)
-        check_is_fitted(self.model, "estimators_")
+        check_is_fitted(self.model_, "estimators_")
 
         preds = self._predict_all_estimators(X)
-        stds = np.std(preds, axis=1)
+        std = np.std(preds, axis=1)
 
-        return (stds <= self.threshold).astype(bool)
+        return (std <= self.threshold).astype(bool)
 
     def _predict_all_estimators(self, X: np.ndarray) -> np.ndarray:
-        if hasattr(self.model.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
-            preds = np.array([est.predict_proba(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+        if hasattr(self.model_.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
+            preds = np.array([est.predict_proba(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
             if preds.shape[2] == 2:
                 preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
             else:
                 raise ValueError("Only binary classifiers are supported.")
 
         else:
-            preds = np.array([est.predict(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+            preds = np.array([est.predict(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
 
         return preds.T  # shape: (n_samples, n_estimators)
 
@@ -149,6 +150,6 @@ class StandardDeviationADChecker(BaseADChecker):
              Standard deviations of predictions.
         """
         X = validate_data(self, X=X, reset=False)
-        check_is_fitted(self.model, "estimators_")
+        check_is_fitted(self.model_, "estimators_")
         preds = self._predict_all_estimators(X)
         return np.std(preds, axis=1)

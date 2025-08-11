@@ -2,7 +2,7 @@ from numbers import Real
 
 import numpy as np
 from sklearn.utils._param_validation import Interval
-from sklearn.utils.validation import check_is_fitted, validate_data
+from sklearn.utils.validation import check_array, check_is_fitted
 
 from skfp.bases.base_ad_checker import BaseADChecker
 
@@ -12,16 +12,16 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     Response variable range method.
 
     Defines applicability domain based on the range of response values observed
-    in the training data [1]_. Supports only one-dimensional (1D) target values.
-    Passing multi-label targets will raise a ``ValueError``. New predictions are
-    considered inside the applicability domain if they lie within the min-max
-    range of training targets.
+    in the training data [1]_. New predictions are considered inside the applicability
+    domain if they lie within the min-max range of training targets.
 
     Typically, this method is used after model prediction, and checks whether
     predicted values lie within the known domain of the response variable.
 
-    Note that this method does not consider molecular structure or descriptors.
-    It operates purely in the output (target) space.
+    Note that this method does not consider molecular structure or descriptors
+    and operates purely in the output (target) space. It only supports
+    one-dimensional (1D) target values. Passing multi-label
+    targets will raise a ``ValueError``.
 
     This method scales extremely well with the number of samples,
     as it only operates in the 1D target space.
@@ -95,7 +95,7 @@ class ResponseVariableRangeADChecker(BaseADChecker):
         y: np.ndarray,
         X: np.ndarray | None = None,  # noqa: ARG002
     ):
-        y = validate_data(self, X=y, ensure_2d=False)
+        y = check_array(y, ensure_2d=False, allow_nd=False)
         if y.ndim != 1:
             raise ValueError(
                 f"{self.__class__.__name__} only supports 1D target values, "
@@ -115,9 +115,8 @@ class ResponseVariableRangeADChecker(BaseADChecker):
 
     def predict(self, y: np.ndarray) -> np.ndarray:  # noqa: D102
         check_is_fitted(self)
-        y = validate_data(self, X=y, ensure_2d=False, reset=False)
+        y = check_array(y, ensure_2d=False, allow_nd=False)
         if y.ndim != 1:
-            print(y.shape)
             raise ValueError(
                 f"{self.__class__.__name__} only supports 1D target values, "
                 f"but got y with shape {y.shape}."
@@ -142,7 +141,7 @@ class ResponseVariableRangeADChecker(BaseADChecker):
         scores : ndarray of shape (n_samples,)
             Applicability domain scores of samples.
         """
-        y = validate_data(self, X=y, ensure_2d=False, reset=False)
+        y = check_array(y, ensure_2d=False, allow_nd=False)
         if y.ndim != 1:
             raise ValueError(
                 f"{self.__class__.__name__} only supports 1D target values, "

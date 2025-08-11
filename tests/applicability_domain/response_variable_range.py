@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from skfp.applicability_domain import ResponseVariableRangeADChecker
 from tests.applicability_domain.utils import get_data_inside_ad, get_data_outside_ad
@@ -58,6 +59,14 @@ def test_response_range_with_threshold():
 
     assert np.all(preds_in == 1)
     assert np.all(preds_out == 0)
+
+
+def test_response_range_raises_on_multilabel():
+    y = np.random.uniform(low=0.0, high=1.0, size=(100, 2))
+    ad_checker = ResponseVariableRangeADChecker()
+
+    with pytest.raises(ValueError, match="only supports 1D target values"):
+        ad_checker.fit(y)
 
 
 def test_response_range_pass_y_train():
