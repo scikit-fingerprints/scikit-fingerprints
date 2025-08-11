@@ -5,4 +5,4 @@ from .hotelling_t2_test import HotellingT2TestADChecker
 from .leverage import LeverageADChecker
 from .pca_bounding_box import PCABoundingBoxADChecker
 from .prob_std import ProbStdADChecker
-from .topkat import TopKatADChecker
+from .topkat import TOPKATADChecker

@@ -1,6 +1,6 @@
 import numpy as np
-from sklearn.datasets import make_blobs, make_regression
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.datasets import make_blobs, make_classification, make_regression
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 from skfp.applicability_domain import ProbStdADChecker
@@ -57,6 +57,66 @@ def test_outside_probstd_ad():
     assert preds.shape == (len(X_test),)
 
     assert np.all(preds == 0)
+
+
+def test_probstd_ad_with_untrained_model():
+    X = np.random.uniform(size=(100, 5))
+    y = X.sum(axis=1)
+
+    model = RandomForestRegressor(n_estimators=5, random_state=0)
+    ad_checker = ProbStdADChecker(model=model, threshold=0.2)
+    ad_checker.fit(X, y)
+
+    scores = ad_checker.score_samples(X)
+    assert np.all(scores >= 0)
+    assert np.all(scores <= 0.5)
+
+    preds = ad_checker.predict(X)
+    assert isinstance(preds, np.ndarray)
+    assert np.isdtype(preds.dtype, np.bool)
+    assert preds.shape == (len(X),)
+
+
+def test_probstd_ad_with_default_model():
+    X = np.random.uniform(size=(100, 5))
+    y = X.sum(axis=1)
+
+    ad_checker = ProbStdADChecker(threshold=0.2)
+    ad_checker.fit(X, y)
+
+    scores = ad_checker.score_samples(X)
+    assert np.all(scores >= 0)
+    assert np.all(scores <= 0.5)
+
+    preds = ad_checker.predict(X)
+    assert isinstance(preds, np.ndarray)
+    assert np.isdtype(preds.dtype, np.bool)
+    assert preds.shape == (len(X),)
+
+
+def test_ptobstd_ad_checker_with_classifier():
+    X, y = make_classification(
+        n_samples=100,
+        n_features=5,
+        n_classes=2,
+        n_clusters_per_class=1,
+        random_state=42,
+    )
+
+    model = RandomForestClassifier(n_estimators=5, random_state=42)
+    model.fit(X, y)
+
+    ad_checker = ProbStdADChecker(model=model, threshold=0.2)
+
+    scores = ad_checker.score_samples(X)
+    assert scores.shape == (len(X),)
+    assert np.all(scores >= 0)
+    assert np.all(scores <= 0.5)
+
+    preds = ad_checker.predict(X)
+    assert isinstance(preds, np.ndarray)
+    assert np.isdtype(preds.dtype, np.bool)
+    assert preds.shape == (len(X),)
 
 
 def test_probstd_fit():

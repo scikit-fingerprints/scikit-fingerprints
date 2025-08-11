@@ -7,7 +7,7 @@ from sklearn.utils.validation import validate_data
 from skfp.bases.base_ad_checker import BaseADChecker
 
 
-class TopKatADChecker(BaseADChecker):
+class TOPKATADChecker(BaseADChecker):
     """
     TOPKAT (Optimal Prediction Space) method.
 
@@ -18,7 +18,7 @@ class TopKatADChecker(BaseADChecker):
     and a weighted distance (dOPS) from the center is computed.
 
     Samples are considered in-domain if their dOPS is below a threshold. By default,
-    this threshold is computed as ``5 * D / (2 * N)``, where:
+    this threshold is computed as :math:`5 * D / (2 * N)`, where:
     - ``D`` is the number of input features,
     - ``N`` is the number of training samples.
 
@@ -29,7 +29,7 @@ class TopKatADChecker(BaseADChecker):
     ----------
     threshold : float, default=None
         Optional user-defined threshold for dOPS. If provided, overrides the default
-        analytical threshold ``5 * D / (2 * N)``. Lower values produce stricter domains.
+        analytical threshold :math:`5 * D / (2 * N)`. Lower values produce stricter domains.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -51,14 +51,14 @@ class TopKatADChecker(BaseADChecker):
     Examples
     --------
     >>> import numpy as np
-    >>> from skfp.applicability_domain import TopKatADChecker
+    >>> from skfp.applicability_domain import TOPKATADChecker
     >>> from sklearn.datasets import make_blobs
     >>> X_train, _ = make_blobs(n_samples=100, centers=2, n_features=5, random_state=0)
     >>> X_test = X_train[:5]
 
-    >>> topkat_ad_checker = TopKatADChecker()
+    >>> topkat_ad_checker = TOPKATADChecker()
     >>> topkat_ad_checker.fit(X_train)
-    TopKatADChecker()
+    TOPKATADChecker()
 
     >>> topkat_ad_checker.predict(X_test)
     array([ True,  True,  True,  True,  True])
@@ -66,7 +66,7 @@ class TopKatADChecker(BaseADChecker):
 
     _parameter_constraints: dict = {
         **BaseADChecker._parameter_constraints,
-        "threshold": [Interval(Real, 0, None, closed="left")],
+        "threshold": [Interval(Real, 0, None, closed="left"), None],
     }
 
     def __init__(
@@ -90,13 +90,17 @@ class TopKatADChecker(BaseADChecker):
 
         self.X_min_ = X.min(axis=0)
         self.X_max_ = X.max(axis=0)
+        self.range_ = self.X_max_ - self.X_min_
         self.num_points = X.shape[0]
         self.num_dims = X.shape[1]
 
-        self.S_ = (2 * X - self.X_max_ - self.X_min_) / np.where(
-            (self.X_max_ - self.X_min_) != 0, (self.X_max_ - self.X_min_), 1.0
-        )
-        S_bias = np.c_[np.ones(self.S_.shape[0]), self.S_]
+        # TOPKAT S-space: feature-wise scaling of X to [-1, 1].
+        # Avoid division by zero: where range==0, denom=1 => scaled value will be 0.
+        self.denom_ = np.where((self.range_) != 0, (self.range_), 1.0)
+        S = (2 * X - self.X_max_ - self.X_min_) / self.denom_
+
+        # Augment with bias (1) so the subsequent rotation (PCA) includes the intercept term.
+        S_bias = np.c_[np.ones(S.shape[0]), S]
 
         cov_matrix = S_bias.T @ S_bias
         eigvals, eigvecs = np.linalg.eigh(cov_matrix)
@@ -111,6 +115,7 @@ class TopKatADChecker(BaseADChecker):
         threshold = self.threshold
         if threshold is None:
             threshold = (5 * self.num_dims) / (2 * self.num_points)
+
         return dOPS < threshold
 
     def score_samples(self, X: np.ndarray) -> np.ndarray:
@@ -135,11 +140,13 @@ class TopKatADChecker(BaseADChecker):
     def _compute_dops(self, X: np.ndarray) -> np.ndarray:
         X = validate_data(self, X=X, reset=False)
 
-        Ssample = (2 * X - self.X_max_ - self.X_min_) / np.where(
-            (self.X_max_ - self.X_min_) != 0, (self.X_max_ - self.X_min_), 1.0
-        )
+        # Apply the same S-space transform as in fit().
+        Ssample = (2 * X - self.X_max_ - self.X_min_) / self.denom_
+
+        # Add bias term to match the augmented space used to compute eigenvectors.
         Ssample_bias = np.c_[np.ones(Ssample.shape[0]), Ssample]
 
+        # Project to OPS space
         OPS_sample = Ssample_bias @ self.eigen_vec
 
         inv_eigval = np.divide(

@@ -2,8 +2,9 @@ from numbers import Real
 
 import numpy as np
 from scipy.stats import norm
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.utils._param_validation import Interval
-from sklearn.utils.validation import validate_data
+from sklearn.utils.validation import check_is_fitted, validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
 
@@ -18,23 +19,24 @@ class ProbStdADChecker(BaseADChecker):
     a normal distribution. The score is defined as the probability mass under this
     distribution that lies on the wrong side of the classification threshold (0.5).
 
-    This approach requires a fitted ensemble model exposing the ``estimators_``
-    attribute (e.g., RandomForestRegressor or BaggingRegressor), where each
-    sub-model implements a ``.predict(X)`` method returning continuous outputs.
-    At prediction time, each sample is passed to all estimators, and their predictions
-    are used to compute a normal distribution. The sample is considered in-domain if
-    the resulting probability of misclassification (PROB-STD) is lower than or equal
-    to the specified threshold.
+    This approach supports both regression models (using ``.predict(X)`` with outputs
+    interpretable as positive-class probabilities in [0, 1], e.g., regressors trained
+    on binary targets) and binary classifiers (using ``.predict_proba(X)`` and the
+    probability of the positive class). The ensemble model must expose the ``estimators_``
+    attribute. If no model is provided, a default ``RandomForestRegressor`` is created and
+    trained during :meth:`fit`.
 
-    This method is specifically designed for binary classification with continuous
-    predictions around the 0.5 decision threshold, typically from regressors trained
-    on binary targets (e.g., 0.0 and 1.0).
+    At prediction time, each sample is passed to all estimators, and their predictions
+    (or predicted probabilities for classifiers) are used to construct the distribution.
+    The sample is considered in-domain if the resulting probability of misclassification
+    (PROB-STD) is lower than or equal to the specified threshold.
 
     Parameters
     ----------
-    model : object
+    model : object, default=None
         Fitted ensemble model with accessible ``estimators_`` attribute and
-        ``.predict(X)`` method on each sub-estimator.
+        either ``.predict(X)`` or ``.predict_proba(X)`` method on each sub-estimator.
+        If not provided, a default RandomForestRegressor will be created.
 
     threshold : float, default=0.2
         Maximum allowed probability of incorrect class assignment.
@@ -54,8 +56,9 @@ class ProbStdADChecker(BaseADChecker):
     References
     ----------
     .. [1] `Klingspohn, W., Mathea, M., ter Laak, A. et al.
-        Efficiency of different measures for defining the applicability
-        domain of classification models. J Cheminform 9, 44 (2017).
+        "Efficiency of different measures for defining the applicability
+        domain of classification models."
+        Journal of Cheminformatics 9, 44 (2017).
         <https://doi.org/10.1186/s13321-017-0230-2>`_
 
     Examples
@@ -78,13 +81,13 @@ class ProbStdADChecker(BaseADChecker):
 
     _parameter_constraints: dict = {
         **BaseADChecker._parameter_constraints,
-        "model": [object],
-        "threshold": [Interval(Real, 0, None, closed="left")],
+        "model": [object, None],
+        "threshold": [Interval(Real, 0, 0.5, closed="left")],
     }
 
     def __init__(
         self,
-        model,
+        model: object | None = None,
         threshold: float = 0.2,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
@@ -98,9 +101,16 @@ class ProbStdADChecker(BaseADChecker):
 
     def fit(  # noqa: D102
         self,
-        X: np.ndarray,  # noqa: ARG002
-        y: np.ndarray | None = None,  # noqa: ARG002
+        X: np.ndarray,
+        y: np.ndarray | None = None,
     ):
+        X = validate_data(self, X=X)
+        y = validate_data(self, X=y, ensure_2d=False)
+
+        if self.model is None:
+            self.model = RandomForestRegressor(n_estimators=10, random_state=0)
+
+        self.model.fit(X, y)  # type: ignore[union-attr]
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
@@ -128,8 +138,19 @@ class ProbStdADChecker(BaseADChecker):
 
     def _compute_prob_std(self, X: np.ndarray) -> np.ndarray:
         X = validate_data(self, X=X, reset=False)
+        check_is_fitted(self.model, "estimators_")
 
-        preds = np.array([est.predict(X) for est in self.model.estimators_]).T
+        if hasattr(self.model.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
+            preds = np.array([est.predict_proba(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+            if preds.shape[2] == 2:
+                preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
+            else:
+                raise ValueError("Only binary classifiers are supported.")
+        else:
+            preds = np.array([est.predict(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+
+        preds = preds.T  # shape: (n_samples, n_estimators)
+
         y_mean = preds.mean(axis=1)
         y_std = preds.std(axis=1)
         y_std = np.maximum(y_std, 1e-8)
