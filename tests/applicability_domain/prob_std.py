@@ -1,5 +1,11 @@
 import numpy as np
-from sklearn.datasets import make_blobs, make_classification, make_regression
+import pytest
+from sklearn.datasets import (
+    make_blobs,
+    make_classification,
+    make_multilabel_classification,
+    make_regression,
+)
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
@@ -20,6 +26,7 @@ def test_inside_probstd_ad():
     model.fit(X_train, y_train)
 
     ad_checker = ProbStdADChecker(model=model, threshold=0.2)
+    ad_checker.fit()
 
     scores = ad_checker.score_samples(X_test)
     assert np.all(scores >= 0)
@@ -46,6 +53,7 @@ def test_outside_probstd_ad():
     model.fit(X_train, y_train)
 
     ad_checker = ProbStdADChecker(model=model, threshold=0.05)
+    ad_checker.fit()
 
     scores = ad_checker.score_samples(X_test)
     assert np.all(scores >= 0)
@@ -57,24 +65,6 @@ def test_outside_probstd_ad():
     assert preds.shape == (len(X_test),)
 
     assert np.all(preds == 0)
-
-
-def test_probstd_ad_with_untrained_model():
-    X = np.random.uniform(size=(100, 5))
-    y = X.sum(axis=1)
-
-    model = RandomForestRegressor(n_estimators=5, random_state=0)
-    ad_checker = ProbStdADChecker(model=model, threshold=0.2)
-    ad_checker.fit(X, y)
-
-    scores = ad_checker.score_samples(X)
-    assert np.all(scores >= 0)
-    assert np.all(scores <= 0.5)
-
-    preds = ad_checker.predict(X)
-    assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X),)
 
 
 def test_probstd_ad_with_default_model():
@@ -107,6 +97,7 @@ def test_ptobstd_ad_checker_with_classifier():
     model.fit(X, y)
 
     ad_checker = ProbStdADChecker(model=model, threshold=0.2)
+    ad_checker.fit()
 
     scores = ad_checker.score_samples(X)
     assert scores.shape == (len(X),)
@@ -119,6 +110,20 @@ def test_ptobstd_ad_checker_with_classifier():
     assert preds.shape == (len(X),)
 
 
+def test_probstd_ad_checker_with_multilabel():
+    X, y = make_multilabel_classification(
+        n_samples=50, n_features=5, n_classes=3, random_state=42
+    )
+    model = RandomForestClassifier(n_estimators=5, random_state=42)
+    model.fit(X, y)
+
+    ad_checker = ProbStdADChecker(model=model, threshold=0.5)
+    ad_checker.fit()
+
+    with pytest.raises(ValueError, match="Only binary classifiers are supported"):
+        ad_checker.predict(X)
+
+
 def test_probstd_fit():
     # smoke test, should not throw errors
     X_train, y_train = make_regression(
@@ -129,4 +134,4 @@ def test_probstd_fit():
     rf.fit(X_train, y_train)
 
     ad_checker = ProbStdADChecker(model=rf)
-    ad_checker.fit(X_train, y_train)
+    ad_checker.fit(None, None)

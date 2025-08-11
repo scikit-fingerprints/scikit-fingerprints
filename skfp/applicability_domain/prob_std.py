@@ -23,8 +23,8 @@ class ProbStdADChecker(BaseADChecker):
     interpretable as positive-class probabilities in [0, 1], e.g., regressors trained
     on binary targets) and binary classifiers (using ``.predict_proba(X)`` and the
     probability of the positive class). The ensemble model must expose the ``estimators_``
-    attribute. If no model is provided, a default ``RandomForestRegressor`` is created and
-    trained during :meth:`fit`.
+    attribute. If no model is provided, a default :class:`~sklearn.ensemble.RandomForestRegressor`
+    is created and trained during :meth:`fit`.
 
     At prediction time, each sample is passed to all estimators, and their predictions
     (or predicted probabilities for classifiers) are used to construct the distribution.
@@ -36,7 +36,7 @@ class ProbStdADChecker(BaseADChecker):
     model : object, default=None
         Fitted ensemble model with accessible ``estimators_`` attribute and
         either ``.predict(X)`` or ``.predict_proba(X)`` method on each sub-estimator.
-        If not provided, a default RandomForestRegressor will be created.
+        If not provided, a default :class:`~sklearn.ensemble.RandomForestRegressor` will be created.
 
     threshold : float, default=0.2
         Maximum allowed probability of incorrect class assignment.
@@ -71,6 +71,7 @@ class ProbStdADChecker(BaseADChecker):
     >>> model = RandomForestRegressor(n_estimators=10, random_state=0)
     >>> model.fit(X_train, y_train)
     >>> probstd_ad_checker = ProbStdADChecker(model=model, threshold=0.1)
+    >>> probstd_ad_checker.fit()
     >>> probstd_ad_checker
     ProbStdADChecker(model=RandomForestRegressor(...), threshold=0.1)
 
@@ -101,16 +102,16 @@ class ProbStdADChecker(BaseADChecker):
 
     def fit(  # noqa: D102
         self,
-        X: np.ndarray,
+        X: np.ndarray | None = None,
         y: np.ndarray | None = None,
     ):
-        X = validate_data(self, X=X)
-        y = validate_data(self, X=y, ensure_2d=False)
-
         if self.model is None:
-            self.model = RandomForestRegressor(n_estimators=10, random_state=0)
+            X, y = validate_data(self, X, y, ensure_2d=False)
+            self.model_ = RandomForestRegressor(n_estimators=10, random_state=0)
+            self.model_.fit(X, y)  # type: ignore[union-attr]
+        else:
+            self.model_ = self.model
 
-        self.model.fit(X, y)  # type: ignore[union-attr]
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
@@ -138,16 +139,16 @@ class ProbStdADChecker(BaseADChecker):
 
     def _compute_prob_std(self, X: np.ndarray) -> np.ndarray:
         X = validate_data(self, X=X, reset=False)
-        check_is_fitted(self.model, "estimators_")
+        check_is_fitted(self.model_, "estimators_")
 
-        if hasattr(self.model.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
-            preds = np.array([est.predict_proba(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+        if hasattr(self.model_.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
+            preds = np.array([est.predict_proba(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
             if preds.shape[2] == 2:
                 preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
             else:
                 raise ValueError("Only binary classifiers are supported.")
         else:
-            preds = np.array([est.predict(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+            preds = np.array([est.predict(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
 
         preds = preds.T  # shape: (n_samples, n_estimators)
 
