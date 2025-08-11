@@ -1,8 +1,9 @@
 from numbers import Real
 
 import numpy as np
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.utils._param_validation import Interval
-from sklearn.utils.validation import validate_data
+from sklearn.utils.validation import check_is_fitted, validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
 
@@ -16,18 +17,23 @@ class StandardDeviationADChecker(BaseADChecker):
     greater consensus among estimators indicates higher prediction reliability,
     which typically occurs in densely sampled regions of the training data.
 
-    This approach requires an ensemble model exposing the ``estimators_``
-    attribute (e.g., RandomForestRegressor), where each
-    sub-model must implement a ``.predict(X)`` method. At prediction time,
-    each sample is passed to all estimators, and the standard deviation of
-    their predictions is calculated. The sample is considered in-domain if
-    the standard deviation is lower than or equal to the specified threshold.
+    This approach supports both regression models (using ``.predict(X)``) and
+    binary classifiers (using ``.predict_proba(X)`` and the probability of the
+    positive class). The ensemble model must expose the ``estimators_`` attribute.
+    If no model is provided, a default ``RandomForestRegressor`` is created and
+    trained during :meth:`fit`.
+
+    At prediction time, each sample is passed to all estimators, and the standard
+    deviation of their predictions (or predicted probabilities for classifiers)
+    is calculated. The sample is considered in-domain if the standard deviation
+    is less than or equal to the specified threshold.
 
     Parameters
     ----------
-    model : object
+    model : object, default=None
         Fitted ensemble model with accessible ``estimators_`` attribute and
-        ``.predict(X)`` method on each sub-estimator.
+        either ``.predict(X)`` or ``.predict_proba(X)`` method on each sub-estimator.
+        If not provided, a default RandomForestRegressor will be created.
 
     threshold : float, default=1.0
         Maximum allowed standard deviation of predictions. Samples with
@@ -73,13 +79,13 @@ class StandardDeviationADChecker(BaseADChecker):
 
     _parameter_constraints: dict = {
         **BaseADChecker._parameter_constraints,
-        "model": [object],
+        "model": [object, None],
         "threshold": [Interval(Real, 0, None, closed="left")],
     }
 
     def __init__(
         self,
-        model,
+        model: object | None = None,
         threshold: float = 1.0,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
@@ -93,13 +99,21 @@ class StandardDeviationADChecker(BaseADChecker):
 
     def fit(  # noqa: D102
         self,
-        X: np.ndarray,  # noqa: ARG002
-        y: np.ndarray | None = None,  # noqa: ARG002
+        X: np.ndarray,
+        y: np.ndarray | None = None,
     ):
+        X = validate_data(self, X=X)
+        y = validate_data(self, X=y, ensure_2d=False)
+
+        if self.model is None:
+            self.model = RandomForestRegressor(n_estimators=10, random_state=0)
+
+        self.model.fit(X, y)  # type: ignore[union-attr]
         return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
         X = validate_data(self, X=X, reset=False)
+        check_is_fitted(self.model, "estimators_")
 
         preds = self._predict_all_estimators(X)
         stds = np.std(preds, axis=1)
@@ -107,8 +121,17 @@ class StandardDeviationADChecker(BaseADChecker):
         return (stds <= self.threshold).astype(bool)
 
     def _predict_all_estimators(self, X: np.ndarray) -> np.ndarray:
-        preds = np.array([est.predict(X) for est in self.model.estimators_])
-        return preds.T
+        if hasattr(self.model.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
+            preds = np.array([est.predict_proba(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+            if preds.shape[2] == 2:
+                preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
+            else:
+                raise ValueError("Only binary classifiers are supported.")
+
+        else:
+            preds = np.array([est.predict(X) for est in self.model.estimators_])  # type: ignore[union-attr]
+
+        return preds.T  # shape: (n_samples, n_estimators)
 
     def score_samples(self, X: np.ndarray) -> np.ndarray:
         """
@@ -126,5 +149,6 @@ class StandardDeviationADChecker(BaseADChecker):
              Standard deviations of predictions.
         """
         X = validate_data(self, X=X, reset=False)
+        check_is_fitted(self.model, "estimators_")
         preds = self._predict_all_estimators(X)
         return np.std(preds, axis=1)

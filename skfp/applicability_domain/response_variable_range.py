@@ -12,8 +12,10 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     Response variable range method.
 
     Defines applicability domain based on the range of response values observed
-    in the training data [1]_. New predictions are considered inside the applicability
-    domain if they lie within the min-max range of training targets.
+    in the training data [1]_. Supports only one-dimensional (1D) target values.
+    Passing multi-label targets will raise a ``ValueError``. New predictions are
+    considered inside the applicability domain if they lie within the min-max
+    range of training targets.
 
     Typically, this method is used after model prediction, and checks whether
     predicted values lie within the known domain of the response variable.
@@ -29,7 +31,7 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     threshold : float, default=None
         Maximum allowed distance from the training response mean.
         If float, defines a symmetric interval around the mean:
-        `[mean - threshold, mean + threshold]`, and predictions outside
+        ``[mean - threshold, mean + threshold]``, and predictions outside
         this range are considered outside the applicability domain.
         If ``None`` (default), the method uses the full min–max range
         of training targets as bounds.
@@ -94,6 +96,11 @@ class ResponseVariableRangeADChecker(BaseADChecker):
         X: np.ndarray | None = None,  # noqa: ARG002
     ):
         y = validate_data(self, X=y, ensure_2d=False)
+        if y.ndim != 1:
+            raise ValueError(
+                f"{self.__class__.__name__} only supports 1D target values, "
+                f"but got y with shape {y.shape}."
+            )
 
         self.mean_y_ = np.mean(y)
 
@@ -109,6 +116,13 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     def predict(self, y: np.ndarray) -> np.ndarray:  # noqa: D102
         check_is_fitted(self)
         y = validate_data(self, X=y, ensure_2d=False, reset=False)
+        if y.ndim != 1:
+            print(y.shape)
+            raise ValueError(
+                f"{self.__class__.__name__} only supports 1D target values, "
+                f"but got y with shape {y.shape}."
+            )
+
         return (self.lower_bound_ <= y) & (self.upper_bound_ >= y)
 
     def score_samples(self, y: np.ndarray) -> np.ndarray:
@@ -129,4 +143,10 @@ class ResponseVariableRangeADChecker(BaseADChecker):
             Applicability domain scores of samples.
         """
         y = validate_data(self, X=y, ensure_2d=False, reset=False)
+        if y.ndim != 1:
+            raise ValueError(
+                f"{self.__class__.__name__} only supports 1D target values, "
+                f"but got y with shape {y.shape}."
+            )
+
         return np.abs(y - self.mean_y_)

@@ -65,4 +65,4 @@ def test_response_range_pass_y_train():
     X_train = np.vstack((np.zeros((10, 5)), np.ones((10, 5))))
     y_train = np.zeros(10)
     ad_checker = ResponseVariableRangeADChecker()
-    ad_checker.fit(X_train, y_train)
+    ad_checker.fit(y_train, X_train)
