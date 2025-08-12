@@ -1,8 +1,9 @@
 from numbers import Real
 
 import numpy as np
+from sklearn.base import is_classifier
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.utils._param_validation import Interval
+from sklearn.utils._param_validation import Interval, InvalidParameterError
 from sklearn.utils.validation import check_is_fitted, validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
@@ -103,6 +104,8 @@ class StandardDeviationADChecker(BaseADChecker):
         X: np.ndarray | None = None,
         y: np.ndarray | None = None,
     ):
+        self._validate_params()
+
         if self.model is None:
             X, y = validate_data(self, X, y, ensure_2d=False)
             self.model_ = RandomForestRegressor(random_state=0)
@@ -120,19 +123,6 @@ class StandardDeviationADChecker(BaseADChecker):
         std = np.std(preds, axis=1)
 
         return (std <= self.threshold).astype(bool)
-
-    def _predict_all_estimators(self, X: np.ndarray) -> np.ndarray:
-        if hasattr(self.model_.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
-            preds = np.array([est.predict_proba(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
-            if preds.shape[2] == 2:
-                preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
-            else:
-                raise ValueError("Only binary classifiers are supported.")
-
-        else:
-            preds = np.array([est.predict(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
-
-        return preds.T  # shape: (n_samples, n_estimators)
 
     def score_samples(self, X: np.ndarray) -> np.ndarray:
         """
@@ -153,3 +143,26 @@ class StandardDeviationADChecker(BaseADChecker):
         check_is_fitted(self.model_, "estimators_")
         preds = self._predict_all_estimators(X)
         return np.std(preds, axis=1)
+
+    def _predict_all_estimators(self, X: np.ndarray) -> np.ndarray:
+        if is_classifier(self.model_):
+            preds = np.array([est.predict_proba(X) for est in self.model_.estimators_])
+            preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
+        else:
+            preds = np.array([est.predict(X) for est in self.model_.estimators_])
+
+        return preds.T  # shape: (n_samples, n_estimators)
+
+    def _validate_params(self):
+        if self.model is not None and is_classifier(self.model):
+            check_is_fitted(self.model, "classes_")
+
+            if not hasattr(self.model, "predict_proba"):
+                raise InvalidParameterError(
+                    f"{self.__class__.__name__} requires classifiers exposing predict_proba."
+                )
+
+            if len(getattr(self.model, "classes_", [])) != 2:
+                raise InvalidParameterError(
+                    f"{self.__class__.__name__} only supports binary classifiers."
+                )

@@ -6,6 +6,7 @@ from sklearn.datasets import (
     make_regression,
 )
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.applicability_domain import StandardDeviationADChecker
 
@@ -108,10 +109,11 @@ def test_std_ad_checker_with_multiclass():
     model.fit(X, y)
 
     ad_checker = StandardDeviationADChecker(model=model, threshold=0.5)
-    ad_checker.fit(X, y)
 
-    with pytest.raises(ValueError, match="Only binary classifiers are supported"):
-        ad_checker.predict(X)
+    with pytest.raises(
+        InvalidParameterError, match="only supports binary classifiers."
+    ):
+        ad_checker.fit(X, y)
 
 
 def test_std_ad_checker_with_multilabel():
@@ -122,10 +124,11 @@ def test_std_ad_checker_with_multilabel():
     model.fit(X, y)
 
     ad_checker = StandardDeviationADChecker(model=model, threshold=0.5)
-    ad_checker.fit()
 
-    with pytest.raises(ValueError, match="Only binary classifiers are supported"):
-        ad_checker.predict(X)
+    with pytest.raises(
+        InvalidParameterError, match="only supports binary classifiers."
+    ):
+        ad_checker.fit()
 
 
 def test_std_fit():
