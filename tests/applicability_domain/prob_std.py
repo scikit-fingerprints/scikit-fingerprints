@@ -134,14 +134,14 @@ def test_probstd_ad_checker_raise_error_on_multilabel():
 
     ad_checker = ProbStdADChecker(model=model)
 
-    with pytest.raises(
-        InvalidParameterError, match="only supports binary classifiers."
-    ):
+    with pytest.raises(InvalidParameterError, match="only supports binary classifiers"):
         ad_checker.fit()
 
 
 def test_probstd_ad_checker_raise_error_on_multiclass():
-    X, y = make_classification(n_samples=50, n_features=5, n_classes=3, random_state=42)
+    X, y = make_classification(
+        n_samples=50, n_features=5, n_classes=3, n_clusters_per_class=1, random_state=42
+    )
     model = RandomForestClassifier(n_estimators=5, random_state=42)
     model.fit(X, y)
 
@@ -158,7 +158,7 @@ def test_probstd_ad_checker_raise_error_no_predict_proba():
 
     ad_checker = ProbStdADChecker(model=model)
 
-    with pytest.raises(
-        InvalidParameterError, match="requires classifiers with .predict_proba() method"
-    ):
+    with pytest.raises(InvalidParameterError) as exc_info:
         ad_checker.fit()
+
+    assert "requires classifiers with .predict_proba() method" in str(exc_info)

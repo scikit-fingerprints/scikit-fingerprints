@@ -111,8 +111,7 @@ class ProbStdADChecker(BaseADChecker):
 
             if not hasattr(self.model, "predict_proba"):
                 raise InvalidParameterError(
-                    f"{self.__class__.__name__} requires classifiers "
-                    f"with .predict_proba() method"
+                    f"{self.__class__.__name__} requires classifiers with .predict_proba() method"
                 )
 
             if len(getattr(self.model, "classes_", [])) != 2:
