@@ -2,8 +2,9 @@ from numbers import Real
 
 import numpy as np
 from scipy.stats import norm
+from sklearn.base import is_classifier
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.utils._param_validation import Interval
+from sklearn.utils._param_validation import Interval, InvalidParameterError
 from sklearn.utils.validation import check_is_fitted, validate_data
 
 from skfp.bases.base_ad_checker import BaseADChecker
@@ -19,10 +20,10 @@ class ProbStdADChecker(BaseADChecker):
     a normal distribution. The score is defined as the probability mass under this
     distribution that lies on the wrong side of the classification threshold (0.5).
 
-    This approach supports both regression models (using ``.predict(X)`` with outputs
-    interpretable as positive-class probabilities in [0, 1], e.g., regressors trained
-    on binary targets) and binary classifiers (using ``.predict_proba(X)`` and the
-    probability of the positive class). The ensemble model must expose the ``estimators_``
+    This approach supports both regression models (using .predict(X)) and binary classifiers
+    (using .predict_proba(X) and the probability of the positive class). For regression models,
+    the outputs should be interpretable as positive-class probabilities in [0, 1], e.g. when the
+    regressor is trained on binary targets. The ensemble model must expose the ``estimators_``
     attribute. If no model is provided, a default :class:`~sklearn.ensemble.RandomForestRegressor`
     is created and trained during :meth:`fit`.
 
@@ -38,7 +39,7 @@ class ProbStdADChecker(BaseADChecker):
         either ``.predict(X)`` or ``.predict_proba(X)`` method on each sub-estimator.
         If not provided, a default :class:`~sklearn.ensemble.RandomForestRegressor` will be created.
 
-    threshold : float, default=0.2
+    threshold : float, default=0.1
         Maximum allowed probability of incorrect class assignment.
         Lower values yield a stricter applicability domain.
 
@@ -89,7 +90,7 @@ class ProbStdADChecker(BaseADChecker):
     def __init__(
         self,
         model: object | None = None,
-        threshold: float = 0.2,
+        threshold: float = 0.1,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
     ):
@@ -105,9 +106,11 @@ class ProbStdADChecker(BaseADChecker):
         X: np.ndarray | None = None,
         y: np.ndarray | None = None,
     ):
+        self._validate_params()
+
         if self.model is None:
             X, y = validate_data(self, X, y, ensure_2d=False)
-            self.model_ = RandomForestRegressor(n_estimators=10, random_state=0)
+            self.model_ = RandomForestRegressor(random_state=0)
             self.model_.fit(X, y)  # type: ignore[union-attr]
         else:
             self.model_ = self.model
@@ -141,14 +144,11 @@ class ProbStdADChecker(BaseADChecker):
         X = validate_data(self, X=X, reset=False)
         check_is_fitted(self.model_, "estimators_")
 
-        if hasattr(self.model_.estimators_[0], "predict_proba"):  # type: ignore[union-attr]
-            preds = np.array([est.predict_proba(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
-            if preds.shape[2] == 2:
-                preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
-            else:
-                raise ValueError("Only binary classifiers are supported.")
+        if is_classifier(self.model_):
+            preds = np.array([est.predict_proba(X) for est in self.model_.estimators_])
+            preds = preds[:, :, 1]  # shape: (n_estimators, n_samples)
         else:
-            preds = np.array([est.predict(X) for est in self.model_.estimators_])  # type: ignore[union-attr]
+            preds = np.array([est.predict(X) for est in self.model_.estimators_])
 
         preds = preds.T  # shape: (n_samples, n_estimators)
 
@@ -159,3 +159,17 @@ class ProbStdADChecker(BaseADChecker):
         left_tail = norm.cdf(0.5, loc=y_mean, scale=y_std)
         prob_std = np.minimum(left_tail, 1 - left_tail)
         return prob_std
+
+    def _validate_params(self):
+        if self.model is not None and is_classifier(self.model):
+            check_is_fitted(self.model, "classes_")
+
+            if not hasattr(self.model, "predict_proba"):
+                raise InvalidParameterError(
+                    f"{self.__class__.__name__} requires classifiers exposing predict_proba."
+                )
+
+            if len(getattr(self.model, "classes_", [])) != 2:
+                raise InvalidParameterError(
+                    f"{self.__class__.__name__} only supports binary classifiers."
+                )

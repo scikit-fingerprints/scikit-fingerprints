@@ -19,8 +19,8 @@ class TOPKATADChecker(BaseADChecker):
 
     Samples are considered in-domain if their dOPS is below a threshold. By default,
     this threshold is computed as :math:`5 * D / (2 * N)`, where:
-    - ``D`` is the number of input features,
-    - ``N`` is the number of training samples.
+    - :math:``D`` is the number of input features,
+    - :math:``N`` is the number of training samples.
 
     This method captures both the variance and correlation structure of the descriptors,
     and performs well for detecting global outliers in descriptor space.
@@ -44,9 +44,10 @@ class TOPKATADChecker(BaseADChecker):
 
     References
     ----------
-    .. [1] Gombar, V. K. (1996).
-       Method and apparatus for validation of model-based predictions.
+    .. [1] Gombar, V. K.
+       `"Method and apparatus for validation of model-based predictions."
        U.S. Patent No. 6,036,349. Washington, DC: U.S. Patent and Trademark Office.
+       <https://patents.google.com/patent/US6036349A/en>`_
 
     Examples
     --------

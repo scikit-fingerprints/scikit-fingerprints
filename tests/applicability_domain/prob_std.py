@@ -8,6 +8,7 @@ from sklearn.datasets import (
 )
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.applicability_domain import ProbStdADChecker
 
@@ -118,10 +119,11 @@ def test_probstd_ad_checker_with_multilabel():
     model.fit(X, y)
 
     ad_checker = ProbStdADChecker(model=model, threshold=0.5)
-    ad_checker.fit()
 
-    with pytest.raises(ValueError, match="Only binary classifiers are supported"):
-        ad_checker.predict(X)
+    with pytest.raises(
+        InvalidParameterError, match="only supports binary classifiers."
+    ):
+        ad_checker.fit()
 
 
 def test_probstd_fit():
