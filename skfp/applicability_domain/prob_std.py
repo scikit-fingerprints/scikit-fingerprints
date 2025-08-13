@@ -20,8 +20,8 @@ class ProbStdADChecker(BaseADChecker):
     a normal distribution. The score is defined as the probability mass under this
     distribution that lies on the wrong side of the classification threshold (0.5).
 
-    This approach supports both regression models (using .predict(X)) and binary classifiers
-    (using .predict_proba(X) and the probability of the positive class). For regression models,
+    This approach supports both regression models (using ``.predict(X)``) and binary classifiers
+    (using ``.predict_proba(X)`` and the probability of the positive class). For regression models,
     the outputs should be interpretable as positive-class probabilities in [0, 1], e.g. when the
     regressor is trained on binary targets. The ensemble model must expose the ``estimators_``
     attribute. If no model is provided, a default :class:`~sklearn.ensemble.RandomForestRegressor`
@@ -37,7 +37,9 @@ class ProbStdADChecker(BaseADChecker):
     model : object, default=None
         Fitted ensemble model with accessible ``estimators_`` attribute and
         either ``.predict(X)`` or ``.predict_proba(X)`` method on each sub-estimator.
-        If not provided, a default :class:`~sklearn.ensemble.RandomForestRegressor` will be created.
+        If not provided, a default :class:`~sklearn.ensemble.RandomForestRegressor` will
+        be created. Note that if you pass a fitted model here, call to :meth:`fit` is
+        not necessary, but it will perform model validation.
 
     threshold : float, default=0.1
         Maximum allowed probability of incorrect class assignment.
@@ -101,6 +103,23 @@ class ProbStdADChecker(BaseADChecker):
         self.model = model
         self.threshold = threshold
 
+    def _validate_params(self):
+        super()._validate_params()
+
+        if self.model is not None and is_classifier(self.model):
+            check_is_fitted(self.model, "classes_")
+
+            if not hasattr(self.model, "predict_proba"):
+                raise InvalidParameterError(
+                    f"{self.__class__.__name__} requires classifiers "
+                    f"with .predict_proba() method"
+                )
+
+            if len(getattr(self.model, "classes_", [])) != 2:
+                raise InvalidParameterError(
+                    f"{self.__class__.__name__} only supports binary classifiers"
+                )
+
     def fit(  # noqa: D102
         self,
         X: np.ndarray | None = None,
@@ -142,7 +161,10 @@ class ProbStdADChecker(BaseADChecker):
 
     def _compute_prob_std(self, X: np.ndarray) -> np.ndarray:
         X = validate_data(self, X=X, reset=False)
+        if self.model is not None and not hasattr(self, "model_"):
+            self.model_ = self.model
         check_is_fitted(self.model_, "estimators_")
+        self._validate_params()
 
         if is_classifier(self.model_):
             preds = np.array([est.predict_proba(X) for est in self.model_.estimators_])
@@ -159,17 +181,3 @@ class ProbStdADChecker(BaseADChecker):
         left_tail = norm.cdf(0.5, loc=y_mean, scale=y_std)
         prob_std = np.minimum(left_tail, 1 - left_tail)
         return prob_std
-
-    def _validate_params(self):
-        if self.model is not None and is_classifier(self.model):
-            check_is_fitted(self.model, "classes_")
-
-            if not hasattr(self.model, "predict_proba"):
-                raise InvalidParameterError(
-                    f"{self.__class__.__name__} requires classifiers exposing predict_proba."
-                )
-
-            if len(getattr(self.model, "classes_", [])) != 2:
-                raise InvalidParameterError(
-                    f"{self.__class__.__name__} only supports binary classifiers."
-                )

@@ -8,6 +8,7 @@ from sklearn.datasets import (
 )
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.svm import LinearSVC
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.applicability_domain import ProbStdADChecker
@@ -111,21 +112,6 @@ def test_ptobstd_ad_checker_with_classifier():
     assert preds.shape == (len(X),)
 
 
-def test_probstd_ad_checker_with_multilabel():
-    X, y = make_multilabel_classification(
-        n_samples=50, n_features=5, n_classes=3, random_state=42
-    )
-    model = RandomForestClassifier(n_estimators=5, random_state=42)
-    model.fit(X, y)
-
-    ad_checker = ProbStdADChecker(model=model, threshold=0.5)
-
-    with pytest.raises(
-        InvalidParameterError, match="only supports binary classifiers."
-    ):
-        ad_checker.fit()
-
-
 def test_probstd_fit():
     # smoke test, should not throw errors
     X_train, y_train = make_regression(
@@ -137,3 +123,42 @@ def test_probstd_fit():
 
     ad_checker = ProbStdADChecker(model=rf)
     ad_checker.fit(None, None)
+
+
+def test_probstd_ad_checker_raise_error_on_multilabel():
+    X, y = make_multilabel_classification(
+        n_samples=50, n_features=5, n_classes=3, random_state=42
+    )
+    model = RandomForestClassifier(n_estimators=5, random_state=42)
+    model.fit(X, y)
+
+    ad_checker = ProbStdADChecker(model=model)
+
+    with pytest.raises(
+        InvalidParameterError, match="only supports binary classifiers."
+    ):
+        ad_checker.fit()
+
+
+def test_probstd_ad_checker_raise_error_on_multiclass():
+    X, y = make_classification(n_samples=50, n_features=5, n_classes=3, random_state=42)
+    model = RandomForestClassifier(n_estimators=5, random_state=42)
+    model.fit(X, y)
+
+    ad_checker = ProbStdADChecker(model=model)
+
+    with pytest.raises(InvalidParameterError, match="only supports binary classifiers"):
+        ad_checker.fit()
+
+
+def test_probstd_ad_checker_raise_error_no_predict_proba():
+    X, y = make_classification(n_samples=50, n_features=5, n_classes=2, random_state=42)
+    model = LinearSVC()
+    model.fit(X, y)
+
+    ad_checker = ProbStdADChecker(model=model)
+
+    with pytest.raises(
+        InvalidParameterError, match="requires classifiers with .predict_proba() method"
+    ):
+        ad_checker.fit()
