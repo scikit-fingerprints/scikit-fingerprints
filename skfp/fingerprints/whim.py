@@ -140,6 +140,81 @@ class WHIMFingerprint(BaseFingerprintTransformer):
         )
         self.clip_val = clip_val
 
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+        """
+        Get fingerprint output feature names. They correspond to various
+        descriptors derived from weighted covariance matrix. See references
+        given in main body for explanations.
+
+        Parameters
+        ----------
+        input_features : array-like of str or None, default=None
+            Unused, kept for scikit-learn compatibility.
+
+        Returns
+        -------
+        feature_names_out : ndarray of str objects
+            WHIM feature names.
+        """
+        weighting_variants = [
+            "unweighted",
+            "atomic mass",
+            "van der Waals volume",
+            "electronegativity",
+            "polarizability",
+            "ion polarity",
+            "IState",
+        ]
+
+        # first 77 directional features
+        directional_feature_names = [
+            f"{weight} {feature_name}"
+            for weight in weighting_variants
+            for feature_name in [
+                "axis 1 directional WHIM size",
+                "axis 2 directional WHIM size",
+                "axis 3 directional WHIM size",
+                "axis 1 directional WHIM shape",
+                "axis 2 directional WHIM shape",
+                "axis 1 directional WHIM symmetry",
+                "axis 2 directional WHIM symmetry",
+                "axis 3 directional WHIM symmetry",
+                "axis 1 directional WHIM density",
+                "axis 2 directional WHIM density",
+                "axis 3 directional WHIM density",
+            ]
+        ]
+        global_whim_size_feature_names = [
+            f"{weight} global WHIM size" for weight in weighting_variants
+        ]
+        global_whim_size_cross_sums_feature_names = [
+            f"{weight} global WHIM size cross sums" for weight in weighting_variants
+        ]
+        global_whim_axial_shape_feature_names = [
+            f"{weight} global WHIM axial shape" for weight in weighting_variants[:2]
+        ]
+        global_whim_shape_feature_names = [
+            f"{weight} global WHIM shape" for weight in weighting_variants
+        ]
+        global_whim_density_feature_names = [
+            f"{weight} global WHIM density" for weight in weighting_variants
+        ]
+        global_whim_symmetry_feature_names = [
+            f"{weight} global WHIM symmetry" for weight in weighting_variants
+        ]
+
+        feature_names = (
+            directional_feature_names
+            + global_whim_size_feature_names
+            + global_whim_size_cross_sums_feature_names
+            + global_whim_axial_shape_feature_names
+            + global_whim_shape_feature_names
+            + global_whim_density_feature_names
+            + global_whim_symmetry_feature_names
+        )
+
+        return np.asarray(feature_names, dtype=object)
+
     def transform(
         self, X: Sequence[str | Mol], copy: bool = False
     ) -> np.ndarray | csr_array:
