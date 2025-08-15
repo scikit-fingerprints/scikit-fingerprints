@@ -21,3 +21,5 @@ Classes for checking applicability domain.
     KNNADChecker
     LeverageADChecker
     PCABoundingBoxADChecker
+    ResponseVariableRangeADChecker
+    StandardDeviationADChecker

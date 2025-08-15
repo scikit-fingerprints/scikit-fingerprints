@@ -13,7 +13,7 @@ class BoundingBoxADChecker(BaseADChecker):
 
     Defines applicability domain based on feature ranges in the training data.
     This creates a "bounding box" using their extreme values, and new molecules
-    should lie in this distribution, i.e. have properties in the same ranges.
+    should lie in this distribution, i.e. have properties in the same ranges [1]_.
 
     Typically, physicochemical properties (continous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
@@ -56,6 +56,15 @@ class BoundingBoxADChecker(BaseADChecker):
         Controls the verbosity when filtering molecules.
         If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
         and can be used to control the progress bar.
+
+    References
+    ----------
+    .. [1] `Kar, S., Roy, K., Leszczynski, J.
+        "Applicability Domain: A Step Toward Confident Predictions and Decidability
+        for QSAR Modeling."
+        Nicolotti, O. (eds) Computational Toxicology. Methods in Molecular Biology, vol 1800.
+        Humana Press, New York, NY
+        <https://doi.org/10.1007/978-1-4939-7899-1_6>`_
 
     Examples
     --------
