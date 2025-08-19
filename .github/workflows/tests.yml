@@ -42,7 +42,7 @@ jobs:
           key: datasets
 
       - name: Install the project dependencies
-        run: uv sync --group test
+        run: uv sync --group test --python ${{ env.pythonLocation }}/python
 
       - name: Check pre-commit
         run: uv run pre-commit run --all-files
