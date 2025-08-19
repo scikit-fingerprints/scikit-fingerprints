@@ -33,7 +33,7 @@ jobs:
         name: Cache venv
         with:
           path: ./.venv
-          key: ${{ matrix.os }}-venv-${{ hashFiles('**/uv.lock') }}
+          key: ${{ matrix.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/uv.lock') }}
 
       - uses: actions/cache@v4
         name: Cache datasets
@@ -42,7 +42,8 @@ jobs:
           key: datasets
 
       - name: Install the project dependencies
-        run: uv sync --group test
+        run: uv sync --group test --python "$(python -c 'import sys; print(sys.executable)')"
+        shell: bash
 
       - name: Check pre-commit
         run: uv run pre-commit run --all-files
