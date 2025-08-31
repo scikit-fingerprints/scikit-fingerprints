@@ -257,6 +257,7 @@ class BaseFilter(ABC, BaseEstimator, TransformerMixin):
                 filter_indicators = [
                     self._filter_mols_batch([mol]) for mol in tqdm(mols)
                 ]
+                filter_indicators = np.array(filter_indicators).ravel()
             else:
                 filter_indicators = self._filter_mols_batch(mols)
         else:
