@@ -97,8 +97,7 @@ def load_moleculenet_benchmark(
 
     Parameters
     ----------
-    subset : {None, "regression", "classification", "classification_single_task",
-              "classification_multitask", "classification_no_pcba"} or list of strings
+    subset : {None, "regression", "classification", "classification_single_task", "classification_multitask", "classification_no_pcba"} or list of strings
         If ``None``, returns all datasets. String loads only a given subset of all
         datasets. List of strings loads only datasets with given names.
 
@@ -180,8 +179,7 @@ def load_moleculenet_dataset(
 
     Parameters
     ----------
-    dataset_name : {"ESOL", "FreeSolv", "Lipophilicity","BACE", "BBBP", "HIV", "ClinTox",
-        "MUV", "SIDER", "Tox21", "ToxCast", "PCBA"}
+    dataset_name : {"ESOL", "FreeSolv", "Lipophilicity","BACE", "BBBP", "HIV", "ClinTox", "MUV", "SIDER", "Tox21", "ToxCast", "PCBA"}
         Name of the dataset to load.
 
     data_dir : {None, str, path-like}, default=None
@@ -258,8 +256,7 @@ def load_ogb_splits(
 
     Parameters
     ----------
-    dataset_name : {"ESOL", "FreeSolv", "Lipophilicity","BACE", "BBBP", "HIV", "ClinTox",
-        "MUV", "SIDER", "Tox21", "ToxCast", "PCBA"}
+    dataset_name : {"ESOL", "FreeSolv", "Lipophilicity","BACE", "BBBP", "HIV", "ClinTox", "MUV", "SIDER", "Tox21", "ToxCast", "PCBA"}
         Name of the dataset to loads splits for.
 
     data_dir : {None, str, path-like}, default=None
