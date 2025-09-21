@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -163,11 +162,14 @@ def braun_blanquet_binary_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_braun_blanquet_binary_similarity(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Braun-Blanquet similarity for binary matrices.
@@ -181,12 +183,12 @@ def bulk_braun_blanquet_binary_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times m`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times n`. If not passed,
+        similarities are computed between rows of X.
 
     Returns
     -------
@@ -209,45 +211,39 @@ def bulk_braun_blanquet_binary_similarity(
     array([[1. , 0.5],
            [0.5, 0.5]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_braun_blanquet_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_braun_blanquet_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_braun_blanquet_binary_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
-    row_sums = np.sum(X, axis=1)
+def _bulk_braun_blanquet_binary_similarity_single(X: csr_array) -> np.ndarray:
+    intersection = (X @ X.T).toarray()
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
+    max_denoms = np.maximum.outer(row_sums, row_sums)
 
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
-            num_common = np.sum(np.logical_and(X[i], X[j]))
-            max_vec = max(row_sums[i], row_sums[j])
-            sim = num_common / max_vec if max_vec != 0 else 0.0
-            sims[i, j] = sims[j, i] = sim
+    sims = np.empty_like(intersection, dtype=float)
+    np.divide(intersection, max_denoms, out=sims, where=max_denoms != 0)
+    np.fill_diagonal(sims, 1.0)
 
     return sims
 
 
-@numba.njit(parallel=True)
 def _bulk_braun_blanquet_binary_similarity_two(
-    X: np.ndarray, Y: np.ndarray
+    X: csr_array, Y: csr_array
 ) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+    intersection = (X @ Y.T).toarray()
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
+    max_denoms = np.maximum.outer(row_sums_X, row_sums_Y)
 
-    row_sums_X = np.sum(X, axis=1)
-    row_sums_Y = np.sum(Y, axis=1)
-
-    for i in numba.prange(m):
-        for j in numba.prange(n):
-            num_common = np.sum(np.logical_and(X[i], Y[j]))
-            max_vec = max(row_sums_X[i], row_sums_Y[j])
-            sims[i, j] = num_common / max_vec if max_vec != 0 else 0.0
+    sims = np.empty_like(intersection, dtype=float)
+    np.divide(intersection, max_denoms, out=sims, where=max_denoms != 0)
 
     return sims
 
@@ -260,7 +256,7 @@ def _bulk_braun_blanquet_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_braun_blanquet_binary_distance(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Braun-Blanquet distance for vectors of binary values.
@@ -274,10 +270,10 @@ def bulk_braun_blanquet_binary_distance(
 
     Parameters
     ----------
-    X : ndarray
+    X : ndarray or CSR sparse array
         First binary input array, of shape :math:`m \times m`
 
-    Y : ndarray, default=None
+    Y : ndarray or CSR sparse array, default=None
         Second binary input array, of shape :math:`n \times n`. If not passed, distances
         are computed between rows of X.
 
