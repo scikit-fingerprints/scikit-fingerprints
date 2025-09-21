@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -186,11 +185,14 @@ def kulczynski_binary_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_kulczynski_binary_similarity(
-    X: np.ndarray,
+    X: np.ndarray | csr_array,
     Y: np.ndarray | None = None,
 ) -> np.ndarray:
     r"""
@@ -205,11 +207,11 @@ def bulk_kulczynski_binary_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed, similarities
         are computed between rows of X.
 
     Returns
@@ -233,87 +235,61 @@ def bulk_kulczynski_binary_similarity(
     array([[1.  , 0.5 ],
            [0.75, 0.75]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_kulczynski_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_kulczynski_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_kulczynski_binary_similarity_single(
-    X: np.ndarray,
-) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
-    X_sum = np.sum(X, axis=1)
+def _bulk_kulczynski_binary_similarity_single(X: csr_array) -> np.ndarray:
+    # formula: 0.5 * (a/a+b + a/a+c)  # noqa: ERA001
+    # note that:
+    #   a = |A & B|, b = |A - B|, a+b = |A|
+    #   c = |B - A|, a+c = |B|
+    # we can rewrite formula row-wise as: 0.5 * (a / |A| + a / |B|)
 
-    # upper triangle - actual similarities
-    for i in numba.prange(m):
-        vec_a = X[i]
-        sum_a = X_sum[i]
-        vec_a_neg = 1 - vec_a
-        sims[i, i] = 1.0
+    intersection = (X @ X.T).toarray()  # a = |A and B|
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
 
-        for j in numba.prange(i + 1, m):
-            vec_b = X[j]
-            sum_b = X_sum[j]
+    denom_A = row_sums[:, None]  # |A|
+    denom_B = row_sums[None, :]  # |B|
 
-            if sum_a == 0 == sum_b:
-                sims[i, j] = sims[j, i] = 1.0
-                continue
+    term_A = np.zeros_like(intersection, dtype=float)
+    term_B = np.zeros_like(intersection, dtype=float)
 
-            vec_b_neg = 1 - vec_b
+    np.divide(intersection, denom_A, out=term_A, where=denom_A != 0)
+    np.divide(intersection, denom_B, out=term_B, where=denom_B != 0)
+    sims = 0.5 * (term_A + term_B)
 
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            b = np.sum(np.logical_and(vec_a, vec_b_neg))
-            c = np.sum(np.logical_and(vec_a_neg, vec_b))
+    both_zero = (denom_A == 0) & (denom_B == 0)
+    sims[both_zero] = 1.0
 
-            if a + b == 0 or a + c == 0:
-                sims[i, j] = sims[j, i] = 0.0
-                continue
-
-            sim = (a / (a + b) + a / (a + c)) / 2.0
-            sims[i, j] = sims[j, i] = sim
-
+    np.fill_diagonal(sims, 1.0)
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_kulczynski_binary_similarity_two(
-    X: np.ndarray,
-    Y: np.ndarray,
-) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
-    X_sum = np.sum(X, axis=1)
-    Y_sum = np.sum(Y, axis=1)
+def _bulk_kulczynski_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    intersection = (X @ Y.T).toarray()
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
 
-    for i in numba.prange(m):
-        vec_a = X[i]
-        sum_a = X_sum[i]
-        vec_a_neg = 1 - vec_a
+    denom_A = row_sums_X[:, None]
+    denom_B = row_sums_Y[None, :]
 
-        for j in numba.prange(n):
-            vec_b = Y[j]
-            sum_b = Y_sum[j]
+    term_A = np.zeros_like(intersection, dtype=float)
+    term_B = np.zeros_like(intersection, dtype=float)
 
-            if sum_a == 0 == sum_b:
-                sims[i, j] = 1.0
-                continue
+    np.divide(intersection, denom_A, out=term_A, where=denom_A != 0)
+    np.divide(intersection, denom_B, out=term_B, where=denom_B != 0)
+    sims = 0.5 * (term_A + term_B)
 
-            # no need to compute vec_b_neg if sum_a == 0 == sum_b
-            vec_b_neg = 1 - vec_b
-
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            b = np.sum(np.logical_and(vec_a, vec_b_neg))
-            c = np.sum(np.logical_and(vec_a_neg, vec_b))
-
-            if a + b == 0 or a + c == 0:
-                sims[i, j] = 0.0
-                continue
-
-            sims[i, j] = (a / (a + b) + a / (a + c)) / 2.0
+    both_zero = (denom_A == 0) & (denom_B == 0)
+    sims[both_zero] = 1.0
 
     return sims
 
@@ -340,11 +316,11 @@ def bulk_kulczynski_binary_distance(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed, distances
         are computed between rows of X.
 
     Returns
