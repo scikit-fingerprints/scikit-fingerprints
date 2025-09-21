@@ -104,54 +104,112 @@ def test_tanimoto_count(vec_a, vec_b, comparison, similarity, distance):
 def test_bulk_tanimoto_binary(mols_list):
     fp = ECFPFingerprint()
     fps = fp.transform(mols_list[:10])
+    fps_sparse = csr_array(fps)
 
-    pairwise_sim = [
+    expected_sim = [
         [tanimoto_binary_similarity(fps[i], fps[j]) for j in range(len(fps))]
         for i in range(len(fps))
     ]
-    pairwise_dist = [
+    expected_dist = [
         [tanimoto_binary_distance(fps[i], fps[j]) for j in range(len(fps))]
         for i in range(len(fps))
     ]
 
     bulk_sim = bulk_tanimoto_binary_similarity(fps)
-    bulk_dist = bulk_tanimoto_binary_distance(fps)
+    bulk_sim_sparse = bulk_tanimoto_binary_similarity(fps_sparse)
 
-    assert np.allclose(pairwise_sim, bulk_sim)
-    assert np.allclose(pairwise_dist, bulk_dist)
+    bulk_dist = bulk_tanimoto_binary_distance(fps)
+    bulk_dist_sparse = bulk_tanimoto_binary_distance(fps_sparse)
+
+    assert np.allclose(expected_sim, bulk_sim)
+    assert np.allclose(expected_dist, bulk_dist)
+
+    assert np.allclose(bulk_sim, bulk_sim_sparse)
+    assert np.allclose(bulk_dist, bulk_dist_sparse)
 
 
 def test_bulk_tanimoto_count(mols_list):
     fp = ECFPFingerprint(count=True)
     fps = fp.transform(mols_list[:10])
+    fps_sparse = csr_array(fps)
 
-    pairwise_sim = [
+    expected_sim = [
         [tanimoto_count_similarity(fps[i], fps[j]) for j in range(len(fps))]
         for i in range(len(fps))
     ]
-    pairwise_dist = [
+    expected_dist = [
         [tanimoto_count_distance(fps[i], fps[j]) for j in range(len(fps))]
         for i in range(len(fps))
     ]
 
     bulk_sim = bulk_tanimoto_count_similarity(fps)
+    bulk_sim_sparse = bulk_tanimoto_count_similarity(fps_sparse)
+
     bulk_dist = bulk_tanimoto_count_distance(fps)
+    bulk_dist_sparse = bulk_tanimoto_count_distance(fps_sparse)
 
-    assert np.allclose(pairwise_sim, bulk_sim)
-    assert np.allclose(pairwise_dist, bulk_dist)
+    assert np.allclose(expected_sim, bulk_sim)
+    assert np.allclose(expected_dist, bulk_dist)
+
+    assert np.allclose(bulk_sim, bulk_sim_sparse)
+    assert np.allclose(bulk_dist, bulk_dist_sparse)
 
 
-def test_bulk_tanimoto_second_array(mols_list):
+def test_bulk_tanimoto_second_array_binary(mols_list):
     fp = ECFPFingerprint()
-    fps = fp.transform(mols_list[:10])
+    fps_1 = fp.transform(mols_list[:10])
+    fps_2 = fp.transform(mols_list[5:])
 
-    bulk_sim_single = bulk_tanimoto_binary_similarity(fps)
-    bulk_sim_two = bulk_tanimoto_binary_similarity(fps, fps)
-    assert np.allclose(bulk_sim_single, bulk_sim_two)
+    fps_sparse_1 = csr_array(fps_1)
+    fps_sparse_2 = csr_array(fps_2)
 
+    expected_sim = [
+        [tanimoto_binary_similarity(fps_1[i], fps_2[j]) for j in range(len(fps_2))]
+        for i in range(len(fps_1))
+    ]
+    expected_dist = [
+        [tanimoto_binary_distance(fps_1[i], fps_2[j]) for j in range(len(fps_2))]
+        for i in range(len(fps_1))
+    ]
+
+    bulk_sim = bulk_tanimoto_binary_similarity(fps_1, fps_2)
+    bulk_sim_sparse = bulk_tanimoto_binary_similarity(fps_sparse_1, fps_sparse_2)
+
+    bulk_dist = bulk_tanimoto_binary_distance(fps_1, fps_2)
+    bulk_dist_sparse = bulk_tanimoto_binary_distance(fps_sparse_1, fps_sparse_2)
+
+    assert np.allclose(expected_sim, bulk_sim)
+    assert np.allclose(expected_dist, bulk_dist)
+
+    assert np.allclose(bulk_sim, bulk_sim_sparse)
+    assert np.allclose(bulk_dist, bulk_dist_sparse)
+
+
+def test_bulk_tanimoto_second_array_count(mols_list):
     fp = ECFPFingerprint(count=True)
-    fps = fp.transform(mols_list[:10])
+    fps_1 = fp.transform(mols_list[:10])
+    fps_2 = fp.transform(mols_list[5:])
 
-    bulk_sim_single = bulk_tanimoto_count_similarity(fps)
-    bulk_sim_two = bulk_tanimoto_count_similarity(fps, fps)
-    assert np.allclose(bulk_sim_single, bulk_sim_two)
+    fps_sparse_1 = csr_array(fps_1)
+    fps_sparse_2 = csr_array(fps_2)
+
+    expected_sim = [
+        [tanimoto_count_similarity(fps_1[i], fps_2[j]) for j in range(len(fps_2))]
+        for i in range(len(fps_1))
+    ]
+    expected_dist = [
+        [tanimoto_count_distance(fps_1[i], fps_2[j]) for j in range(len(fps_2))]
+        for i in range(len(fps_1))
+    ]
+
+    bulk_sim = bulk_tanimoto_count_similarity(fps_1, fps_2)
+    bulk_sim_sparse = bulk_tanimoto_count_similarity(fps_sparse_1, fps_sparse_2)
+
+    bulk_dist = bulk_tanimoto_count_distance(fps_1, fps_2)
+    bulk_dist_sparse = bulk_tanimoto_count_distance(fps_sparse_1, fps_sparse_2)
+
+    assert np.allclose(expected_sim, bulk_sim)
+    assert np.allclose(expected_dist, bulk_dist)
+
+    assert np.allclose(bulk_sim, bulk_sim_sparse)
+    assert np.allclose(bulk_dist, bulk_dist_sparse)
