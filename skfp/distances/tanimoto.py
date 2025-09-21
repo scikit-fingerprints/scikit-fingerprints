@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -348,34 +347,19 @@ def bulk_tanimoto_binary_similarity(
     array([[1.        , 0.33333333],
            [0.5       , 0.5       ]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
-        if isinstance(X, np.ndarray):
-            return _bulk_tanimoto_binary_similarity_single(X)
-        else:
-            return _bulk_tanimoto_binary_similarity_single_sparse(X)
-    elif isinstance(X, np.ndarray):
-        return _bulk_tanimoto_binary_similarity_two(X, Y)
+        return _bulk_tanimoto_binary_similarity_single(X)
     else:
-        return _bulk_tanimoto_binary_similarity_two_sparse(X, Y)
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
+
+        return _bulk_tanimoto_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_tanimoto_binary_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
-
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
-            intersection = np.sum(np.logical_and(X[i], X[j]))
-            union = np.sum(np.logical_or(X[i], X[j]))
-            sim = intersection / union if union != 0 else 1.0
-            sims[i, j] = sims[j, i] = sim
-
-    return sims
-
-
-def _bulk_tanimoto_binary_similarity_single_sparse(X: csr_array) -> np.ndarray:
+def _bulk_tanimoto_binary_similarity_single(X: csr_array) -> np.ndarray:
     # intersection = x * y, dot product
     # union = |x| + |y| - intersection, |x| is number of 1s
     intersection = (X @ X.T).toarray()
@@ -388,24 +372,7 @@ def _bulk_tanimoto_binary_similarity_single_sparse(X: csr_array) -> np.ndarray:
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
-
-    for i in numba.prange(m):
-        for j in numba.prange(n):
-            intersection = np.sum(np.logical_and(X[i], Y[j]))
-            union = np.sum(np.logical_or(X[i], Y[j]))
-            sims[i, j] = intersection / union if union != 0 else 1.0
-
-    return sims
-
-
-def _bulk_tanimoto_binary_similarity_two_sparse(
-    X: csr_array, Y: csr_array
-) -> np.ndarray:
+def _bulk_tanimoto_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     # intersection = x * y, dot product
     # union = |x| + |y| - intersection, |x| is number of 1s
     intersection = (X @ Y.T).toarray()
@@ -531,47 +498,20 @@ def bulk_tanimoto_count_similarity(
            [0.5       , 0.5       ]])
     """
     X = X.astype(float)  # Numba does not allow integers
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
 
     if Y is None:
-        if isinstance(X, np.ndarray):
-            return _bulk_tanimoto_count_similarity_single(X)
-        else:
-            return _bulk_tanimoto_count_similarity_single_sparse(X)
+        return _bulk_tanimoto_count_similarity_single(X)
     else:
         Y = Y.astype(float)  # Numba does not allow integers
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
 
-        if isinstance(X, np.ndarray):
-            return _bulk_tanimoto_count_similarity_two(X, Y)
-        else:
-            return _bulk_tanimoto_count_similarity_two_sparse(X, Y)
-
-
-@numba.njit(parallel=True)
-def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
-
-    for i in numba.prange(m):
-        vec_a = X[i]
-        sims[i, i] = 1.0
-
-        for j in numba.prange(i + 1, m):
-            vec_b = X[j]
-
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            intersection = dot_ab
-            union = dot_aa + dot_bb - dot_ab
-
-            sim = intersection / union if union >= 1e-8 else 1.0
-            sims[i, j] = sims[j, i] = sim
-
-    return sims
+        return _bulk_tanimoto_count_similarity_two(X, Y)
 
 
-def _bulk_tanimoto_count_similarity_single_sparse(X: csr_array) -> np.ndarray:
+def _bulk_tanimoto_count_similarity_single(X: csr_array) -> np.ndarray:
     # intersection = x * y, dot product
     # union = |x| + |y| - intersection
     # |x| is the row dot product with itself (squared L2 norm)
@@ -587,33 +527,7 @@ def _bulk_tanimoto_count_similarity_single_sparse(X: csr_array) -> np.ndarray:
     return sims
 
 
-@numba.jit(parallel=True)
-def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
-
-    for i in numba.prange(m):
-        vec_a = X[i]
-
-        for j in numba.prange(n):
-            vec_b = Y[j]
-
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            intersection = dot_ab
-            union = dot_aa + dot_bb - dot_ab
-
-            sims[i, j] = intersection / union if union >= 1e-8 else 1.0
-
-    return sims
-
-
-def _bulk_tanimoto_count_similarity_two_sparse(
-    X: csr_array, Y: csr_array
-) -> np.ndarray:
+def _bulk_tanimoto_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     # intersection = x * y, dot product
     # union = |x| + |y| - intersection
     # |x| is the row dot product with itself (squared L2 norm)
