@@ -1,6 +1,4 @@
-import numpy as np
 import pytest
-from scipy.sparse import csr_array
 
 from skfp.distances import (
     harris_lahey_binary_distance,
@@ -10,8 +8,11 @@ from skfp.distances.harris_lahey import (
     bulk_harris_lahey_binary_distance,
     bulk_harris_lahey_binary_similarity,
 )
-from skfp.fingerprints.ecfp import ECFPFingerprint
-from tests.distances.utils import assert_distance_values, assert_similarity_values
+from tests.distances.utils import (
+    run_test_bulk_similarity_and_distance,
+    run_test_bulk_similarity_and_distance_two_arrays,
+    run_test_similarity_and_distance,
+)
 
 
 def _get_unnormalized_values() -> list[tuple[list[int], list[int], str, float, float]]:
@@ -34,7 +35,7 @@ def _get_normalized_values() -> list[tuple[list[int], list[int], str, float, flo
         ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
         ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
         ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
-        ([1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1], "<", 0.5, 0.9),
+        ([1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1], "<", 0.5, 0.8),
     ]
 
 
@@ -42,74 +43,53 @@ def _get_normalized_values() -> list[tuple[list[int], list[int], str, float, flo
     "vec_a, vec_b, comparison, similarity, distance", _get_unnormalized_values()
 )
 def test_harris_lahey_unnormalized(vec_a, vec_b, comparison, similarity, distance):
-    vec_a = np.array(vec_a)
-    vec_b = np.array(vec_b)
-
-    vec_a_sparse = csr_array([vec_a])
-    vec_b_sparse = csr_array([vec_b])
-
-    sim_dense = harris_lahey_binary_similarity(vec_a, vec_b)
-    dist_dense = harris_lahey_binary_distance(vec_a, vec_b)
-
-    sim_sparse = harris_lahey_binary_similarity(vec_a_sparse, vec_b_sparse)
-    dist_sparse = harris_lahey_binary_distance(vec_a_sparse, vec_b_sparse)
-
-    assert_similarity_values(sim_dense, comparison, similarity)
-    assert_similarity_values(sim_sparse, comparison, similarity)
-
-    assert_distance_values(dist_dense, comparison, distance)
-    assert_distance_values(dist_sparse, comparison, distance)
-
-    assert np.isclose(sim_dense, sim_sparse)
-    assert np.isclose(dist_dense, dist_sparse)
+    run_test_similarity_and_distance(
+        harris_lahey_binary_similarity,
+        harris_lahey_binary_distance,
+        vec_a,
+        vec_b,
+        comparison,
+        similarity,
+        distance,
+        normalized=False,
+    )
 
 
 @pytest.mark.parametrize(
     "vec_a, vec_b, comparison, similarity, distance", _get_normalized_values()
 )
 def test_harris_lahey_normalized(vec_a, vec_b, comparison, similarity, distance):
-    # only similarity, since distance is always normalized
-    vec_a = np.array(vec_a)
-    vec_b = np.array(vec_b)
-
-    vec_a_sparse = csr_array([vec_a])
-    vec_b_sparse = csr_array([vec_b])
-
-    sim_dense = harris_lahey_binary_similarity(vec_a, vec_b, normalized=True)
-    sim_sparse = harris_lahey_binary_similarity(
-        vec_a_sparse, vec_b_sparse, normalized=True
+    run_test_similarity_and_distance(
+        harris_lahey_binary_similarity,
+        harris_lahey_binary_distance,
+        vec_a,
+        vec_b,
+        comparison,
+        similarity,
+        distance,
+        normalized=True,
     )
 
-    assert_similarity_values(sim_dense, comparison, similarity)
-    assert_similarity_values(sim_sparse, comparison, similarity)
 
-    assert np.isclose(sim_dense, sim_sparse)
-
-
-def test_bulk_harris_lahey_binary(mols_list):
-    fp = ECFPFingerprint()
-    fps = fp.transform(mols_list[:10])
-
-    pairwise_sim = [
-        [harris_lahey_binary_similarity(fps[i], fps[j]) for j in range(len(fps))]
-        for i in range(len(fps))
-    ]
-    pairwise_dist = [
-        [harris_lahey_binary_distance(fps[i], fps[j]) for j in range(len(fps))]
-        for i in range(len(fps))
-    ]
-
-    bulk_sim = bulk_harris_lahey_binary_similarity(fps)
-    bulk_dist = bulk_harris_lahey_binary_distance(fps)
-
-    assert np.allclose(pairwise_sim, bulk_sim)
-    assert np.allclose(pairwise_dist, bulk_dist)
+@pytest.mark.parametrize("normalized", [False, True])
+def test_bulk_harris_lahey(mols_list, normalized):
+    run_test_bulk_similarity_and_distance(
+        mols_list,
+        harris_lahey_binary_similarity,
+        harris_lahey_binary_distance,
+        bulk_harris_lahey_binary_similarity,
+        bulk_harris_lahey_binary_distance,
+        normalized=normalized,
+    )
 
 
-def test_bulk_harris_lahey_second_array(mols_list):
-    fp = ECFPFingerprint()
-    fps = fp.transform(mols_list[:10])
-
-    bulk_sim_single = bulk_harris_lahey_binary_similarity(fps)
-    bulk_sim_two = bulk_harris_lahey_binary_similarity(fps, fps)
-    assert np.allclose(bulk_sim_single, bulk_sim_two)
+@pytest.mark.parametrize("normalized", [False, True])
+def test_bulk_harris_lahey_second_array(mols_list, normalized):
+    run_test_bulk_similarity_and_distance_two_arrays(
+        mols_list,
+        harris_lahey_binary_similarity,
+        harris_lahey_binary_distance,
+        bulk_harris_lahey_binary_similarity,
+        bulk_harris_lahey_binary_distance,
+        normalized=normalized,
+    )

@@ -107,7 +107,7 @@ def test_bulk_tanimoto_second_array_binary(mols_list):
 
 
 def test_bulk_tanimoto_second_array_count(mols_list):
-    run_test_bulk_similarity_and_distance(
+    run_test_bulk_similarity_and_distance_two_arrays(
         mols_list,
         tanimoto_count_similarity,
         tanimoto_count_distance,
