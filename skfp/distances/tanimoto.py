@@ -79,7 +79,7 @@ def tanimoto_binary_similarity(
         intersection = len(vec_a_idxs & vec_b_idxs)
         union = len(vec_a_idxs | vec_b_idxs)
 
-    sim = intersection / union if union != 0 else 1.0
+    sim = intersection / union if union != 0 else 1
     return float(sim)
 
 
@@ -228,7 +228,7 @@ def tanimoto_count_similarity(
     intersection = dot_ab
     union = dot_aa + dot_bb - dot_ab
 
-    sim = intersection / union if union >= 1e-8 else 1.0
+    sim = intersection / union if union >= 1e-8 else 1
     return float(sim)
 
 
@@ -522,7 +522,7 @@ def _bulk_tanimoto_count_similarity_single(X: csr_array) -> np.ndarray:
     sims = np.empty_like(inter, dtype=float)
     np.divide(inter, unions, out=sims, where=unions >= 1e-8)
 
-    np.fill_diagonal(sims, 1.0)
+    np.fill_diagonal(sims, 1)
 
     return sims
 

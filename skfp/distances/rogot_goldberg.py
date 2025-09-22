@@ -107,7 +107,7 @@ def rogot_goldberg_binary_similarity(
 
     # all-ones or all-zeros vectors
     if first_denom == 0 or second_denom == 0:
-        return 1.0
+        return 1
 
     sim = a / first_denom + d / second_denom
 
@@ -259,7 +259,7 @@ def _bulk_rogot_goldberg_binary_similarity_single(X: csr_array) -> np.ndarray:
     # b+c = |A| + |B| - 2a
     sum_A = row_sums[:, None]
     sum_B = row_sums[None, :]
-    bc_sum = sum_A + sum_B - 2.0 * a
+    bc_sum = sum_A + sum_B - 2 * a
 
     # d = n - (a + b + c)  # noqa: ERA001
     d = n_features - (a + bc_sum)

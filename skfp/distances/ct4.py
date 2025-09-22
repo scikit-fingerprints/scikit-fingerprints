@@ -91,7 +91,7 @@ def ct4_binary_similarity(
         intersection = len(vec_a_idxs & vec_b_idxs)
         union = len(vec_a_idxs | vec_b_idxs)
 
-    sim = float(np.log1p(intersection) / np.log1p(union)) if union != 0 else 1.0
+    sim = float(np.log1p(intersection) / np.log1p(union)) if union != 0 else 1
     return sim
 
 
@@ -261,7 +261,7 @@ def ct4_count_similarity(
     numerator = np.log1p(dot_ab)
     denominator = np.log1p(dot_aa + dot_bb - dot_ab)
 
-    sim = float(numerator / denominator) if denominator >= 1e-8 else 1.0
+    sim = float(numerator / denominator) if denominator >= 1e-8 else 1
 
     return sim
 
@@ -411,8 +411,8 @@ def _bulk_ct4_binary_similarity_single(X: csr_array) -> np.ndarray:
     with np.errstate(divide="ignore", invalid="ignore"):
         np.divide(np.log1p(intersection), np.log1p(unions), out=sims, where=unions != 0)
 
-    sims[unions == 0] = 1.0
-    np.fill_diagonal(sims, 1.0)
+    sims[unions == 0] = 1
+    np.fill_diagonal(sims, 1)
     return sims
 
 
@@ -426,7 +426,7 @@ def _bulk_ct4_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     with np.errstate(divide="ignore", invalid="ignore"):
         np.divide(np.log1p(intersection), np.log1p(unions), out=sims, where=unions != 0)
 
-    sims[unions == 0] = 1.0
+    sims[unions == 0] = 1
     return sims
 
 
@@ -525,8 +525,8 @@ def _bulk_ct4_count_similarity_single(X: csr_array) -> np.ndarray:
             np.log1p(dot_products), np.log1p(unions), out=sims, where=unions >= 1e-8
         )
 
-    sims[unions == 0] = 1.0
-    np.fill_diagonal(sims, 1.0)
+    sims[unions == 0] = 1
+    np.fill_diagonal(sims, 1)
     return sims
 
 
@@ -542,7 +542,7 @@ def _bulk_ct4_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
             np.log1p(dot_products), np.log1p(unions), out=sims, where=unions >= 1e-8
         )
 
-    sims[unions == 0] = 1.0
+    sims[unions == 0] = 1
     return sims
 
 

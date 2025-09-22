@@ -85,7 +85,7 @@ def braun_blanquet_binary_similarity(
 
     max_vec = max(np.sum(vec_a), np.sum(vec_b))
 
-    sim = float(num_common / max_vec) if max_vec != 0 else 1.0
+    sim = float(num_common / max_vec) if max_vec != 0 else 1
     return sim
 
 
@@ -229,7 +229,7 @@ def _bulk_braun_blanquet_binary_similarity_single(X: csr_array) -> np.ndarray:
 
     sims = np.empty_like(intersection, dtype=float)
     np.divide(intersection, max_denoms, out=sims, where=max_denoms != 0)
-    np.fill_diagonal(sims, 1.0)
+    np.fill_diagonal(sims, 1)
 
     return sims
 

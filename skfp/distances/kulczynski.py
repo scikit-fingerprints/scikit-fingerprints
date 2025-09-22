@@ -90,7 +90,7 @@ def kulczynski_binary_similarity(
         )
 
     if np.sum(vec_a) == 0 == np.sum(vec_b):
-        return 1.0
+        return 1
 
     if isinstance(vec_a, np.ndarray):
         a = np.sum(np.logical_and(vec_a, vec_b))
@@ -105,7 +105,7 @@ def kulczynski_binary_similarity(
         c = len(vec_b_idxs - vec_a_idxs)
 
     if a + b == 0 or a + c == 0:
-        return 0.0
+        return 0
 
     sim = (a / (a + b) + a / (a + c)) / 2
     return float(sim)
@@ -266,9 +266,9 @@ def _bulk_kulczynski_binary_similarity_single(X: csr_array) -> np.ndarray:
     sims = 0.5 * (term_A + term_B)
 
     both_zero = (denom_A == 0) & (denom_B == 0)
-    sims[both_zero] = 1.0
+    sims[both_zero] = 1
 
-    np.fill_diagonal(sims, 1.0)
+    np.fill_diagonal(sims, 1)
     return sims
 
 
@@ -288,7 +288,7 @@ def _bulk_kulczynski_binary_similarity_two(X: csr_array, Y: csr_array) -> np.nda
     sims = 0.5 * (term_A + term_B)
 
     both_zero = (denom_A == 0) & (denom_B == 0)
-    sims[both_zero] = 1.0
+    sims[both_zero] = 1
 
     return sims
 

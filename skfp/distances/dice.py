@@ -87,7 +87,7 @@ def dice_binary_similarity(
         intersection = len(set(vec_a.indices) & set(vec_b.indices))
 
     denominator = vec_a.sum() + vec_b.sum()
-    sim = 2 * intersection / denominator if denominator != 0 else 1.0
+    sim = 2 * intersection / denominator if denominator != 0 else 1
 
     return float(sim)
 
@@ -257,7 +257,7 @@ def dice_count_similarity(
         dot_bb = vec_b.multiply(vec_b).sum()
 
     denominator = dot_aa + dot_bb
-    sim = 2 * dot_ab / denominator if denominator >= 1e-8 else 1.0
+    sim = 2 * dot_ab / denominator if denominator >= 1e-8 else 1
 
     return float(sim)
 
@@ -410,13 +410,11 @@ def _bulk_dice_binary_similarity_single(X: csr_array) -> np.ndarray:
     sims = np.empty_like(intersection, dtype=float)
     # sim = 2 * |A∩B| / (|A| + |B|)
     with np.errstate(divide="ignore", invalid="ignore"):
-        np.multiply(2.0, intersection, out=sims)
+        np.multiply(2, intersection, out=sims)
         np.divide(sims, denom, out=sims, where=denom != 0)
 
-    # Handle all-zero union: similarity = 1.0 (matches scalar function)
-    sims[denom == 0] = 1.0
-    # Ensure exact self-similarity = 1.0
-    np.fill_diagonal(sims, 1.0)
+    sims[denom == 0] = 1
+    np.fill_diagonal(sims, 1)
 
     return sims
 
@@ -429,10 +427,10 @@ def _bulk_dice_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
 
     sims = np.empty_like(intersection, dtype=float)
     with np.errstate(divide="ignore", invalid="ignore"):
-        np.multiply(2.0, intersection, out=sims)
+        np.multiply(2, intersection, out=sims)
         np.divide(sims, denom, out=sims, where=denom != 0)
 
-    sims[denom == 0] = 1.0
+    sims[denom == 0] = 1
     return sims
 
 
@@ -564,11 +562,11 @@ def _bulk_dice_count_similarity_single(X: csr_array) -> np.ndarray:
 
     sims = np.empty_like(dot_products, dtype=float)
     with np.errstate(divide="ignore", invalid="ignore"):
-        np.multiply(2.0, dot_products, out=sims)
+        np.multiply(2, dot_products, out=sims)
         np.divide(sims, denom, out=sims, where=denom >= 1e-8)
 
-    sims[denom < 1e-8] = 1.0
-    np.fill_diagonal(sims, 1.0)
+    sims[denom < 1e-8] = 1
+    np.fill_diagonal(sims, 1)
     return sims
 
 
@@ -580,10 +578,10 @@ def _bulk_dice_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
 
     sims = np.empty_like(dot_products, dtype=float)
     with np.errstate(divide="ignore", invalid="ignore"):
-        np.multiply(2.0, dot_products, out=sims)
+        np.multiply(2, dot_products, out=sims)
         np.divide(sims, denom, out=sims, where=denom >= 1e-8)
 
-    sims[denom < 1e-8] = 1.0
+    sims[denom < 1e-8] = 1
     return sims
 
 

@@ -122,7 +122,7 @@ def harris_lahey_binary_similarity(
 
     # all-ones or all-zeros vectors
     if first_denom == 0 or second_denom == 0:
-        return 1.0
+        return 1
 
     sim = float(
         (a * (2 * d + b + c)) / (2 * first_denom)
@@ -306,7 +306,7 @@ def _bulk_harris_lahey_binary_similarity_single_sparse(
         sims = part_1 + part_2
 
     # handle all-zeros / all-ones vectors
-    sims[(first_denom == 0) | (second_denom == 0)] = 1.0
+    sims[(first_denom == 0) | (second_denom == 0)] = 1
 
     if normalized:
         sims /= length
@@ -340,7 +340,7 @@ def _bulk_harris_lahey_binary_similarity_two_sparse(
 
         sims = part_1 + part_2
 
-    sims[(first_denom == 0) | (second_denom == 0)] = 1.0
+    sims[(first_denom == 0) | (second_denom == 0)] = 1
 
     if normalized:
         sims /= length
