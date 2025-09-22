@@ -207,21 +207,6 @@ def bulk_rand_binary_similarity(
         Array with pairwise Rand similarity values. Shape is :math:`m \times n`
         if two arrays are passed, or :math:`m \times m` otherwise.
 
-    References
-    ----------
-    .. [1] `Rand, W.M.
-        "Objective criteria for the evaluation of clustering methods."
-        J. Amer. Stat. Assoc. 1971; 66: 846–850.
-        <https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356>`_
-
-    .. [2] `Deza M.M., Deza E.
-        "Encyclopedia of Distances."
-        Springer, Berlin, Heidelberg, 2009.
-        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
-
-    .. [3] `RDKit documentation
-        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
-
     See Also
     --------
     :py:func:`rand_binary_similarity` : Rand similarity function for two vectors.

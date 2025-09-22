@@ -205,24 +205,6 @@ def bulk_simpson_binary_similarity(
         Array with pairwise Simpson similarity values. Shape is :math:`m \times n`
         if two arrays are passed, or :math:`m \times m` otherwise.
 
-    References
-    ----------
-    .. [1] `Simpson, G.G.
-        "Mammals and the nature of continents."
-        American Journal of Science, 241: 1-31 (1943).
-        <https://doi.org/10.1038/163688a0>`_
-
-    .. [2] `Deza M.M., Deza E.
-        "Encyclopedia of Distances."
-        Springer, Berlin, Heidelberg, 2009.
-        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
-
-    .. [3] `RDKit documentation
-        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
-
-    .. [4] `Overlap coefficient on Wikipedia
-        <https://en.wikipedia.org/wiki/Overlap_coefficient>`_
-
     Examples
     --------
     >>> from skfp.distances import bulk_simpson_binary_similarity

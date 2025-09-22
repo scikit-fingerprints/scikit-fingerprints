@@ -132,6 +132,38 @@ def russell_binary_distance(
     -------
     distance : float
         Russell distance between ``vec_a`` and ``vec_b``.
+
+    References
+    ----------
+    .. [1] `Russell P.F., Rao T.R.
+        "On habitat and association of species of anopheline larvae in south-eastern Madras"
+        Journal of the Malaria Institute of India, 1940, June, Vol. 3, No. 1, 153-178 pp.
+        <https://www.cabidigitallibrary.org/doi/full/10.5555/19412900343>`_
+
+    .. [2] `Deza M.M., Deza E.
+        "Encyclopedia of Distances."
+        Springer, Berlin, Heidelberg, 2009.
+        <https://doi.org/10.1007/978-3-642-00234-2_1>`_
+
+    .. [3] `RDKit documentation
+        <https://www.rdkit.org/docs/source/rdkit.DataStructs.cDataStructs.html>`_
+
+    Examples
+    --------
+    >>> from skfp.distances import russell_binary_distance
+    >>> import numpy as np
+    >>> vec_a = np.array([1, 1, 1, 1])
+    >>> vec_b = np.array([1, 1, 0, 0])
+    >>> dist = russell_binary_distance(vec_a, vec_b)
+    >>> dist
+    0.5
+
+    >>> from scipy.sparse import csr_array
+    >>> vec_a = csr_array([[1, 1, 1, 1]])
+    >>> vec_b = csr_array([[1, 1, 0, 0]])
+    >>> dist = russell_binary_distance(vec_a, vec_b)
+    >>> dist
+    0.5
     """
     return 1 - russell_binary_similarity(vec_a, vec_b)
 
