@@ -259,8 +259,8 @@ def bulk_mcconnaughey_binary_similarity(
 def _bulk_mcconnaughey_binary_similarity_single(
     X: csr_array, normalized: bool
 ) -> np.ndarray:
-    intersection = (X @ X.T).toarray().astype(float)
-    row_sums = np.asarray(X.sum(axis=1)).ravel().astype(float)
+    intersection = (X @ X.T).toarray()
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
 
     denom_A = row_sums[:, None]
     denom_B = row_sums[None, :]
@@ -287,10 +287,10 @@ def _bulk_mcconnaughey_binary_similarity_single(
 def _bulk_mcconnaughey_binary_similarity_two(
     X: csr_array, Y: csr_array, normalized: bool
 ) -> np.ndarray:
-    intersection = (X @ Y.T).toarray().astype(float)
+    intersection = (X @ Y.T).toarray()
 
-    row_sums_X = np.asarray(X.sum(axis=1)).ravel().astype(float)
-    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel().astype(float)
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
 
     denom_A = row_sums_X[:, None]
     denom_B = row_sums_Y[None, :]

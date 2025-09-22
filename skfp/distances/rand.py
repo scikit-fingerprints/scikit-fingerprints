@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -168,37 +167,41 @@ def rand_binary_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_rand_binary_similarity(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Rand similarity for binary matrices.
 
-    Computes the pairwise Rand [1]_ [2]_ (known as All-Bit [3]_ or Sokal-Michener)
-    similarity between binary matrices. If one array is passed, similarities are
-    computed between its rows. For two arrays, similarities are between their respective
-    rows, with `i`-th row and `j`-th column in output corresponding to `i`-th row from
-    first array and `j`-th row from second array.
+    Computes the pairwise Rand [1]_ [2]_ (also known as All-Bit [3]_ or
+    Sokal-Michener) similarity between binary matrices. If one array is passed,
+    similarities are computed between its rows. For two arrays, similarities
+    are between their respective rows, with `i`-th row and `j`-th column in
+    output corresponding to `i`-th row from first array and `j`-th row from
+    second array.
 
     See also :py:func:`rand_binary_similarity`.
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed,
+        similarities are computed between rows of X.
 
     Returns
     -------
     similarities : ndarray
-        Array with pairwise Rand similarity values. Shape is :math:`m \times n` if two
-        arrays are passed, or :math:`m \times m` otherwise.
+        Array with pairwise Rand similarity values. Shape is :math:`m \times n`
+        if two arrays are passed, or :math:`m \times m` otherwise.
 
     References
     ----------
@@ -230,37 +233,28 @@ def bulk_rand_binary_similarity(
     array([[0.66666667, 0.33333333],
            [0.33333333, 0.33333333]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_rand_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_rand_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_rand_binary_similarity_single(X: np.ndarray) -> np.ndarray:
-    m, length = X.shape
-    sims = np.empty((m, m))
-
-    for i in numba.prange(m):
-        for j in numba.prange(i, m):
-            intersection = np.sum(np.logical_and(X[i], X[j]))
-            sim = intersection / length
-            sims[i, j] = sims[j, i] = sim
-
+def _bulk_rand_binary_similarity_single(X: csr_array) -> np.ndarray:
+    n_features = X.shape[1]
+    intersection = (X @ X.T).toarray()
+    sims = intersection / n_features
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_rand_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m, length = X.shape
-    n = Y.shape[0]
-    sims = np.empty((m, n))
-
-    for i in numba.prange(m):
-        for j in numba.prange(n):
-            intersection = np.sum(np.logical_and(X[i], Y[j]))
-            sims[i, j] = intersection / length
-
+def _bulk_rand_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    n_features = X.shape[1]
+    intersection = (X @ Y.T).toarray()
+    sims = intersection / n_features
     return sims
 
 
@@ -271,35 +265,38 @@ def _bulk_rand_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray
     },
     prefer_skip_nested_validation=True,
 )
-def bulk_rand_binary_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
+def bulk_rand_binary_distance(
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+) -> np.ndarray:
     r"""
     Bulk Rand distance for vectors of binary values.
 
-    Computes the pairwise Rand distance between binary matrices. If one array is
-    passed, distances are computed between its rows. For two arrays, distances
-    are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    Computes the pairwise Rand distance between binary matrices. If one array
+    is passed, distances are computed between its rows. For two arrays,
+    distances are between their respective rows, with `i`-th row and `j`-th
+    column in output corresponding to `i`-th row from first array and `j`-th
+    row from second array.
 
     See also :py:func:`rand_binary_distance`.
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed,
+        distances are computed between rows of X.
 
     Returns
     -------
     distances : ndarray
-        Array with pairwise Rand distance values. Shape is :math:`m \times n` if two
-        arrays are passed, or :math:`m \times m` otherwise.
+        Array with pairwise Rand distance values. Shape is :math:`m \times n` if
+        two arrays are passed, or :math:`m \times m` otherwise.
 
     See Also
     --------
-    :py:func:`rand_binary_distance` : Rand distance function for two vectors
+    :py:func:`rand_binary_distance` : Rand distance function for two vectors.
 
     Examples
     --------
