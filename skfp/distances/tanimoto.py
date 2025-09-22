@@ -360,8 +360,6 @@ def bulk_tanimoto_binary_similarity(
 
 
 def _bulk_tanimoto_binary_similarity_single(X: csr_array) -> np.ndarray:
-    # intersection = x * y, dot product
-    # union = |x| + |y| - intersection, |x| is number of 1s
     intersection = (X @ X.T).toarray()
     row_sums = np.asarray(X.sum(axis=1)).ravel()
     unions = np.add.outer(row_sums, row_sums) - intersection
@@ -373,8 +371,6 @@ def _bulk_tanimoto_binary_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_tanimoto_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
-    # intersection = x * y, dot product
-    # union = |x| + |y| - intersection, |x| is number of 1s
     intersection = (X @ Y.T).toarray()
 
     row_sums_X = np.asarray(X.sum(axis=1)).ravel()
@@ -512,9 +508,6 @@ def bulk_tanimoto_count_similarity(
 
 
 def _bulk_tanimoto_count_similarity_single(X: csr_array) -> np.ndarray:
-    # intersection = x * y, dot product
-    # union = |x| + |y| - intersection
-    # |x| is the row dot product with itself (squared L2 norm)
     inter = (X @ X.T).toarray()
     row_norms = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     unions = np.add.outer(row_norms, row_norms) - inter
@@ -528,9 +521,6 @@ def _bulk_tanimoto_count_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_tanimoto_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
-    # intersection = x * y, dot product
-    # union = |x| + |y| - intersection
-    # |x| is the row dot product with itself (squared L2 norm)
     inter = (X @ Y.T).toarray()
     row_norms_X = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     row_norms_Y = np.asarray(Y.multiply(Y).sum(axis=1)).ravel()

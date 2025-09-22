@@ -273,7 +273,6 @@ def _bulk_mcconnaughey_binary_similarity_single(
 
     sims = term_A + term_B - 1
 
-    # both empty → similarity = 1
     both_zero = (denom_A == 0) & (denom_B == 0)
     sims[both_zero] = 1
 

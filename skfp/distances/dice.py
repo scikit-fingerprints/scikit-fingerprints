@@ -401,14 +401,11 @@ def bulk_dice_binary_similarity(
 
 
 def _bulk_dice_binary_similarity_single(X: csr_array) -> np.ndarray:
-    # intersection = x * y (dot-product for 0/1 data)
     intersection = (X @ X.T).toarray()
-    # |x| = number of ones
     row_sums = np.asarray(X.sum(axis=1)).ravel()
     denom = np.add.outer(row_sums, row_sums)
 
     sims = np.empty_like(intersection, dtype=float)
-    # sim = 2 * |A∩B| / (|A| + |B|)
     with np.errstate(divide="ignore", invalid="ignore"):
         np.multiply(2, intersection, out=sims)
         np.divide(sims, denom, out=sims, where=denom != 0)
@@ -555,7 +552,6 @@ def bulk_dice_count_similarity(
 
 
 def _bulk_dice_count_similarity_single(X: csr_array) -> np.ndarray:
-    # dot_ab = a · b ; dot_self = ||a||^2
     dot_products = (X @ X.T).toarray()
     dot_self = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     denom = np.add.outer(dot_self, dot_self)
