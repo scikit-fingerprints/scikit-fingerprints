@@ -22,9 +22,11 @@ def rand_binary_similarity(
 
     .. math::
 
-        sim(a, b) = \frac{|a \cap b|}{n}
+        sim(a, b) = \frac{|a+d|}{n}
 
-    where `n` is the length of vector `a`.
+    - :math:`a` - both are 1 (:math:`|x \cap y|`, common "on" bits)
+    - :math:`d` - both are 0 (:math:`~|x \cap y|`, common "off" bits)
+    - :math:`n` - length of passed vectors
 
     The calculated similarity falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a similarity of 0.
@@ -62,14 +64,14 @@ def rand_binary_similarity(
     >>> from skfp.distances import rand_binary_similarity
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
-    >>> vec_b = np.array([1, 0, 1])
+    >>> vec_b = np.array([1, 0, 0])
     >>> sim = rand_binary_similarity(vec_a, vec_b)
     >>> sim
     0.6666666666666666
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
-    >>> vec_b = csr_array([[1, 0, 1]])
+    >>> vec_b = csr_array([[1, 0, 0]])
     >>> sim = rand_binary_similarity(vec_a, vec_b)
     >>> sim
     0.6666666666666666
@@ -81,15 +83,17 @@ def rand_binary_similarity(
         )
 
     if isinstance(vec_a, np.ndarray):
-        num_common = np.sum(np.logical_and(vec_a, vec_b))
+        a = np.sum(np.logical_and(vec_a, vec_b))
+        d = np.sum(np.logical_and(1 - vec_a, 1 - vec_b))
         length = len(vec_a)
     else:
+        length = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
-        num_common = len(vec_a_idxs & vec_b_idxs)
-        length = vec_a.shape[1]
+        a = len(vec_a_idxs & vec_b_idxs)
+        d = length - (vec_a.nnz + vec_b.nnz - a)
 
-    rand_sim = num_common / length
+    rand_sim = (a + d) / length
     return float(rand_sim)
 
 
@@ -151,14 +155,14 @@ def rand_binary_distance(
     >>> from skfp.distances import rand_binary_distance
     >>> import numpy as np
     >>> vec_a = np.array([1, 0, 1])
-    >>> vec_b = np.array([1, 0, 1])
+    >>> vec_b = np.array([1, 0, 0])
     >>> dist = rand_binary_distance(vec_a, vec_b)
     >>> dist
     0.33333333333333337
 
     >>> from scipy.sparse import csr_array
     >>> vec_a = csr_array([[1, 0, 1]])
-    >>> vec_b = csr_array([[1, 0, 1]])
+    >>> vec_b = csr_array([[1, 0, 0]])
     >>> dist = rand_binary_distance(vec_a, vec_b)
     >>> dist
     0.33333333333333337
@@ -230,8 +234,8 @@ def bulk_rand_binary_similarity(
     >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_rand_binary_similarity(X, Y)
     >>> sim
-    array([[0.66666667, 0.33333333],
-           [0.33333333, 0.33333333]])
+    array([[1.        , 0.33333333],
+           [0.66666667, 0.66666667]])
     """
     if not isinstance(X, csr_array):
         X = csr_array(X)
@@ -246,15 +250,32 @@ def bulk_rand_binary_similarity(
 
 def _bulk_rand_binary_similarity_single(X: csr_array) -> np.ndarray:
     n_features = X.shape[1]
-    intersection = (X @ X.T).toarray()
-    sims = intersection / n_features
+
+    a = (X @ X.T).toarray()
+
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
+    sum_A = row_sums[:, None]
+    sum_B = row_sums[None, :]
+
+    d = n_features - (sum_A + sum_B - a)
+
+    sims = (a + d) / n_features
     return sims
 
 
 def _bulk_rand_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     n_features = X.shape[1]
-    intersection = (X @ Y.T).toarray()
-    sims = intersection / n_features
+
+    a = (X @ Y.T).toarray()
+
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
+    sum_A = row_sums_X[:, None]
+    sum_B = row_sums_Y[None, :]
+
+    d = n_features - (sum_A + sum_B - a)
+
+    sims = (a + d) / n_features
     return sims
 
 
@@ -303,16 +324,16 @@ def bulk_rand_binary_distance(
     >>> from skfp.distances import bulk_rand_binary_distance
     >>> import numpy as np
     >>> X = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 0], [1, 0, 0]])
     >>> dist = bulk_rand_binary_distance(X, Y)
     >>> dist
     array([[0.33333333, 0.33333333],
            [0.33333333, 0.33333333]])
 
-    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
+    >>> X = np.array([[1, 0, 1], [1, 0, 0]])
     >>> dist = bulk_rand_binary_distance(X)
     >>> dist
-    array([[0.33333333, 0.33333333],
-           [0.33333333, 0.33333333]])
+    array([[0.        , 0.33333333],
+           [0.33333333, 0.        ]])
     """
     return 1 - bulk_rand_binary_similarity(X, Y)
