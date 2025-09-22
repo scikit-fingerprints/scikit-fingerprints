@@ -183,12 +183,11 @@ def bulk_rand_binary_similarity(
     r"""
     Bulk Rand similarity for binary matrices.
 
-    Computes the pairwise Rand [1]_ [2]_ (also known as All-Bit [3]_ or
-    Sokal-Michener) similarity between binary matrices. If one array is passed,
-    similarities are computed between its rows. For two arrays, similarities
-    are between their respective rows, with `i`-th row and `j`-th column in
-    output corresponding to `i`-th row from first array and `j`-th row from
-    second array.
+    Computes the pairwise Rand (also known as All-Bit or Sokal-Michener) similarity
+    between binary matrices. If one array is passed, similarities are computed between
+    its rows. For two arrays, similarities are between their respective rows, with
+    `i`-th row and `j`-th column in output corresponding to `i`-th row from first array
+    and `j`-th row from second array.
 
     See also :py:func:`rand_binary_similarity`.
 

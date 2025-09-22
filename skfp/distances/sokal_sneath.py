@@ -187,8 +187,8 @@ def bulk_sokal_sneath_2_binary_similarity(
     r"""
     Bulk Sokal-Sneath similarity 2 for binary matrices.
 
-    Computes the pairwise Sokal-Sneath similarity 2 [1]_ [2]_ [3]_ between binary
-    matrices. If one array is passed, similarities are computed between its rows.
+    Computes the pairwise Sokal-Sneath similarity 2 between binary matrices.
+    If one array is passed, similarities are computed between its rows.
     For two arrays, similarities are between their respective rows, with
     `i`-th row and `j`-th column in output corresponding to `i`-th row from the
     first array and `j`-th row from the second array.
@@ -314,7 +314,7 @@ def bulk_sokal_sneath_2_binary_distance(
     distances : ndarray
         Array with pairwise Sokal-Sneath distance 2 values. Shape is
         :math:`m \times n` if two arrays are passed, or :math:`m \times m`
-        otherwise.
+        otherwise.https://github.com/scikit-fingerprints/scikit-fingerprints/pull/488
 
     Examples
     --------

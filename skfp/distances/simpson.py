@@ -182,9 +182,9 @@ def bulk_simpson_binary_similarity(
     r"""
     Bulk Simpson similarity for binary matrices.
 
-    Computes the pairwise Simpson [1]_ (also known as asymmetric similarity [2]_ [3]_
-    or overlap coefficient [4]_) similarity between binary matrices. If one array is
-    passed, similarities are computed between its rows. For two arrays, similarities
+    Computes the pairwise Simpson (also known as asymmetric similarity or overlap
+    coefficient) similarity between binary matrices. If one array is passed,
+    similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
     corresponding to `i`-th row from first array and `j`-th row from second array.
 
