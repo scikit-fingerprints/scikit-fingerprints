@@ -208,7 +208,7 @@ def bulk_russell_binary_distance(
     X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
-    Bulk Russell distance for binary matrices.
+    Bulk Russell distance for vectors of binary values.
 
     Computes the pairwise Russell distance between binary matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
@@ -216,5 +216,41 @@ def bulk_russell_binary_distance(
     corresponding to `i`-th row from first array and `j`-th row from second array.
 
     See also :py:func:`russell_binary_distance`.
+
+    Parameters
+    ----------
+    X : ndarray
+        First binary input array, of shape :math:`m \times m`
+
+    Y : ndarray, default=None
+        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        are computed between rows of X.
+
+    Returns
+    -------
+    distances : ndarray
+        Array with pairwise Russell distance values. Shape is :math:`m \times n` if two
+        arrays are passed, or :math:`m \times m` otherwise.
+
+    See Also
+    --------
+    :py:func:`russell_binary_distance` : Russell distance function for two vectors
+
+    Examples
+    --------
+    >>> from skfp.distances import bulk_russell_binary_distance
+    >>> import numpy as np
+    >>> X = np.array([[1, 1, 1], [1, 0, 1]])
+    >>> Y = np.array([[1, 0, 1], [1, 1, 0]])
+    >>> dist = bulk_russell_binary_distance(X, Y)
+    >>> dist
+    array([[0.33333333, 0.33333333],
+           [0.33333333, 0.66666667]])
+
+    >>> X = np.array([[1, 1, 1], [1, 0, 0]])
+    >>> dist = bulk_russell_binary_distance(X)
+    >>> dist
+    array([[0.        , 0.66666667],
+           [0.66666667, 0.66666667]])
     """
     return 1 - bulk_russell_binary_similarity(X, Y)
