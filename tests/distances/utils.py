@@ -60,11 +60,17 @@ def run_test_bulk_similarity_and_distance(
         [dist_func(fps[i], fps[j]) for j in range(len(fps))] for i in range(len(fps))
     ]
 
+    expected_sim = np.array(expected_sim)
+    expected_dist = np.array(expected_dist)
+
     bulk_sim = bulk_sim_func(fps, **sim_func_kwargs)
     bulk_dist = bulk_dist_func(fps)
 
     bulk_sim_sparse = bulk_sim_func(fps_sparse, **sim_func_kwargs)
     bulk_dist_sparse = bulk_dist_func(fps_sparse)
+
+    print(expected_sim)
+    print(bulk_sim)
 
     assert np.allclose(expected_sim, bulk_sim, atol=1e-3)
     assert np.allclose(expected_dist, bulk_dist, atol=1e-3)
