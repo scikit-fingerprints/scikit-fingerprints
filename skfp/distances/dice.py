@@ -400,7 +400,7 @@ def bulk_dice_binary_similarity(
         return _bulk_dice_binary_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_dice_binary_similarity_two(X, Y)
 
 
@@ -555,7 +555,7 @@ def bulk_dice_count_similarity(
         return _bulk_dice_count_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_dice_count_similarity_two(X, Y)
 
 

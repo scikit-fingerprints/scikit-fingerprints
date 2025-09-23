@@ -354,7 +354,7 @@ def bulk_tanimoto_binary_similarity(
         return _bulk_tanimoto_binary_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
 
         return _bulk_tanimoto_binary_similarity_two(X, Y)
 
@@ -504,9 +504,8 @@ def bulk_tanimoto_count_similarity(
     if Y is None:
         return _bulk_tanimoto_count_similarity_single(X)
     else:
-        Y = np.array(Y, dtype=float)  # Numba does not allow integers
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
 
         return _bulk_tanimoto_count_similarity_two(X, Y)
 

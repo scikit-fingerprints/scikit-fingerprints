@@ -396,7 +396,7 @@ def bulk_ct4_binary_similarity(
         return _bulk_ct4_binary_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_ct4_binary_similarity_two(X, Y)
 
 
@@ -512,7 +512,7 @@ def bulk_ct4_count_similarity(
         return _bulk_ct4_count_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_ct4_count_similarity_two(X, Y)
 
 
