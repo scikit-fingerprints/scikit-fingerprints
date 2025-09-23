@@ -31,7 +31,7 @@ def _get_values() -> list[tuple[Mol, Mol, float, float]]:
 
 
 @pytest.mark.parametrize("mol_query, mol_ref, similarity, distance", _get_values())
-def test_fraggle(mol_query, mol_ref, comparison, similarity, distance):
+def test_fraggle(mol_query, mol_ref, similarity, distance):
     computed_similarity = fraggle_similarity(mol_query, mol_ref)
     computed_distance = fraggle_distance(mol_query, mol_ref)
 
