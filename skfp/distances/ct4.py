@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def ct4_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Consonni–Todeschini 4 similarity for vectors of binary values.
@@ -82,7 +82,7 @@ def ct4_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         intersection = np.sum(np.logical_and(vec_a, vec_b))
         union = np.sum(np.logical_or(vec_a, vec_b))
     else:
@@ -103,8 +103,8 @@ def ct4_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def ct4_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Consonni–Todeschini 4 distance for vectors of binary values.
@@ -180,7 +180,7 @@ def ct4_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def ct4_count_similarity(
-    vec_a: np.ndarray | csr_array, vec_b: np.ndarray | csr_array
+    vec_a: list | np.ndarray | csr_array, vec_b: list | np.ndarray | csr_array
 ) -> float:
     r"""
     Consonni–Todeschini 4 similarity for vectors of count values.
@@ -249,7 +249,7 @@ def ct4_count_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         dot_aa = np.dot(vec_a, vec_a)
         dot_bb = np.dot(vec_b, vec_b)
         dot_ab = np.dot(vec_a, vec_b)
@@ -274,7 +274,7 @@ def ct4_count_similarity(
     prefer_skip_nested_validation=True,
 )
 def ct4_count_distance(
-    vec_a: np.ndarray | csr_array, vec_b: np.ndarray | csr_array
+    vec_a: list | np.ndarray | csr_array, vec_b: list | np.ndarray | csr_array
 ) -> float:
     """
     Consonni–Todeschini distance for vectors of count values.
@@ -351,7 +351,7 @@ def ct4_count_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_ct4_binary_similarity(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 similarity for binary matrices.
@@ -396,7 +396,7 @@ def bulk_ct4_binary_similarity(
         return _bulk_ct4_binary_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_ct4_binary_similarity_two(X, Y)
 
 
@@ -440,7 +440,7 @@ def _bulk_ct4_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     prefer_skip_nested_validation=True,
 )
 def bulk_ct4_binary_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 distance for vectors of binary values.
@@ -478,7 +478,7 @@ def bulk_ct4_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_ct4_count_similarity(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 similarity for count matrices.
@@ -512,7 +512,7 @@ def bulk_ct4_count_similarity(
         return _bulk_ct4_count_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_ct4_count_similarity_two(X, Y)
 
 
@@ -558,7 +558,7 @@ def _bulk_ct4_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     prefer_skip_nested_validation=True,
 )
 def bulk_ct4_count_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 distance for vectors of count values.

@@ -12,8 +12,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def russell_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Russell similarity for vectors of binary values.
@@ -84,7 +84,7 @@ def russell_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         a = np.sum(np.logical_and(vec_a, vec_b))
         n = len(vec_a)
     else:
@@ -107,8 +107,8 @@ def russell_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def russell_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Russell distance for vectors of binary values.

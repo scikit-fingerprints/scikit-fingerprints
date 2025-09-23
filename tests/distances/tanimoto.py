@@ -17,59 +17,53 @@ from tests.distances.utils import (
 )
 
 
-def _get_binary_values() -> list[tuple[list[int], list[int], str, float, float]]:
-    # vec_a, vec_b, comparison, similarity, distance
+def _get_binary_values() -> list[tuple[list[int], list[int], float, float]]:
+    # vec_a, vec_b, similarity, distance
     return [
-        ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
-        ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
-        ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
-        ([1, 0, 0, 0], [1, 1, 1, 1], "<", 0.5, 0.5),
-        ([1, 1, 1, 0], [1, 1, 1, 1], ">", 0.5, 0.5),
+        ([1, 0, 0], [0, 1, 1], 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], 0.0, 1.0),
+        ([0, 0, 0], [0, 0, 0], 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], 1.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], 1.0, 0.0),
+        ([1, 0, 0, 0], [1, 1, 1, 1], 0.25, 0.75),
+        ([1, 1, 1, 0], [1, 1, 1, 1], 0.75, 0.25),
     ]
 
 
-def _get_count_values() -> list[tuple[list[int], list[int], str, float, float]]:
-    # vec_a, vec_b, comparison, similarity, distance
+def _get_count_values() -> list[tuple[list[int], list[int], float, float]]:
+    # vec_a, vec_b, similarity, distance
     return [
-        ([1, 0, 0], [0, 2, 3], "==", 0.0, 1.0),
-        ([1, 0, 0], [0, 0, 0], "==", 0.0, 1.0),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
-        ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
-        ([4, 0, 0], [4, 0, 0], "==", 1.0, 0.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
-        ([3, 2, 1], [3, 2, 1], "==", 1.0, 0.0),
-        ([3, 0, 0, 0], [1, 1, 1, 1], "<", 0.5, 0.5),
-        ([2, 3, 4, 0], [2, 3, 4, 2], ">", 0.5, 0.5),
+        ([1, 0, 0], [0, 2, 3], 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], 0.0, 1.0),
+        ([0, 0, 0], [0, 0, 0], 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], 1.0, 0.0),
+        ([4, 0, 0], [4, 0, 0], 1.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], 1.0, 0.0),
+        ([3, 2, 1], [3, 2, 1], 1.0, 0.0),
+        ([3, 0, 0, 0], [1, 1, 1, 1], 0.3, 0.7),
+        ([1, 3, 4, 0], [2, 3, 4, 2], 0.84375, 0.15625),
     ]
 
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, comparison, similarity, distance", _get_binary_values()
-)
-def test_tanimoto_binary(vec_a, vec_b, comparison, similarity, distance):
+@pytest.mark.parametrize("vec_a, vec_b, similarity, distance", _get_binary_values())
+def test_tanimoto_binary(vec_a, vec_b, similarity, distance):
     run_test_similarity_and_distance(
         tanimoto_binary_similarity,
         tanimoto_binary_distance,
         vec_a,
         vec_b,
-        comparison,
         similarity,
         distance,
     )
 
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, comparison, similarity, distance", _get_count_values()
-)
-def test_tanimoto_count(vec_a, vec_b, comparison, similarity, distance):
+@pytest.mark.parametrize("vec_a, vec_b, similarity, distance", _get_count_values())
+def test_tanimoto_count(vec_a, vec_b, similarity, distance):
     run_test_similarity_and_distance(
         tanimoto_count_similarity,
         tanimoto_count_distance,
         vec_a,
         vec_b,
-        comparison,
         similarity,
         distance,
     )

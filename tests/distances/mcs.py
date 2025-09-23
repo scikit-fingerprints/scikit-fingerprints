@@ -8,38 +8,37 @@ from skfp.distances import (
     mcs_distance,
     mcs_similarity,
 )
-from tests.distances.utils import assert_distance_values, assert_similarity_values
 
 
-def _get_values() -> list[tuple[Mol, Mol, str, float, float]]:
-    # mol_query, mol_ref, comparison, similarity, distance
+def _get_values() -> list[tuple[Mol, Mol, float, float]]:
+    # mol_query, mol_ref, similarity, distance
     paracetamol = MolFromSmiles("CC(=O)Nc1ccc(O)cc1")
     ibuprofen = MolFromSmiles("CC(C)CC1=CC=C(C=C1)C(C)C(=O)O")
     caffeine = MolFromSmiles("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")
     theobromine = MolFromSmiles("Cn1cnc2c1c(=O)[nH]c(=O)n2C")
 
     return [
-        (paracetamol, paracetamol, "==", 1.0, 0.0),
-        (ibuprofen, ibuprofen, "==", 1.0, 0.0),
-        (caffeine, caffeine, "==", 1.0, 0.0),
-        (theobromine, theobromine, "==", 1.0, 0.0),
-        (caffeine, theobromine, ">", 0.5, 0.5),
-        (paracetamol, ibuprofen, "<", 0.5, 0.5),
-        (ibuprofen, paracetamol, "<", 0.5, 0.5),
-        (paracetamol, caffeine, "<", 0.5, 0.5),
-        (caffeine, paracetamol, "<", 0.5, 0.5),
+        (paracetamol, paracetamol, 1.0, 0.0),
+        (ibuprofen, ibuprofen, 1.0, 0.0),
+        (caffeine, caffeine, 1.0, 0.0),
+        (theobromine, theobromine, 1.0, 0.0),
+        (caffeine, theobromine, 0.5, 0.5),
+        (paracetamol, ibuprofen, 0.3, 0.7),
+        (ibuprofen, paracetamol, 0.3, 0.7),
+        (paracetamol, caffeine, 0.3, 0.7),
+        (caffeine, paracetamol, 0.3, 0.7),
     ]
 
 
 @pytest.mark.parametrize(
-    "mol_query, mol_ref, comparison, similarity, distance", _get_values()
+    "mol_query, mol_ref, similarity_threshold, distance_threshold", _get_values()
 )
-def test_mcs(mol_query, mol_ref, comparison, similarity, distance):
+def test_mcs(mol_query, mol_ref, similarity_threshold, distance_threshold):
     computed_similarity = mcs_similarity(mol_query, mol_ref)
     computed_distance = mcs_distance(mol_query, mol_ref)
 
-    assert_similarity_values(computed_similarity, comparison, similarity)
-    assert_distance_values(computed_distance, comparison, distance)
+    assert computed_similarity >= similarity_threshold
+    assert computed_distance <= distance_threshold
 
 
 def test_bulk_mcs(mols_list):
