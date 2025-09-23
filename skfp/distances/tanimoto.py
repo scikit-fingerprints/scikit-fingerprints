@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def tanimoto_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Tanimoto similarity for vectors of binary values.
@@ -70,7 +70,7 @@ def tanimoto_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         intersection = np.sum(np.logical_and(vec_a, vec_b))
         union = np.sum(np.logical_or(vec_a, vec_b))
     else:
@@ -91,8 +91,8 @@ def tanimoto_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def tanimoto_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Tanimoto distance for vectors of binary values.
@@ -157,8 +157,8 @@ def tanimoto_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def tanimoto_count_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Tanimoto similarity for vectors of count values.
@@ -216,7 +216,7 @@ def tanimoto_count_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         dot_aa = np.dot(vec_a, vec_a)
         dot_bb = np.dot(vec_b, vec_b)
         dot_ab = np.dot(vec_a, vec_b)
@@ -240,8 +240,8 @@ def tanimoto_count_similarity(
     prefer_skip_nested_validation=True,
 )
 def tanimoto_count_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Tanimoto distance for vectors of count values.
@@ -305,7 +305,7 @@ def tanimoto_count_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_binary_similarity(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto similarity for binary matrices.
@@ -360,6 +360,8 @@ def bulk_tanimoto_binary_similarity(
 
 
 def _bulk_tanimoto_binary_similarity_single(X: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # union = |x| + |y| - intersection, |x| is number of 1s
     intersection = (X @ X.T).toarray()
     row_sums = np.asarray(X.sum(axis=1)).ravel()
     unions = np.add.outer(row_sums, row_sums) - intersection
@@ -371,6 +373,8 @@ def _bulk_tanimoto_binary_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_tanimoto_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # union = |x| + |y| - intersection, |x| is number of 1s
     intersection = (X @ Y.T).toarray()
 
     row_sums_X = np.asarray(X.sum(axis=1)).ravel()
@@ -392,7 +396,7 @@ def _bulk_tanimoto_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarr
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_binary_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of binary values.
@@ -451,7 +455,7 @@ def bulk_tanimoto_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_count_similarity(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto similarity for count matrices.
@@ -493,14 +497,14 @@ def bulk_tanimoto_count_similarity(
     array([[1.        , 0.33333333],
            [0.5       , 0.5       ]])
     """
-    X = X.astype(float)  # Numba does not allow integers
+    # Numba does not allow integers
     if not isinstance(X, csr_array):
         X = csr_array(X)
 
     if Y is None:
         return _bulk_tanimoto_count_similarity_single(X)
     else:
-        Y = Y.astype(float)  # Numba does not allow integers
+        Y = np.array(Y, dtype=float)  # Numba does not allow integers
         if not isinstance(Y, csr_array):
             Y = csr_array(Y)
 
@@ -508,12 +512,13 @@ def bulk_tanimoto_count_similarity(
 
 
 def _bulk_tanimoto_count_similarity_single(X: csr_array) -> np.ndarray:
-    inter = (X @ X.T).toarray()
+    # union for counts = dot(x,x) + dot(y,y) - dot(x,y)
+    intersection = (X @ X.T).toarray()
     row_norms = np.asarray(X.multiply(X).sum(axis=1)).ravel()
-    unions = np.add.outer(row_norms, row_norms) - inter
+    unions = np.add.outer(row_norms, row_norms) - intersection
 
-    sims = np.empty_like(inter, dtype=float)
-    np.divide(inter, unions, out=sims, where=unions >= 1e-8)
+    sims = np.empty_like(intersection, dtype=float)
+    np.divide(intersection, unions, out=sims, where=unions >= 1e-8)
 
     np.fill_diagonal(sims, 1)
 
@@ -521,14 +526,15 @@ def _bulk_tanimoto_count_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_tanimoto_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
-    inter = (X @ Y.T).toarray()
+    # union for counts = dot(x,x) + dot(y,y) - dot(x,y)
+    intersection = (X @ Y.T).toarray()
     row_norms_X = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     row_norms_Y = np.asarray(Y.multiply(Y).sum(axis=1)).ravel()
 
-    unions = np.add.outer(row_norms_X, row_norms_Y) - inter
+    unions = np.add.outer(row_norms_X, row_norms_Y) - intersection
 
-    sims = np.empty_like(inter, dtype=float)
-    np.divide(inter, unions, out=sims, where=unions >= 1e-8)
+    sims = np.empty_like(intersection, dtype=float)
+    np.divide(intersection, unions, out=sims, where=unions >= 1e-8)
 
     return sims
 
@@ -541,7 +547,7 @@ def _bulk_tanimoto_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarra
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_count_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of count values.
