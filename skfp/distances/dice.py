@@ -401,6 +401,8 @@ def bulk_dice_binary_similarity(
 
 
 def _bulk_dice_binary_similarity_single(X: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = sum of 1s in both rows
     intersection = (X @ X.T).toarray()
     row_sums = np.asarray(X.sum(axis=1)).ravel()
     denom = np.add.outer(row_sums, row_sums)
@@ -417,6 +419,8 @@ def _bulk_dice_binary_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_dice_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = sum of 1s in both rows
     intersection = (X @ Y.T).toarray()
     row_sums_X = np.asarray(X.sum(axis=1)).ravel()
     row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
@@ -552,6 +556,8 @@ def bulk_dice_count_similarity(
 
 
 def _bulk_dice_count_similarity_single(X: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = dot(x,x) + dot(y,y)
     dot_products = (X @ X.T).toarray()
     dot_self = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     denom = np.add.outer(dot_self, dot_self)
@@ -567,6 +573,8 @@ def _bulk_dice_count_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_dice_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = dot(x,x) + dot(y,y)
     dot_products = (X @ Y.T).toarray()
     dot_self_X = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     dot_self_Y = np.asarray(Y.multiply(Y).sum(axis=1)).ravel()
