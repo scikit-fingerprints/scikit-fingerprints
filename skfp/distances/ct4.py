@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -92,7 +91,7 @@ def ct4_binary_similarity(
         intersection = len(vec_a_idxs & vec_b_idxs)
         union = len(vec_a_idxs | vec_b_idxs)
 
-    sim = float(np.log(1 + intersection) / np.log(1 + union)) if union != 0 else 1.0
+    sim = float(np.log1p(intersection) / np.log1p(union)) if union != 0 else 1
     return sim
 
 
@@ -259,10 +258,10 @@ def ct4_count_similarity(
         dot_aa = vec_a.multiply(vec_a).sum()
         dot_bb = vec_b.multiply(vec_b).sum()
 
-    numerator = np.log(1 + dot_ab)
-    denominator = np.log(1 + dot_aa + dot_bb - dot_ab)
+    numerator = np.log1p(dot_ab)
+    denominator = np.log1p(dot_aa + dot_bb - dot_ab)
 
-    sim = float(numerator / denominator) if denominator >= 1e-8 else 1.0
+    sim = float(numerator / denominator) if denominator >= 1e-8 else 1
 
     return sim
 
@@ -345,41 +344,39 @@ def ct4_count_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_ct4_binary_similarity(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 similarity for binary matrices.
 
-    Computes the pairwise Consonni–Todeschini 4 (CT4) similarity between
-    binary matrices. If one array is passed, similarities are computed
-    between its rows. For two arrays, similarities are between their respective
-    rows, with `i`-th row and `j`-th column in output corresponding to `i`-th row
-    from first array and `j`-th row from second array.
+    Computes the pairwise Consonni–Todeschini 4 (CT4) similarity between binary matrices.
+    If one array is passed, similarities are computed between its rows. For two arrays,
+    similarities are between their respective rows, with `i`-th row and `j`-th column in output
+    corresponding to `i`-th row from first array and `j`-th row from second array.
 
     See also :py:func:`ct4_binary_similarity`.
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times d`.
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times d`.
+        If not passed, similarities are computed between rows of X.
 
     Returns
     -------
     similarities : ndarray
-        Array with pairwise Consonni–Todeschini similarity values. Shape is :math:`m \times n` if two
+        Array with pairwise CT4 similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    See Also
-    --------
-    :py:func:`ct4_binary_similarity` : Consonni–Todeschini similarity function for two vectors.
 
     Examples
     --------
@@ -392,48 +389,46 @@ def bulk_ct4_binary_similarity(
     array([[1.        , 0.5       ],
            [0.63092975, 0.63092975]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_ct4_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_ct4_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_ct4_binary_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
+def _bulk_ct4_binary_similarity_single(X: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # union = |x| + |y| - intersection, |x| is number of 1s
+    intersection = (X @ X.T).toarray()
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
+    unions = np.add.outer(row_sums, row_sums) - intersection
 
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
-            intersection = np.sum(np.logical_and(X[i], X[j]))
-            union = np.sum(np.logical_or(X[i], X[j]))
-            sim = (
-                float(np.log(1 + intersection) / np.log(1 + union))
-                if union != 0
-                else 1.0
-            )
-            sims[i, j] = sims[j, i] = sim
+    sims = np.empty_like(intersection, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.divide(np.log1p(intersection), np.log1p(unions), out=sims, where=unions != 0)
 
+    sims[unions == 0] = 1
+    np.fill_diagonal(sims, 1)
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_ct4_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+def _bulk_ct4_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # union = |x| + |y| - intersection, |x| is number of 1s
+    intersection = (X @ Y.T).toarray()
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
+    unions = np.add.outer(row_sums_X, row_sums_Y) - intersection
 
-    for i in numba.prange(m):
-        for j in numba.prange(n):
-            intersection = np.sum(np.logical_and(X[i], Y[j]))
-            union = np.sum(np.logical_or(X[i], Y[j]))
-            sims[i, j] = (
-                float(np.log(1 + intersection) / np.log(1 + union))
-                if union != 0
-                else 1.0
-            )
+    sims = np.empty_like(intersection, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.divide(np.log1p(intersection), np.log1p(unions), out=sims, where=unions != 0)
 
+    sims[unions == 0] = 1
     return sims
 
 
@@ -444,7 +439,9 @@ def _bulk_ct4_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     },
     prefer_skip_nested_validation=True,
 )
-def bulk_ct4_binary_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
+def bulk_ct4_binary_distance(
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 distance for vectors of binary values.
 
@@ -457,48 +454,32 @@ def bulk_ct4_binary_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.n
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times d`.
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times d`.
+        If not passed, distances are computed between rows of X.
 
     Returns
     -------
     distances : ndarray
-        Array with pairwise Consonni–Todeschini distance values. Shape is :math:`m \times n` if two
+        Array with pairwise CT4 distance values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    See Also
-    --------
-    :py:func:`ct4_binary_distance` : Consonni–Todeschini distance function for two vectors
-
-    Examples
-    --------
-    >>> from skfp.distances import bulk_ct4_binary_distance
-    >>> import numpy as np
-    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> dist = bulk_ct4_binary_distance(X, Y)
-    >>> dist
-    array([[0., 0.],
-           [0., 0.]])
-
-    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> dist = bulk_ct4_binary_distance(X)
-    >>> dist
-    array([[0., 0.],
-           [0., 0.]])
     """
     return 1 - bulk_ct4_binary_similarity(X, Y)
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
-def bulk_ct4_count_similarity(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
+def bulk_ct4_count_similarity(
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 similarity for count matrices.
 
@@ -511,88 +492,61 @@ def bulk_ct4_count_similarity(X: np.ndarray, Y: np.ndarray | None = None) -> np.
 
     Parameters
     ----------
-    X : ndarray
-        First count input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First count input array or sparse matrix, of shape :math:`m \times d`.
 
-    Y : ndarray, default=None
-        Second count input array, of shape :math:`n \times n`. If not passed, similarities
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second count input array or sparse matrix, of shape :math:`n \times d`.
+        If not passed, similarities are computed between rows of X.
 
     Returns
     -------
     similarities : ndarray
-        Array with pairwise Consonni–Todeschini similarity values. Shape is :math:`m \times n` if two
+        Array with pairwise CT4 similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    See Also
-    --------
-    :py:func:`ct4_count_similarity` : Consonni–Todeschini similarity function for two vectors.
-
-    Examples
-    --------
-    >>> from skfp.distances import bulk_ct4_count_similarity
-    >>> import numpy as np
-    >>> X = np.array([[1, 0, 1], [0, 0, 1]])
-    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
-    >>> sim = bulk_ct4_count_similarity(X, Y)
-    >>> sim
-    array([[1.        , 0.5       ],
-           [0.63092975, 0.63092975]])
     """
-    X = X.astype(float)  # Numba does not allow integers
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
 
     if Y is None:
         return _bulk_ct4_count_similarity_single(X)
     else:
-        Y = Y.astype(float)
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_ct4_count_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_ct4_count_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
+def _bulk_ct4_count_similarity_single(X: csr_array) -> np.ndarray:
+    # union for counts = dot(x,x) + dot(y,y) - dot(x,y)
+    dot_products = (X @ X.T).toarray()
+    dot_self = np.asarray(X.multiply(X).sum(axis=1)).ravel()
+    unions = np.add.outer(dot_self, dot_self) - dot_products
 
-    for i in numba.prange(m):
-        vec_a = X[i]
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
-            vec_b = X[j]
+    sims = np.empty_like(dot_products, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.divide(
+            np.log1p(dot_products), np.log1p(unions), out=sims, where=unions >= 1e-8
+        )
 
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            numerator = np.log(1 + dot_ab)
-            denominator = np.log(1 + dot_aa + dot_bb - dot_ab)
-
-            sim = float(numerator / denominator) if denominator >= 1e-8 else 1.0
-            sims[i, j] = sims[j, i] = sim
-
+    sims[unions == 0] = 1
+    np.fill_diagonal(sims, 1)
     return sims
 
 
-@numba.jit(parallel=True)
-def _bulk_ct4_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+def _bulk_ct4_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    # union for counts = dot(x,x) + dot(y,y) - dot(x,y)
+    dot_products = (X @ Y.T).toarray()
+    dot_self_X = np.asarray(X.multiply(X).sum(axis=1)).ravel()
+    dot_self_Y = np.asarray(Y.multiply(Y).sum(axis=1)).ravel()
+    unions = np.add.outer(dot_self_X, dot_self_Y) - dot_products
 
-    for i in numba.prange(m):
-        vec_a = X[i]
+    sims = np.empty_like(dot_products, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.divide(
+            np.log1p(dot_products), np.log1p(unions), out=sims, where=unions >= 1e-8
+        )
 
-        for j in numba.prange(n):
-            vec_b = Y[j]
-
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            numerator = np.log(1 + dot_ab)
-            denominator = np.log(1 + dot_aa + dot_bb - dot_ab)
-
-            sims[i, j] = float(numerator / denominator) if denominator >= 1e-8 else 1.0
-
+    sims[unions == 0] = 1
     return sims
 
 
@@ -603,7 +557,9 @@ def _bulk_ct4_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     },
     prefer_skip_nested_validation=True,
 )
-def bulk_ct4_count_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
+def bulk_ct4_count_distance(
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+) -> np.ndarray:
     r"""
     Bulk Consonni–Todeschini 4 distance for vectors of count values.
 
@@ -616,38 +572,17 @@ def bulk_ct4_count_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.nd
 
     Parameters
     ----------
-    X : ndarray
-        First count input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First count input array or sparse matrix, of shape :math:`m \times d`.
 
-    Y : ndarray, default=None
-        Second count input array, of shape :math:`n \times n`. If not passed, distances
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second count input array or sparse matrix, of shape :math:`n \times d`.
+        If not passed, distances are computed between rows of X.
 
     Returns
     -------
     distances : ndarray
-        Array with pairwise Consonni–Todeschini distance values. Shape is :math:`m \times n` if two
+        Array with pairwise CT4 distance values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    See Also
-    --------
-    :py:func:`ct4_count_distance` : Consonni–Todeschini distance function for two vectors
-
-    Examples
-    --------
-    >>> from skfp.distances import bulk_ct4_count_distance
-    >>> import numpy as np
-    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> dist = bulk_ct4_count_distance(X, Y)
-    >>> dist
-    array([[0., 0.],
-           [0., 0.]])
-
-    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> dist = bulk_ct4_count_distance(X)
-    >>> dist
-    array([[0., 0.],
-           [0., 0.]])
     """
     return 1 - bulk_ct4_count_similarity(X, Y)

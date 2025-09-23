@@ -117,19 +117,27 @@ def run_test_bulk_similarity_and_distance_two_arrays(
     assert np.allclose(bulk_dist, bulk_dist_sparse, atol=1e-3)
 
 
-def assert_similarity_values(similarity: float, comparison: str, value: float) -> None:
-    if comparison == ">":
-        assert similarity > value
-    elif comparison == "<":
-        assert similarity < value
-    elif comparison == "==":
-        assert np.isclose(similarity, value, atol=1e-3)
+def assert_similarity_values(
+    similarity: float,
+    comparison_sign: str,
+    threshold: float,
+) -> None:
+    if comparison_sign == ">":
+        assert similarity > threshold
+    elif comparison_sign == "<":
+        assert similarity < threshold
+    elif comparison_sign == "==":
+        assert np.isclose(similarity, threshold, atol=1e-3)
 
 
-def assert_distance_values(distance: float, comparison: str, value: float) -> None:
-    if comparison == ">":
-        assert value > distance
-    elif comparison == "<":
-        assert value < distance
-    elif comparison == "==":
-        assert np.isclose(distance, value, atol=1e-3)
+def assert_distance_values(
+    distance: float,
+    comparison_sign: str,
+    threshold: float,
+) -> None:
+    if comparison_sign == ">":
+        assert threshold > distance
+    elif comparison_sign == "<":
+        assert threshold < distance
+    elif comparison_sign == "==":
+        assert np.isclose(distance, threshold, atol=1e-3)
