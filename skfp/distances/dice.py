@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -88,7 +87,7 @@ def dice_binary_similarity(
         intersection = len(set(vec_a.indices) & set(vec_b.indices))
 
     denominator = vec_a.sum() + vec_b.sum()
-    sim = 2 * intersection / denominator if denominator != 0 else 1.0
+    sim = 2 * intersection / denominator if denominator != 0 else 1
 
     return float(sim)
 
@@ -258,7 +257,7 @@ def dice_count_similarity(
         dot_bb = vec_b.multiply(vec_b).sum()
 
     denominator = dot_aa + dot_bb
-    sim = 2 * dot_ab / denominator if denominator >= 1e-8 else 1.0
+    sim = 2 * dot_ab / denominator if denominator >= 1e-8 else 1
 
     return float(sim)
 
@@ -341,11 +340,14 @@ def dice_count_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_binary_similarity(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice similarity for binary matrices.
@@ -359,11 +361,11 @@ def bulk_dice_binary_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times d`. If not passed, similarities
         are computed between rows of X.
 
     Returns
@@ -387,45 +389,45 @@ def bulk_dice_binary_similarity(
     array([[1.        , 0.5       ],
            [0.66666667, 0.66666667]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_dice_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_dice_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_dice_binary_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
+def _bulk_dice_binary_similarity_single(X: csr_array) -> np.ndarray:
+    intersection = (X @ X.T).toarray()
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
+    denom = np.add.outer(row_sums, row_sums)
 
-    row_sums = np.sum(X, axis=1)
+    sims = np.empty_like(intersection, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.multiply(2, intersection, out=sims)
+        np.divide(sims, denom, out=sims, where=denom != 0)
 
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
-            intersection = np.sum(np.logical_and(X[i], X[j]))
-            denominator = row_sums[i] + row_sums[j]
-            sim = 2 * intersection / denominator if denominator != 0 else 1.0
-            sims[i, j] = sims[j, i] = sim
+    sims[denom == 0] = 1
+    np.fill_diagonal(sims, 1)
 
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_dice_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+def _bulk_dice_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    intersection = (X @ Y.T).toarray()
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
+    denom = np.add.outer(row_sums_X, row_sums_Y)
 
-    row_sums_X = np.sum(X, axis=1)
-    row_sums_Y = np.sum(Y, axis=1)
+    sims = np.empty_like(intersection, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.multiply(2, intersection, out=sims)
+        np.divide(sims, denom, out=sims, where=denom != 0)
 
-    for i in numba.prange(m):
-        for j in numba.prange(n):
-            intersection = np.sum(np.logical_and(X[i], Y[j]))
-            denominator = row_sums_X[i] + row_sums_Y[j]
-            sims[i, j] = 2 * intersection / denominator if denominator != 0 else 1.0
-
+    sims[denom == 0] = 1
     return sims
 
 
@@ -436,7 +438,9 @@ def _bulk_dice_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray
     },
     prefer_skip_nested_validation=True,
 )
-def bulk_dice_binary_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
+def bulk_dice_binary_distance(
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+) -> np.ndarray:
     r"""
     Bulk Dice distance for vectors of binary values.
 
@@ -449,11 +453,11 @@ def bulk_dice_binary_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times d`. If not passed, distances
         are computed between rows of X.
 
     Returns
@@ -487,11 +491,14 @@ def bulk_dice_binary_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_count_similarity(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice similarity for count matrices.
@@ -505,11 +512,11 @@ def bulk_dice_count_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First count input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First count input array or sparse matrix, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second count input array, of shape :math:`n \times n`. If not passed, similarities
+    Y : ndarray or CSR sparse array, default=None
+        Second count input array or sparse matrix, of shape :math:`n \times d`. If not passed, similarities
         are computed between rows of X.
 
     Returns
@@ -533,57 +540,44 @@ def bulk_dice_count_similarity(
     array([[1.        , 0.5       ],
            [0.66666667, 0.66666667]])
     """
-    X = X.astype(float)  # Numba does not allow integers
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
 
     if Y is None:
         return _bulk_dice_count_similarity_single(X)
     else:
-        Y = Y.astype(float)
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_dice_count_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_dice_count_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
+def _bulk_dice_count_similarity_single(X: csr_array) -> np.ndarray:
+    dot_products = (X @ X.T).toarray()
+    dot_self = np.asarray(X.multiply(X).sum(axis=1)).ravel()
+    denom = np.add.outer(dot_self, dot_self)
 
-    for i in numba.prange(m):
-        vec_a = X[i]
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
-            vec_b = X[j]
+    sims = np.empty_like(dot_products, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.multiply(2, dot_products, out=sims)
+        np.divide(sims, denom, out=sims, where=denom >= 1e-8)
 
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            denominator = dot_aa + dot_bb
-
-            sim = 2 * dot_ab / denominator if denominator >= 1e-8 else 1.0
-            sims[i, j] = sims[j, i] = sim
-
+    sims[denom < 1e-8] = 1
+    np.fill_diagonal(sims, 1)
     return sims
 
 
-@numba.jit(parallel=True)
-def _bulk_dice_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+def _bulk_dice_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    dot_products = (X @ Y.T).toarray()
+    dot_self_X = np.asarray(X.multiply(X).sum(axis=1)).ravel()
+    dot_self_Y = np.asarray(Y.multiply(Y).sum(axis=1)).ravel()
+    denom = np.add.outer(dot_self_X, dot_self_Y)
 
-    for i in numba.prange(m):
-        vec_a = X[i]
+    sims = np.empty_like(dot_products, dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        np.multiply(2, dot_products, out=sims)
+        np.divide(sims, denom, out=sims, where=denom >= 1e-8)
 
-        for j in numba.prange(n):
-            vec_b = Y[j]
-
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            denominator = dot_aa + dot_bb
-            sims[i, j] = 2 * dot_ab / denominator if denominator >= 1e-8 else 1.0
-
+    sims[denom < 1e-8] = 1
     return sims
 
 
@@ -594,7 +588,9 @@ def _bulk_dice_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     },
     prefer_skip_nested_validation=True,
 )
-def bulk_dice_count_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.ndarray:
+def bulk_dice_count_distance(
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+) -> np.ndarray:
     r"""
     Bulk Dice distance for vectors of count values.
 
@@ -607,11 +603,11 @@ def bulk_dice_count_distance(X: np.ndarray, Y: np.ndarray | None = None) -> np.n
 
     Parameters
     ----------
-    X : ndarray
-        First count input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First count input array or sparse matrix, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second count input array, of shape :math:`n \times n`. If not passed, distances
+    Y : ndarray or CSR sparse array, default=None
+        Second count input array or sparse matrix, of shape :math:`n \times d`. If not passed, distances
         are computed between rows of X.
 
     Returns
