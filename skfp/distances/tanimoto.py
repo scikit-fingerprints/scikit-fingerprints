@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -30,10 +29,10 @@ def tanimoto_binary_similarity(
 
     Parameters
     ----------
-    vec_a : {ndarray, sparse matrix}
+    vec_a : ndarray or CSR sparse matrix
         First binary input array or sparse matrix.
 
-    vec_b : {ndarray, sparse matrix}
+    vec_b : ndarray or CSR sparse matrix
         Second binary input array or sparse matrix.
 
     Returns
@@ -80,7 +79,7 @@ def tanimoto_binary_similarity(
         intersection = len(vec_a_idxs & vec_b_idxs)
         union = len(vec_a_idxs | vec_b_idxs)
 
-    sim = intersection / union if union != 0 else 1.0
+    sim = intersection / union if union != 0 else 1
     return float(sim)
 
 
@@ -112,10 +111,10 @@ def tanimoto_binary_distance(
 
     Parameters
     ----------
-    vec_a : {ndarray, sparse matrix}
+    vec_a : ndarray or CSR sparse matrix
         First binary input array or sparse matrix.
 
-    vec_b : {ndarray, sparse matrix}
+    vec_b : ndarray or CSR sparse matrix
         Second binary input array or sparse matrix.
 
     References
@@ -176,10 +175,10 @@ def tanimoto_count_similarity(
 
     Parameters
     ----------
-    vec_a : {ndarray, sparse matrix}
+    vec_a : ndarray or CSR sparse matrix
         First count input array or sparse matrix.
 
-    vec_b : {ndarray, sparse matrix}
+    vec_b : ndarray or CSR sparse matrix
         Second count input array or sparse matrix.
 
     Returns
@@ -229,7 +228,7 @@ def tanimoto_count_similarity(
     intersection = dot_ab
     union = dot_aa + dot_bb - dot_ab
 
-    sim = intersection / union if union >= 1e-8 else 1.0
+    sim = intersection / union if union >= 1e-8 else 1
     return float(sim)
 
 
@@ -260,10 +259,10 @@ def tanimoto_count_distance(
 
     Parameters
     ----------
-    vec_a : {ndarray, sparse matrix}
+    vec_a : ndarray or CSR sparse matrix
         First count input array or sparse matrix.
 
-    vec_b : {ndarray, sparse matrix}
+    vec_b : ndarray or CSR sparse matrix
         Second count input array or sparse matrix.
 
     References
@@ -299,11 +298,14 @@ def tanimoto_count_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_binary_similarity(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto similarity for binary matrices.
@@ -317,12 +319,12 @@ def bulk_tanimoto_binary_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times m`.
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        If not passed, similarities are computed between rows of X.
 
     Returns
     -------
@@ -345,39 +347,39 @@ def bulk_tanimoto_binary_similarity(
     array([[1.        , 0.33333333],
            [0.5       , 0.5       ]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_tanimoto_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
+
         return _bulk_tanimoto_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_tanimoto_binary_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
+def _bulk_tanimoto_binary_similarity_single(X: csr_array) -> np.ndarray:
+    intersection = (X @ X.T).toarray()
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
+    unions = np.add.outer(row_sums, row_sums) - intersection
 
-    for i in numba.prange(m):
-        sims[i, i] = 1.0
-        for j in numba.prange(i + 1, m):
-            intersection = np.sum(np.logical_and(X[i], X[j]))
-            union = np.sum(np.logical_or(X[i], X[j]))
-            sim = intersection / union if union != 0 else 1.0
-            sims[i, j] = sims[j, i] = sim
+    sims = np.empty_like(intersection, dtype=float)
+    np.divide(intersection, unions, out=sims, where=unions != 0)
 
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+def _bulk_tanimoto_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    intersection = (X @ Y.T).toarray()
 
-    for i in numba.prange(m):
-        for j in numba.prange(n):
-            intersection = np.sum(np.logical_and(X[i], Y[j]))
-            union = np.sum(np.logical_or(X[i], Y[j]))
-            sims[i, j] = intersection / union if union != 0 else 1.0
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
+
+    unions = np.add.outer(row_sums_X, row_sums_Y) - intersection
+
+    sims = np.empty_like(intersection, dtype=float)
+    np.divide(intersection, unions, out=sims, where=unions != 0)
 
     return sims
 
@@ -390,7 +392,7 @@ def _bulk_tanimoto_binary_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.nda
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_binary_distance(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of binary values.
@@ -404,12 +406,12 @@ def bulk_tanimoto_binary_distance(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times m`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        If not passed, distances are computed between rows of X.
 
     Returns
     -------
@@ -442,11 +444,14 @@ def bulk_tanimoto_binary_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_count_similarity(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto similarity for count matrices.
@@ -460,12 +465,12 @@ def bulk_tanimoto_count_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First count input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times m`
 
-    Y : ndarray, default=None
-        Second count input array, of shape :math:`n \times n`. If not passed, similarities
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        If not passed, similarities are computed between rows of X.
 
     Returns
     -------
@@ -489,59 +494,41 @@ def bulk_tanimoto_count_similarity(
            [0.5       , 0.5       ]])
     """
     X = X.astype(float)  # Numba does not allow integers
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
 
     if Y is None:
         return _bulk_tanimoto_count_similarity_single(X)
     else:
-        Y = Y.astype(float)
+        Y = Y.astype(float)  # Numba does not allow integers
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
+
         return _bulk_tanimoto_count_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_tanimoto_count_similarity_single(X: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
+def _bulk_tanimoto_count_similarity_single(X: csr_array) -> np.ndarray:
+    inter = (X @ X.T).toarray()
+    row_norms = np.asarray(X.multiply(X).sum(axis=1)).ravel()
+    unions = np.add.outer(row_norms, row_norms) - inter
 
-    for i in numba.prange(m):
-        vec_a = X[i]
-        sims[i, i] = 1.0
+    sims = np.empty_like(inter, dtype=float)
+    np.divide(inter, unions, out=sims, where=unions >= 1e-8)
 
-        for j in numba.prange(i + 1, m):
-            vec_b = X[j]
-
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            intersection = dot_ab
-            union = dot_aa + dot_bb - dot_ab
-
-            sim = intersection / union if union >= 1e-8 else 1.0
-            sims[i, j] = sims[j, i] = sim
+    np.fill_diagonal(sims, 1)
 
     return sims
 
 
-@numba.jit(parallel=True)
-def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+def _bulk_tanimoto_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    inter = (X @ Y.T).toarray()
+    row_norms_X = np.asarray(X.multiply(X).sum(axis=1)).ravel()
+    row_norms_Y = np.asarray(Y.multiply(Y).sum(axis=1)).ravel()
 
-    for i in numba.prange(m):
-        vec_a = X[i]
+    unions = np.add.outer(row_norms_X, row_norms_Y) - inter
 
-        for j in numba.prange(n):
-            vec_b = Y[j]
-
-            dot_aa = np.dot(vec_a, vec_a)
-            dot_bb = np.dot(vec_b, vec_b)
-            dot_ab = np.dot(vec_a, vec_b)
-
-            intersection = dot_ab
-            union = dot_aa + dot_bb - dot_ab
-
-            sims[i, j] = intersection / union if union >= 1e-8 else 1.0
+    sims = np.empty_like(inter, dtype=float)
+    np.divide(inter, unions, out=sims, where=unions >= 1e-8)
 
     return sims
 
@@ -554,7 +541,7 @@ def _bulk_tanimoto_count_similarity_two(X: np.ndarray, Y: np.ndarray) -> np.ndar
     prefer_skip_nested_validation=True,
 )
 def bulk_tanimoto_count_distance(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Tanimoto distance for vectors of count values.
@@ -568,12 +555,12 @@ def bulk_tanimoto_count_distance(
 
     Parameters
     ----------
-    X : ndarray
-        First count input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array or sparse matrix, of shape :math:`m \times m`
 
-    Y : ndarray, default=None
-        Second count input array, of shape :math:`n \times n`. If not passed, distances
-        are computed between rows of X.
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        If not passed, distances are computed between rows of X.
 
     Returns
     -------
