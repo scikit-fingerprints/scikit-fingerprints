@@ -181,8 +181,8 @@ def sokal_sneath_2_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_sokal_sneath_2_binary_similarity(
-    X: np.ndarray | csr_array,
-    Y: np.ndarray | csr_array | None = None,
+    X: list | np.ndarray | csr_array,
+    Y: list | np.ndarray | csr_array | None = None,
 ) -> np.ndarray:
     r"""
     Bulk Sokal-Sneath similarity 2 for binary matrices.
@@ -287,7 +287,7 @@ def _bulk_sokal_sneath_2_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_sokal_sneath_2_binary_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Sokal-Sneath distance 2 for binary matrices.

@@ -199,8 +199,8 @@ def rogot_goldberg_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_rogot_goldberg_binary_similarity(
-    X: np.ndarray | csr_array,
-    Y: np.ndarray | csr_array | None = None,
+    X: list | np.ndarray | csr_array,
+    Y: list | np.ndarray | csr_array | None = None,
 ) -> np.ndarray:
     r"""
     Bulk Rogot-Goldberg similarity for binary matrices.
@@ -324,7 +324,7 @@ def _bulk_rogot_goldberg_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_rogot_goldberg_binary_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Rogot-Goldberg distance for vectors of binary values.

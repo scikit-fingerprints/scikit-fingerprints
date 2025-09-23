@@ -197,8 +197,8 @@ def mcconnaughey_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_mcconnaughey_binary_similarity(
-    X: np.ndarray | csr_array,
-    Y: np.ndarray | csr_array | None = None,
+    X: list | np.ndarray | csr_array,
+    Y: list | np.ndarray | csr_array | None = None,
     normalized: bool = False,
 ) -> np.ndarray:
     r"""
@@ -319,7 +319,7 @@ def _bulk_mcconnaughey_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_mcconnaughey_binary_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk McConnaughey distance for vectors of binary values.
