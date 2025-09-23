@@ -494,7 +494,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             X = [self._get_maccs_patterns_counts(mol) for mol in X]
         else:
             X = [GetMACCSKeysFingerprint(mol) for mol in X]
-            X = np.array(X)[:, 1:]  # remove constant zeros column
+            X = np.vstack(X)[:, 1:]  # remove constant zeros column
 
         dtype = np.uint32 if self.count else np.uint8
         return csr_array(X, dtype=dtype) if self.sparse else np.array(X, dtype=dtype)

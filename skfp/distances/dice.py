@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def dice_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Dice similarity for vectors of binary values.
@@ -81,12 +81,16 @@ def dice_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
+    if isinstance(vec_a, list):
+        vec_a = np.array(vec_a)
+        vec_b = np.array(vec_b)
+
     if isinstance(vec_a, np.ndarray):
         intersection = np.sum(np.logical_and(vec_a, vec_b))
     else:
-        intersection = len(set(vec_a.indices) & set(vec_b.indices))
+        intersection = len(set(vec_a.indices) & set(vec_b.indices))  # type: ignore
 
-    denominator = vec_a.sum() + vec_b.sum()
+    denominator = vec_a.sum() + vec_b.sum()  # type: ignore
     sim = 2 * intersection / denominator if denominator != 0 else 1
 
     return float(sim)
@@ -100,8 +104,8 @@ def dice_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def dice_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Dice distance for vectors of binary values.
@@ -177,8 +181,8 @@ def dice_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def dice_count_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Dice similarity for vectors of count values.
@@ -247,7 +251,7 @@ def dice_count_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         dot_aa = np.dot(vec_a, vec_a)
         dot_bb = np.dot(vec_b, vec_b)
         dot_ab = np.dot(vec_a, vec_b)
@@ -270,8 +274,8 @@ def dice_count_similarity(
     prefer_skip_nested_validation=True,
 )
 def dice_count_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Dice distance for vectors of count values.
@@ -347,7 +351,7 @@ def dice_count_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_binary_similarity(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice similarity for binary matrices.
@@ -396,11 +400,13 @@ def bulk_dice_binary_similarity(
         return _bulk_dice_binary_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_dice_binary_similarity_two(X, Y)
 
 
 def _bulk_dice_binary_similarity_single(X: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = sum of 1s in both rows
     intersection = (X @ X.T).toarray()
     row_sums = np.asarray(X.sum(axis=1)).ravel()
     denom = np.add.outer(row_sums, row_sums)
@@ -417,6 +423,8 @@ def _bulk_dice_binary_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_dice_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = sum of 1s in both rows
     intersection = (X @ Y.T).toarray()
     row_sums_X = np.asarray(X.sum(axis=1)).ravel()
     row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
@@ -439,7 +447,7 @@ def _bulk_dice_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_binary_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice distance for vectors of binary values.
@@ -498,7 +506,7 @@ def bulk_dice_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_count_similarity(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice similarity for count matrices.
@@ -547,11 +555,13 @@ def bulk_dice_count_similarity(
         return _bulk_dice_count_similarity_single(X)
     else:
         if not isinstance(Y, csr_array):
-            Y = csr_array(Y)
+            Y = csr_array(Y, dtype=float)
         return _bulk_dice_count_similarity_two(X, Y)
 
 
 def _bulk_dice_count_similarity_single(X: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = dot(x,x) + dot(y,y)
     dot_products = (X @ X.T).toarray()
     dot_self = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     denom = np.add.outer(dot_self, dot_self)
@@ -567,6 +577,8 @@ def _bulk_dice_count_similarity_single(X: csr_array) -> np.ndarray:
 
 
 def _bulk_dice_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    # intersection = x * y, dot product
+    # |x| + |y| = dot(x,x) + dot(y,y)
     dot_products = (X @ Y.T).toarray()
     dot_self_X = np.asarray(X.multiply(X).sum(axis=1)).ravel()
     dot_self_Y = np.asarray(Y.multiply(Y).sum(axis=1)).ravel()
@@ -589,7 +601,7 @@ def _bulk_dice_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     prefer_skip_nested_validation=True,
 )
 def bulk_dice_count_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Dice distance for vectors of count values.

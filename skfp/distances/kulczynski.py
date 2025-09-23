@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def kulczynski_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Kulczynski similarity for vectors of binary values.
@@ -92,13 +92,17 @@ def kulczynski_binary_similarity(
     if np.sum(vec_a) == 0 == np.sum(vec_b):
         return 1
 
+    if isinstance(vec_a, list):
+        vec_a = np.array(vec_a)
+        vec_b = np.array(vec_b)
+
     if isinstance(vec_a, np.ndarray):
         a = np.sum(np.logical_and(vec_a, vec_b))
-        b = np.sum(np.logical_and(vec_a, 1 - vec_b))
+        b = np.sum(np.logical_and(vec_a, 1 - vec_b))  # type: ignore
         c = np.sum(np.logical_and(1 - vec_a, vec_b))
     else:
         vec_a_idxs = set(vec_a.indices)
-        vec_b_idxs = set(vec_b.indices)
+        vec_b_idxs = set(vec_b.indices)  # type: ignore
 
         a = len(vec_a_idxs & vec_b_idxs)
         b = len(vec_a_idxs - vec_b_idxs)
@@ -119,8 +123,8 @@ def kulczynski_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def kulczynski_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Kulczynski distance for vectors of binary values.

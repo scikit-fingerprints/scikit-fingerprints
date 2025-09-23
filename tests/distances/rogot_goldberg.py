@@ -15,28 +15,25 @@ from tests.distances.utils import (
 )
 
 
-def _get_values() -> list[tuple[list[int], list[int], str, float, float]]:
-    # vec_a, vec_b, comparison, similarity, distance
+def _get_values() -> list[tuple[list[int], list[int], float, float]]:
+    # vec_a, vec_b, similarity, distance
     return [
-        ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
-        ([1, 0, 0], [0, 0, 0], "==", 0.4, 0.6),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
-        ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
-        ([1, 1, 1, 0], [1, 1, 1, 1], "<", 0.5, 0.5),
+        ([1, 0, 0], [0, 1, 1], 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], 0.4, 0.6),
+        ([0, 0, 0], [0, 0, 0], 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], 1.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], 1.0, 0.0),
+        ([1, 1, 0, 0], [1, 1, 1, 1], 1 / 3, 2 / 3),
     ]
 
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, comparison, similarity, distance", _get_values()
-)
-def test_rogot_goldberg(vec_a, vec_b, comparison, similarity, distance):
+@pytest.mark.parametrize("vec_a, vec_b, similarity, distance", _get_values())
+def test_rogot_goldberg(vec_a, vec_b, similarity, distance):
     run_test_similarity_and_distance(
         rogot_goldberg_binary_similarity,
         rogot_goldberg_binary_distance,
         vec_a,
         vec_b,
-        comparison,
         similarity,
         distance,
     )

@@ -15,56 +15,52 @@ from tests.distances.utils import (
 )
 
 
-def _get_unnormalized_values() -> list[tuple[list[int], list[int], str, float, float]]:
-    # vec_a, vec_b, comparison, similarity, distance
+def _get_unnormalized_values() -> list[tuple[list[int], list[int], float, float]]:
+    # vec_a, vec_b, similarity, distance
     return [
-        ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
-        ([1, 0, 0], [0, 0, 0], "==", 1 / 3, 8 / 9),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
-        ([1, 0, 0], [1, 0, 0], "==", 3.0, 0.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
-        ([1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1], ">", 0.5, 0.9),
+        ([1, 0, 0], [0, 1, 1], 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], 1 / 3, 8 / 9),
+        ([0, 0, 0], [0, 0, 0], 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], 3.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], 1.0, 0.0),
+        ([1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1], 0.75, 0.875),
     ]
 
 
-def _get_normalized_values() -> list[tuple[list[int], list[int], str, float, float]]:
-    # vec_a, vec_b, comparison, similarity, distance
+def _get_normalized_values() -> list[tuple[list[int], list[int], float, float]]:
+    # vec_a, vec_b, similarity, distance
     return [
-        ([1, 0, 0], [0, 1, 1], "==", 0.0, 1.0),
-        ([1, 0, 0], [0, 0, 0], "==", 1 / 9, 8 / 9),
-        ([0, 0, 0], [0, 0, 0], "==", 1.0, 0.0),
-        ([1, 0, 0], [1, 0, 0], "==", 1.0, 0.0),
-        ([1, 1, 1], [1, 1, 1], "==", 1.0, 0.0),
-        ([1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1], "<", 0.5, 0.8),
+        ([1, 0, 0], [0, 1, 1], 0.0, 1.0),
+        ([1, 0, 0], [0, 0, 0], 1 / 9, 8 / 9),
+        ([0, 0, 0], [0, 0, 0], 1.0, 0.0),
+        ([1, 0, 0], [1, 0, 0], 1.0, 0.0),
+        ([1, 1, 1], [1, 1, 1], 1.0, 0.0),
+        ([1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1], 0.125, 0.875),
     ]
 
 
 @pytest.mark.parametrize(
-    "vec_a, vec_b, comparison, similarity, distance", _get_unnormalized_values()
+    "vec_a, vec_b, similarity, distance", _get_unnormalized_values()
 )
-def test_harris_lahey_unnormalized(vec_a, vec_b, comparison, similarity, distance):
+def test_harris_lahey_unnormalized(vec_a, vec_b, similarity, distance):
     run_test_similarity_and_distance(
         harris_lahey_binary_similarity,
         harris_lahey_binary_distance,
         vec_a,
         vec_b,
-        comparison,
         similarity,
         distance,
         normalized=False,
     )
 
 
-@pytest.mark.parametrize(
-    "vec_a, vec_b, comparison, similarity, distance", _get_normalized_values()
-)
-def test_harris_lahey_normalized(vec_a, vec_b, comparison, similarity, distance):
+@pytest.mark.parametrize("vec_a, vec_b, similarity, distance", _get_normalized_values())
+def test_harris_lahey_normalized(vec_a, vec_b, similarity, distance):
     run_test_similarity_and_distance(
         harris_lahey_binary_similarity,
         harris_lahey_binary_distance,
         vec_a,
         vec_b,
-        comparison,
         similarity,
         distance,
         normalized=True,

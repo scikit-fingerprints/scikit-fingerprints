@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def rogot_goldberg_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Rogot-Goldberg similarity for vectors of binary values.
@@ -84,9 +84,13 @@ def rogot_goldberg_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
+    if isinstance(vec_a, list):
+        vec_a = np.array(vec_a)
+        vec_b = np.array(vec_b)
+
     if isinstance(vec_a, np.ndarray):
         vec_a_neg = 1 - vec_a
-        vec_b_neg = 1 - vec_b
+        vec_b_neg = 1 - vec_b  # type: ignore
 
         a = np.sum(np.logical_and(vec_a, vec_b))
         b = np.sum(np.logical_and(vec_a, vec_b_neg))
@@ -95,7 +99,7 @@ def rogot_goldberg_binary_similarity(
     else:
         length = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
-        vec_b_idxs = set(vec_b.indices)
+        vec_b_idxs = set(vec_b.indices)  # type: ignore
 
         a = len(vec_a_idxs & vec_b_idxs)
         b = len(vec_a_idxs - vec_b_idxs)
@@ -122,8 +126,8 @@ def rogot_goldberg_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def rogot_goldberg_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Rogot-Goldberg distance for vectors of binary values.

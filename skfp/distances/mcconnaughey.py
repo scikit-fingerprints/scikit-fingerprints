@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def mcconnaughey_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
     normalized: bool = False,
 ) -> float:
     r"""
@@ -87,7 +87,7 @@ def mcconnaughey_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         num_common = np.sum(np.logical_and(vec_a, vec_b))
         vec_a_ones = np.sum(vec_a)
         vec_b_ones = np.sum(vec_b)
@@ -123,8 +123,8 @@ def mcconnaughey_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def mcconnaughey_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     McConnaughey distance for vectors of binary values.

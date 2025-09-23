@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def rand_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Rand similarity for vectors of binary values.
@@ -82,16 +82,20 @@ def rand_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
+    if isinstance(vec_a, list):
+        vec_a = np.array(vec_a)
+        vec_b = np.array(vec_b)
+
     if isinstance(vec_a, np.ndarray):
         a = np.sum(np.logical_and(vec_a, vec_b))
-        d = np.sum(np.logical_and(1 - vec_a, 1 - vec_b))
+        d = np.sum(np.logical_and(1 - vec_a, 1 - vec_b))  # type: ignore
         length = len(vec_a)
     else:
         length = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
-        vec_b_idxs = set(vec_b.indices)
+        vec_b_idxs = set(vec_b.indices)  # type: ignore
         a = len(vec_a_idxs & vec_b_idxs)
-        d = length - (vec_a.nnz + vec_b.nnz - a)
+        d = length - (vec_a.nnz + vec_b.nnz - a)  # type: ignore
 
     rand_sim = (a + d) / length
     return float(rand_sim)
@@ -105,8 +109,8 @@ def rand_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def rand_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Rand distance for vectors of binary values.
@@ -178,7 +182,7 @@ def rand_binary_distance(
     prefer_skip_nested_validation=True,
 )
 def bulk_rand_binary_similarity(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Rand similarity for binary matrices.
@@ -271,7 +275,7 @@ def _bulk_rand_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
     prefer_skip_nested_validation=True,
 )
 def bulk_rand_binary_distance(
-    X: np.ndarray | csr_array, Y: np.ndarray | csr_array | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Rand distance for vectors of binary values.

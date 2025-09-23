@@ -11,8 +11,8 @@ from sklearn.utils._param_validation import validate_params
     prefer_skip_nested_validation=True,
 )
 def sokal_sneath_2_binary_similarity(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     r"""
     Sokal-Sneath similarity 2 for vectors of binary values.
@@ -82,7 +82,7 @@ def sokal_sneath_2_binary_similarity(
             f"got {type(vec_a)} and {type(vec_b)}"
         )
 
-    if isinstance(vec_a, np.ndarray):
+    if isinstance(vec_a, (np.ndarray, list)):
         intersection = np.sum(np.logical_and(vec_a, vec_b))
         a_sum = np.sum(vec_a)
         b_sum = np.sum(vec_b)
@@ -108,8 +108,8 @@ def sokal_sneath_2_binary_similarity(
     prefer_skip_nested_validation=True,
 )
 def sokal_sneath_2_binary_distance(
-    vec_a: np.ndarray | csr_array,
-    vec_b: np.ndarray | csr_array,
+    vec_a: list | np.ndarray | csr_array,
+    vec_b: list | np.ndarray | csr_array,
 ) -> float:
     """
     Sokal-Sneath distance 2 for vectors of binary values.
