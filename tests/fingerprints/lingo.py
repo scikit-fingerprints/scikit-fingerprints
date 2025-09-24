@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+from numpy.testing import assert_equal
 from scipy.sparse import csr_array, load_npz
 
 from skfp.fingerprints import LingoFingerprint
@@ -50,8 +51,8 @@ def test_lingo_fingerprint_bit():
 
     expected_array = _load_lingo_data_file(count=False, sparse=False)
 
-    assert np.array_equal(X_skfp, expected_array)
-    assert X_skfp.shape == (2, 1024)
+    assert_equal(X_skfp, expected_array)
+    assert_equal(X_skfp.shape, (2, 1024))
     assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
 
@@ -63,8 +64,8 @@ def test_lingo_fingerprint_count():
 
     expected_array = _load_lingo_data_file(count=True, sparse=False)
 
-    assert np.array_equal(X_skfp, expected_array)
-    assert X_skfp.shape == (2, 1024)
+    assert_equal(X_skfp, expected_array)
+    assert_equal(X_skfp.shape, (2, 1024))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp >= 0)
 
@@ -76,8 +77,8 @@ def test_lingo_fingerprint_bit_sparse():
 
     expected_array = _load_lingo_data_file(count=False, sparse=True)
 
-    assert np.array_equal(X_skfp.data, expected_array.data)
-    assert X_skfp.shape == (2, 1024)
+    assert_equal(X_skfp.data, expected_array.data)
+    assert_equal(X_skfp.shape, (2, 1024))
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data == 1)
 
@@ -89,8 +90,8 @@ def test_lingo_fingerprint_count_sparse():
 
     expected_array = _load_lingo_data_file(count=True, sparse=True)
 
-    assert np.array_equal(X_skfp.data, expected_array.data)
-    assert X_skfp.shape == (2, 1024)
+    assert_equal(X_skfp.data, expected_array.data)
+    assert_equal(X_skfp.shape, (2, 1024))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
 

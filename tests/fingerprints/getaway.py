@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.testing import assert_equal
 
 from skfp.fingerprints import GETAWAYFingerprint
 
@@ -7,7 +8,7 @@ def test_getaway_fingerprint(mols_conformers_list):
     getaway_fp = GETAWAYFingerprint(n_jobs=-1)
     X_skfp = getaway_fp.transform(mols_conformers_list)
 
-    assert X_skfp.shape == (len(mols_conformers_list), 273)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 273))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -15,7 +16,7 @@ def test_getaway_sparse_fingerprint(mols_conformers_list):
     getaway_fp = GETAWAYFingerprint(sparse=True, n_jobs=-1)
     X_skfp = getaway_fp.transform(mols_conformers_list)
 
-    assert X_skfp.shape == (len(mols_conformers_list), 273)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 273))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -23,8 +24,8 @@ def test_getaway_feature_names():
     getaway_fp = GETAWAYFingerprint()
     feature_names = getaway_fp.get_feature_names_out()
 
-    assert len(feature_names) == getaway_fp.n_features_out
-    assert len(feature_names) == len(set(feature_names))
+    assert_equal(len(feature_names), getaway_fp.n_features_out)
+    assert_equal(len(feature_names), len(set(feature_names)))
 
     # for indices understanding, see:
     # https://github.com/rdkit/rdkit/blob/53a01430e057d34cf7a7ca52eb2d8b069178114d/Code/GraphMol/Descriptors/GETAWAY.cpp#L1145

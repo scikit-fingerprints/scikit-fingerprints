@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem.rdMolDescriptors import CalcWHIM
 from scipy.sparse import csr_array
 
@@ -17,8 +18,8 @@ def test_whim_fingerprint(mols_conformers_list):
     )
     X_rdkit = np.minimum(X_rdkit, whim_fp.clip_val)
 
-    np.testing.assert_allclose(X_skfp, X_rdkit, atol=1e-1)
-    assert X_skfp.shape == (len(mols_conformers_list), 114)
+    assert_allclose(X_skfp, X_rdkit, atol=1e-1)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 114))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -34,8 +35,8 @@ def test_whim_sparse_fingerprint(mols_conformers_list):
     )
     X_rdkit = X_rdkit.minimum(whim_fp.clip_val)
 
-    np.testing.assert_allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
-    assert X_skfp.shape == (len(mols_conformers_list), 114)
+    assert_allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 114))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -43,21 +44,21 @@ def test_whim_feature_names():
     whim_fp = WHIMFingerprint()
     feature_names = whim_fp.get_feature_names_out()
 
-    assert len(feature_names) == whim_fp.n_features_out
-    assert len(feature_names) == len(set(feature_names))
+    assert_equal(len(feature_names), whim_fp.n_features_out)
+    assert_equal(len(feature_names), len(set(feature_names)))
 
-    assert feature_names[0] == "unweighted axis 1 directional WHIM size"
-    assert feature_names[3] == "unweighted axis 1 directional WHIM shape"
-    assert feature_names[10] == "unweighted axis 3 directional WHIM density"
-    assert feature_names[11] == "atomic mass axis 1 directional WHIM size"
-    assert feature_names[22] == "van der Waals volume axis 1 directional WHIM size"
-    assert feature_names[33] == "electronegativity axis 1 directional WHIM size"
-    assert feature_names[44] == "polarizability axis 1 directional WHIM size"
-    assert feature_names[76] == "IState axis 3 directional WHIM density"
+    assert_equal(feature_names[0], "unweighted axis 1 directional WHIM size")
+    assert_equal(feature_names[3], "unweighted axis 1 directional WHIM shape")
+    assert_equal(feature_names[10], "unweighted axis 3 directional WHIM density")
+    assert_equal(feature_names[11], "atomic mass axis 1 directional WHIM size")
+    assert_equal(feature_names[22], "van der Waals volume axis 1 directional WHIM size")
+    assert_equal(feature_names[33], "electronegativity axis 1 directional WHIM size")
+    assert_equal(feature_names[44], "polarizability axis 1 directional WHIM size")
+    assert_equal(feature_names[76], "IState axis 3 directional WHIM density")
 
-    assert feature_names[77] == "unweighted global WHIM size"
-    assert feature_names[78] == "atomic mass global WHIM size"
-    assert feature_names[83] == "IState global WHIM size"
+    assert_equal(feature_names[77], "unweighted global WHIM size")
+    assert_equal(feature_names[78], "atomic mass global WHIM size")
+    assert_equal(feature_names[83], "IState global WHIM size")
 
     assert all(
         name.endswith("global WHIM size cross sums") for name in feature_names[84:91]
@@ -65,8 +66,8 @@ def test_whim_feature_names():
     assert feature_names[84].startswith("unweighted")
     assert feature_names[90].startswith("IState")
 
-    assert feature_names[91] == "unweighted global WHIM axial shape"
-    assert feature_names[92] == "atomic mass global WHIM axial shape"
+    assert_equal(feature_names[91], "unweighted global WHIM axial shape")
+    assert_equal(feature_names[92], "atomic mass global WHIM axial shape")
 
     assert all(name.endswith("global WHIM shape") for name in feature_names[93:100])
     assert feature_names[93].startswith("unweighted")

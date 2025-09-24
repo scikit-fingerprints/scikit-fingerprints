@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.filters import REOSFilter
 
@@ -33,21 +34,21 @@ def test_mols_passing_reos(smiles_passing_reos):
     mol_filter = REOSFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_reos)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_reos)
+    assert_equal(len(smiles_filtered), len(smiles_passing_reos))
 
 
 def test_mols_partially_passing_reos(smiles_passing_one_fail):
     mol_filter = REOSFilter(allow_one_violation=True)
     smiles_filtered = mol_filter.transform(smiles_passing_one_fail)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_one_fail)
+    assert_equal(len(smiles_filtered), len(smiles_passing_one_fail))
 
 
 def test_mols_failing_reos(smiles_failing_reos):
     mol_filter = REOSFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_reos)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_reos_filter_return_indicators(
@@ -65,7 +66,7 @@ def test_reos_filter_return_indicators(
         + [False] * len(smiles_passing_one_fail),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     mol_filter = REOSFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
@@ -75,7 +76,7 @@ def test_reos_filter_return_indicators(
         + [True] * len(smiles_passing_one_fail),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_reos_filter_parallel(smiles_list):
@@ -85,7 +86,7 @@ def test_reos_filter_parallel(smiles_list):
     mol_filter = REOSFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_reos_transform_x_y(smiles_passing_reos, smiles_failing_reos):
@@ -94,13 +95,13 @@ def test_reos_transform_x_y(smiles_passing_reos, smiles_failing_reos):
 
     filt = REOSFilter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_passing_reos)
+    assert_equal(len(mols), len(smiles_passing_reos))
     assert np.all(labels_filt == 1)
 
     filt = REOSFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_passing_reos)
-    assert np.array_equal(indicators, labels_filt)
+    assert_equal(np.sum(indicators), len(smiles_passing_reos))
+    assert_equal(indicators, labels_filt)
 
 
 def test_reos_condition_names():
@@ -108,7 +109,7 @@ def test_reos_condition_names():
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (7,)
+    assert_equal(condition_names.shape, (7,))
 
 
 def test_reos_return_condition_indicators(smiles_passing_reos, smiles_failing_reos):
@@ -118,7 +119,7 @@ def test_reos_return_condition_indicators(smiles_passing_reos, smiles_failing_re
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 7)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 7))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -133,7 +134,7 @@ def test_reos_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 7)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 7))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

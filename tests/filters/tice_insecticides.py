@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.filters import TiceInsecticidesFilter
 
@@ -31,20 +32,18 @@ def smiles_passing_one_violation_tice_insecticides() -> list[str]:
     ]
 
 
-def test_mols_passing_tice_insecticides(
-    smiles_passing_tice_insecticides,
-):
+def test_mols_passing_tice_insecticides(smiles_passing_tice_insecticides):
     mol_filter = TiceInsecticidesFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_tice_insecticides)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_tice_insecticides)
+    assert_equal(len(smiles_filtered), len(smiles_passing_tice_insecticides))
 
 
 def test_mols_failing_tice_insecticides(smiles_failing_tice_insecticides):
     mol_filter = TiceInsecticidesFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_tice_insecticides)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_mols_passing_with_violation_tice_insecticides(
@@ -54,13 +53,13 @@ def test_mols_passing_with_violation_tice_insecticides(
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_tice_insecticides
     )
-    assert len(smiles_filtered) == 3
+    assert_equal(len(smiles_filtered), 3)
 
     mol_filter = TiceInsecticidesFilter(allow_one_violation=False)
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_tice_insecticides
     )
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_tice_insecticides_return_indicators(
@@ -82,7 +81,7 @@ def test_tice_insecticides_return_indicators(
         + [False] * len(smiles_passing_one_violation_tice_insecticides),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     mol_filter = TiceInsecticidesFilter(
         allow_one_violation=True, return_type="indicators"
@@ -94,7 +93,7 @@ def test_tice_insecticides_return_indicators(
         + [True] * len(smiles_passing_one_violation_tice_insecticides),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_tice_insecticides_parallel(smiles_list):
@@ -104,7 +103,7 @@ def test_tice_insecticides_parallel(smiles_list):
     mol_filter = TiceInsecticidesFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_tice_insecticides_transform_x_y(
@@ -118,13 +117,13 @@ def test_tice_insecticides_transform_x_y(
 
     filt = TiceInsecticidesFilter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_passing_tice_insecticides)
+    assert_equal(len(mols), len(smiles_passing_tice_insecticides))
     assert np.all(labels_filt == 1)
 
     filt = TiceInsecticidesFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_passing_tice_insecticides)
-    assert np.array_equal(indicators, labels_filt)
+    assert_equal(np.sum(indicators), len(smiles_passing_tice_insecticides))
+    assert_equal(indicators, labels_filt)
 
 
 def test_tice_insecticides_condition_names():
@@ -132,7 +131,7 @@ def test_tice_insecticides_condition_names():
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (5,)
+    assert_equal(condition_names.shape, (5,))
 
 
 def test_tice_insecticides_return_condition_indicators(
@@ -144,7 +143,7 @@ def test_tice_insecticides_return_condition_indicators(
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 5)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 5))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -162,7 +161,7 @@ def test_tice_insecticides_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 5)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 5))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

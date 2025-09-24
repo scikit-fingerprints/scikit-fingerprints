@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem import Mol
 from sklearn.utils._param_validation import InvalidParameterError
 
@@ -63,20 +64,20 @@ def test_mol_weight_thresholds(
 
     smiles_light_filtered = filt.transform(smiles_light_mols)
     assert all(isinstance(x, str) for x in smiles_light_filtered)
-    assert len(smiles_light_filtered) == len(smiles_light_mols)
-    assert len(smiles_light_filtered) == 3
+    assert_equal(len(smiles_light_filtered), len(smiles_light_mols))
+    assert_equal(len(smiles_light_filtered), 3)
 
     smiles_medium_filtered = filt.transform(smiles_medium_mols)
     assert all(isinstance(x, str) for x in smiles_medium_filtered)
-    assert len(smiles_medium_filtered) == len(smiles_medium_mols)
-    assert len(smiles_medium_filtered) == 3
+    assert_equal(len(smiles_medium_filtered), len(smiles_medium_mols))
+    assert_equal(len(smiles_medium_filtered), 3)
 
     smiles_heavy_filtered = filt.transform(smiles_heavy_mols)
-    assert len(smiles_heavy_filtered) == 0
+    assert_equal(len(smiles_heavy_filtered), 0)
 
     all_smiles = smiles_light_mols + smiles_medium_mols + smiles_heavy_mols
     all_smiles_filtered = filt.transform(all_smiles)
-    assert len(all_smiles_filtered) == 6
+    assert_equal(len(all_smiles_filtered), 6)
 
 
 def test_mol_weight_smiles_and_mol_input(
@@ -92,8 +93,8 @@ def test_mol_weight_smiles_and_mol_input(
 
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert all(isinstance(x, Mol) for x in mols_filtered)
-    assert len(smiles_filtered) == len(mols_filtered)
-    assert len(smiles_filtered) == 6
+    assert_equal(len(smiles_filtered), len(mols_filtered))
+    assert_equal(len(smiles_filtered), 6)
 
 
 def test_mol_weight_parallel(smiles_light_mols, smiles_medium_mols, smiles_heavy_mols):
@@ -104,7 +105,7 @@ def test_mol_weight_parallel(smiles_light_mols, smiles_medium_mols, smiles_heavy
     filt = MolecularWeightFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = filt.transform(all_smiles)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_mol_weight_return_indicators(
@@ -120,7 +121,7 @@ def test_mol_weight_return_indicators(
         + [False] * len(smiles_heavy_mols),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     filt = MolecularWeightFilter(max_weight=500, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
@@ -130,7 +131,7 @@ def test_mol_weight_return_indicators(
         + [False] * len(smiles_heavy_mols),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_mol_weight_min_max_thresholds(
@@ -146,7 +147,7 @@ def test_mol_weight_min_max_thresholds(
         + [False] * len(smiles_heavy_mols),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     filt = MolecularWeightFilter(max_weight=500, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
@@ -156,7 +157,7 @@ def test_mol_weight_min_max_thresholds(
         + [False] * len(smiles_heavy_mols),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     filt = MolecularWeightFilter(min_weight=500, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
@@ -166,7 +167,7 @@ def test_mol_weight_min_max_thresholds(
         + [False] * len(smiles_heavy_mols),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_mol_weight_wrong_min_max_thresholds(smiles_list):
@@ -187,13 +188,13 @@ def test_mol_weight_transform_x_y(smiles_light_mols, smiles_heavy_mols):
 
     filt = MolecularWeightFilter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_light_mols)
+    assert_equal(len(mols), len(smiles_light_mols))
     assert np.all(labels_filt == 1)
 
     filt = MolecularWeightFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_light_mols)
-    assert np.array_equal(indicators, labels_filt)
+    assert_equal(np.sum(indicators), len(smiles_light_mols))
+    assert_equal(indicators, labels_filt)
 
 
 def test_mol_weight_condition_names():
@@ -201,7 +202,7 @@ def test_mol_weight_condition_names():
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (1,)
+    assert_equal(condition_names.shape, (1,))
 
 
 def test_mol_weight_return_condition_indicators(smiles_light_mols, smiles_heavy_mols):
@@ -211,7 +212,7 @@ def test_mol_weight_return_condition_indicators(smiles_light_mols, smiles_heavy_
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 1)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 1))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -226,7 +227,7 @@ def test_mol_weight_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 1)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 1))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

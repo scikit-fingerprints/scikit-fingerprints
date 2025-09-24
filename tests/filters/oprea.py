@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.filters import OpreaFilter
 
@@ -32,21 +33,21 @@ def test_mols_passing_oprea_filter(smiles_passing_oprea):
     mol_filter = OpreaFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_oprea)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_oprea)
+    assert_equal(len(smiles_filtered), len(smiles_passing_oprea))
 
 
 def test_mols_partially_passing_oprea_filter(smiles_passing_oprea_one_fail):
     mol_filter = OpreaFilter(allow_one_violation=True)
     smiles_filtered = mol_filter.transform(smiles_passing_oprea_one_fail)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_oprea_one_fail)
+    assert_equal(len(smiles_filtered), len(smiles_passing_oprea_one_fail))
 
 
 def test_mols_failing_oprea_filter(smiles_failing_oprea):
     mol_filter = OpreaFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_oprea)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_oprea_filter_return_indicators(
@@ -66,7 +67,7 @@ def test_oprea_filter_return_indicators(
         + [False] * len(smiles_passing_oprea_one_fail),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     mol_filter = OpreaFilter(allow_one_violation=True, return_type="indicators")
     filter_indicators = mol_filter.transform(all_smiles)
@@ -76,7 +77,7 @@ def test_oprea_filter_return_indicators(
         + [True] * len(smiles_passing_oprea_one_fail),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_oprea_filter_parallel(smiles_list):
@@ -86,7 +87,7 @@ def test_oprea_filter_parallel(smiles_list):
     mol_filter = OpreaFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_oprea_transform_x_y(smiles_passing_oprea, smiles_failing_oprea):
@@ -95,13 +96,13 @@ def test_oprea_transform_x_y(smiles_passing_oprea, smiles_failing_oprea):
 
     filt = OpreaFilter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_passing_oprea)
+    assert_equal(len(mols), len(smiles_passing_oprea))
     assert np.all(labels_filt == 1)
 
     filt = OpreaFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_passing_oprea)
-    assert np.array_equal(indicators, labels_filt)
+    assert_equal(np.sum(indicators), len(smiles_passing_oprea))
+    assert_equal(indicators, labels_filt)
 
 
 def test_oprea_condition_names():
@@ -109,7 +110,7 @@ def test_oprea_condition_names():
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (4,)
+    assert_equal(condition_names.shape, (4,))
 
 
 def test_oprea_return_condition_indicators(smiles_passing_oprea, smiles_failing_oprea):
@@ -119,7 +120,7 @@ def test_oprea_return_condition_indicators(smiles_passing_oprea, smiles_failing_
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 4))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -134,7 +135,7 @@ def test_oprea_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 4))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

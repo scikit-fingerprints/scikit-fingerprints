@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.fingerprints import ElectroShapeFingerprint
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
@@ -15,7 +16,7 @@ def test_electroshape_bit_fingerprint(mols_conformers_3_plus_atoms):
     electroshape_fp = ElectroShapeFingerprint(n_jobs=-1)
     X_skfp = electroshape_fp.transform(mols_conformers_3_plus_atoms)
 
-    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 15)
+    assert_equal(X_skfp.shape, (len(mols_conformers_3_plus_atoms), 15))
     assert np.issubdtype(X_skfp.dtype, np.floating)
     assert not np.any(np.isnan(X_skfp))
 
@@ -26,10 +27,10 @@ def test_electroshape_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms
     electroshape_fp = ElectroShapeFingerprint(n_jobs=-1)
     X_skfp, y_skfp = electroshape_fp.transform_x_y(mols_conformers_3_plus_atoms, y)
 
-    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 15)
+    assert_equal(X_skfp.shape, (len(mols_conformers_3_plus_atoms), 15))
     assert np.issubdtype(X_skfp.dtype, np.floating)
     assert not np.any(np.isnan(X_skfp))
-    assert len(X_skfp) == len(y_skfp)
+    assert_equal(len(X_skfp), len(y_skfp))
 
 
 def test_electroshape_charge_models(mols_conformers_3_plus_atoms):
@@ -61,18 +62,12 @@ def test_electroshape_ignore_errors():
         "CCCC[SnH](CCCC)CCCC",
     ]
     non_metallics = [
-        # benzene
-        "c1ccccc1",
-        # ibuprofen
-        "CC(C)Cc1ccc(cc1)[C@@H](C)C(=O)O",
-        # caffeine
-        "CN1C=NC2=C1C(=O)N(C(=O)N2C)C",
-        # nicotine
-        "c1ncccc1[C@@H]2CCCN2C",
-        # Venlafaxine
-        "OC2(C(c1ccc(OC)cc1)CN(C)C)CCCCC2",
-        # Chlordiazepoxide
-        "ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1",
+        "c1ccccc1",  # benzene
+        "CC(C)Cc1ccc(cc1)[C@@H](C)C(=O)O",  # ibuprofen
+        "CN1C=NC2=C1C(=O)N(C(=O)N2C)C",  # caffeine
+        "c1ncccc1[C@@H]2CCCN2C",  # nicotine
+        "OC2(C(c1ccc(OC)cc1)CN(C)C)CCCCC2",  # Venlafaxine
+        "ClC1=CC2=C(N=C(NC)C[N+]([O-])=C2C3=CC=CC=C3)C=C1",  # Chlordiazepoxide
     ]
     all_smiles = organometallics + non_metallics
     all_mols = MolFromSmilesTransformer().transform(all_smiles)
@@ -81,7 +76,7 @@ def test_electroshape_ignore_errors():
     electroshape_fp = ElectroShapeFingerprint(errors="ignore", n_jobs=-1)
     X_skfp = electroshape_fp.transform(all_mols)
 
-    assert len(X_skfp) == len(all_mols)
+    assert_equal(len(X_skfp), len(all_mols))
 
 
 def test_electroshape_transform_x_y(mols_conformers_3_plus_atoms):
@@ -90,7 +85,7 @@ def test_electroshape_transform_x_y(mols_conformers_3_plus_atoms):
     electroshape_fp = ElectroShapeFingerprint(n_jobs=-1)
     X_skfp, y_skfp = electroshape_fp.transform_x_y(mols_conformers_3_plus_atoms, labels)
 
-    assert len(X_skfp) == len(y_skfp)
+    assert_equal(len(X_skfp), len(y_skfp))
     assert np.all(y_skfp == 1)
 
 
@@ -98,8 +93,10 @@ def test_electroshape_feature_names():
     electroshape_fp = ElectroShapeFingerprint()
     feature_names = electroshape_fp.get_feature_names_out()
 
-    assert len(feature_names) == electroshape_fp.n_features_out
-    assert len(feature_names) == len(set(feature_names))
+    assert_equal(len(feature_names), electroshape_fp.n_features_out)
+    assert_equal(len(feature_names), len(set(feature_names)))
 
-    assert feature_names[0] == "centroid_dists_mean"
-    assert feature_names[-1] == "centroid_lowest_partial_charge_skewness_cubic_root"
+    assert_equal(feature_names[0], "centroid_dists_mean")
+    assert_equal(
+        feature_names[-1], "centroid_lowest_partial_charge_skewness_cubic_root"
+    )
