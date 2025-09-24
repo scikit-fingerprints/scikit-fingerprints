@@ -65,7 +65,7 @@ class ConformerGenerator(BasePreprocessor):
         Number of attempts to generate a conformer. Should be sufficiently large,
         typically hundreds-thousands.
 
-    max_gen_time : int, default=0
+    timeout : int, default=0
         Maximal allowed time in seconds to try to generate a conformer. Zero means
         unlimited time.
 
@@ -144,7 +144,7 @@ class ConformerGenerator(BasePreprocessor):
     _parameter_constraints: dict = {
         "num_conformers": [Interval(Integral, 1, None, closed="left")],
         "max_gen_attempts": [Interval(Integral, 1, None, closed="left")],
-        "max_gen_time": [Interval(Integral, 0, None, closed="left")],
+        "timeout": [Interval(Integral, 0, None, closed="left")],
         "optimize_force_field": [StrOptions({"UFF", "MMFF94", "MMFF94s"}), None],
         "multiple_confs_select": [StrOptions({"min_energy", "first"})],
         "suppress_warnings": ["boolean"],
@@ -159,7 +159,7 @@ class ConformerGenerator(BasePreprocessor):
         self,
         num_conformers: int = 1,
         max_gen_attempts: int = 1000,
-        max_gen_time: int = 0,
+        timeout: int = 0,
         optimize_force_field: str | None = None,
         multiple_confs_select: str | None = "min_energy",
         suppress_warnings: bool = False,
@@ -176,7 +176,7 @@ class ConformerGenerator(BasePreprocessor):
         )
         self.num_conformers = num_conformers
         self.max_gen_attempts = max_gen_attempts
-        self.max_gen_time = max_gen_time
+        self.timeout = timeout
         self.optimize_force_field = optimize_force_field
         self.multiple_confs_select = multiple_confs_select
         self.suppress_warnings = suppress_warnings
@@ -387,7 +387,7 @@ class ConformerGenerator(BasePreprocessor):
 
     def _set_common_embed_params(self, embed_params: EmbedParameters) -> None:
         embed_params.maxIterations = self.max_gen_attempts
-        embed_params.timeout = self.max_gen_time
+        embed_params.timeout = self.timeout
         embed_params.useRandomCoords = True
         embed_params.randomSeed = self.random_state
         embed_params.enableSequentialRandomSeeds = True
