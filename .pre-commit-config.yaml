@@ -17,7 +17,9 @@ repos:
           --vulnerability-service, "pypi",
           --cache-dir, ".pip_audit_cache",
           # false alert for setuptools, we have a much newer version
-          --ignore-vuln, "GHSA-5rjg-fvgr-3xxf"
+          --ignore-vuln, "GHSA-5rjg-fvgr-3xxf",
+          # false alert for pip
+          --ignore-vuln, "GHSA-4xh5-x5gv-qwph"
         ]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
