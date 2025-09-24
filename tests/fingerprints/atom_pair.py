@@ -158,7 +158,7 @@ def test_atom_pair_hac_scaling(smiles_list, mols_list):
         for fp, mol in zip(X_rdkit, mols_list, strict=False)
     ]
 
-    assert np.allclose(X_skfp, X_rdkit_scaled)
+    np.testing.assert_allclose(X_skfp, X_rdkit_scaled)
     assert np.issubdtype(X_skfp.dtype, np.floating)
     assert X_skfp.shape == (len(smiles_list), atom_pair_fp.fp_size)
 
@@ -174,7 +174,7 @@ def test_atom_pair_squared_hac_scaling(smiles_list, mols_list):
         for fp, mol in zip(X_rdkit, mols_list, strict=False)
     ]
 
-    assert np.allclose(X_skfp, X_rdkit_scaled)
+    np.testing.assert_allclose(X_skfp, X_rdkit_scaled)
     assert np.all((X_skfp >= 0) & (X_skfp <= 100))
     assert np.issubdtype(X_skfp.dtype, np.floating)
     assert X_skfp.shape == (len(smiles_list), atom_pair_fp.fp_size)

@@ -62,7 +62,7 @@ def test_erg_fuzzy_sparse_fingerprint(smiles_list):
     mols_list = [MolFromSmiles(smi) for smi in smiles_list]
     X_rdkit = csr_array([GetErGFingerprint(mol) for mol in mols_list])
 
-    assert np.allclose(X_skfp.data, X_rdkit.data)
+    np.testing.assert_allclose(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), 315)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
@@ -75,7 +75,7 @@ def test_erg_bit_sparse_fingerprint(smiles_list):
     X_rdkit = csr_array([GetErGFingerprint(mol, fuzzIncrement=0) for mol in mols_list])
     X_rdkit.data = X_rdkit.data > 0
 
-    assert np.allclose(X_skfp.data, X_rdkit.data)
+    np.testing.assert_allclose(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), 315)
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data == 1)
@@ -89,7 +89,7 @@ def test_erg_count_sparse_fingerprint(smiles_list):
     X_rdkit = csr_array([GetErGFingerprint(mol, fuzzIncrement=0) for mol in mols_list])
     X_rdkit.data = np.round(X_rdkit.data)
 
-    assert np.allclose(X_skfp.data, X_rdkit.data)
+    np.testing.assert_allclose(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), 315)
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)

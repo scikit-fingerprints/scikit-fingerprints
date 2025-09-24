@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem.rdMolDescriptors import GetUSRCAT
 
 from skfp.fingerprints import USRCATFingerprint
@@ -22,8 +23,8 @@ def test_usrcat_bit_fingerprint(mols_conformers_3_plus_atoms):
         ]
     )
 
-    assert np.allclose(X_skfp, X_rdkit, atol=1e-3)
-    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
+    assert_allclose(X_skfp, X_rdkit, atol=1e-3)
+    assert_equal(X_skfp.shape, (len(mols_conformers_3_plus_atoms), 60))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -43,10 +44,10 @@ def test_usrcat_bit_fingerprint_transform_x_y(mols_conformers_3_plus_atoms):
     X_rdkit = np.array(X_rdkit)
     y_rdkit = np.array(y_rdkit)
 
-    assert np.allclose(X_skfp, X_rdkit, atol=1e-3)
-    assert X_skfp.shape == (len(mols_conformers_3_plus_atoms), 60)
+    assert_allclose(X_skfp, X_rdkit, atol=1e-3)
+    assert_equal(X_skfp.shape, (len(mols_conformers_3_plus_atoms), 60))
     assert np.issubdtype(X_skfp.dtype, np.floating)
-    assert np.array_equal(y_skfp, y_rdkit)
+    assert_equal(y_skfp, y_rdkit)
 
 
 def test_usrcat_ignore_errors(mols_conformers_list, mols_conformers_3_plus_atoms):
@@ -54,7 +55,7 @@ def test_usrcat_ignore_errors(mols_conformers_list, mols_conformers_3_plus_atoms
     X_skfp = usrcat_fp.transform(mols_conformers_list)
     X_skfp_3_plus_atoms = usrcat_fp.transform(mols_conformers_3_plus_atoms)
 
-    assert np.allclose(X_skfp, X_skfp_3_plus_atoms)
+    assert_allclose(X_skfp, X_skfp_3_plus_atoms)
 
 
 def test_usrcat_copy(mols_conformers_3_plus_atoms):
@@ -66,7 +67,7 @@ def test_usrcat_copy(mols_conformers_3_plus_atoms):
         mols_conformers_3_plus_atoms, labels, copy=True
     )
 
-    assert np.array_equal(labels, labels_out)
+    np.testing.assert_array_equal(labels, labels_out)
     assert labels is not labels_out
 
 
@@ -74,29 +75,30 @@ def test_usrcat_feature_names():
     usrcat_fp = USRCATFingerprint()
     feature_names = usrcat_fp.get_feature_names_out()
 
-    assert len(feature_names) == usrcat_fp.n_features_out
-    assert len(feature_names) == len(set(feature_names))
+    assert_equal(len(feature_names), usrcat_fp.n_features_out)
+    assert_equal(len(feature_names), len(set(feature_names)))
 
-    assert feature_names[0] == "all_centroid_dists_mean"
-    assert feature_names[12] == "hydrophobic_centroid_dists_mean"
-    assert feature_names[24] == "aromatic_centroid_dists_mean"
-    assert feature_names[36] == "hydrogen_bond_donor_centroid_dists_mean"
-    assert feature_names[48] == "hydrogen_bond_acceptor_centroid_dists_mean"
+    assert_equal(feature_names[0], "all_centroid_dists_mean")
+    assert_equal(feature_names[12], "hydrophobic_centroid_dists_mean")
+    assert_equal(feature_names[24], "aromatic_centroid_dists_mean")
+    assert_equal(feature_names[36], "hydrogen_bond_donor_centroid_dists_mean")
+    assert_equal(feature_names[48], "hydrogen_bond_acceptor_centroid_dists_mean")
 
-    assert feature_names[11] == "all_farthest_atom_from_farthest_to_centroid_cubic_root"
-    assert (
-        feature_names[23]
-        == "hydrophobic_farthest_atom_from_farthest_to_centroid_cubic_root"
+    assert_equal(
+        feature_names[11], "all_farthest_atom_from_farthest_to_centroid_cubic_root"
     )
-    assert (
-        feature_names[35]
-        == "aromatic_farthest_atom_from_farthest_to_centroid_cubic_root"
+    assert_equal(
+        feature_names[23],
+        "hydrophobic_farthest_atom_from_farthest_to_centroid_cubic_root",
     )
-    assert (
-        feature_names[47]
-        == "hydrogen_bond_donor_farthest_atom_from_farthest_to_centroid_cubic_root"
+    assert_equal(
+        feature_names[35], "aromatic_farthest_atom_from_farthest_to_centroid_cubic_root"
     )
-    assert (
-        feature_names[59]
-        == "hydrogen_bond_acceptor_farthest_atom_from_farthest_to_centroid_cubic_root"
+    assert_equal(
+        feature_names[47],
+        "hydrogen_bond_donor_farthest_atom_from_farthest_to_centroid_cubic_root",
+    )
+    assert_equal(
+        feature_names[59],
+        "hydrogen_bond_acceptor_farthest_atom_from_farthest_to_centroid_cubic_root",
     )

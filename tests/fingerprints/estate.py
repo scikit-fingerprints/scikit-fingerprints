@@ -38,7 +38,7 @@ def test_estate_sum_fingerprint(smiles_list, mols_list):
     X_rdkit = np.array([FingerprintMol(mol) for mol in mols_list])
     X_rdkit = X_rdkit[:, 1]
 
-    assert np.allclose(X_skfp, X_rdkit)
+    np.testing.assert_allclose(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(smiles_list), 79)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
@@ -79,7 +79,7 @@ def test_estate_sparse_sum_fingerprint(smiles_list, mols_list):
     X_rdkit = X_rdkit[:, 1]
     X_rdkit = csr_array(X_rdkit)
 
-    assert np.allclose(X_skfp.data, X_rdkit.data)
+    np.testing.assert_allclose(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(smiles_list), 79)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 

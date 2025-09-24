@@ -1,5 +1,5 @@
-import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.DataStructs import (
     IntSparseIntVect,
     LongSparseIntVect,
@@ -28,7 +28,7 @@ def test_base_transform_copy(smiles_list):
     atom_pair_fp = AtomPairFingerprint(n_jobs=-1)
     X_skfp = atom_pair_fp.transform(smiles_list, copy=False)
     X_skfp_2 = atom_pair_fp.transform(smiles_list, copy=True)
-    assert np.array_equal(X_skfp, X_skfp_2)
+    assert_equal(X_skfp, X_skfp_2)
 
 
 def test_base_invalid_params(smiles_list):

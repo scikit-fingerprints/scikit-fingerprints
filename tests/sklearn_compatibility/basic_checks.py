@@ -174,7 +174,7 @@ def check_estimators_pickle(
         else:
             assert result[method].shape == unpickled_result.shape
             if name not in omit_results_check:
-                assert np.allclose(
+                np.testing.assert_allclose(
                     result[method], unpickled_result, atol=1e-1, equal_nan=True
                 )
 

@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from sklearn.datasets import (
     make_blobs,
     make_classification,
@@ -37,8 +38,7 @@ def test_inside_probstd_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.issubdtype(preds.dtype, np.bool_)
-    assert preds.shape == (len(X_test),)
-
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
 
@@ -64,8 +64,7 @@ def test_outside_probstd_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.issubdtype(preds.dtype, np.bool_)
-    assert preds.shape == (len(X_test),)
-
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 
 
@@ -83,7 +82,7 @@ def test_probstd_ad_with_default_model():
     preds = ad_checker.predict(X)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X),)
+    assert_equal(preds.shape, (len(X),))
 
 
 def test_ptobstd_ad_checker_with_classifier():
@@ -109,7 +108,7 @@ def test_ptobstd_ad_checker_with_classifier():
     preds = ad_checker.predict(X)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X),)
+    assert_equal(preds.shape, (len(X),))
 
 
 def test_probstd_fit():

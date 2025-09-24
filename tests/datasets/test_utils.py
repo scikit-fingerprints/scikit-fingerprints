@@ -2,6 +2,7 @@ from typing import Literal
 
 import numpy as np
 import pandas as pd
+from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem import Mol
 
 from skfp.preprocessing import MolFromSmilesTransformer
@@ -37,7 +38,7 @@ def run_basic_dataset_checks(
 def assert_valid_smiles_list(smiles_list: list[str], expected_length: int) -> None:
     assert isinstance(smiles_list, list)
     assert all(isinstance(s, str) for s in smiles_list)
-    assert len(smiles_list) == expected_length
+    assert_equal(len(smiles_list), expected_length)
 
 
 def assert_valid_mols_from_smiles(smiles_list: list[str]) -> None:
@@ -58,9 +59,9 @@ def assert_valid_labels(
     assert isinstance(y, np.ndarray)
 
     if num_tasks == 1:
-        assert y.shape == (expected_length,)
+        assert_equal(y.shape, (expected_length,))
     else:
-        assert y.shape == (expected_length, num_tasks)
+        assert_equal(y.shape, (expected_length, num_tasks))
 
     # note that in multioutput problems we allow NaN labels
     # it results in float dtype, instead of integer
@@ -102,10 +103,10 @@ def assert_valid_dataframe(
     assert isinstance(df, pd.DataFrame)
     if "aminoseq" in df.columns:
         # SMILES + aminoseq + labels
-        assert df.shape == (expected_length, num_tasks + 2)
+        assert_equal(df.shape, (expected_length, num_tasks + 2))
     else:
         # SMILES + labels
-        assert df.shape == (expected_length, num_tasks + 1)
+        assert_equal(df.shape, (expected_length, num_tasks + 1))
 
     assert "SMILES" in df.columns
 
@@ -115,5 +116,5 @@ def assert_valid_dataframe(
     if num_tasks == 1:
         df_y = df_y.ravel()
 
-    assert df_smiles == smiles_list
-    assert np.array_equal(df_y, y, equal_nan=True)
+    assert_equal(df_smiles, smiles_list)
+    assert_allclose(df_y, y, equal_nan=True)

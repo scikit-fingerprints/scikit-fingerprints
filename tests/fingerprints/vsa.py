@@ -17,7 +17,7 @@ def test_vsa_fingerprint(mols_list):
 
     X_rdkit = np.column_stack((X_slogp, X_smr, X_peoe))
 
-    assert np.allclose(X_skfp, X_rdkit)
+    np.testing.assert_allclose(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(mols_list), 36)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
@@ -33,7 +33,7 @@ def test_vsa_fingerprint_with_estate(mols_list):
 
     X_rdkit = np.column_stack((X_slogp, X_smr, X_peoe, X_estate))
 
-    assert np.allclose(X_skfp, X_rdkit)
+    np.testing.assert_allclose(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(mols_list), 47)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
@@ -64,7 +64,7 @@ def test_vsa_sparse_fingerprint(mols_list):
 
     X_rdkit = csr_array(np.column_stack((X_slogp, X_smr, X_peoe)))
 
-    assert np.allclose(X_skfp.data, X_rdkit.data)
+    np.testing.assert_allclose(X_skfp.data, X_rdkit.data)
     assert X_skfp.shape == (len(mols_list), 36)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 

@@ -27,7 +27,7 @@ def test_bcut2d_fingerprint_gasteiger(gasteiger_allowed_mols):
 
     X_rdkit = np.array([BCUT2D(mol) for mol in gasteiger_allowed_mols])
 
-    assert np.allclose(X_skfp, X_rdkit)
+    np.testing.assert_allclose(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(gasteiger_allowed_mols), 8)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
@@ -40,7 +40,7 @@ def test_bcut2d_fingerprint_formal(smallest_mols_list):
     bcut2d_fp = BCUT2DFingerprint()
     X_skfp_seq = bcut2d_fp.transform(smallest_mols_list)
 
-    assert np.allclose(X_skfp_parallel, X_skfp_seq)
+    np.testing.assert_allclose(X_skfp_parallel, X_skfp_seq)
     assert X_skfp_parallel.shape == X_skfp_seq.shape
 
 
@@ -51,7 +51,7 @@ def test_bcut2d_ignore_errors(mols_list, gasteiger_allowed_mols):
     X_skfp = bcut2d_fp.transform(mols_list)
     X_skfp_gasteiger = bcut2d_fp.transform(gasteiger_allowed_mols)
 
-    assert np.allclose(X_skfp, X_skfp_gasteiger)
+    np.testing.assert_allclose(X_skfp, X_skfp_gasteiger)
 
 
 def test_bcut2d_zero_errors(mols_list):

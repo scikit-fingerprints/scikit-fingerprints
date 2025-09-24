@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem import GetDistanceMatrix, Mol, MolFromSmiles
 
 from skfp.descriptors import burden_matrix
@@ -48,8 +49,8 @@ def test_wiener_index(mol_name, expected_value, input_mols):
     result = top.wiener_index(mol, distance_matrix)
     result_no_dist_matrix = top.wiener_index(mol)
 
-    assert result == expected_value
-    assert result_no_dist_matrix == expected_value
+    assert_equal(result, expected_value)
+    assert_equal(result_no_dist_matrix, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -71,8 +72,8 @@ def test_average_wiener_index(mol_name, expected_value, input_mols):
     result = top.average_wiener_index(mol, distance_matrix)
     result_no_dist_matrix = top.average_wiener_index(mol)
 
-    assert round(result, 3) == expected_value
-    assert round(result_no_dist_matrix, 3) == expected_value
+    assert_allclose(result, expected_value, atol=1e-3)
+    assert_allclose(result_no_dist_matrix, expected_value, atol=1e-3)
 
 
 def test_average_wiener_index_single_atom(input_mols):
@@ -104,8 +105,8 @@ def test_balaban_j_index(mol_name, expected_value, input_mols):
     result = top.balaban_j_index(mol)
     result_no_dist_matrix = top.balaban_j_index(mol)
 
-    assert round(result, 3) == expected_value
-    assert round(result_no_dist_matrix, 3) == expected_value
+    assert_allclose(result, expected_value, atol=1e-3)
+    assert_allclose(result_no_dist_matrix, expected_value, atol=1e-3)
 
 
 def test_burden_wrong_descriptors():
@@ -144,8 +145,8 @@ def test_diameter(mol_name, expected_value, input_mols):
     result = top.diameter(mol, distance_matrix)
     result_no_dist_matrix = top.diameter(mol)
 
-    assert result == expected_value
-    assert result_no_dist_matrix == expected_value
+    assert_equal(result, expected_value)
+    assert_equal(result_no_dist_matrix, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -168,8 +169,8 @@ def test_graph_distance_index(mol_name, expected_value, input_mols):
     result = top.graph_distance_index(mol, distance_matrix)
     result_no_dist_matrix = top.graph_distance_index(mol)
 
-    assert result == expected_value
-    assert result_no_dist_matrix == expected_value
+    assert_equal(result, expected_value)
+    assert_equal(result_no_dist_matrix, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -193,7 +194,7 @@ def test_petitjean_index(mol_name, expected_value, input_mols):
     result_no_dist_matrix = top.petitjean_index(mol)
 
     assert round(result, 3) == expected_value
-    assert result_no_dist_matrix == expected_value
+    assert_equal(result_no_dist_matrix, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -216,8 +217,8 @@ def test_radius(mol_name, expected_value, input_mols):
     result = top.radius(mol, distance_matrix)
     result_no_dist_matrix = top.radius(mol)
 
-    assert result == expected_value
-    assert result_no_dist_matrix == expected_value
+    assert_equal(result, expected_value)
+    assert_equal(result_no_dist_matrix, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -236,8 +237,7 @@ def test_radius(mol_name, expected_value, input_mols):
 def test_hall_kier_alpha(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
     result = top.hall_kier_alpha(mol)
-
-    assert round(result, 3) == expected_value
+    assert_allclose(result, expected_value, atol=1e-3)
 
 
 @pytest.mark.parametrize(
@@ -256,8 +256,7 @@ def test_hall_kier_alpha(mol_name, expected_value, input_mols):
 def test_kappa1_index(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
     result = top.kappa1_index(mol)
-
-    assert round(result, 3) == expected_value
+    assert_allclose(result, expected_value, atol=1e-3)
 
 
 @pytest.mark.parametrize(
@@ -277,7 +276,7 @@ def test_kappa2_index(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
     result = top.kappa2_index(mol)
 
-    assert round(result, 3) == expected_value
+    assert_allclose(result, expected_value, atol=1e-3)
 
 
 @pytest.mark.parametrize(
@@ -296,8 +295,7 @@ def test_kappa2_index(mol_name, expected_value, input_mols):
 def test_kappa3_index(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
     result = top.kappa3_index(mol)
-
-    assert round(result, 3) == expected_value
+    assert_allclose(result, expected_value, atol=1e-3)
 
 
 @pytest.mark.parametrize(
@@ -317,7 +315,7 @@ def test_kappa3_index(mol_name, expected_value, input_mols):
 def test_zagreb_index_m1(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
     result = top.zagreb_index_m1(mol)
-    assert result == expected_value
+    assert_equal(result, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -337,7 +335,7 @@ def test_zagreb_index_m1(mol_name, expected_value, input_mols):
 def test_zagreb_index_m2(mol_name, expected_value, input_mols):
     mol, _ = input_mols[mol_name]
     result = top.zagreb_index_m2(mol)
-    assert result == expected_value
+    assert_equal(result, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -360,8 +358,8 @@ def test_polarity_number(mol_name, expected_value, input_mols):
     result = top.polarity_number(mol, distance_matrix)
     result_no_dist_matrix = top.polarity_number(mol)
 
-    assert result == expected_value
-    assert result_no_dist_matrix == expected_value
+    assert_equal(result, expected_value)
+    assert_equal(result_no_dist_matrix, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -380,8 +378,8 @@ def test_polarity_number_carbon_only(mol_name, expected_value, input_mols):
     result = top.polarity_number(mol, distance_matrix, carbon_only=True)
     result_no_dist_matrix = top.polarity_number(mol, carbon_only=True)
 
-    assert result == expected_value
-    assert result_no_dist_matrix == expected_value
+    assert_equal(result, expected_value)
+    assert_equal(result_no_dist_matrix, expected_value)
 
 
 def test_polarity_number_no_carbon(input_mols):

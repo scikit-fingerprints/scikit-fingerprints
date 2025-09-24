@@ -29,7 +29,7 @@ def test_pubchem_sparse_bit_fingerprint(smiles_list, mols_list):
 
     assert X_skfp.shape == (len(mols_list), 881)
     assert X_skfp.dtype == np.uint8
-    assert np.allclose(X_skfp.data, 1)
+    np.testing.assert_allclose(X_skfp.data, 1)
 
 
 def test_pubchem_sparse_count_fingerprint(smiles_list, mols_list):

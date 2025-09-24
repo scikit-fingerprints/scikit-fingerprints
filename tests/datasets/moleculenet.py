@@ -1,4 +1,5 @@
 import pytest
+from numpy.testing import assert_equal
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.datasets.moleculenet import (
@@ -33,11 +34,11 @@ from tests.datasets.test_utils import run_basic_dataset_checks
 def test_load_moleculenet_benchmark():
     benchmark_full = load_moleculenet_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
-    assert benchmark_names == MOLECULENET_DATASET_NAMES
+    assert_equal(benchmark_names, MOLECULENET_DATASET_NAMES)
 
     benchmark_full_tuples = load_moleculenet_benchmark(as_frames=False)
     benchmark_names = [name for name, smiles, y in benchmark_full_tuples]
-    assert benchmark_names == MOLECULENET_DATASET_NAMES
+    assert_equal(benchmark_names, MOLECULENET_DATASET_NAMES)
 
 
 @pytest.mark.flaky(
@@ -49,7 +50,7 @@ def test_load_moleculenet_benchmark_subset():
     dataset_names = ["ESOL", "SIDER", "BACE"]
     benchmark_full = load_moleculenet_benchmark(subset=dataset_names, as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
-    assert benchmark_names == dataset_names
+    assert_equal(benchmark_names, dataset_names)
 
 
 @pytest.mark.flaky(
@@ -130,7 +131,7 @@ def test_load_ogb_splits_as_dict(dataset_name):
 def test_load_ogb_splits_lengths(dataset_name, dataset_length):
     train, valid, test = load_ogb_splits(dataset_name)
     loaded_length = len(train) + len(valid) + len(test)
-    assert loaded_length == dataset_length
+    assert_equal(loaded_length, dataset_length)
 
 
 @pytest.mark.flaky(
@@ -201,7 +202,7 @@ def test_load_dataset(dataset_name, load_func, expected_length, num_tasks, task_
 )
 def test_subset_to_dataset_names(subset_name, expected_num_datasets):
     subset_datasets = _subset_to_dataset_names(subset_name)
-    assert len(subset_datasets) == expected_num_datasets
+    assert_equal(len(subset_datasets), expected_num_datasets)
 
 
 def test_nonexistent_subset_name():

@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
 
@@ -46,7 +47,7 @@ def test_substructure_count_fingerprint(
             [0, 0, 0, 0, 4, 0],
         ]
     )
-    assert np.array_equal(X_count, expected_count)
+    assert_equal(X_count, expected_count)
 
 
 def test_substructure_bit_fingerprint(
@@ -66,7 +67,7 @@ def test_substructure_bit_fingerprint(
             [0, 0, 0, 0, 1, 0],
         ]
     )
-    assert np.array_equal(X_bit, expected_bit)
+    assert_equal(X_bit, expected_bit)
 
 
 def test_substructure_sparse_count_fingerprint(
@@ -86,7 +87,7 @@ def test_substructure_sparse_count_fingerprint(
             [0, 0, 0, 0, 4, 0],
         ]
     )
-    assert np.array_equal(X_count.data, expected_count.data)
+    assert_equal(X_count.data, expected_count.data)
 
 
 def test_substructure_sparse_bit_fingerprint(
@@ -105,7 +106,7 @@ def test_substructure_sparse_bit_fingerprint(
             [0, 0, 0, 0, 1, 0],
         ]
     )
-    assert np.array_equal(X_bit.data, expected_bit.data)
+    assert_equal(X_bit.data, expected_bit.data)
 
 
 def test_parameter_constraints_enabled(

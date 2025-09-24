@@ -9,7 +9,7 @@ def test_autocorr_fingerprint(smiles_list, mols_list):
     X_skfp = autocorr_fp.transform(smiles_list)
     X_rdkit = np.array([CalcAUTOCORR2D(mol) for mol in mols_list])
 
-    assert np.allclose(X_skfp, X_rdkit)
+    np.testing.assert_allclose(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(smiles_list), 192)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
@@ -25,7 +25,7 @@ def test_autocorr_3D_fingerprint(mols_conformers_list):
         ]
     )
 
-    assert np.allclose(X_skfp, X_rdkit)
+    np.testing.assert_allclose(X_skfp, X_rdkit)
     assert X_skfp.shape == (len(mols_conformers_list), 80)
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
