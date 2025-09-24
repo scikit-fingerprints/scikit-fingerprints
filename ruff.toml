@@ -43,7 +43,6 @@ ignore = [
     "C408",     # call dict(), list(), set()
     "E731",     # Lambda expressions
     "TRY003",   # long error messages
-    "PD901",    # df variable for DataFrames
     "PGH003",   # ignore types where necessary
     "PLC0415",  # imports inside functions/methods
     "PLR2004",  # numerical constants
@@ -52,6 +51,7 @@ ignore = [
     "PT011",    # use ValueError
     "PYI041",   # explicitly mark Union[int, float] for readability
     "RUF002",   # regular minus sign in docs
+    "RUF059",   # unused variables after unpacking
     "RUF012",   # mutable class attributes
     "SLF001",   # use private members
     "SIM108",   # if/else instead of ternary if when we need
@@ -97,6 +97,7 @@ ignore = [
     "PT006",    # lists in pytest.mark.parametrize
     "PT012",    # multiple lines in pytest.raises()
     "RUF005",   # adding lists
+    "RUF043",   # do not require r-strings in pytest.raises()
     "S101",     # assert
     "S301",     # pickle
     "S311",     # pseudo-random generation
