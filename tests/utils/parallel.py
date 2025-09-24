@@ -1,6 +1,7 @@
 import re
 
 import pytest
+from numpy.testing import assert_equal
 from sklearn.utils.parallel import delayed
 
 from skfp.utils.parallel import ProgressParallel, run_in_parallel
@@ -33,7 +34,7 @@ def test_run_in_parallel():
     data = list(range(100))
     result_sequential = func(data)
     result_parallel = run_in_parallel(func, data, n_jobs=-1, flatten_results=True)
-    assert result_sequential == result_parallel
+    assert_equal(result_sequential, result_parallel)
 
 
 def test_run_in_parallel_batch_size():
@@ -43,7 +44,7 @@ def test_run_in_parallel_batch_size():
     result_parallel = run_in_parallel(
         func, data, n_jobs=-1, batch_size=1, flatten_results=True
     )
-    assert result_sequential == result_parallel
+    assert_equal(result_sequential, result_parallel)
 
 
 def test_run_in_parallel_invalid_batch_size():
@@ -60,7 +61,7 @@ def test_run_in_parallel_single_element_func():
     data = list(range(100))
     result_parallel = run_in_parallel(func, data, n_jobs=-1, single_element_func=True)
     expected_result = list(range(1, 101))
-    assert result_parallel == expected_result
+    assert_equal(result_parallel, expected_result)
 
 
 def test_run_in_parallel_verbose_dict(capsys):

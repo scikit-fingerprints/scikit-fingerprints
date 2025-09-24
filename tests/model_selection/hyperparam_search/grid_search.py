@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.testing import assert_allclose, assert_equal
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import GridSearchCV
 
@@ -18,6 +19,7 @@ def test_fp_estimator_grid_search(smallest_mols_list):
     pos_mols = np.ones(num_mols // 2)
     neg_mols = np.zeros(num_mols - len(pos_mols))
     y = np.concatenate((pos_mols, neg_mols))
+
     fp = AtomPairFingerprint()
     fp_param_grid = {"max_distance": [2, 3, 4]}
     estimator_cv = GridSearchCV(
@@ -30,19 +32,19 @@ def test_fp_estimator_grid_search(smallest_mols_list):
 
     y_pred = fp_cv.predict(smallest_mols_list)
     y_pred_proba = fp_cv.predict_proba(smallest_mols_list)
-    assert len(y_pred) == len(smallest_mols_list)
-    assert len(y_pred) == len(y_pred_proba)
+    assert_equal(len(y_pred), len(smallest_mols_list))
+    assert_equal(len(y_pred), len(y_pred_proba))
 
     X = fp_cv.transform(smallest_mols_list)
-    assert X.shape == (len(smallest_mols_list), fp.n_features_out)
+    assert_equal(X.shape, (len(smallest_mols_list), fp.n_features_out))
 
-    assert len(fp_cv.cv_results_) == 3
+    assert_equal(len(fp_cv.cv_results_), 3)
     assert isinstance(fp_cv.best_fp_, AtomPairFingerprint)
     assert isinstance(fp_cv.best_fp_params_, dict)
-    assert np.isclose(fp_cv.best_score_, len(pos_mols) / num_mols)
+    assert_allclose(fp_cv.best_score_, len(pos_mols) / num_mols)
 
     assert isinstance(fp_cv.best_estimator_cv_.best_estimator_, MockClassifier)
-    assert fp_cv.best_estimator_cv_.best_params_ == {"param1": 0, "param2": 0}
+    assert_equal(fp_cv.best_estimator_cv_.best_params_, {"param1": 0, "param2": 0})
 
 
 def test_fp_estimator_grid_search_verbose(smallest_mols_list, capsys):
@@ -50,6 +52,7 @@ def test_fp_estimator_grid_search_verbose(smallest_mols_list, capsys):
     pos_mols = np.ones(num_mols // 2)
     neg_mols = np.zeros(num_mols - len(pos_mols))
     y = np.concatenate((pos_mols, neg_mols))
+
     fp = AtomPairFingerprint()
     fp_param_grid = {"max_distance": [2, 3, 4]}
     estimator_cv = GridSearchCV(
@@ -75,6 +78,7 @@ def test_best_fp_caching(smallest_mols_list):
     pos_mols = np.ones(num_mols // 2)
     neg_mols = np.zeros(num_mols - len(pos_mols))
     y = np.concatenate((pos_mols, neg_mols))
+
     fp = AtomPairFingerprint()
     fp_param_grid = {"max_distance": [2, 3, 4]}
     estimator_cv = GridSearchCV(
@@ -93,4 +97,4 @@ def test_best_fp_caching(smallest_mols_list):
 
     assert fp_cv.best_fp_array_ is not None
     assert isinstance(fp_cv.best_fp_array_, np.ndarray)
-    assert fp_cv.best_fp_array_.shape == (num_mols, fp.n_features_out)
+    assert_equal(fp_cv.best_fp_array_.shape, (num_mols, fp.n_features_out))

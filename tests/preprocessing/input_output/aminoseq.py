@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem import Mol, MolFromFASTA, MolToSmiles
 
 from skfp.preprocessing import MolFromAminoseqTransformer
@@ -24,7 +25,7 @@ def test_mol_from_fasta(fasta_list):
     mol_from_fasta = MolFromAminoseqTransformer()
     mols_list = mol_from_fasta.transform(fasta_list)
 
-    assert len(mols_list) == len(fasta_list)
+    assert_equal(len(mols_list), len(fasta_list))
     assert all(isinstance(x, Mol) for x in mols_list)
 
 
@@ -34,7 +35,7 @@ def test_mol_to_and_from_fasta(fasta_list, peptides_smiles_list):
     peptide_list = mol_from_fasta.transform(fasta_list)
     smiles_list = [MolToSmiles(mol) for mol in peptide_list]
 
-    assert smiles_list == peptides_smiles_list
+    assert_equal(smiles_list, peptides_smiles_list)
 
 
 def test_mol_from_fasta_and_sequence(fasta_list, sequence_list):
@@ -47,7 +48,7 @@ def test_mol_from_fasta_and_sequence(fasta_list, sequence_list):
     smiles_list_fasta = [MolToSmiles(mol) for mol in mols_list_fasta]
     smiles_list_sequence = [MolToSmiles(mol) for mol in mols_list_sequence]
 
-    assert smiles_list_fasta == smiles_list_sequence
+    assert_equal(smiles_list_fasta, smiles_list_sequence)
 
 
 def test_parallel_to_and_from_fasta(peptide_list, fasta_list):
@@ -59,7 +60,7 @@ def test_parallel_to_and_from_fasta(peptide_list, fasta_list):
     mols_list_parallel = mol_from_fasta_parallel.transform(fasta_list)
     smiles_list_parallel = [MolToSmiles(mol) for mol in mols_list_parallel]
 
-    assert smiles_list_seq == smiles_list_parallel
+    assert_equal(smiles_list_seq, smiles_list_parallel)
 
 
 def test_from_invalid_fasta(fasta_list):
@@ -70,15 +71,14 @@ def test_from_invalid_fasta(fasta_list):
     mol_from_aminoseq = MolFromAminoseqTransformer(valid_only=True)
     mols_list_2 = mol_from_aminoseq.transform(fasta_list + invalid_fasta_list)
 
-    assert len(mols_list) == len(fasta_list) + len(invalid_fasta_list)
-    assert len(mols_list_2) == len(fasta_list)
+    assert_equal(len(mols_list), len(fasta_list) + len(invalid_fasta_list))
+    assert_equal(len(mols_list_2), len(fasta_list))
 
 
 def test_from_invalid_smiles_with_y(fasta_list):
     invalid_fasta_list = ["[H]=[H]", "..."]
     all_fasta_list = fasta_list + invalid_fasta_list
     labels = np.ones(len(all_fasta_list))
-
     labels[-len(invalid_fasta_list) :] = 0
 
     mol_from_aminoseq = MolFromAminoseqTransformer(valid_only=False)
@@ -87,9 +87,9 @@ def test_from_invalid_smiles_with_y(fasta_list):
     mol_from_aminoseq = MolFromAminoseqTransformer(valid_only=True)
     mols_list_2, y_2 = mol_from_aminoseq.transform_x_y(all_fasta_list, labels)
 
-    assert len(mols_list) == len(all_fasta_list)
-    assert len(mols_list_2) == len(fasta_list)
+    assert_equal(len(mols_list), len(all_fasta_list))
+    assert_equal(len(mols_list_2), len(fasta_list))
 
-    assert len(y) == len(all_fasta_list)
-    assert len(y_2) == len(fasta_list)
-    assert len(mols_list_2) == len(y_2)
+    assert_equal(len(y), len(all_fasta_list))
+    assert_equal(len(y_2), len(fasta_list))
+    assert_equal(len(mols_list_2), len(y_2))
