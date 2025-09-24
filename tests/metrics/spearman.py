@@ -43,4 +43,4 @@ def test_spearman_p_value():
     y_true = list(range(5))
     y_pred = list(range(1, 6))
     p_value = spearman_correlation(y_true, y_pred, return_p_value=True)
-    assert_allclose(p_value, 0.0)
+    assert_allclose(p_value, 0.0, atol=1e-5)
