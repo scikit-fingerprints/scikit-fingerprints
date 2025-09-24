@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -127,7 +126,7 @@ def harris_lahey_binary_similarity(
 
     # all-ones or all-zeros vectors
     if first_denom == 0 or second_denom == 0:
-        return 1.0
+        return 1
 
     sim = float(
         (a * (2 * d + b + c)) / (2 * first_denom)
@@ -218,12 +217,15 @@ def harris_lahey_binary_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_harris_lahey_binary_similarity(
-    X: np.ndarray,
-    Y: np.ndarray | None = None,
+    X: list | np.ndarray | csr_array,
+    Y: list | np.ndarray | csr_array | None = None,
     normalized: bool = False,
 ) -> np.ndarray:
     r"""
@@ -238,15 +240,15 @@ def bulk_harris_lahey_binary_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed, similarities
         are computed between rows of X.
 
     normalized : bool, default=False
-        Whether to divide the resulting similarity by length of vectors, (their number
+        Whether to divide the resulting similarity by length of vectors (their number
         of elements), to normalize values to range ``[0, 1]``.
 
     Returns
@@ -263,98 +265,89 @@ def bulk_harris_lahey_binary_similarity(
     --------
     >>> from skfp.distances import bulk_harris_lahey_binary_similarity
     >>> import numpy as np
-    >>> X = np.array([[1, 0, 1], [0, 0, 1]])
-    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
+    >>> from scipy.sparse import csr_array
+    >>> X = csr_array([[1, 0, 1], [0, 0, 1]])
+    >>> Y = csr_array([[1, 0, 1], [0, 1, 1]])
     >>> sim = bulk_harris_lahey_binary_similarity(X, Y)
     >>> sim
     array([[3.        , 0.33333333],
            [1.5       , 1.5       ]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
-        return _bulk_harris_lahey_binary_similarity_single(X, normalized)
+        return _bulk_harris_lahey_binary_similarity_single_sparse(X, normalized)
     else:
-        return _bulk_harris_lahey_binary_similarity_two(X, Y, normalized)
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
+        return _bulk_harris_lahey_binary_similarity_two_sparse(X, Y, normalized)
 
 
-@numba.njit(parallel=True)
-def _bulk_harris_lahey_binary_similarity_single(
-    X: np.ndarray, normalized: bool
+def _bulk_harris_lahey_binary_similarity_single_sparse(
+    X: csr_array, normalized: bool
 ) -> np.ndarray:
     m, length = X.shape
-    sims = np.empty((m, m))
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
+    a = (X @ X.T).toarray()
+    bc_sum = np.add.outer(row_sums, row_sums) - 2 * a
+    d = length - (a + bc_sum)
 
-    for i in numba.prange(m):
-        vec_a = X[i]
-        vec_a_neg = 1 - vec_a
+    first_denom = a + bc_sum
+    second_denom = bc_sum + d
 
-        for j in numba.prange(i, m):
-            vec_b = X[j]
-            vec_b_neg = 1 - vec_b
+    sims = np.empty_like(a, dtype=float)
 
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            b = np.sum(np.logical_and(vec_a, vec_b_neg))
-            c = np.sum(np.logical_and(vec_a_neg, vec_b))
-            d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        first_num = a * (2 * d + bc_sum)
+        first_denom = 2 * np.where(first_denom != 0, first_denom, 1)
+        part_1 = first_num / first_denom
 
-            bc_sum = b + c
+        second_num = d * (2 * a + bc_sum)
+        second_denom = 2 * np.where(second_denom != 0, second_denom, 1)
+        part_2 = second_num / second_denom
 
-            first_denom = a + bc_sum
-            second_denom = bc_sum + d
+        sims = part_1 + part_2
 
-            # all-ones or all-zeros vectors
-            if first_denom == 0 or second_denom == 0:
-                sim = 1.0
-            else:
-                sim = float(
-                    (a * (2 * d + bc_sum)) / (2 * first_denom)
-                    + (d * (2 * a + bc_sum)) / (2 * second_denom)
-                )
-                if normalized:
-                    sim /= length
+    # handle all-zeros / all-ones vectors
+    sims[(first_denom == 0) | (second_denom == 0)] = 1
 
-            sims[i, j] = sims[j, i] = sim
+    if normalized:
+        sims /= length
 
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_harris_lahey_binary_similarity_two(
-    X: np.ndarray, Y: np.ndarray, normalized: bool
+def _bulk_harris_lahey_binary_similarity_two_sparse(
+    X: csr_array, Y: csr_array, normalized: bool
 ) -> np.ndarray:
     m, length = X.shape
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
+    a = (X @ Y.T).toarray()
+    bc_sum = np.add.outer(row_sums_X, row_sums_Y) - 2 * a
+    d = length - (a + bc_sum)
 
-    for i in numba.prange(m):
-        vec_a = X[i]
-        vec_a_neg = 1 - vec_a
+    first_denom = a + bc_sum
+    second_denom = bc_sum + d
 
-        for j in numba.prange(n):
-            vec_b = Y[j]
-            vec_b_neg = 1 - vec_b
+    sims = np.empty_like(a, dtype=float)
 
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            b = np.sum(np.logical_and(vec_a, vec_b_neg))
-            c = np.sum(np.logical_and(vec_a_neg, vec_b))
-            d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        first_num = a * (2 * d + bc_sum)
+        first_denom = 2 * np.where(first_denom != 0, first_denom, 1)
+        part_1 = first_num / first_denom
 
-            bc_sum = b + c
+        second_num = d * (2 * a + bc_sum)
+        second_denom = 2 * np.where(second_denom != 0, second_denom, 1)
+        part_2 = second_num / second_denom
 
-            first_denom = a + bc_sum
-            second_denom = bc_sum + d
+        sims = part_1 + part_2
 
-            # all-ones or all-zeros vectors
-            if first_denom == 0 or second_denom == 0:
-                sim = 1.0
-            else:
-                sim = float(
-                    (a * (2 * d + bc_sum)) / (2 * first_denom)
-                    + (d * (2 * a + bc_sum)) / (2 * second_denom)
-                )
-                if normalized:
-                    sim /= length
+    sims[(first_denom == 0) | (second_denom == 0)] = 1
 
-            sims[i, j] = sim
+    if normalized:
+        sims /= length
 
     return sims
 
@@ -367,7 +360,7 @@ def _bulk_harris_lahey_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_harris_lahey_binary_distance(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Harris-Lahey distance for vectors of binary values.
@@ -381,11 +374,11 @@ def bulk_harris_lahey_binary_distance(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed, distances
         are computed between rows of X.
 
     Returns
@@ -397,22 +390,5 @@ def bulk_harris_lahey_binary_distance(
     See Also
     --------
     :py:func:`harris_lahey_binary_distance` : Harris-Lahey distance function for two vectors
-
-    Examples
-    --------
-    >>> from skfp.distances import bulk_harris_lahey_binary_distance
-    >>> import numpy as np
-    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> Y = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> dist = bulk_harris_lahey_binary_distance(X, Y)
-    >>> dist
-    array([[0., 0.],
-           [0., 0.]])
-
-    >>> X = np.array([[1, 0, 1], [1, 0, 1]])
-    >>> dist = bulk_harris_lahey_binary_distance(X)
-    >>> dist
-    array([[0., 0.],
-           [0., 0.]])
     """
     return 1 - bulk_harris_lahey_binary_similarity(X, Y, normalized=True)

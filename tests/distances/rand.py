@@ -10,7 +10,7 @@ from tests.distances.utils import (
 
 
 def _get_values() -> list[tuple[list[int], list[int], float, float]]:
-    # vec_a, vec_b, comparison, similarity, distance
+    # vec_a, vec_b, similarity, distance
     return [
         ([1, 0, 0], [0, 1, 1], 0.0, 1.0),
         ([1, 0, 0], [0, 0, 0], 2 / 3, 1 / 3),

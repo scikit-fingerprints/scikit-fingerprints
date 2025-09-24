@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -27,7 +26,7 @@ def russell_binary_similarity(
 
     where
 
-    - :math:`a` - common "on" bits
+    - :math:`a` - both are 1 (:math:`|x \cap y|`, common "on" bits)
     - :math:`n` - length of passed vectors
 
     The calculated similarity falls within the range :math:`[0, 1]`.
@@ -35,10 +34,10 @@ def russell_binary_similarity(
 
     Parameters
     ----------
-    vec_a : {ndarray, sparse matrix}
+    vec_a : {ndarray, CSR sparse array}
         First binary input array or sparse matrix.
 
-    vec_b : {ndarray, sparse matrix}
+    vec_b : {ndarray, CSR sparse array}
         Second binary input array or sparse matrix.
 
     Returns
@@ -91,12 +90,9 @@ def russell_binary_similarity(
         n = vec_a.shape[1]
         vec_a_idxs = set(vec_a.indices)
         vec_b_idxs = set(vec_b.indices)
-
         a = len(vec_a_idxs & vec_b_idxs)
 
-    sim = a / n
-
-    return float(sim)
+    return float(a / n)
 
 
 @validate_params(
@@ -126,10 +122,10 @@ def russell_binary_distance(
 
     Parameters
     ----------
-    vec_a : {ndarray, sparse matrix}
+    vec_a : {ndarray, CSR sparse array}
         First binary input array or sparse matrix.
 
-    vec_b : {ndarray, sparse matrix}
+    vec_b : {ndarray, CSR sparse array}
         Second binary input array or sparse matrix.
 
     Returns
@@ -173,12 +169,15 @@ def russell_binary_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_russell_binary_similarity(
-    X: np.ndarray,
-    Y: np.ndarray | None = None,
+    X: list | np.ndarray | csr_array,
+    Y: list | np.ndarray | csr_array | None = None,
 ) -> np.ndarray:
     r"""
     Bulk Russell similarity for binary matrices.
@@ -192,11 +191,11 @@ def bulk_russell_binary_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed, similarities
         are computed between rows of X.
 
     Returns
@@ -204,64 +203,29 @@ def bulk_russell_binary_similarity(
     similarities : ndarray
         Array with pairwise Russell similarity values. Shape is :math:`m \times n` if two
         arrays are passed, or :math:`m \times m` otherwise.
-
-    See Also
-    --------
-    :py:func:`russell_binary_similarity` : Russell similarity function for two vectors.
-
-    Examples
-    --------
-    >>> from skfp.distances import bulk_russell_binary_similarity
-    >>> import numpy as np
-    >>> X = np.array([[1, 1, 1], [0, 0, 1]])
-    >>> Y = np.array([[1, 0, 1], [0, 1, 1]])
-    >>> sim = bulk_russell_binary_similarity(X, Y)
-    >>> sim
-    array([[0.66666667, 0.66666667],
-           [0.33333333, 0.33333333]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_russell_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_russell_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_russell_binary_similarity_single(
-    X: np.ndarray,
-) -> np.ndarray:
-    m, length = X.shape
-    sims = np.empty((m, m))
-
-    # upper triangle - actual similarities
-    for i in numba.prange(m):
-        vec_a = X[i]
-        for j in numba.prange(i, m):
-            vec_b = X[j]
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            sim = a / length
-            sims[i, j] = sims[j, i] = sim
-
+def _bulk_russell_binary_similarity_single(X: csr_array) -> np.ndarray:
+    n_features = X.shape[1]
+    a = (X @ X.T).toarray()
+    sims = a / n_features
     return sims
 
 
-@numba.njit(parallel=True)
-def _bulk_russell_binary_similarity_two(
-    X: np.ndarray,
-    Y: np.ndarray,
-) -> np.ndarray:
-    m, length = X.shape
-    n = Y.shape[0]
-    sims = np.empty((m, n))
-
-    for i in numba.prange(m):
-        vec_a = X[i]
-        for j in numba.prange(n):
-            vec_b = Y[j]
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            sim = a / length
-            sims[i, j] = sim
-
+def _bulk_russell_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
+    n_features = X.shape[1]
+    a = (X @ Y.T).toarray()
+    sims = a / n_features
     return sims
 
 
@@ -273,7 +237,7 @@ def _bulk_russell_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_russell_binary_distance(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Russell distance for vectors of binary values.

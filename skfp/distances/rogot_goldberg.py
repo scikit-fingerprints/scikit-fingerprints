@@ -1,4 +1,3 @@
-import numba
 import numpy as np
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import validate_params
@@ -112,7 +111,7 @@ def rogot_goldberg_binary_similarity(
 
     # all-ones or all-zeros vectors
     if first_denom == 0 or second_denom == 0:
-        return 1.0
+        return 1
 
     sim = a / first_denom + d / second_denom
 
@@ -193,12 +192,15 @@ def rogot_goldberg_binary_distance(
 
 
 @validate_params(
-    {"X": ["array-like"], "Y": ["array-like", None]},
+    {
+        "X": ["array-like", csr_array],
+        "Y": ["array-like", csr_array, None],
+    },
     prefer_skip_nested_validation=True,
 )
 def bulk_rogot_goldberg_binary_similarity(
-    X: np.ndarray,
-    Y: np.ndarray | None = None,
+    X: list | np.ndarray | csr_array,
+    Y: list | np.ndarray | csr_array | None = None,
 ) -> np.ndarray:
     r"""
     Bulk Rogot-Goldberg similarity for binary matrices.
@@ -212,11 +214,11 @@ def bulk_rogot_goldberg_binary_similarity(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, similarities
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed, similarities
         are computed between rows of X.
 
     Returns
@@ -240,78 +242,76 @@ def bulk_rogot_goldberg_binary_similarity(
     array([[0.4       , 0.4       ],
            [0.66666667, 0.66666667]])
     """
+    if not isinstance(X, csr_array):
+        X = csr_array(X)
+
     if Y is None:
         return _bulk_rogot_goldberg_binary_similarity_single(X)
     else:
+        if not isinstance(Y, csr_array):
+            Y = csr_array(Y)
         return _bulk_rogot_goldberg_binary_similarity_two(X, Y)
 
 
-@numba.njit(parallel=True)
-def _bulk_rogot_goldberg_binary_similarity_single(
-    X: np.ndarray,
-) -> np.ndarray:
-    m = X.shape[0]
-    sims = np.empty((m, m))
+def _bulk_rogot_goldberg_binary_similarity_single(X: csr_array) -> np.ndarray:
+    n_features = X.shape[1]
 
-    # upper triangle - actual similarities
-    for i in numba.prange(m):
-        vec_a = X[i]
-        vec_a_neg = 1 - vec_a
-        sims[i, i] = 1.0
+    # a - intersection
+    a = (X @ X.T).toarray()
+    row_sums = np.asarray(X.sum(axis=1)).ravel()
 
-        for j in numba.prange(i + 1, m):
-            vec_b = X[j]
-            vec_b_neg = 1 - vec_b
+    # b+c = |A| + |B| - 2a
+    sum_A = row_sums[:, None]
+    sum_B = row_sums[None, :]
+    bc_sum = sum_A + sum_B - 2 * a
 
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            b = np.sum(np.logical_and(vec_a, vec_b_neg))
-            c = np.sum(np.logical_and(vec_a_neg, vec_b))
-            d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
+    # d = n - (a + b + c)  # noqa: ERA001
+    d = n_features - (a + bc_sum)
 
-            first_denom = 2 * a + b + c
-            second_denom = 2 * d + b + c
+    denom_1 = 2 * a + bc_sum
+    denom_2 = 2 * d + bc_sum
 
-            if first_denom == 0 or second_denom == 0:
-                sim = 1.0
-            else:
-                sim = a / first_denom + d / second_denom
+    sims = np.zeros_like(a, dtype=float)
+    np.divide(a, denom_1, out=sims, where=denom_1 != 0)
 
-            sims[i, j] = sims[j, i] = sim
+    part_2 = np.zeros_like(a, dtype=float)
+    np.divide(d, denom_2, out=part_2, where=denom_2 != 0)
+    sims += part_2
+
+    denom_zero = (denom_1 == 0) | (denom_2 == 0)
+    sims[denom_zero] = 1
 
     return sims
 
 
-@numba.njit(parallel=True)
 def _bulk_rogot_goldberg_binary_similarity_two(
-    X: np.ndarray,
-    Y: np.ndarray,
+    X: csr_array, Y: csr_array
 ) -> np.ndarray:
-    m = X.shape[0]
-    n = Y.shape[0]
-    sims = np.empty((m, n))
+    n_features = X.shape[1]
 
-    for i in numba.prange(m):
-        vec_a = X[i]
-        vec_a_neg = 1 - vec_a
+    a = (X @ Y.T).toarray()
 
-        for j in numba.prange(n):
-            vec_b = Y[j]
-            vec_b_neg = 1 - vec_b
+    row_sums_X = np.asarray(X.sum(axis=1)).ravel()
+    row_sums_Y = np.asarray(Y.sum(axis=1)).ravel()
 
-            a = np.sum(np.logical_and(vec_a, vec_b))
-            b = np.sum(np.logical_and(vec_a, vec_b_neg))
-            c = np.sum(np.logical_and(vec_a_neg, vec_b))
-            d = np.sum(np.logical_and(vec_a_neg, vec_b_neg))
+    sum_A = row_sums_X[:, None]
+    sum_B = row_sums_Y[None, :]
+    bc = sum_A + sum_B - 2 * a
+    d = n_features - (a + bc)
 
-            first_denom = 2 * a + b + c
-            second_denom = 2 * d + b + c
+    denom_1 = 2 * a + bc
+    denom_2 = 2 * d + bc
 
-            if first_denom == 0 or second_denom == 0:
-                sims[i, j] = 1.0
-                continue
+    sims = np.zeros_like(a, dtype=float)
+    np.divide(a, denom_1, out=sims, where=denom_1 != 0)
 
-            sim = a / first_denom + d / second_denom
-            sims[i, j] = sim
+    part_2 = np.zeros_like(a, dtype=float)
+    np.divide(d, denom_2, out=part_2, where=denom_2 != 0)
+
+    sims += part_2
+
+    denom_zero = (denom_1 == 0) | (denom_2 == 0)
+    sims[denom_zero] = 1
 
     return sims
 
@@ -324,7 +324,7 @@ def _bulk_rogot_goldberg_binary_similarity_two(
     prefer_skip_nested_validation=True,
 )
 def bulk_rogot_goldberg_binary_distance(
-    X: np.ndarray, Y: np.ndarray | None = None
+    X: list | np.ndarray | csr_array, Y: list | np.ndarray | csr_array | None = None
 ) -> np.ndarray:
     r"""
     Bulk Rogot-Goldberg distance for vectors of binary values.
@@ -338,11 +338,11 @@ def bulk_rogot_goldberg_binary_distance(
 
     Parameters
     ----------
-    X : ndarray
-        First binary input array, of shape :math:`m \times m`
+    X : ndarray or CSR sparse array
+        First binary input array, of shape :math:`m \times d`
 
-    Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+    Y : ndarray or CSR sparse array, default=None
+        Second binary input array, of shape :math:`n \times d`. If not passed, distances
         are computed between rows of X.
 
     Returns
