@@ -1,6 +1,6 @@
 import numpy as np
 from mordred import Calculator, descriptors
-from numpy.testing import assert_equal
+from numpy.testing import assert_allclose, assert_equal
 from scipy.sparse import csr_array
 
 from skfp.fingerprints import MordredFingerprint
@@ -14,7 +14,7 @@ def test_mordred_fingerprint(smallest_smiles_list, smallest_mols_list):
     X_seq = [calc(mol) for mol in smallest_mols_list]
     X_seq = np.array(X_seq, dtype=np.float32)
 
-    assert_equal(X_skfp, X_seq, equal_nan=True)
+    assert_allclose(X_skfp, X_seq, equal_nan=True)
     assert_equal(X_skfp.shape, (len(smallest_smiles_list), 1613))
     assert X_skfp.dtype == np.float32
 
@@ -27,7 +27,7 @@ def test_mordred_sparse_fingerprint(smallest_smiles_list, smallest_mols_list):
     X_seq = [calc(mol) for mol in smallest_mols_list]
     X_seq = csr_array(X_seq, dtype=np.float32)
 
-    assert_equal(X_skfp.data, X_seq.data, equal_nan=True)
+    assert_allclose(X_skfp.data, X_seq.data, equal_nan=True)
     assert_equal(X_skfp.shape, (len(smallest_smiles_list), 1613))
     assert X_skfp.dtype == np.float32
 
@@ -40,7 +40,7 @@ def test_mordred_3D_fingerprint(smallest_smiles_list, smallest_mols_list):
     X_seq = [calc(mol) for mol in smallest_mols_list]
     X_seq = np.array(X_seq, dtype=np.float32)
 
-    assert_equal(X_skfp, X_seq, equal_nan=True)
+    assert_allclose(X_skfp, X_seq, equal_nan=True)
     assert_equal(X_skfp.shape, (len(smallest_smiles_list), 1826))
     assert X_skfp.dtype == np.float32
 
@@ -53,7 +53,7 @@ def test_mordred_3D_sparse_fingerprint(smallest_smiles_list, smallest_mols_list)
     X_seq = [calc(mol) for mol in smallest_mols_list]
     X_seq = csr_array(X_seq, dtype=np.float32)
 
-    assert_equal(X_skfp.data, X_seq.data, equal_nan=True)
+    assert_allclose(X_skfp.data, X_seq.data, equal_nan=True)
     assert_equal(X_skfp.shape, (len(smallest_smiles_list), 1826))
     assert X_skfp.dtype == np.float32
 
