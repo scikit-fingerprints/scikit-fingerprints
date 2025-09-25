@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.metrics import extract_pos_proba
 
@@ -10,7 +11,7 @@ def test_extract_pos_proba_single_task():
     predictions = np.random.rand(n_samples, 2)
     predictions = extract_pos_proba(predictions)
 
-    assert predictions.shape == (n_samples,)
+    assert_equal(predictions.shape, (n_samples,))
 
 
 def test_extract_pos_proba_multioutput():
@@ -20,7 +21,7 @@ def test_extract_pos_proba_multioutput():
     predictions = [np.random.rand(n_samples, 2) for _ in range(n_tasks)]
     predictions = extract_pos_proba(predictions)
 
-    assert predictions.shape == (n_samples, n_tasks)
+    assert_equal(predictions.shape, (n_samples, n_tasks))
 
 
 def test_extract_pos_proba_wrong_dimensions():

@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem.rdMolDescriptors import CalcMORSE
 from scipy.sparse import csr_array
 
@@ -16,8 +17,8 @@ def test_morse_fingerprint(mols_conformers_list):
         ]
     )
 
-    assert np.allclose(X_skfp, X_rdkit, atol=1e-1)
-    assert X_skfp.shape == (len(mols_conformers_list), 224)
+    assert_allclose(X_skfp, X_rdkit, atol=1e-1)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 224))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -32,8 +33,8 @@ def test_morse_sparse_fingerprint(mols_conformers_list):
         ]
     )
 
-    assert np.allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
-    assert X_skfp.shape == (len(mols_conformers_list), 224)
+    assert_allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 224))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -41,10 +42,10 @@ def test_morse_feature_names():
     morse_fp = MORSEFingerprint()
     feature_names = morse_fp.get_feature_names_out()
 
-    assert len(feature_names) == morse_fp.n_features_out
-    assert len(feature_names) == len(set(feature_names))
+    assert_equal(len(feature_names), morse_fp.n_features_out)
+    assert_equal(len(feature_names), len(set(feature_names)))
 
-    assert feature_names[0] == "unweighted 0"
-    assert feature_names[1] == "unweighted 1"
-    assert feature_names[32] == "atomic mass 0"
-    assert feature_names[-1] == "IState 31"
+    assert_equal(feature_names[0], "unweighted 0")
+    assert_equal(feature_names[1], "unweighted 1")
+    assert_equal(feature_names[32], "atomic mass 0")
+    assert_equal(feature_names[-1], "IState 31")

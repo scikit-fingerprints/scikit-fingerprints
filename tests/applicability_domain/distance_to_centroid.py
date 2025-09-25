@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.applicability_domain import DistanceToCentroidADChecker
 from skfp.applicability_domain.distance_to_centroid import SCIPY_METRIC_NAMES
@@ -27,7 +28,7 @@ def test_inside_distance_to_centroid_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
 
@@ -43,7 +44,7 @@ def test_outside_distance_to_centroid_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 
 

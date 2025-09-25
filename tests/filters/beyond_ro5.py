@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem import Mol
 
 from skfp.filters import BeyondRo5Filter, LipinskiFilter
@@ -62,31 +63,31 @@ def test_mols_passing_bro5(smiles_passing_ro5, smiles_failing_ro5, smiles_beyond
 
     smiles_filtered = filt.transform(smiles_passing_ro5)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_ro5)
+    assert_equal(len(smiles_filtered), len(smiles_passing_ro5))
 
     smiles_filtered = filt.transform(smiles_failing_ro5)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_failing_ro5)
+    assert_equal(len(smiles_filtered), len(smiles_failing_ro5))
 
     smiles_filtered = filt.transform(smiles_beyond_ro5)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_beyond_ro5)
+    assert_equal(len(smiles_filtered), len(smiles_beyond_ro5))
 
 
 def test_mols_ro5_vs_bro5(smiles_passing_ro5, smiles_failing_ro5, smiles_beyond_ro5):
     all_smiles = smiles_passing_ro5 + smiles_failing_ro5 + smiles_beyond_ro5
 
     filt_ro5 = LipinskiFilter()
-    assert len(filt_ro5.transform(smiles_passing_ro5)) == 3
-    assert len(filt_ro5.transform(smiles_failing_ro5)) == 0
-    assert len(filt_ro5.transform(smiles_beyond_ro5)) == 0
-    assert len(filt_ro5.transform(all_smiles)) == 3
+    assert_equal(len(filt_ro5.transform(smiles_passing_ro5)), 3)
+    assert_equal(len(filt_ro5.transform(smiles_failing_ro5)), 0)
+    assert_equal(len(filt_ro5.transform(smiles_beyond_ro5)), 0)
+    assert_equal(len(filt_ro5.transform(all_smiles)), 3)
 
     filt_bro5 = BeyondRo5Filter()
-    assert len(filt_bro5.transform(smiles_passing_ro5)) == 3
-    assert len(filt_bro5.transform(smiles_failing_ro5)) == 3
-    assert len(filt_bro5.transform(smiles_beyond_ro5)) == 3
-    assert len(filt_bro5.transform(all_smiles)) == 9
+    assert_equal(len(filt_bro5.transform(smiles_passing_ro5)), 3)
+    assert_equal(len(filt_bro5.transform(smiles_failing_ro5)), 3)
+    assert_equal(len(filt_bro5.transform(smiles_beyond_ro5)), 3)
+    assert_equal(len(filt_bro5.transform(all_smiles)), 9)
 
 
 def test_bro5_smiles_and_mol_input(smiles_list, mols_list):
@@ -96,7 +97,7 @@ def test_bro5_smiles_and_mol_input(smiles_list, mols_list):
 
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert all(isinstance(x, Mol) for x in mols_filtered)
-    assert len(smiles_filtered) == len(mols_filtered)
+    assert_equal(len(smiles_filtered), len(mols_filtered))
 
 
 def test_bro5_parallel(smiles_list):
@@ -106,7 +107,7 @@ def test_bro5_parallel(smiles_list):
     filt = BeyondRo5Filter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = filt.transform(smiles_list)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_mols_loose_bro5(mols_list):
@@ -127,7 +128,7 @@ def test_bro5_return_indicators(
     filt = BeyondRo5Filter(return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
 
-    assert len(filter_indicators) == len(all_smiles)
+    assert_equal(len(filter_indicators), len(all_smiles))
     assert isinstance(filter_indicators, np.ndarray)
     assert np.issubdtype(filter_indicators.dtype, bool)
     assert np.all(np.isin(filter_indicators, [0, 1]))
@@ -141,12 +142,12 @@ def test_bro5_transform_x_y(smiles_passing_ro5, smiles_failing_beyond_ro5):
 
     filt = BeyondRo5Filter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_passing_ro5)
+    assert_equal(len(mols), len(smiles_passing_ro5))
     assert np.all(labels_filt == 1)
 
     filt = BeyondRo5Filter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_passing_ro5)
+    assert_equal(np.sum(indicators), len(smiles_passing_ro5))
     assert np.array_equal(indicators, labels_filt)
 
 
@@ -155,7 +156,7 @@ def test_bro5_condition_names():
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (6,)
+    assert_equal(condition_names.shape, (6,))
 
 
 def test_bro5_return_condition_indicators(
@@ -167,7 +168,7 @@ def test_bro5_return_condition_indicators(
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 6))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -184,7 +185,7 @@ def test_bro5_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 6))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

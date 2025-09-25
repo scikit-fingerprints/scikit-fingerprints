@@ -3,6 +3,7 @@ from collections.abc import Callable
 
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 from scipy.sparse import csr_array
 from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import NearestNeighbors
@@ -46,7 +47,7 @@ def test_sklearn_nearest_neighbors_compatible(dist_func):
     nn.fit(vec_a)
     distances, _ = nn.kneighbors(vec_b)
     sklearn_dist = distances[0][0]
-    assert np.isclose(skfp_dist, sklearn_dist)
+    assert_allclose(skfp_dist, sklearn_dist)
 
 
 @pytest.mark.parametrize("dist_func", _get_distance_functions())
@@ -59,7 +60,7 @@ def test_sklearn_nearest_neighbors_compatible_sparse_csr(dist_func):
     nn.fit(vec_a)
     distances, _ = nn.kneighbors(vec_b)
     sklearn_dist = distances[0][0]
-    assert np.isclose(skfp_dist, sklearn_dist)
+    assert_allclose(skfp_dist, sklearn_dist)
 
 
 @pytest.mark.parametrize("dist_func", _get_distance_functions())

@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem.rdMHFPFingerprint import MHFPEncoder
 from scipy.sparse import csr_array
 from sklearn.utils._param_validation import InvalidParameterError
@@ -14,9 +15,9 @@ def test_secfp_fingerprint(smiles_list, mols_list):
     encoder = MHFPEncoder(2048, 0)
     X_rdkit = np.array([encoder.EncodeSECFPMol(x) for x in mols_list])
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smiles_list), secfp_fp.fp_size)
-    assert X_skfp.dtype == np.uint8
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smiles_list), secfp_fp.fp_size))
+    assert_equal(X_skfp.dtype, np.uint8)
     assert np.all(np.isin(X_skfp, [0, 1]))
 
 
@@ -27,9 +28,9 @@ def test_secfp_sparse_fingerprint(smiles_list, mols_list):
     encoder = MHFPEncoder(2048, 0)
     X_rdkit = csr_array([encoder.EncodeSECFPMol(x) for x in mols_list])
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(smiles_list), secfp_fp.fp_size)
-    assert X_skfp.dtype == np.uint8
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(smiles_list), secfp_fp.fp_size))
+    assert_equal(X_skfp.dtype, np.uint8)
     assert np.all(X_skfp.data == 1)
 
 

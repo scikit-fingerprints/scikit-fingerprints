@@ -2,6 +2,7 @@ from inspect import getmembers, isfunction
 
 import numpy as np
 import rdkit.Chem.Fragments
+from numpy.testing import assert_equal
 from scipy.sparse import csr_array
 
 from skfp.fingerprints import FunctionalGroupsFingerprint
@@ -22,8 +23,8 @@ def test_functional_groups_bit_fingerprint(smiles_list, mols_list):
     ]
     X_rdkit = np.array(X_rdkit, dtype=np.uint8)
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smiles_list), 85)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smiles_list), 85))
     assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
 
@@ -42,8 +43,8 @@ def test_functional_groups_count_fingerprint(smiles_list, mols_list):
     ]
     X_rdkit = np.array(X_rdkit, dtype=np.uint32)
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smiles_list), 85)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smiles_list), 85))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp >= 0)
 
@@ -63,8 +64,8 @@ def test_functional_groups_sparse_bit_fingerprint(smiles_list, mols_list):
     ]
     X_rdkit = csr_array(X_rdkit, dtype=np.uint8)
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(smiles_list), 85)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(smiles_list), 85))
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data == 1)
 
@@ -83,8 +84,8 @@ def test_functional_groups_sparse_count_fingerprint(smiles_list, mols_list):
     ]
     X_rdkit = csr_array(X_rdkit, dtype=np.uint32)
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(smiles_list), 85)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(smiles_list), 85))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
 
@@ -93,14 +94,14 @@ def test_functional_groups_feature_names():
     fg_fp = FunctionalGroupsFingerprint()
     feature_names = fg_fp.get_feature_names_out()
 
-    assert len(feature_names) == fg_fp.n_features_out
-    assert len(feature_names) == len(set(feature_names))
+    assert_equal(len(feature_names), fg_fp.n_features_out)
+    assert_equal(len(feature_names), len(set(feature_names)))
 
     # compared with https://rdkit.org/docs/source/rdkit.Chem.Fragments.html
-    assert feature_names[0] == "aliphatic carboxylic acids"
-    assert feature_names[1] == "aliphatic hydroxyl groups"
-    assert (
-        feature_names[-2]
-        == "unbranched alkanes of at least 4 members (excludes halogenated alkanes)"
+    assert_equal(feature_names[0], "aliphatic carboxylic acids")
+    assert_equal(feature_names[1], "aliphatic hydroxyl groups")
+    assert_equal(
+        feature_names[-2],
+        "unbranched alkanes of at least 4 members (excludes halogenated alkanes)",
     )
-    assert feature_names[-1] == "urea groups"
+    assert_equal(feature_names[-1], "urea groups")

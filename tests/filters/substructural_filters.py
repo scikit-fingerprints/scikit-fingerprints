@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem import Mol
 
 from skfp.filters import (
@@ -65,7 +66,7 @@ def test_substructural_filter_parallel(substruct_filt_cls, smiles_list):
     filt = substruct_filt_cls(n_jobs=-1)
     smiles_filtered_parallel = filt.transform(smiles_list)
 
-    assert smiles_filtered_sequential == smiles_filtered_parallel
+    assert_equal(smiles_filtered_sequential, smiles_filtered_parallel)
 
 
 @pytest.mark.parametrize("substruct_filt_cls", _get_substructural_filter_classes())
@@ -85,7 +86,7 @@ def test_substructural_filter_return_indicators(substruct_filt_cls, mols_list):
     filt = substruct_filt_cls(return_type="indicators")
     filter_indicators = filt.transform(mols_list)
 
-    assert len(filter_indicators) == len(mols_list)
+    assert_equal(len(filter_indicators), len(mols_list))
     assert isinstance(filter_indicators, np.ndarray)
     assert np.issubdtype(filter_indicators.dtype, bool)
     assert np.all(np.isin(filter_indicators, [0, 1]))
@@ -97,7 +98,7 @@ def test_substructural_filter_transform_x_y(substruct_filt_cls, mols_list):
 
     filt = substruct_filt_cls()
     mols_filtered, labels_filt = filt.transform_x_y(mols_list, labels)
-    assert len(mols_filtered) == len(labels_filt)
+    assert_equal(len(mols_filtered), len(labels_filt))
 
 
 @pytest.mark.parametrize(
@@ -111,7 +112,7 @@ def test_substructural_filter_condition_names(
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (expected_num_conditions,)
+    assert_equal(condition_names.shape, (expected_num_conditions,))
 
 
 @pytest.mark.parametrize(
@@ -125,7 +126,7 @@ def test_substructural_filter_return_condition_indicators(
     condition_indicators = filt.transform(mols_list)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(mols_list), expected_num_conditions)
+    assert_equal(condition_indicators.shape, (len(mols_list), expected_num_conditions))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -143,7 +144,7 @@ def test_substructural_filter_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(mols_list, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(mols_list), expected_num_conditions)
+    assert_equal(condition_indicators.shape, (len(mols_list), expected_num_conditions))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

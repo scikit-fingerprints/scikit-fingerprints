@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.applicability_domain import KNNADChecker
 from tests.applicability_domain.utils import get_data_inside_ad, get_data_outside_ad
@@ -9,11 +10,11 @@ ALLOWED_METRICS = [
     "tanimoto_count_distance",
 ]
 
-ALLOWED_AGGS = ["mean", "max", "min"]
+ALLOWED_AGGREGATIONS = ["mean", "max", "min"]
 
 
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
-@pytest.mark.parametrize("agg", ALLOWED_AGGS)
+@pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_inside_knn_ad(metric, agg):
     if "binary" in metric:
         X_train, X_test = get_data_inside_ad(binarize=True)
@@ -24,17 +25,18 @@ def test_inside_knn_ad(metric, agg):
     ad_checker.fit(X_train)
 
     scores = ad_checker.score_samples(X_test)
+    assert_equal(scores.shape, (len(X_test),))
     assert scores.shape == (len(X_test),)
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.issubdtype(preds.dtype, np.bool_)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
 
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
-@pytest.mark.parametrize("agg", ALLOWED_AGGS)
+@pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_outside_knn_ad(metric, agg):
     if "binary" in metric:
         X_train, X_test = get_data_outside_ad(binarize=True)
@@ -48,15 +50,14 @@ def test_outside_knn_ad(metric, agg):
     assert np.all(scores >= 0)
 
     preds = ad_checker.predict(X_test)
-    print(preds)
     assert isinstance(preds, np.ndarray)
     assert np.issubdtype(preds.dtype, np.bool_)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 
 
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
-@pytest.mark.parametrize("agg", ALLOWED_AGGS)
+@pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_knn_different_k_values(metric, agg):
     if "binary" in metric:
         X_train, X_test = get_data_inside_ad(binarize=True)
@@ -79,7 +80,7 @@ def test_knn_different_k_values(metric, agg):
 
 
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
-@pytest.mark.parametrize("agg", ALLOWED_AGGS)
+@pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_knn_pass_y_train(metric, agg):
     # smoke test, should not throw errors
     if "binary" in metric:
@@ -93,7 +94,7 @@ def test_knn_pass_y_train(metric, agg):
 
 
 @pytest.mark.parametrize("metric", ALLOWED_METRICS)
-@pytest.mark.parametrize("agg", ALLOWED_AGGS)
+@pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_knn_invalid_k(metric, agg):
     if "binary" in metric:
         X_train, _ = get_data_inside_ad(binarize=True)

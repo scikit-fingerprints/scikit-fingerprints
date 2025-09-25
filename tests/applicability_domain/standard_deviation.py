@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from sklearn.datasets import (
     make_classification,
     make_multilabel_classification,
@@ -29,7 +30,7 @@ def test_inside_std_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
 
@@ -51,7 +52,7 @@ def test_outside_std_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 
 
@@ -68,7 +69,7 @@ def test_std_ad_with_default_model():
     preds = ad_checker.predict(X)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X),)
+    assert_equal(preds.shape, (len(X),))
 
 
 def test_std_ad_checker_with_classifier():
@@ -93,7 +94,7 @@ def test_std_ad_checker_with_classifier():
     preds = ad_checker.predict(X)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X),)
+    assert_equal(preds.shape, (len(X),))
 
 
 def test_std_ad_checker_with_multiclass():

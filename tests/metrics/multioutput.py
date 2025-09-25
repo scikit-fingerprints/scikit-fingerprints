@@ -2,6 +2,7 @@ from collections.abc import Callable
 
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import (
@@ -78,12 +79,7 @@ def test_multioutput_metrics_single_task_equivalence(
 
     single_task_value = single_task_metric(y_true, y_pred)
     multioutput_value = multioutput_metric(y_true, y_pred)
-    if not np.isclose(single_task_value, multioutput_value):
-        raise AssertionError(
-            f"{metric_name} values differ:"
-            f"single-task {single_task_value:.2f}, "
-            f"multioutput {multioutput_value:.2f}"
-        )
+    assert_allclose(single_task_value, multioutput_value)
 
 
 @pytest.mark.parametrize(
@@ -272,7 +268,7 @@ def test_skip_all_nan_column():
     score_without_nan = _safe_multioutput_metric(
         mean_squared_error, y_true[:, [0, 2]], y_pred[:, [0, 2]]
     )
-    assert np.isclose(score_with_nan, score_without_nan)
+    assert_allclose(score_with_nan, score_without_nan)
 
 
 def test_metrics_inputs_shapes():

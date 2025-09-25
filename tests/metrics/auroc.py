@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 from sklearn.metrics import roc_auc_score
 
 from skfp.metrics import auroc_score
@@ -10,7 +11,7 @@ def test_auroc_score_sklearn_behavior():
     y_score = np.array([0.7, 0.1, 0.05])
     sklearn_auroc = roc_auc_score(y_true, y_score)
     skfp_auroc = auroc_score(y_true, y_score)
-    assert np.isclose(sklearn_auroc, skfp_auroc)
+    assert_allclose(sklearn_auroc, skfp_auroc)
 
 
 def test_auroc_score_y_true_constant_nan():
@@ -41,7 +42,7 @@ def test_auroc_score_y_true_constant_float():
     y_true = np.array([0, 0, 0])
     y_score = np.array([0.7, 0.1, 0.05])
     skfp_auroc = auroc_score(y_true, y_score, constant_target_behavior=0.5)
-    assert np.isclose(skfp_auroc, 0.5)
+    assert_allclose(skfp_auroc, 0.5)
 
     skfp_auroc = auroc_score(y_true, y_score, constant_target_behavior=1.0)
-    assert np.isclose(skfp_auroc, 1.0)
+    assert_allclose(skfp_auroc, 1.0)

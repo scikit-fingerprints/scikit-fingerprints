@@ -1,3 +1,4 @@
+from numpy.testing import assert_array_equal, assert_equal
 from rdkit.Chem import GetMolFrags, MolToSmiles
 
 from skfp.preprocessing import MolStandardizer
@@ -10,7 +11,7 @@ def test_mol_standardizer(smiles_list):
     mols = standardizer.transform(smiles_list)
     mols_parallel = standardizer_parallel.transform(smiles_list)
 
-    assert len(mols) == len(mols_parallel)
+    assert_equal(len(mols), len(mols_parallel))
     for mol, mol_2 in zip(mols, mols_parallel, strict=False):
         assert MolToSmiles(mol) == MolToSmiles(mol_2)
 
@@ -26,7 +27,7 @@ def test_multifragment_standardization():
     mols = standardizer.transform(multi_fragment_smiles)
     num_frags = [len(GetMolFrags(mol)) for mol in mols]
     num_frags_expected = [2, 2, 2, 5]
-    assert num_frags == num_frags_expected
+    assert_array_equal(num_frags, num_frags_expected)
 
 
 def test_largest_fragment_standardization(smiles_list):

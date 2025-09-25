@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.filters import FAF4LeadlikeFilter
 
@@ -34,14 +35,14 @@ def test_mols_passing_faf4_leadlike(smiles_passing_faf4_leadlike):
     mol_filter = FAF4LeadlikeFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_faf4_leadlike)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_faf4_leadlike)
+    assert_equal(len(smiles_filtered), len(smiles_passing_faf4_leadlike))
 
 
 def test_mols_failing_faf4_leadlike(smiles_failing_faf4_leadlike):
     mol_filter = FAF4LeadlikeFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_faf4_leadlike)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_faf4_leadlike_return_indicators(
@@ -57,7 +58,7 @@ def test_faf4_leadlike_return_indicators(
         + [False] * len(smiles_failing_faf4_leadlike),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_faf4_leadlike_parallel(smiles_list):
@@ -67,7 +68,7 @@ def test_faf4_leadlike_parallel(smiles_list):
     mol_filter = FAF4LeadlikeFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_faf4_leadlike_allow_one_violation(smiles_failing_faf4_leadlike):
@@ -77,7 +78,7 @@ def test_faf4_leadlike_allow_one_violation(smiles_failing_faf4_leadlike):
     mol_filter = FAF4LeadlikeFilter(allow_one_violation=True)
     mols_filtered_one_violation = mol_filter.transform(smiles_failing_faf4_leadlike)
 
-    assert mols_filtered == mols_filtered_one_violation
+    assert_equal(mols_filtered, mols_filtered_one_violation)
 
 
 def test_faf4_leadlike_transform_x_y(
@@ -91,13 +92,13 @@ def test_faf4_leadlike_transform_x_y(
 
     filt = FAF4LeadlikeFilter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_passing_faf4_leadlike)
+    assert_equal(len(mols), len(smiles_passing_faf4_leadlike))
     assert np.all(labels_filt == 1)
 
     filt = FAF4LeadlikeFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_passing_faf4_leadlike)
-    assert np.array_equal(indicators, labels_filt)
+    assert_equal(np.sum(indicators), len(smiles_passing_faf4_leadlike))
+    assert_equal(indicators, labels_filt)
 
 
 def test_faf4_leadlike_condition_names():
@@ -105,7 +106,7 @@ def test_faf4_leadlike_condition_names():
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (15,)
+    assert_equal(condition_names.shape, (15,))
 
 
 def test_faf4_leadlike_return_condition_indicators(
@@ -117,7 +118,7 @@ def test_faf4_leadlike_return_condition_indicators(
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 15)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 15))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -135,7 +136,7 @@ def test_faf4_leadlike_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 15)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 15))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))
