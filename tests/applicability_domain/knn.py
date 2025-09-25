@@ -17,9 +17,9 @@ ALLOWED_AGGREGATIONS = ["mean", "max", "min"]
 @pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_inside_knn_ad(metric, agg):
     if "binary" in metric:
-        X_train, X_test = get_data_inside_ad(binarize=True)
+        X_train, X_test = get_data_inside_ad(n_train=100, n_test=10, binarize=True)
     else:
-        X_train, X_test = get_data_inside_ad()
+        X_train, X_test = get_data_inside_ad(n_train=100, n_test=10)
 
     ad_checker = KNNADChecker(k=3, agg=agg)
     ad_checker.fit(X_train)
@@ -39,9 +39,9 @@ def test_inside_knn_ad(metric, agg):
 @pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_outside_knn_ad(metric, agg):
     if "binary" in metric:
-        X_train, X_test = get_data_outside_ad(binarize=True)
+        X_train, X_test = get_data_outside_ad(n_train=100, n_test=10, binarize=True)
     else:
-        X_train, X_test = get_data_outside_ad()
+        X_train, X_test = get_data_outside_ad(n_train=100, n_test=10)
 
     ad_checker = KNNADChecker(k=3, metric=metric, agg=agg)
     ad_checker.fit(X_train)
@@ -60,9 +60,9 @@ def test_outside_knn_ad(metric, agg):
 @pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_knn_different_k_values(metric, agg):
     if "binary" in metric:
-        X_train, X_test = get_data_inside_ad(binarize=True)
+        X_train, X_test = get_data_inside_ad(n_train=100, n_test=10, binarize=True)
     else:
-        X_train, X_test = get_data_inside_ad()
+        X_train, X_test = get_data_inside_ad(n_train=100, n_test=10)
 
     # smaller k, stricter check
     ad_checker_k1 = KNNADChecker(k=1, metric=metric, agg=agg)
@@ -84,9 +84,9 @@ def test_knn_different_k_values(metric, agg):
 def test_knn_pass_y_train(metric, agg):
     # smoke test, should not throw errors
     if "binary" in metric:
-        X_train, _ = get_data_inside_ad(binarize=True)
+        X_train, _ = get_data_inside_ad(n_train=100, n_test=10, binarize=True)
     else:
-        X_train, _ = get_data_inside_ad()
+        X_train, _ = get_data_inside_ad(n_train=100, n_test=10)
 
     y_train = np.zeros(len(X_train))
     ad_checker = KNNADChecker(k=3, metric=metric, agg=agg)
@@ -97,9 +97,9 @@ def test_knn_pass_y_train(metric, agg):
 @pytest.mark.parametrize("agg", ALLOWED_AGGREGATIONS)
 def test_knn_invalid_k(metric, agg):
     if "binary" in metric:
-        X_train, _ = get_data_inside_ad(binarize=True)
+        X_train, _ = get_data_inside_ad(n_train=100, n_test=10, binarize=True)
     else:
-        X_train, _ = get_data_inside_ad()
+        X_train, _ = get_data_inside_ad(n_train=100, n_test=10)
 
     with pytest.raises(
         ValueError,
@@ -110,7 +110,7 @@ def test_knn_invalid_k(metric, agg):
 
 
 def test_knn_invalid_metric():
-    X_train, _ = get_data_inside_ad()
+    X_train, _ = get_data_inside_ad(n_train=100)
     ad_checker = KNNADChecker(k=3, metric="euclidean")
     with pytest.raises(KeyError):
         ad_checker.fit(X_train)

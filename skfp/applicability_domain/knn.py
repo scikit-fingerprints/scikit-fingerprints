@@ -199,12 +199,12 @@ class KNNADChecker(BaseADChecker):
 
         return self._get_agg_dists(k_nearest)
 
-    def _get_agg_dists(self, k_nearest) -> np.ndarray[float]:
+    def _get_agg_dists(self, k_nearest) -> np.ndarray:
         if self.agg == "mean":
             agg_dists = np.mean(k_nearest, axis=1)
         elif self.agg == "max":
             agg_dists = np.max(k_nearest, axis=1)
-        elif self.agg == "min":
+        else:  # "min"
             agg_dists = np.min(k_nearest, axis=1)
 
         return agg_dists
