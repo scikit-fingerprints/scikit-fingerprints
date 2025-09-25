@@ -24,13 +24,6 @@ def test_whim_fingerprint(mols_conformers_3_plus_atoms):
     )
     X_rdkit = np.clip(X_rdkit, -whim_fp.clip_val, whim_fp.clip_val)
 
-    for i in range(X_skfp.shape[0]):
-        x_skfp = X_skfp[i]
-        x_rdkit = X_rdkit[i]
-        for j in range(len(x_skfp)):
-            if abs(x_skfp[j] - x_rdkit[j]) > 100:
-                print(whim_fp.get_feature_names_out()[j], x_skfp[j], x_rdkit[j])
-
     assert_allclose(X_skfp, X_rdkit, atol=1e-1)
     assert_equal(X_skfp.shape, (len(mols_conformers_3_plus_atoms), 114))
     assert np.issubdtype(X_skfp.dtype, np.floating)
