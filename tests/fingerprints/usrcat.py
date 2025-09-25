@@ -8,6 +8,7 @@ from skfp.fingerprints import USRCATFingerprint
 
 @pytest.fixture
 def mols_conformers_3_plus_atoms(mols_conformers_list):
+    # molecules with 1 or 2 atoms can be numerically unstable with WHIM
     return [mol for mol in mols_conformers_list if mol.GetNumAtoms() >= 3]
 
 
