@@ -1,4 +1,5 @@
 import pytest
+from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem import Mol, MolFromSmiles
 
 from skfp.descriptors import constitutional as const
@@ -72,7 +73,7 @@ def test_average_molecular_weight_empty_molecule(input_mols):
 def test_bond_count(mol_name, bond_type, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.bond_count(mol, bond_type)
-    assert result == expected_value
+    assert_equal(result, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -90,7 +91,7 @@ def test_bond_count(mol_name, bond_type, expected_value, input_mols):
 def test_element_atom_count(mol_name, atom_id, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.element_atom_count(mol, atom_id)
-    assert result == expected_value
+    assert_equal(result, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -108,7 +109,7 @@ def test_element_atom_count(mol_name, atom_id, expected_value, input_mols):
 def test_heavy_atom_count(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.heavy_atom_count(mol)
-    assert result == expected_value
+    assert_equal(result, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -126,7 +127,7 @@ def test_heavy_atom_count(mol_name, expected_value, input_mols):
 def test_molecular_weight(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.molecular_weight(mol)
-    assert round(result, 3) == round(expected_value, 3)
+    assert_allclose(result, expected_value, atol=1e-3)
 
 
 @pytest.mark.parametrize(
@@ -143,7 +144,7 @@ def test_molecular_weight(mol_name, expected_value, input_mols):
 def test_number_of_rings(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.number_of_rings(mol)
-    assert result == expected_value
+    assert_equal(result, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -160,7 +161,7 @@ def test_number_of_rings(mol_name, expected_value, input_mols):
 def test_number_of_rotatable_bonds(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.number_of_rotatable_bonds(mol)
-    assert result == expected_value
+    assert_equal(result, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -178,4 +179,4 @@ def test_number_of_rotatable_bonds(mol_name, expected_value, input_mols):
 def test_total_atom_count(mol_name, expected_value, input_mols):
     mol = input_mols[mol_name]
     result = const.total_atom_count(mol)
-    assert result == expected_value
+    assert_equal(result, expected_value)

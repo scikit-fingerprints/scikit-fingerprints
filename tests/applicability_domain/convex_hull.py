@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.testing import assert_equal
 
 from skfp.applicability_domain import ConvexHullADChecker
 from tests.applicability_domain.utils import get_data_inside_ad, get_data_outside_ad
@@ -16,7 +17,7 @@ def test_inside_convex_hull_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
 
@@ -32,7 +33,7 @@ def test_outside_convex_hull_ad():
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
     assert np.isdtype(preds.dtype, np.bool)
-    assert preds.shape == (len(X_test),)
+    assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 
 

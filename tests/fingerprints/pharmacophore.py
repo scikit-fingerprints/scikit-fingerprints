@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem import Get3DDistanceMatrix, Mol
 from rdkit.Chem.ChemicalFeatures import BuildFeatureFactoryFromString
 from rdkit.Chem.Pharm2D import Gobbi_Pharm2D
@@ -14,11 +15,10 @@ def test_pharmacophore_raw_bits_fingerprint(smallest_smiles_list, smallest_mols_
     pharmacophore_fp = PharmacophoreFingerprint(n_jobs=-1)
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(smallest_mols_list)
-    X_rdkit = np.array(X_rdkit)
+    X_rdkit = np.array(_get_rdkit_pharmacophore_fp(smallest_mols_list))
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smallest_smiles_list), 39972)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), 39972))
     assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
 
@@ -27,11 +27,10 @@ def test_pharmacophore_raw_bits_3D_fingerprint(mols_conformers_list):
     pharmacophore_fp = PharmacophoreFingerprint(use_3D=True, n_jobs=-1)
     X_skfp = pharmacophore_fp.transform(mols_conformers_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True)
-    X_rdkit = np.array(X_rdkit)
+    X_rdkit = np.array(_get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True))
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(mols_conformers_list), 39972)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 39972))
     assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
 
@@ -40,13 +39,15 @@ def test_pharmacophore_bit_fingerprint(smallest_smiles_list, smallest_mols_list)
     pharmacophore_fp = PharmacophoreFingerprint(variant="folded", n_jobs=-1)
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(smallest_mols_list)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=False, sparse=False
+        _get_rdkit_pharmacophore_fp(smallest_mols_list),
+        fp_size=pharmacophore_fp.fp_size,
+        count=False,
+        sparse=False,
     )
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
 
@@ -57,13 +58,15 @@ def test_pharmacophore_bit_3D_fingerprint(mols_conformers_list):
     )
     X_skfp = pharmacophore_fp.transform(mols_conformers_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=False, sparse=False
+        _get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True),
+        fp_size=pharmacophore_fp.fp_size,
+        count=False,
+        sparse=False,
     )
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint8
     assert np.all(np.isin(X_skfp, [0, 1]))
 
@@ -72,13 +75,15 @@ def test_pharmacophore_count_fingerprint(smallest_smiles_list, smallest_mols_lis
     pharmacophore_fp = PharmacophoreFingerprint(variant="folded", count=True, n_jobs=-1)
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(smallest_mols_list, count=True)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=True, sparse=False
+        _get_rdkit_pharmacophore_fp(smallest_mols_list, count=True),
+        fp_size=pharmacophore_fp.fp_size,
+        count=True,
+        sparse=False,
     )
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp >= 0)
 
@@ -89,13 +94,15 @@ def test_pharmacophore_count_3D_fingerprint(mols_conformers_list):
     )
     X_skfp = pharmacophore_fp.transform(mols_conformers_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(mols_conformers_list, count=True, use_3D=True)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=True, sparse=False
+        _get_rdkit_pharmacophore_fp(mols_conformers_list, count=True, use_3D=True),
+        fp_size=pharmacophore_fp.fp_size,
+        count=True,
+        sparse=False,
     )
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp >= 0)
 
@@ -106,11 +113,10 @@ def test_pharmacophore_raw_bits_sparse_fingerprint(
     pharmacophore_fp = PharmacophoreFingerprint(sparse=True, n_jobs=-1)
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(smallest_mols_list)
-    X_rdkit = csr_array(X_rdkit)
+    X_rdkit = csr_array(_get_rdkit_pharmacophore_fp(smallest_mols_list))
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(smallest_smiles_list), 39972)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), 39972))
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data == 1)
 
@@ -119,11 +125,10 @@ def test_pharmacophore_raw_bits_3D_sparse_fingerprint(mols_conformers_list):
     pharmacophore_fp = PharmacophoreFingerprint(use_3D=True, sparse=True, n_jobs=-1)
     X_skfp = pharmacophore_fp.transform(mols_conformers_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True)
-    X_rdkit = csr_array(X_rdkit)
+    X_rdkit = csr_array(_get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True))
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(mols_conformers_list), 39972)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), 39972))
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data == 1)
 
@@ -134,13 +139,15 @@ def test_pharmacophore_bit_sparse_fingerprint(smallest_smiles_list, smallest_mol
     )
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(smallest_mols_list)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=False, sparse=True
+        _get_rdkit_pharmacophore_fp(smallest_mols_list),
+        fp_size=pharmacophore_fp.fp_size,
+        count=False,
+        sparse=True,
     )
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data == 1)
 
@@ -151,13 +158,15 @@ def test_pharmacophore_bit_3D_sparse_fingerprint(mols_conformers_list):
     )
     X_skfp = pharmacophore_fp.transform(mols_conformers_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=False, sparse=True
+        _get_rdkit_pharmacophore_fp(mols_conformers_list, use_3D=True),
+        fp_size=pharmacophore_fp.fp_size,
+        count=False,
+        sparse=True,
     )
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint8
     assert np.all(X_skfp.data == 1)
 
@@ -170,13 +179,15 @@ def test_pharmacophore_count_sparse_fingerprint(
     )
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(smallest_mols_list, count=True)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=True, sparse=True
+        _get_rdkit_pharmacophore_fp(smallest_mols_list, count=True),
+        fp_size=pharmacophore_fp.fp_size,
+        count=True,
+        sparse=True,
     )
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(smallest_smiles_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
 
@@ -187,13 +198,15 @@ def test_pharmacophore_count_3D_sparse_fingerprint(mols_conformers_list):
     )
     X_skfp = pharmacophore_fp.transform(mols_conformers_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(mols_conformers_list, count=True, use_3D=True)
     X_rdkit = pharmacophore_fp._hash_fingerprint_bits(
-        X_rdkit, fp_size=pharmacophore_fp.fp_size, count=True, sparse=True
+        _get_rdkit_pharmacophore_fp(mols_conformers_list, count=True, use_3D=True),
+        fp_size=pharmacophore_fp.fp_size,
+        count=True,
+        sparse=True,
     )
 
-    assert np.array_equal(X_skfp.data, X_rdkit.data)
-    assert X_skfp.shape == (len(mols_conformers_list), pharmacophore_fp.fp_size)
+    assert_equal(X_skfp.data, X_rdkit.data)
+    assert_equal(X_skfp.shape, (len(mols_conformers_list), pharmacophore_fp.fp_size))
     assert X_skfp.dtype == np.uint32
     assert np.all(X_skfp.data > 0)
 
@@ -202,29 +215,27 @@ def test_pharmacophore_2_2_points(smallest_smiles_list, smallest_mols_list):
     pharmacophore_fp = PharmacophoreFingerprint(min_points=2, max_points=2)
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(
-        smallest_mols_list, min_points=2, max_points=2
+    X_rdkit = np.array(
+        _get_rdkit_pharmacophore_fp(smallest_mols_list, min_points=2, max_points=2)
     )
-    X_rdkit = np.array(X_rdkit)
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smallest_smiles_list), 252)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), 252))
 
 
 def test_pharmacophore_3_3_points(smallest_smiles_list, smallest_mols_list):
     pharmacophore_fp = PharmacophoreFingerprint(min_points=3, max_points=3)
     X_skfp = pharmacophore_fp.transform(smallest_smiles_list)
 
-    X_rdkit = _get_rdkit_pharmacophore_fp(
-        smallest_mols_list, min_points=3, max_points=3
+    X_rdkit = np.array(
+        _get_rdkit_pharmacophore_fp(smallest_mols_list, min_points=3, max_points=3)
     )
-    X_rdkit = np.array(X_rdkit)
 
-    assert np.array_equal(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(smallest_smiles_list), 39720)
+    assert_equal(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(smallest_smiles_list), 39720))
 
 
-def test_pharmacophore_wrong_n_points(smallest_smiles_list, smallest_mols_list):
+def test_pharmacophore_wrong_n_points():
     with pytest.raises(ValueError) as exc_info:
         PharmacophoreFingerprint(min_points=3, max_points=2)
     assert "min_points <= max_points" in str(exc_info)
@@ -255,8 +266,7 @@ def _get_rdkit_pharmacophore_fp(
         Get3DDistanceMatrix(mol, confId=mol.GetIntProp("conf_id")) if use_3D else None
         for mol in mols
     ]
-    X = [
+    return [
         Gen2DFingerprint(mol, factory, dMat=dists_3d)
         for mol, dists_3d in zip(mols, dists_3d_list, strict=False)
     ]
-    return X

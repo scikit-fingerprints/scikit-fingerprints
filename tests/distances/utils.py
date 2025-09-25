@@ -1,6 +1,7 @@
 from collections.abc import Callable
 
 import numpy as np
+from numpy.testing import assert_allclose
 from rdkit.Chem import Mol
 from scipy.sparse import csr_array
 
@@ -28,14 +29,14 @@ def run_test_similarity_and_distance(
     sim_sparse = sim_func(vec_a_sparse, vec_b_sparse, **sim_func_kwargs)
     dist_sparse = dist_func(vec_a_sparse, vec_b_sparse)
 
-    assert np.isclose(sim_dense, similarity, atol=1e-3)
-    assert np.isclose(sim_sparse, similarity, atol=1e-3)
+    assert_allclose(sim_dense, similarity, atol=1e-3)
+    assert_allclose(sim_sparse, similarity, atol=1e-3)
 
-    assert np.isclose(dist_dense, distance, atol=1e-3)
-    assert np.isclose(dist_sparse, distance, atol=1e-3)
+    assert_allclose(dist_dense, distance, atol=1e-3)
+    assert_allclose(dist_sparse, distance, atol=1e-3)
 
-    assert np.isclose(sim_dense, sim_sparse)
-    assert np.isclose(dist_dense, dist_sparse)
+    assert_allclose(sim_dense, sim_sparse)
+    assert_allclose(dist_dense, dist_sparse)
 
 
 def run_test_bulk_similarity_and_distance(
@@ -68,11 +69,11 @@ def run_test_bulk_similarity_and_distance(
     bulk_sim_sparse = bulk_sim_func(fps_sparse, **sim_func_kwargs)
     bulk_dist_sparse = bulk_dist_func(fps_sparse)
 
-    assert np.allclose(expected_sim, bulk_sim, atol=1e-3)
-    assert np.allclose(expected_dist, bulk_dist, atol=1e-3)
+    assert_allclose(expected_sim, bulk_sim, atol=1e-3)
+    assert_allclose(expected_dist, bulk_dist, atol=1e-3)
 
-    assert np.allclose(bulk_sim, bulk_sim_sparse, atol=1e-3)
-    assert np.allclose(bulk_dist, bulk_dist_sparse, atol=1e-3)
+    assert_allclose(bulk_sim, bulk_sim_sparse, atol=1e-3)
+    assert_allclose(bulk_dist, bulk_dist_sparse, atol=1e-3)
 
 
 def run_test_bulk_similarity_and_distance_two_arrays(
@@ -106,8 +107,8 @@ def run_test_bulk_similarity_and_distance_two_arrays(
     bulk_sim_sparse = bulk_sim_func(fps_sparse_1, fps_sparse_2, **sim_func_kwargs)
     bulk_dist_sparse = bulk_dist_func(fps_sparse_1, fps_sparse_2)
 
-    assert np.allclose(expected_sim, bulk_sim, atol=1e-3)
-    assert np.allclose(expected_dist, bulk_dist, atol=1e-3)
+    assert_allclose(expected_sim, bulk_sim, atol=1e-3)
+    assert_allclose(expected_dist, bulk_dist, atol=1e-3)
 
-    assert np.allclose(bulk_sim, bulk_sim_sparse, atol=1e-3)
-    assert np.allclose(bulk_dist, bulk_dist_sparse, atol=1e-3)
+    assert_allclose(bulk_sim, bulk_sim_sparse, atol=1e-3)
+    assert_allclose(bulk_dist, bulk_dist_sparse, atol=1e-3)

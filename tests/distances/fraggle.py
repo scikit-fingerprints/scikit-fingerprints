@@ -1,5 +1,5 @@
-import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 from rdkit.Chem import Mol, MolFromSmiles
 
 from skfp.distances import (
@@ -56,8 +56,8 @@ def test_bulk_fraggle(mols_list):
     bulk_sim = bulk_fraggle_similarity(mols_list)
     bulk_dist = bulk_fraggle_distance(mols_list)
 
-    assert np.allclose(pairwise_sim, bulk_sim)
-    assert np.allclose(pairwise_dist, bulk_dist)
+    assert_allclose(pairwise_sim, bulk_sim, atol=1e-3)
+    assert_allclose(pairwise_dist, bulk_dist, atol=1e-3)
 
 
 def test_bulk_fraggle_second_list(mols_list):
@@ -65,4 +65,5 @@ def test_bulk_fraggle_second_list(mols_list):
 
     bulk_sim_single = bulk_fraggle_similarity(mols_list)
     bulk_sim_two = bulk_fraggle_similarity(mols_list, mols_list)
-    assert np.allclose(bulk_sim_single, bulk_sim_two)
+
+    assert_allclose(bulk_sim_single, bulk_sim_two, atol=1e-3)

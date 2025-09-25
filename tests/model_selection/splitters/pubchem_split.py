@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit import Chem
 from rdkit.Chem import Mol
 
@@ -46,8 +47,7 @@ def test_get_cid_for_smiles_with_proper_smiles(mock):
     mock.return_value.json.return_value = {"IdentifierList": {"CID": [25058138]}}
 
     cid = _get_cid_for_smiles(proper_smiles, 1, verbosity=0)
-
-    assert cid == "25058138"
+    assert_equal(cid, "25058138")
 
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
@@ -57,17 +57,9 @@ def test_get_cid_for_smiles_with_wrong_smiles(mock):
     mock.return_value.json.return_value = {
         "Fault": {
             "Code": "PUGREST.BadRequest",
-            "Message": "Unable to standardize the given structure - perhaps some special characters need to be escaped \
-            or data packed in a MIME form?",
+            "Message": "Unable to standardize the given structure...",
             "Details": [
-                "error: ",
-                "status: 400",
-                "output: Caught ncbi::CException: Standardization failed",
-                "Output Log:",
-                "Record 1: Warning: Cactvs Ensemble cannot be created from input string",
-                "Record 1: Error: Unable to convert input into a compound object",
-                "",
-                "",
+                "Record 1: Error: Unable to convert input into a compound object"
             ],
         }
     }
@@ -78,27 +70,30 @@ def test_get_cid_for_smiles_with_wrong_smiles(mock):
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
 def test_get_cid_for_smiles_with_no_existing_smiles(mock):
-    smiles_that_not_exists_in_pubchem = "C[Fe](C)(C)OC(C)=O"
+    smiles_not_exists = "C[Fe](C)(C)OC(C)=O"
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {"IdentifierList": {"CID": [0]}}
-    cid = _get_cid_for_smiles(smiles_that_not_exists_in_pubchem, 1, verbosity=0)
+
+    cid = _get_cid_for_smiles(smiles_not_exists, 1, verbosity=0)
     assert cid is None
 
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
 def test_get_earliest_publication_date_proper_cid(mock):
-    proper_pubchem_cid = "24261"
+    proper_cid = "24261"
     mock_response = [{"pclid": "204154486", "articlepubdate": "1833-11"}]
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = mock_response
-    year = _get_earliest_publication_date(proper_pubchem_cid, 1)
-    assert year == 1833
+
+    year = _get_earliest_publication_date(proper_cid, 1)
+    assert_equal(year, 1833)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split.requests.get")
 def test_get_earliest_publication_date_none_cid(mock, get_none):
     mock.return_value.status_code = 200
     mock.return_value.json.return_value = {}
+
     year = _get_earliest_publication_date(get_none, 1)
     assert year is None
 
@@ -106,26 +101,24 @@ def test_get_earliest_publication_date_none_cid(mock, get_none):
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
 def test_pubchem_train_test_split_default(mock, varied_mols_years, varied_mols):
     mock.return_value = varied_mols_years
-    train_split, test_split = pubchem_train_test_split(
-        varied_mols, return_indices=False
-    )
+    train, test = pubchem_train_test_split(varied_mols, return_indices=False)
 
-    assert len(train_split) + len(test_split) == len(varied_mols)
-    assert len(train_split) == 7
-    assert len(test_split) == 3
+    assert_equal(len(train) + len(test), len(varied_mols))
+    assert_equal(len(train), 7)
+    assert_equal(len(test), 3)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
 def test_pubchem_train_valid_test_split_default(mock, varied_mols_years, varied_mols):
     mock.return_value = varied_mols_years
-    train_split, valid_split, test_split = pubchem_train_valid_test_split(
+    train, valid, test = pubchem_train_valid_test_split(
         varied_mols, return_indices=False
     )
 
-    assert len(train_split) + len(valid_split) + len(test_split) == len(varied_mols)
-    assert len(train_split) == 8
-    assert len(valid_split) == 1
-    assert len(test_split) == 1
+    assert_equal(len(train) + len(valid) + len(test), len(varied_mols))
+    assert_equal(len(train), 8)
+    assert_equal(len(valid), 1)
+    assert_equal(len(test), 1)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -133,21 +126,21 @@ def test_pubchem_train_test_split_returns_molecules(
     mock, varied_mols_years, varied_mols
 ):
     mock.return_value = varied_mols_years
-    mols = [Chem.MolFromSmiles(smiles) for smiles in varied_mols]
-    train_set, test_set = pubchem_train_test_split(mols, return_indices=False)
+    mols = [Chem.MolFromSmiles(s) for s in varied_mols]
+    train, test = pubchem_train_test_split(mols, return_indices=False)
 
-    assert all(isinstance(train, Mol) for train in train_set)
-    assert all(isinstance(test, Mol) for test in test_set)
+    assert all(isinstance(m, Mol) for m in train)
+    assert all(isinstance(m, Mol) for m in test)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
 def test_pubchem_train_test_split_return_indices(mock, varied_mols_years, varied_mols):
     mock.return_value = varied_mols_years
-    mols = [Chem.MolFromSmiles(smiles) for smiles in varied_mols]
-    train_idxs, test_idxs = pubchem_train_test_split(mols, return_indices=True)
+    mols = [Chem.MolFromSmiles(s) for s in varied_mols]
+    train_idx, test_idx = pubchem_train_test_split(mols, return_indices=True)
 
-    assert all(isinstance(idx, int) for idx in train_idxs)
-    assert all(isinstance(idx, int) for idx in test_idxs)
+    assert all(isinstance(idx, int) for idx in train_idx)
+    assert all(isinstance(idx, int) for idx in test_idx)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -155,14 +148,12 @@ def test_pubchem_train_valid_test_split_returns_molecules(
     mock, varied_mols_years, varied_mols
 ):
     mock.return_value = varied_mols_years
-    mols = [Chem.MolFromSmiles(smiles) for smiles in varied_mols]
-    train_set, valid_set, test_set = pubchem_train_valid_test_split(
-        mols, return_indices=False
-    )
+    mols = [Chem.MolFromSmiles(s) for s in varied_mols]
+    train, valid, test = pubchem_train_valid_test_split(mols, return_indices=False)
 
-    assert all(isinstance(train, Mol) for train in train_set)
-    assert all(isinstance(valid, Mol) for valid in valid_set)
-    assert all(isinstance(test, Mol) for test in test_set)
+    assert all(isinstance(m, Mol) for m in train)
+    assert all(isinstance(m, Mol) for m in valid)
+    assert all(isinstance(m, Mol) for m in test)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -170,14 +161,14 @@ def test_pubchem_train_valid_test_split_return_indices(
     mock, varied_mols_years, varied_mols
 ):
     mock.return_value = varied_mols_years
-    mols = [Chem.MolFromSmiles(smiles) for smiles in varied_mols]
-    train_idxs, valid_idxs, test_idxs = pubchem_train_valid_test_split(
+    mols = [Chem.MolFromSmiles(s) for s in varied_mols]
+    train_idx, valid_idx, test_idx = pubchem_train_valid_test_split(
         mols, return_indices=True
     )
 
-    assert all(isinstance(idx, int) for idx in train_idxs)
-    assert all(isinstance(idx, int) for idx in valid_idxs)
-    assert all(isinstance(idx, int) for idx in test_idxs)
+    assert all(isinstance(idx, int) for idx in train_idx)
+    assert all(isinstance(idx, int) for idx in valid_idx)
+    assert all(isinstance(idx, int) for idx in test_idx)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -185,18 +176,18 @@ def test_pubchem_train_valid_test_split_not_found_behaviour_train(
     mock, varied_mols_years, varied_mols
 ):
     mock.return_value = varied_mols_years
-    train_set, valid_set, test_set = pubchem_train_valid_test_split(
+    train, valid, test = pubchem_train_valid_test_split(
         varied_mols,
-        return_indices=False,
         not_found_behavior="train",
         train_size=0.6,
         valid_size=0.2,
         test_size=0.2,
     )
-    assert len(train_set) + len(valid_set) + len(test_set) == len(varied_mols_years)
-    assert len(train_set) == 7
-    assert len(valid_set) == 2
-    assert len(test_set) == 1
+
+    assert_equal(len(train) + len(valid) + len(test), len(varied_mols_years))
+    assert_equal(len(train), 7)
+    assert_equal(len(valid), 2)
+    assert_equal(len(test), 1)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -204,13 +195,11 @@ def test_pubchem_train_test_split_not_found_behaviour_train(
     mock, varied_mols_years, varied_mols
 ):
     mock.return_value = varied_mols_years
-    train_split, test_split = pubchem_train_test_split(
-        varied_mols, return_indices=False, not_found_behavior="train"
-    )
+    train, test = pubchem_train_test_split(varied_mols, not_found_behavior="train")
 
-    assert len(train_split) + len(test_split) == len(varied_mols)
-    assert len(train_split) == 8
-    assert len(test_split) == 2
+    assert_equal(len(train) + len(test), len(varied_mols))
+    assert_equal(len(train), 8)
+    assert_equal(len(test), 2)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -219,18 +208,18 @@ def test_pubchem_train_valid_test_split_not_found_behaviour_remove(
 ):
     mock.return_value = varied_mols_years
     mols_with_years = sum(bool(y) for y in varied_mols_years)
-    train_set, valid_set, test_set = pubchem_train_valid_test_split(
+    train, valid, test = pubchem_train_valid_test_split(
         varied_mols,
-        return_indices=False,
         not_found_behavior="remove",
         train_size=0.6,
         valid_size=0.2,
         test_size=0.2,
     )
-    assert len(train_set) + len(valid_set) + len(test_set) == mols_with_years
-    assert len(train_set) == 6
-    assert len(valid_set) == 2
-    assert len(test_set) == 1
+
+    assert_equal(len(train) + len(valid) + len(test), mols_with_years)
+    assert_equal(len(train), 6)
+    assert_equal(len(valid), 2)
+    assert_equal(len(test), 1)
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -243,8 +232,8 @@ def test_pubchem_train_test_split_with_additional_data(
         varied_mols, labels
     )
 
-    assert len(train_mols) == len(train_labels)
-    assert len(test_mols) == len(test_labels)
+    assert_equal(len(train_mols), len(train_labels))
+    assert_equal(len(test_mols), len(test_labels))
 
 
 @patch("skfp.model_selection.splitters.pubchem_split._get_pubchem_years")
@@ -253,10 +242,10 @@ def test_pubchem_train_valid_test_split_with_additional_data(
 ):
     mock.return_value = varied_mols_years
     labels = np.ones(len(varied_mols))
-    train_mols, valid_mols, test_mols, train_labels, valid_labels, test_labels = (
-        pubchem_train_valid_test_split(varied_mols, labels)
+    train, valid, test, y_train, y_valid, y_test = pubchem_train_valid_test_split(
+        varied_mols, labels
     )
 
-    assert len(train_mols) == len(train_labels)
-    assert len(valid_mols) == len(valid_labels)
-    assert len(test_mols) == len(test_labels)
+    assert_equal(len(train), len(y_train))
+    assert_equal(len(valid), len(y_valid))
+    assert_equal(len(test), len(y_test))

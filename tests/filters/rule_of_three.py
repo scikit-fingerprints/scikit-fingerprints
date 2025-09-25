@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 
 from skfp.filters import RuleOfThreeFilter
 
@@ -54,28 +55,28 @@ def test_mols_passing_basic_rule_of_three(smiles_passing_basic_rule_of_three):
     mol_filter = RuleOfThreeFilter()
     smiles_filtered = mol_filter.transform(smiles_passing_basic_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_basic_rule_of_three)
+    assert_equal(len(smiles_filtered), len(smiles_passing_basic_rule_of_three))
 
 
 def test_mols_passing_extended_rule_of_three(smiles_passing_extended_rule_of_three):
     mol_filter = RuleOfThreeFilter(extended=True)
     smiles_filtered = mol_filter.transform(smiles_passing_extended_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == len(smiles_passing_extended_rule_of_three)
+    assert_equal(len(smiles_filtered), len(smiles_passing_extended_rule_of_three))
 
 
 def test_mols_failing_basic_rule_of_three(smiles_failing_basic_rule_of_three):
     mol_filter = RuleOfThreeFilter()
     smiles_filtered = mol_filter.transform(smiles_failing_basic_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_failing_basic_rule_of_three)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_mols_failing_extended_rule_of_three(smiles_failing_extended_rule_of_three):
     mol_filter = RuleOfThreeFilter(extended=True)
     smiles_filtered = mol_filter.transform(smiles_failing_extended_rule_of_three)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_mols_passing_with_violation_basic_rule_of_three(
@@ -85,13 +86,13 @@ def test_mols_passing_with_violation_basic_rule_of_three(
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_basic_rule_of_three
     )
-    assert len(smiles_filtered) == 3
+    assert_equal(len(smiles_filtered), 3)
 
     mol_filter = RuleOfThreeFilter(allow_one_violation=False)
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_basic_rule_of_three
     )
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_mols_passing_with_violation_extended_rule_of_three(
@@ -101,13 +102,13 @@ def test_mols_passing_with_violation_extended_rule_of_three(
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_extended_rule_of_three
     )
-    assert len(smiles_filtered) == 3
+    assert_equal(len(smiles_filtered), 3)
 
     mol_filter = RuleOfThreeFilter(allow_one_violation=False, extended=True)
     smiles_filtered = mol_filter.transform(
         smiles_passing_one_violation_extended_rule_of_three
     )
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_rule_of_three_return_indicators(
@@ -129,7 +130,7 @@ def test_rule_of_three_return_indicators(
         + [False] * len(smiles_passing_one_violation_extended_rule_of_three),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     mol_filter = RuleOfThreeFilter(
         extended=True, allow_one_violation=True, return_type="indicators"
@@ -141,7 +142,7 @@ def test_rule_of_three_return_indicators(
         + [True] * len(smiles_passing_one_violation_extended_rule_of_three),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_rule_of_three_parallel(smiles_list):
@@ -151,7 +152,7 @@ def test_rule_of_three_parallel(smiles_list):
     mol_filter = RuleOfThreeFilter(extended=True, n_jobs=-1, batch_size=1)
     mols_filtered_parallel = mol_filter.transform(smiles_list)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_rule_of_three_transform_x_y(
@@ -165,13 +166,13 @@ def test_rule_of_three_transform_x_y(
 
     filt = RuleOfThreeFilter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_passing_basic_rule_of_three)
+    assert_equal(len(mols), len(smiles_passing_basic_rule_of_three))
     assert np.all(labels_filt == 1)
 
     filt = RuleOfThreeFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_passing_basic_rule_of_three)
-    assert np.array_equal(indicators, labels_filt)
+    assert_equal(np.sum(indicators), len(smiles_passing_basic_rule_of_three))
+    assert_equal(indicators, labels_filt)
 
 
 @pytest.mark.parametrize(
@@ -185,7 +186,7 @@ def test_rule_of_three_condition_names(filt, num_conditions):
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (num_conditions,)
+    assert_equal(condition_names.shape, (num_conditions,))
 
 
 def test_basic_rule_of_three_return_condition_indicators(
@@ -197,7 +198,7 @@ def test_basic_rule_of_three_return_condition_indicators(
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 4))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -213,7 +214,7 @@ def test_extended_rule_of_three_return_condition_indicators(
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 6))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -231,10 +232,10 @@ def test_basic_rule_of_three_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 4))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))
 
 
 def test_extended_rule_of_three_return_condition_indicators_transform_x_y(
@@ -252,7 +253,7 @@ def test_extended_rule_of_three_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 6)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 6))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

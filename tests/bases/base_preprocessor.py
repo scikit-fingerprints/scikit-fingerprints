@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem import Mol, MolToSmiles
 from sklearn.utils._param_validation import InvalidParameterError
 
@@ -45,7 +46,7 @@ def test_base_flattened_results(n_jobs, verbose, smiles_list):
     results = mol_from_smiles.transform(smiles_list)
 
     assert isinstance(results, Sequence)
-    assert len(results) == len(smiles_list)
+    assert_equal(len(results), len(smiles_list))
     assert all(isinstance(elem, Mol) for elem in results)
 
 
@@ -77,4 +78,4 @@ def test_sequential_and_parallel_results(transformer_cls, inputs, verbose):
     seq_smiles = [MolToSmiles(mol) for mol in results_seq]
     par_smiles = [MolToSmiles(mol) for mol in results_par]
 
-    assert seq_smiles == par_smiles
+    assert_equal(seq_smiles, par_smiles)

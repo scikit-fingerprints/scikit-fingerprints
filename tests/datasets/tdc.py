@@ -1,4 +1,5 @@
 import pytest
+from numpy.testing import assert_equal
 from sklearn.utils._param_validation import InvalidParameterError
 
 from skfp.datasets.tdc import load_tdc_benchmark, load_tdc_splits
@@ -60,11 +61,11 @@ from tests.datasets.test_utils import run_basic_dataset_checks
 def test_load_tdc_benchmark():
     benchmark_full = load_tdc_benchmark(as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
-    assert benchmark_names == TDC_DATASET_NAMES
+    assert_equal(benchmark_names, TDC_DATASET_NAMES)
 
     benchmark_full_tuples = load_tdc_benchmark(as_frames=False)
     benchmark_names = [name for name, smiles, y in benchmark_full_tuples]
-    assert benchmark_names == TDC_DATASET_NAMES
+    assert_equal(benchmark_names, TDC_DATASET_NAMES)
 
 
 @pytest.mark.flaky(
@@ -76,7 +77,7 @@ def test_load_tdc_benchmark_subset():
     dataset_names = ["pampa_approved_drugs", "sarscov2_3clpro_diamond", "ames"]
     benchmark_full = load_tdc_benchmark(subset=dataset_names, as_frames=True)
     benchmark_names = [name for name, df in benchmark_full]
-    assert benchmark_names == dataset_names
+    assert_equal(benchmark_names, dataset_names)
 
 
 @pytest.mark.flaky(
@@ -181,7 +182,7 @@ def test_load_ogb_splits_as_dict(dataset_name):
 def test_load_tdc_splits_lengths(dataset_name, dataset_length):
     train, valid, test = load_tdc_splits(dataset_name)
     loaded_length = len(train) + len(valid) + len(test)
-    assert loaded_length == dataset_length
+    assert_equal(loaded_length, dataset_length)
 
 
 @pytest.mark.flaky(
@@ -192,8 +193,6 @@ def test_load_tdc_splits_lengths(dataset_name, dataset_length):
 def test_load_tdc_splits_nonexistent_dataset():
     with pytest.raises(InvalidParameterError) as error:
         load_tdc_splits("nonexistent")
-
-    print(str(error.value))
 
     assert str(error.value).startswith(
         "The 'dataset_name' parameter of load_tdc_splits must be a str among"
@@ -342,7 +341,7 @@ def test_load_dataset(dataset_name, load_func, expected_length, num_tasks, task_
 )
 def test_subset_to_dataset_names(subset_name, expected_num_datasets):
     subset_datasets = _subset_to_dataset_names(subset_name)
-    assert len(subset_datasets) == expected_num_datasets
+    assert_equal(len(subset_datasets), expected_num_datasets)
 
 
 def test_nonexistent_subset_name():

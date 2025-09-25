@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_equal
 from rdkit.Chem import Mol
 
 from skfp.filters import LipinskiFilter
@@ -47,23 +48,24 @@ def test_mols_passing_lipinski(smiles_passing_lipinski):
     smiles_filtered = filt.transform(smiles_passing_lipinski)
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert len(smiles_filtered) == len(smiles_passing_lipinski)
+    assert_equal(len(smiles_filtered), len(smiles_passing_lipinski))
 
 
 def test_mols_failing_lipinski(smiles_failing_lipinski):
     filt = LipinskiFilter()
     smiles_filtered = filt.transform(smiles_failing_lipinski)
     assert all(isinstance(x, str) for x in smiles_filtered)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_mols_failing_strict_lipinski(smiles_one_lipinski_violation):
     filt = LipinskiFilter()
     smiles_filtered = filt.transform(smiles_one_lipinski_violation)
-    assert len(smiles_filtered) == 3
+    assert_equal(len(smiles_filtered), 3)
 
     filt = LipinskiFilter(allow_one_violation=False)
     smiles_filtered = filt.transform(smiles_one_lipinski_violation)
-    assert len(smiles_filtered) == 0
+    assert_equal(len(smiles_filtered), 0)
 
 
 def test_mols_lipinski_various_conditions(
@@ -77,11 +79,11 @@ def test_mols_lipinski_various_conditions(
 
     filt = LipinskiFilter()
     mols_filtered = filt.transform(all_smiles)
-    assert len(mols_filtered) == 6
+    assert_equal(len(mols_filtered), 6)
 
     filt = LipinskiFilter(allow_one_violation=False)
     mols_filtered = filt.transform(all_smiles)
-    assert len(mols_filtered) == 3
+    assert_equal(len(mols_filtered), 3)
 
 
 def test_lipinski_smiles_and_mol_input(smiles_list, mols_list):
@@ -91,7 +93,7 @@ def test_lipinski_smiles_and_mol_input(smiles_list, mols_list):
 
     assert all(isinstance(x, str) for x in smiles_filtered)
     assert all(isinstance(x, Mol) for x in mols_filtered)
-    assert len(smiles_filtered) == len(mols_filtered)
+    assert_equal(len(smiles_filtered), len(mols_filtered))
 
 
 def test_lipinski_parallel(smiles_list):
@@ -101,7 +103,7 @@ def test_lipinski_parallel(smiles_list):
     filt = LipinskiFilter(n_jobs=-1, batch_size=1)
     mols_filtered_parallel = filt.transform(smiles_list)
 
-    assert mols_filtered_sequential == mols_filtered_parallel
+    assert_equal(mols_filtered_sequential, mols_filtered_parallel)
 
 
 def test_lipinski_return_indicators(
@@ -121,7 +123,7 @@ def test_lipinski_return_indicators(
         + [True] * len(smiles_one_lipinski_violation),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
     filt = LipinskiFilter(allow_one_violation=False, return_type="indicators")
     filter_indicators = filt.transform(all_smiles)
@@ -131,7 +133,7 @@ def test_lipinski_return_indicators(
         + [False] * len(smiles_one_lipinski_violation),
         dtype=bool,
     )
-    assert np.array_equal(filter_indicators, expected_indicators)
+    assert_equal(filter_indicators, expected_indicators)
 
 
 def test_lipinski_transform_x_y(smiles_passing_lipinski, smiles_failing_lipinski):
@@ -142,13 +144,13 @@ def test_lipinski_transform_x_y(smiles_passing_lipinski, smiles_failing_lipinski
 
     filt = LipinskiFilter()
     mols, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert len(mols) == len(smiles_passing_lipinski)
+    assert_equal(len(mols), len(smiles_passing_lipinski))
     assert np.all(labels_filt == 1)
 
     filt = LipinskiFilter(return_type="indicators")
     indicators, labels_filt = filt.transform_x_y(all_smiles, labels)
-    assert np.sum(indicators) == len(smiles_passing_lipinski)
-    assert np.array_equal(indicators, labels_filt)
+    assert_equal(np.sum(indicators), len(smiles_passing_lipinski))
+    assert_equal(indicators, labels_filt)
 
 
 def test_lipinski_condition_names():
@@ -156,7 +158,7 @@ def test_lipinski_condition_names():
     condition_names = filt.get_feature_names_out()
 
     assert isinstance(condition_names, np.ndarray)
-    assert condition_names.shape == (4,)
+    assert_equal(condition_names.shape, (4,))
 
 
 def test_lipinski_return_condition_indicators(
@@ -168,7 +170,7 @@ def test_lipinski_return_condition_indicators(
     condition_indicators = filt.transform(all_smiles)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 4))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
 
@@ -185,7 +187,7 @@ def test_lipinski_return_condition_indicators_transform_x_y(
     condition_indicators, y = filt.transform_x_y(all_smiles, labels)
 
     assert isinstance(condition_indicators, np.ndarray)
-    assert condition_indicators.shape == (len(all_smiles), 4)
+    assert_equal(condition_indicators.shape, (len(all_smiles), 4))
     assert np.issubdtype(condition_indicators.dtype, bool)
     assert np.all(np.isin(condition_indicators, [0, 1]))
-    assert len(condition_indicators) == len(y)
+    assert_equal(len(condition_indicators), len(y))

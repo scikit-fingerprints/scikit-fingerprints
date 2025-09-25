@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem.rdMolDescriptors import BCUT2D
 
 from skfp.fingerprints import BCUT2DFingerprint
@@ -27,8 +28,8 @@ def test_bcut2d_fingerprint_gasteiger(gasteiger_allowed_mols):
 
     X_rdkit = np.array([BCUT2D(mol) for mol in gasteiger_allowed_mols])
 
-    assert np.allclose(X_skfp, X_rdkit)
-    assert X_skfp.shape == (len(gasteiger_allowed_mols), 8)
+    assert_allclose(X_skfp, X_rdkit)
+    assert_equal(X_skfp.shape, (len(gasteiger_allowed_mols), 8))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
@@ -40,8 +41,8 @@ def test_bcut2d_fingerprint_formal(smallest_mols_list):
     bcut2d_fp = BCUT2DFingerprint()
     X_skfp_seq = bcut2d_fp.transform(smallest_mols_list)
 
-    assert np.allclose(X_skfp_parallel, X_skfp_seq)
-    assert X_skfp_parallel.shape == X_skfp_seq.shape
+    assert_allclose(X_skfp_parallel, X_skfp_seq)
+    assert_equal(X_skfp_parallel.shape, X_skfp_seq.shape)
 
 
 def test_bcut2d_ignore_errors(mols_list, gasteiger_allowed_mols):
@@ -51,7 +52,7 @@ def test_bcut2d_ignore_errors(mols_list, gasteiger_allowed_mols):
     X_skfp = bcut2d_fp.transform(mols_list)
     X_skfp_gasteiger = bcut2d_fp.transform(gasteiger_allowed_mols)
 
-    assert np.allclose(X_skfp, X_skfp_gasteiger)
+    assert_allclose(X_skfp, X_skfp_gasteiger)
 
 
 def test_bcut2d_zero_errors(mols_list):
@@ -60,7 +61,7 @@ def test_bcut2d_zero_errors(mols_list):
     )
     X_skfp = bcut2d_fp.transform(mols_list)
 
-    assert len(X_skfp) == len(mols_list)
+    assert_equal(len(X_skfp), len(mols_list))
 
 
 def test_bcut2d_transform_x_y(mols_list):
@@ -69,7 +70,7 @@ def test_bcut2d_transform_x_y(mols_list):
     bcut2d_fp = BCUT2DFingerprint(n_jobs=-1)
     X_skfp, y_skfp = bcut2d_fp.transform_x_y(mols_list, labels, copy=True)
 
-    assert len(X_skfp) == len(y_skfp)
+    assert_equal(len(X_skfp), len(y_skfp))
     assert np.all(y_skfp == 1)
 
 
@@ -77,9 +78,9 @@ def test_bcut2d_feature_names():
     bcut2d_fp = BCUT2DFingerprint()
     feature_names = bcut2d_fp.get_feature_names_out()
 
-    assert len(feature_names) == bcut2d_fp.n_features_out
-    assert len(feature_names) == len(set(feature_names))
+    assert_equal(len(feature_names), bcut2d_fp.n_features_out)
+    assert_equal(len(feature_names), len(set(feature_names)))
 
-    assert feature_names[0] == "max Burden eigenvalue mass"
-    assert feature_names[1] == "min Burden eigenvalue mass"
-    assert feature_names[-1] == "min Burden eigenvalue MR"
+    assert_equal(feature_names[0], "max Burden eigenvalue mass")
+    assert_equal(feature_names[1], "min Burden eigenvalue mass")
+    assert_equal(feature_names[-1], "min Burden eigenvalue MR")
