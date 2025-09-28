@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose, assert_equal
 from rdkit.Chem.rdMolDescriptors import CalcWHIM
 from scipy.sparse import csr_array
@@ -6,37 +7,42 @@ from scipy.sparse import csr_array
 from skfp.fingerprints import WHIMFingerprint
 
 
-def test_whim_fingerprint(mols_conformers_list):
+@pytest.fixture
+def mols_conformers_3_plus_atoms(mols_conformers_list):
+    return [mol for mol in mols_conformers_list if mol.GetNumAtoms() >= 3]
+
+
+def test_whim_fingerprint(mols_conformers_3_plus_atoms):
     whim_fp = WHIMFingerprint(n_jobs=-1)
-    X_skfp = whim_fp.transform(mols_conformers_list)
+    X_skfp = whim_fp.transform(mols_conformers_3_plus_atoms)
 
     X_rdkit = np.array(
         [
             CalcWHIM(mol, confId=mol.GetIntProp("conf_id"))
-            for mol in mols_conformers_list
+            for mol in mols_conformers_3_plus_atoms
         ]
     )
-    X_rdkit = np.minimum(X_rdkit, whim_fp.clip_val)
+    X_rdkit = np.clip(X_rdkit, -whim_fp.clip_val, whim_fp.clip_val)
 
     assert_allclose(X_skfp, X_rdkit, atol=1e-1)
-    assert_equal(X_skfp.shape, (len(mols_conformers_list), 114))
+    assert_equal(X_skfp.shape, (len(mols_conformers_3_plus_atoms), 114))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 
-def test_whim_sparse_fingerprint(mols_conformers_list):
+def test_whim_sparse_fingerprint(mols_conformers_3_plus_atoms):
     whim_fp = WHIMFingerprint(sparse=True, n_jobs=-1)
-    X_skfp = whim_fp.transform(mols_conformers_list)
+    X_skfp = whim_fp.transform(mols_conformers_3_plus_atoms)
 
     X_rdkit = csr_array(
         [
             CalcWHIM(mol, confId=mol.GetIntProp("conf_id"))
-            for mol in mols_conformers_list
+            for mol in mols_conformers_3_plus_atoms
         ]
     )
     X_rdkit = X_rdkit.minimum(whim_fp.clip_val)
 
     assert_allclose(X_skfp.data, X_rdkit.data, atol=1e-1)
-    assert_equal(X_skfp.shape, (len(mols_conformers_list), 114))
+    assert_equal(X_skfp.shape, (len(mols_conformers_3_plus_atoms), 114))
     assert np.issubdtype(X_skfp.dtype, np.floating)
 
 

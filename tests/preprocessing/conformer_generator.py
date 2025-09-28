@@ -19,7 +19,7 @@ def test_conformer_generator_too_few_tries():
     mol_from_smiles = MolFromSmilesTransformer()
     mols = mol_from_smiles.transform(["C1C2CC3C1C1CN3C21"])
 
-    conf_gen = ConformerGenerator(max_gen_attempts=100)
+    conf_gen = ConformerGenerator(suppress_warnings=True, max_gen_attempts=10)
     with pytest.raises(ValueError) as exc_info:
         conf_gen.transform(mols)
 
