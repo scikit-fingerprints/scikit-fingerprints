@@ -111,5 +111,8 @@ ignore = [
 # extremely long lines
 max-line-length = 200
 
+[lint.pydocstyle]
+convention = "google"
+
 [lint.mccabe]
 max-complexity = 10 # B in xenon rating
