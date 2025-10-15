@@ -10,3 +10,4 @@ Functions for loading benchmark molecular datasets.
     datasets/lrgb
     datasets/moleculenet
     datasets/tdc
+    datasets/moleculeace
