@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from sklearn.utils._param_validation import StrOptions, validate_params
 
+from skfp.datasets.utils import fetch_splits
+
 from .moleculeace import (
     load_chembl204_ki,
     load_chembl214_ki,
@@ -107,6 +109,7 @@ MOLECULEACE_DATASET_NAME_TO_LOADER_FUNC = {
 
 @validate_params(
     {
+        "subset": [None, list],
         "data_dir": [None, str, os.PathLike],
         "as_frame": ["boolean"],
         "verbose": ["boolean"],
@@ -114,7 +117,7 @@ MOLECULEACE_DATASET_NAME_TO_LOADER_FUNC = {
     prefer_skip_nested_validation=True,
 )
 def load_moleculeace_benchmark(
-    subset: str | list[str] | None = None,
+    subset: list[str] | None = None,
     data_dir: str | os.PathLike | None = None,
     as_frames: bool = False,
     verbose: bool = False,
@@ -128,7 +131,36 @@ def load_moleculeace_benchmark(
     For more details, see loading functions for particular datasets. Allowed individual
     dataset names are listed below. Dataset names are also returned (case-sensitive).
 
-    - "chembl204_ki"
+    - chembl204_ki
+    - chembl214_ki
+    - chembl218_ec50
+    - chembl219_ki
+    - chembl228_ki
+    - chembl231_ki
+    - chembl233_ki
+    - chembl234_ki
+    - chembl235_ec50
+    - chembl236_ki
+    - chembl237_ec50
+    - chembl237_ki
+    - chembl238_ki
+    - chembl239_ec50
+    - chembl244_ki
+    - chembl262_ki
+    - chembl264_ki
+    - chembl287_ki
+    - chembl1862_ki
+    - chembl1871_ki
+    - chembl2034_ki
+    - chembl2047_ec50
+    - chembl2147_ki
+    - chembl2835_ki
+    - chembl2971_ki
+    - chembl3979_ec50
+    - chembl4005_ki
+    - chembl4203_ki
+    - chembl4616_ec50
+    - chembl4792_ki
 
     Parameters
     ----------
@@ -214,7 +246,7 @@ def load_moleculeace_dataset(
 
     Parameters
     ----------
-    dataset_name : {}
+    dataset_name : str
         Name of the dataset to load.
 
     data_dir : {None, str, path-like}, default=None
@@ -254,7 +286,89 @@ def load_moleculeace_dataset(
     return loader_func(data_dir, as_frame, verbose)
 
 
-def _subset_to_dataset_names(subset: str | list[str] | None) -> list[str]:
+@validate_params(
+    {
+        "dataset_name": [StrOptions(set(MOLECULEACE_DATASET_NAMES))],
+        "split_type": [StrOptions({"random", "activity_cliff"})],
+        "data_dir": [None, str, os.PathLike],
+        "as_frame": ["boolean"],
+        "verbose": ["boolean"],
+    },
+    prefer_skip_nested_validation=True,
+)
+def load_moleculeace_splits(
+    dataset_name: str,
+    split_type: str = "activity_cliff",
+    data_dir: str | os.PathLike | None = None,
+    as_dict: bool = False,
+    verbose: bool = False,
+) -> tuple[list[int], list[int]] | dict[str, list[int]]:
+    """
+    Load pre-generated dataset splits for the MoleculeACE benchmark.
+
+    MoleculeACE [1]_ provides two split types for stratified random
+    train/validation/test partitions with respect to activity cliffs:
+    - random
+    - activity_cliff
+
+    Random splits use an 80/20 train/test split. Activity_cliff splits additionally
+    restrict the test set to molecules that are part of activity-cliff pairs.
+    Activity_cliff splits are recommended in the literature.
+
+    Dataset names are the same as those returned by `load_moleculeace_benchmark`
+    and are case-sensitive.
+
+    Parameters
+    ----------
+    dataset_name : str
+        Name of the dataset to loads splits for.
+
+    split_type: {"random", "activity_cliff"}
+        Type of the split to load.
+
+    data_dir : {None, str, path-like}, default=None
+        Path to the root data directory. If ``None``, currently set scikit-learn directory
+        is used, by default `$HOME/scikit_learn_data`.
+
+    as_dict : bool, default=False
+        If True, returns the splits as dictionary with keys "train", "valid" and "test",
+        and index lists as values. Otherwise, returns three lists with splits indexes.
+
+    verbose : bool, default=False
+        If True, progress bar will be shown for downloading or loading files.
+
+    Returns
+    -------
+    data : tuple(list[int], list[int], list[int]) or dict
+        Depending on the `as_dict` argument, one of:
+        - three lists of integer indexes
+        - dictionary with "train", "valid" and "test" keys, and values as lists with
+        splits indexes
+
+    References
+    ----------
+    .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
+        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022.
+        <https://doi.org/10.1021/acs.jcim.2c01073>`_
+    """
+    splits_suffix = {"random": "splits.json", "activity_cliff": "splits_activity.json"}[
+        split_type
+    ]
+
+    splits = fetch_splits(
+        data_dir,
+        dataset_name=f"MoleculeACE_{dataset_name}",
+        filename=f"{dataset_name}_{splits_suffix}",
+        verbose=verbose,
+    )
+    if as_dict:
+        return splits
+    else:
+        return splits["train"], splits["test"]
+
+
+def _subset_to_dataset_names(subset: list[str] | None) -> list[str]:
     if subset is None:
         dataset_names = MOLECULEACE_DATASET_NAMES
     elif isinstance(subset, (list, set, tuple)):

@@ -23,4 +23,4 @@ tests/preprocessing/input_output/data/mol_out.sdf
 .python-version
 
 .DS_Store
-
+.vscode

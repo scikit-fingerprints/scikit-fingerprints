@@ -1,6 +1,7 @@
 from .benchmark import (
     load_moleculeace_benchmark,
     load_moleculeace_dataset,
+    load_moleculeace_splits,
 )
 from .moleculeace import (
     load_chembl204_ki,
