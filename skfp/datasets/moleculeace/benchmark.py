@@ -189,12 +189,12 @@ def load_moleculeace_benchmark(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022.
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods,”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023.
         <https://doi.org/10.1093/nar/gkad1004>`_
     """
@@ -272,7 +272,7 @@ def load_moleculeace_dataset(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022.
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
@@ -308,7 +308,7 @@ def load_moleculeace_splits(
     Load pre-generated dataset splits for the MoleculeACE benchmark.
 
     MoleculeACE [1]_ provides two stratified split types based on activity-cliff membership.
-    The data are split into train/test partitions:
+    The data are split into train/test partitions as one of:
 
     * ``random``
     * ``activity_cliff``
@@ -350,13 +350,19 @@ def load_moleculeace_splits(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022.
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
     """
-    splits_suffix = {"random": "splits.json", "activity_cliff": "splits_activity.json"}[
-        split_type
-    ]
+    if split_type == "random":
+        splits_suffix = "splits.json"
+    elif split_type == "activity_cliff":
+        splits_suffix = "splits_activity.json"
+    else:
+        raise ValueError(
+            f'Split type "{split_type}" not recognized, must be one of: '
+            f'{{"random", "activity_cliff"}}'
+        )
 
     splits = fetch_splits(
         data_dir,

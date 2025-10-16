@@ -58,12 +58,12 @@ def load_chembl204_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -144,12 +144,12 @@ def load_chembl214_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -230,12 +230,12 @@ def load_chembl218_ec50(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -316,12 +316,12 @@ def load_chembl219_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -402,12 +402,12 @@ def load_chembl228_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -488,12 +488,12 @@ def load_chembl231_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -574,12 +574,12 @@ def load_chembl233_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -660,12 +660,12 @@ def load_chembl234_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -746,12 +746,12 @@ def load_chembl235_ec50(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -832,12 +832,12 @@ def load_chembl236_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -918,12 +918,12 @@ def load_chembl237_ec50(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1004,12 +1004,12 @@ def load_chembl237_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1090,12 +1090,12 @@ def load_chembl238_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1176,12 +1176,12 @@ def load_chembl239_ec50(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1262,12 +1262,12 @@ def load_chembl244_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1348,12 +1348,12 @@ def load_chembl262_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1434,12 +1434,12 @@ def load_chembl264_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1520,12 +1520,12 @@ def load_chembl287_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1606,12 +1606,12 @@ def load_chembl1862_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1692,12 +1692,12 @@ def load_chembl1871_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1778,12 +1778,12 @@ def load_chembl2034_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1864,12 +1864,12 @@ def load_chembl2047_ec50(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -1950,12 +1950,12 @@ def load_chembl2147_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -2036,12 +2036,12 @@ def load_chembl2835_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -2122,12 +2122,12 @@ def load_chembl2971_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -2208,12 +2208,12 @@ def load_chembl3979_ec50(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -2294,12 +2294,12 @@ def load_chembl4005_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -2380,12 +2380,12 @@ def load_chembl4203_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -2466,12 +2466,12 @@ def load_chembl4616_ec50(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 
@@ -2552,12 +2552,12 @@ def load_chembl4792_ki(
     References
     ----------
     .. [1] `D. van Tilborg, A. Alenicheva, and F. Grisoni
-        “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
+        "Exposing the Limitations of Molecular Machine Learning with Activity Cliffs"
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
 
     .. [2] `B. Zdrazil et al.
-        “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods”
+        "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods"
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023
         <https://doi.org/10.1093/nar/gkad1004>`_
 

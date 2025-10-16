@@ -190,9 +190,9 @@ def test_load_moleculeace_splits_nonexistent_dataset(split_type):
     with pytest.raises(InvalidParameterError) as error:
         load_moleculeace_splits("nonexistent", split_type)
 
-        assert str(error.value).startswith(
-            "The 'dataset_name' parameter of load_moleculeace_splits must be a str among"
-        )
+    assert str(error.value).startswith(
+        "The 'dataset_name' parameter of load_moleculeace_splits must be a str among"
+    )
 
 
 @pytest.mark.flaky(
@@ -204,9 +204,9 @@ def test_load_moleculeace_splits_nonexistent_splits():
     with pytest.raises(InvalidParameterError) as error:
         load_moleculeace_splits("chembl204_ki", "nonexistent")
 
-        assert str(error.value).startswith(
-            "The 'split_type' parameter of load_moleculeace_splits must be a str among"
-        )
+    assert str(error.value).startswith(
+        "The 'split_type' parameter of load_moleculeace_splits must be a str among"
+    )
 
 
 @pytest.mark.flaky(
