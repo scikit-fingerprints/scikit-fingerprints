@@ -2,7 +2,7 @@
 
 # You can set these variables from the command line.
 PREPROCESS    = sphinx-apidoc
-SPHINXOPTS    = -W
+SPHINXOPTS    = -W -j auto
 SPHINXBUILD   = sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = _build
