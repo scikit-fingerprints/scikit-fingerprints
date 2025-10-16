@@ -8,5 +8,6 @@ Functions for loading benchmark molecular datasets.
     :maxdepth: 2
 
     datasets/lrgb
+    datasets/moleculeace
     datasets/moleculenet
     datasets/tdc

@@ -1,0 +1,57 @@
+===========
+MoleculeACE
+===========
+
+.. automodule:: skfp.datasets.moleculeace
+    :exclude-members: load_moleculeace_benchmark
+
+=========================================================
+
+.. py:currentmodule:: skfp.datasets.moleculeace
+
+MoleculeACE benchmark
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    load_moleculeace_benchmark
+    load_moleculeace_dataset
+    load_moleculeace_splits
+
+Dataset loaders
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    load_chembl204_ki
+    load_chembl214_ki
+    load_chembl218_ec50
+    load_chembl219_ki
+    load_chembl228_ki
+    load_chembl231_ki
+    load_chembl233_ki
+    load_chembl234_ki
+    load_chembl235_ec50
+    load_chembl236_ki
+    load_chembl237_ec50
+    load_chembl237_ki
+    load_chembl238_ki
+    load_chembl239_ec50
+    load_chembl244_ki
+    load_chembl262_ki
+    load_chembl264_ki
+    load_chembl287_ki
+    load_chembl1862_ki
+    load_chembl1871_ki
+    load_chembl2034_ki
+    load_chembl2047_ec50
+    load_chembl2147_ki
+    load_chembl2835_ki
+    load_chembl2971_ki
+    load_chembl3979_ec50
+    load_chembl4005_ki
+    load_chembl4203_ki
+    load_chembl4616_ec50
+    load_chembl4792_ki
