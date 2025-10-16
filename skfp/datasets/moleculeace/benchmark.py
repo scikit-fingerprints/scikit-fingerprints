@@ -126,7 +126,7 @@ def load_moleculeace_benchmark(
     Load the MoleculeACE benchmark datasets.
 
     MoleculeACE [1]_ datasets are varied inhibition and effective concentration targets from ChEMBL [2]_.
-    Activity cliff is recommended for all of them.
+    Activity cliffs split is recommended for all of them.
 
     For more details, see loading functions for particular datasets. Allowed individual
     dataset names are listed below. Dataset names are also returned (case-sensitive).
@@ -192,6 +192,7 @@ def load_moleculeace_benchmark(
         “Exposing the Limitations of Molecular Machine Learning with Activity Cliffs”
         Journal of Chemical Information and Modeling, vol. 62, no. 23, pp. 5938–5951, Dec. 2022.
         <https://doi.org/10.1021/acs.jcim.2c01073>`_
+
     .. [2] `B. Zdrazil et al.
         “The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods,”
         Nucleic Acids Research, vol. 52, no. D1, Nov. 2023.
@@ -239,9 +240,9 @@ def load_moleculeace_dataset(
     Load MoleculeACE dataset by name.
 
     Loads a given dataset from MoleculeACE [1]_ benchmark by its name. This is a proxy
-    for easier benchmarking, that avoids looking for individual functions.
+    for easier benchmarking that avoids looking for individual functions.
 
-    Dataset names here are the same as returned by `load_moleculenet_benchmark` function,
+    Dataset names here are the same as returned by :py:func:`.load_moleculenet_benchmark` function,
     and are case-sensitive.
 
     Parameters
@@ -306,16 +307,17 @@ def load_moleculeace_splits(
     """
     Load pre-generated dataset splits for the MoleculeACE benchmark.
 
-    MoleculeACE [1]_ provides two split types for stratified random
-    train/validation/test partitions with respect to activity cliffs:
-    - random
-    - activity_cliff
+    MoleculeACE [1]_ provides two stratified split types based on activity-cliff membership.
+    The data are split into train/test partitions:
 
-    Random splits use an 80/20 train/test split. Activity_cliff splits additionally
+    * ``random``
+    * ``activity_cliff``
+
+    Random splits use an 80/20 train/test split. Activity cliffs additionally
     restrict the test set to molecules that are part of activity-cliff pairs.
-    Activity_cliff splits are recommended in the literature.
+    Activity cliffs splits are recommended in the literature.
 
-    Dataset names are the same as those returned by `load_moleculeace_benchmark`
+    Dataset names are the same as those returned by :py:func:`.load_moleculeace_benchmark`
     and are case-sensitive.
 
     Parameters
