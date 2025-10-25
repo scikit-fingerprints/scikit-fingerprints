@@ -13,8 +13,7 @@ setup: ## Install development dependencies
 	uv run pre-commit install
 
 docs: ## Re-generate documentation
-	-rm -r docs/modules/generated
-	uv run $(MAKE) -C docs clean html
+	uv run $(MAKE) -C docs html
 
 doctest: docs ## Run documentation tests
 	uv run $(MAKE) -C docs doctest
