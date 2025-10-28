@@ -117,6 +117,16 @@ def scaffold_train_test_split(
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
         <https://github.com/rdkit/rdkit/discussions/6844>`_
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import scaffold_train_test_split
+    >>> smiles = ['c1ccccc1', 'C1CCCCC1', 'CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> train_smiles, test_smiles = scaffold_train_test_split(smiles, train_size=6, test_size=2)
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> print('Test SMILES:', test_smiles)
+    Test SMILES: ['c1ccccc1', 'C1CCCCC1']
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
@@ -272,6 +282,20 @@ def scaffold_train_valid_test_split(
 
     .. [3] ` Bemis-Murcko scaffolds and their variants
         <https://github.com/rdkit/rdkit/discussions/6844>`_
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import scaffold_train_valid_test_split
+    >>> smiles = ['c1ccccc1', 'C1CCCCC1', 'CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> train_smiles, valid_smiles, test_smiles = scaffold_train_valid_test_split(
+    ...     smiles, train_size=6, valid_size=1, test_size=1
+    ... )
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> print('Valid SMILES:', valid_smiles)
+    Valid SMILES: ['C1CCCCC1']
+    >>> print('Test SMILES:', test_smiles)
+    Test SMILES: ['c1ccccc1']
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)

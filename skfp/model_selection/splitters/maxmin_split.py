@@ -113,6 +113,27 @@ def maxmin_train_test_split(
 
     .. [4] `Squonk - RDKit MaxMin Picker
         <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_train_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> train_smiles, test_smiles = maxmin_train_test_split(
+    ...     smiles, train_size=0.75, test_size=0.25, random_state=42
+    ... )
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> print('Test SMILES:', test_smiles)
+    Test SMILES: ['CCC', 'CC=O']
+    >>> additional_names = ['ethanol', 'ethylamine', 'propane', 'chloroethane',
+    ...                     'bromoethane', 'iodoethane', 'fluoroethane', 'acetaldehyde']
+    >>> train_smiles, test_smiles, train_names, test_names = maxmin_train_test_split(
+    ...     smiles, additional_names, train_size=0.75, test_size=0.25, random_state=42
+    ... )
+    >>> print('Train Names:', train_names)
+    Train Names: ['ethanol', 'ethylamine', 'chloroethane', 'bromoethane', 'iodoethane', 'fluoroethane']
+    >>> print('Test Names:', test_names)
+    Test Names: ['propane', 'acetaldehyde']
     """
     data_size = len(data)
     train_size, test_size = validate_train_test_split_sizes(
@@ -261,6 +282,34 @@ def maxmin_train_valid_test_split(
 
     .. [4] `Squonk - RDKit MaxMin Picker
         <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_train_valid_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> train_smiles, valid_smiles, test_smiles = maxmin_train_valid_test_split(
+    ...     smiles, train_size=0.5, valid_size=0.25, test_size=0.25, random_state=42
+    ... )
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> print('Valid SMILES:', valid_smiles)
+    Valid SMILES: ['CCO', 'CCN']
+    >>> print('Test SMILES:', test_smiles)
+    Test SMILES: ['CCC', 'CC=O']
+    >>> additional_names = ['ethanol', 'ethylamine', 'propane', 'chloroethane',
+    ...                     'bromoethane', 'iodoethane', 'fluoroethane', 'acetaldehyde']
+    >>> train_smiles, valid_smiles, test_smiles, train_names, valid_names, test_names = (
+    ...     maxmin_train_valid_test_split(
+    ...         smiles, additional_names,
+    ...         train_size=0.5, valid_size=0.25, test_size=0.25, random_state=42
+    ...     )
+    ... )
+    >>> print('Train Names:', train_names)
+    Train Names: ['chloroethane', 'bromoethane', 'iodoethane', 'fluoroethane']
+    >>> print('Valid Names:', valid_names)
+    Valid Names: ['ethanol', 'ethylamine']
+    >>> print('Test Names:', test_names)
+    Test Names: ['propane', 'acetaldehyde']
     """
     data_size = len(data)
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
@@ -405,6 +454,34 @@ def maxmin_stratified_train_test_split(
     See Also
     --------
     :func:`maxmin_train_test_split` : Regular MaxMin split.
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_stratified_train_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> labels = [0, 0, 1, 1, 0, 1, 0, 1]
+    >>> train_smiles, test_smiles, train_labels, test_labels = maxmin_stratified_train_test_split(
+    ...     smiles, labels, train_size=0.75, test_size=0.25, random_state=42
+    ... )
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCO', 'CCBr', 'CCF', 'CCC', 'CCI', 'CC=O']
+    >>> print('Test SMILES:', test_smiles)
+    Test SMILES: ['CCN', 'CCCl']
+    >>> print('Train Labels:', train_labels)
+    Train Labels: [0 0 0 1 1 1]
+    >>> print('Test Labels:', test_labels)
+    Test Labels: [0 1]
+    >>> additional_names = ['ethanol', 'ethylamine', 'propane', 'chloroethane',
+    ...                     'bromoethane', 'iodoethane', 'fluoroethane', 'acetaldehyde']
+    >>> train_smiles, test_smiles, train_labels, test_labels, train_names, test_names = (
+    ...     maxmin_stratified_train_test_split(
+    ...         smiles, labels, additional_names, train_size=0.75, test_size=0.25, random_state=42
+    ...     )
+    ... )
+    >>> print('Train Names:', train_names)
+    Train Names: ['ethanol', 'bromoethane', 'fluoroethane', 'propane', 'iodoethane', 'acetaldehyde']
+    >>> print('Test Names:', test_names)
+    Test Names: ['ethylamine', 'chloroethane']
     """
     data_arr = np.array(data)
     labels = np.array(labels, dtype=int)
@@ -561,6 +638,43 @@ def maxmin_stratified_train_valid_test_split(
     See Also
     --------
     :func:`maxmin_train_valid_test_split` : Regular MaxMin split.
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_stratified_train_valid_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> labels = [0, 0, 1, 1, 0, 1, 0, 1]
+    >>> train_smiles, valid_smiles, test_smiles, train_labels, valid_labels, test_labels = (
+    ...     maxmin_stratified_train_valid_test_split(
+    ...         smiles, labels, train_size=0.5, valid_size=0.25, test_size=0.25, random_state=42
+    ...     )
+    ... )
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCBr', 'CCF', 'CCC', 'CCI']
+    >>> print('Valid SMILES:', valid_smiles)
+    Valid SMILES: ['CCO', 'CC=O']
+    >>> print('Test SMILES:', test_smiles)
+    Test SMILES: ['CCN', 'CCCl']
+    >>> print('Train Labels:', train_labels)
+    Train Labels: [0 0 1 1]
+    >>> print('Valid Labels:', valid_labels)
+    Valid Labels: [0 1]
+    >>> print('Test Labels:', test_labels)
+    Test Labels: [0 1]
+    >>> additional_names = ['ethanol', 'ethylamine', 'propane', 'chloroethane',
+    ...                     'bromoethane', 'iodoethane', 'fluoroethane', 'acetaldehyde']
+    >>> res = maxmin_stratified_train_valid_test_split(
+    ...     smiles, labels, additional_names, train_size=0.5, valid_size=0.25, test_size=0.25, random_state=42
+    ... )
+    >>> len(res)
+    9
+    >>> train_smiles, valid_smiles, test_smiles, train_labels, valid_labels, test_labels, train_names, valid_names, test_names = res
+    >>> print('Train Names:', train_names)
+    Train Names: ['bromoethane', 'fluoroethane', 'propane', 'iodoethane']
+    >>> print('Valid Names:', valid_names)
+    Valid Names: ['ethanol', 'acetaldehyde']
+    >>> print('Test Names:', test_names)
+    Test Names: ['ethylamine', 'chloroethane']
     """
     data_arr = np.array(data)
     labels = np.array(labels, dtype=int)
