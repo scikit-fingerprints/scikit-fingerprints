@@ -101,18 +101,18 @@ def maxmin_train_test_split(
     .. [1] `Mark Ashton et al.
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
         Quant. Struct.-Act. Relat., 21: 598-604
-        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>`_
 
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
-        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>`_
 
     .. [3] `Tim Dudgeon
         "Revisiting the MaxMinPicker"
-        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>`_
 
     .. [4] `Squonk - RDKit MaxMin Picker
-        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
+        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>`_
 
     Examples
     --------
@@ -270,18 +270,18 @@ def maxmin_train_valid_test_split(
     .. [1] `Mark Ashton et al.
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
         Quant. Struct.-Act. Relat., 21: 598-604
-        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>`_
 
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
-        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>`_
 
     .. [3] `Tim Dudgeon
         "Revisiting the MaxMinPicker"
-        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>`_
 
     .. [4] `Squonk - RDKit MaxMin Picker
-        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
+        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>`_
 
     Examples
     --------
