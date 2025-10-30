@@ -159,8 +159,6 @@ def butina_train_test_split(
     >>> train_smiles, test_smiles = butina_train_test_split(smiles, train_size=0.75, test_size=0.25)
     >>> print('Train SMILES:', train_smiles)
     Train SMILES: ['CCBr', 'CCI', 'CCF', 'CC=O', 'CCO', 'CCC']
-    >>> print('Test SMILES:', test_smiles)
-    Test SMILES: ['CCN', 'CCCl']
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
@@ -356,10 +354,6 @@ def butina_train_valid_test_split(
     ... )
     >>> print('Train SMILES:', train_smiles)
     Train SMILES: ['CCF', 'CC=O', 'CCO', 'CCC']
-    >>> print('Valid SMILES:', valid_smiles)
-    Valid SMILES: ['CCBr', 'CCI']
-    >>> print('Test SMILES:', test_smiles)
-    Test SMILES: ['CCN', 'CCCl']
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)

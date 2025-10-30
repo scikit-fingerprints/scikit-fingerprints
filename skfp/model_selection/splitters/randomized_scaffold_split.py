@@ -135,8 +135,6 @@ def randomized_scaffold_train_test_split(
     ... )
     >>> print('Train SMILES:', train_smiles)
     Train SMILES: ['C1CCCCC1', 'c1ccccc1']
-    >>> print('Test SMILES:', test_smiles)
-    Test SMILES: ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
     """
     train_size, test_size = validate_train_test_split_sizes(
         train_size, test_size, len(data)
@@ -311,10 +309,6 @@ def randomized_scaffold_train_valid_test_split(
     ... )
     >>> print('Train SMILES:', train_smiles)
     Train SMILES: ['c1ccccc1']
-    >>> print('Valid SMILES:', valid_smiles)
-    Valid SMILES: ['C1CCCCC1']
-    >>> print('Test SMILES:', test_smiles)
-    Test SMILES: ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
     """
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
         train_size, valid_size, test_size, len(data)

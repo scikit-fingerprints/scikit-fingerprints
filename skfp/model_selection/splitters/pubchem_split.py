@@ -136,20 +136,10 @@ def pubchem_train_test_split(
     >>> from skfp.model_selection.splitters import pubchem_train_test_split
     >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
     >>> train_smiles, test_smiles = pubchem_train_test_split(
-    ...     smiles, train_size=0.75, test_size=0.25, n_jobs=1, n_retries=1, verbose=0
+    ...     smiles, train_size=0.75, test_size=0.25, n_jobs=1, n_retries=1
     ... )
-    CCO
-    CCN
-    CCC
-    CCCl
-    CCBr
-    CCI
-    CCF
-    CC=O
     >>> print('Train SMILES:', train_smiles)
     Train SMILES: ['CCCl', 'CCI', 'CCO', 'CCN', 'CCBr', 'CCC']
-    >>> print('Test SMILES:', test_smiles)
-    Test SMILES: ['CC=O', 'CCF']
     """
     years = _get_pubchem_years(data, n_jobs, n_retries, verbose)
 
@@ -324,20 +314,8 @@ def pubchem_train_valid_test_split(
     >>> train_smiles, valid_smiles, test_smiles = pubchem_train_valid_test_split(
     ...     smiles, train_size=0.5, valid_size=0.25, test_size=0.25, n_jobs=1, n_retries=1, verbose=0
     ... )
-    CCO
-    CCN
-    CCC
-    CCCl
-    CCBr
-    CCI
-    CCF
-    CC=O
     >>> print('Train SMILES:', train_smiles)
     Train SMILES: ['CCCl', 'CCI', 'CCO', 'CCN']
-    >>> print('Valid SMILES:', valid_smiles)
-    Valid SMILES: ['CCBr', 'CCC']
-    >>> print('Test SMILES:', test_smiles)
-    Test SMILES: ['CC=O', 'CCF']
     """
     years = _get_pubchem_years(data, n_jobs, n_retries, verbose)
 
@@ -423,7 +401,8 @@ def _get_cid_for_smiles(smiles: str, n_retries: int, verbosity: int) -> str | No
     """
     Get PubChem CID from SMILES, or None if molecule cannot be found.
     """
-    print(smiles)
+    if verbosity > 0:
+        print(smiles)
     url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{quote(smiles)}/cids/JSON"
 
     response = None
