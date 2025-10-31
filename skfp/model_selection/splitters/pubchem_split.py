@@ -138,8 +138,8 @@ def pubchem_train_test_split(
     >>> train_smiles, test_smiles = pubchem_train_test_split(
     ...     smiles, train_size=0.75, test_size=0.25, n_jobs=1, n_retries=1
     ... )
-    >>> print('Train SMILES:', train_smiles)
-    Train SMILES: ['CCCl', 'CCI', 'CCO', 'CCN', 'CCBr', 'CCC']
+    >>> train_smiles
+    ['CCCl', 'CCI', 'CCO', 'CCN', 'CCBr', 'CCC']
     """
     years = _get_pubchem_years(data, n_jobs, n_retries, verbose)
 
@@ -314,8 +314,8 @@ def pubchem_train_valid_test_split(
     >>> train_smiles, valid_smiles, test_smiles = pubchem_train_valid_test_split(
     ...     smiles, train_size=0.5, valid_size=0.25, test_size=0.25, n_jobs=1, n_retries=1, verbose=0
     ... )
-    >>> print('Train SMILES:', train_smiles)
-    Train SMILES: ['CCCl', 'CCI', 'CCO', 'CCN']
+    >>> train_smiles
+    ['CCCl', 'CCI', 'CCO', 'CCN']
     """
     years = _get_pubchem_years(data, n_jobs, n_retries, verbose)
 

@@ -121,8 +121,8 @@ def maxmin_train_test_split(
     >>> train_smiles, test_smiles = maxmin_train_test_split(
     ...     smiles, train_size=0.75, test_size=0.25, random_state=42
     ... )
-    >>> print('Train SMILES:', train_smiles)
-    Train SMILES: ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> train_smiles
+    ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
     """
     data_size = len(data)
     train_size, test_size = validate_train_test_split_sizes(
@@ -279,8 +279,8 @@ def maxmin_train_valid_test_split(
     >>> train_smiles, valid_smiles, test_smiles = maxmin_train_valid_test_split(
     ...     smiles, train_size=0.5, valid_size=0.25, test_size=0.25, random_state=42
     ... )
-    >>> print('Train SMILES:', train_smiles)
-    Train SMILES: ['CCCl', 'CCBr', 'CCI', 'CCF']
+    >>> train_smiles
+    ['CCCl', 'CCBr', 'CCI', 'CCF']
     """
     data_size = len(data)
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
