@@ -101,18 +101,28 @@ def maxmin_train_test_split(
     .. [1] `Mark Ashton et al.
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
         Quant. Struct.-Act. Relat., 21: 598-604
-        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>`_
 
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
-        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>`_
 
     .. [3] `Tim Dudgeon
         "Revisiting the MaxMinPicker"
-        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>`_
 
     .. [4] `Squonk - RDKit MaxMin Picker
-        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
+        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>`_
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_train_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> train_smiles, test_smiles = maxmin_train_test_split(
+    ...     smiles, train_size=0.75, test_size=0.25, random_state=42
+    ... )
+    >>> train_smiles
+    ['CCO', 'CCN', 'CCCl', 'CCBr', 'CCI', 'CCF']
     """
     data_size = len(data)
     train_size, test_size = validate_train_test_split_sizes(
@@ -249,18 +259,28 @@ def maxmin_train_valid_test_split(
     .. [1] `Mark Ashton et al.
         "Identification of Diverse Database Subsets using Property-Based and Fragment-Based Molecular Descriptions"
         Quant. Struct.-Act. Relat., 21: 598-604
-        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>_`
+        <https://onlinelibrary.wiley.com/doi/10.1002/qsar.200290002>`_
 
     .. [2] `Roger Sayle
         "Improved RDKit implementation"
-        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>_`
+        <https://github.com/rdkit/UGM_2017/blob/master/Presentations/Sayle_RDKitDiversity_Berlin17.pdf>`_
 
     .. [3] `Tim Dudgeon
         "Revisiting the MaxMinPicker"
-        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>_`
+        <https://rdkit.org/docs/cppapi/classRDPickers_1_1MaxMinPicker.html>`_
 
     .. [4] `Squonk - RDKit MaxMin Picker
-        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>_`
+        <https://squonk.it/docs/cells/RDKit%20MaxMin%20Picker>`_
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_train_valid_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> train_smiles, valid_smiles, test_smiles = maxmin_train_valid_test_split(
+    ...     smiles, train_size=0.5, valid_size=0.25, test_size=0.25, random_state=42
+    ... )
+    >>> train_smiles
+    ['CCCl', 'CCBr', 'CCI', 'CCF']
     """
     data_size = len(data)
     train_size, valid_size, test_size = validate_train_valid_test_split_sizes(
@@ -405,6 +425,17 @@ def maxmin_stratified_train_test_split(
     See Also
     --------
     :func:`maxmin_train_test_split` : Regular MaxMin split.
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_stratified_train_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> labels = [0, 0, 1, 1, 0, 1, 0, 1]
+    >>> train_smiles, test_smiles, train_labels, test_labels = maxmin_stratified_train_test_split(
+    ...     smiles, labels, train_size=0.75, test_size=0.25, random_state=42
+    ... )
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCO', 'CCBr', 'CCF', 'CCC', 'CCI', 'CC=O']
     """
     data_arr = np.array(data)
     labels = np.array(labels, dtype=int)
@@ -561,6 +592,19 @@ def maxmin_stratified_train_valid_test_split(
     See Also
     --------
     :func:`maxmin_train_valid_test_split` : Regular MaxMin split.
+
+    Examples
+    --------
+    >>> from skfp.model_selection.splitters import maxmin_stratified_train_valid_test_split
+    >>> smiles = ['CCO', 'CCN', 'CCC', 'CCCl', 'CCBr', 'CCI', 'CCF', 'CC=O']
+    >>> labels = [0, 0, 1, 1, 0, 1, 0, 1]
+    >>> train_smiles, valid_smiles, test_smiles, train_labels, valid_labels, test_labels = (
+    ...     maxmin_stratified_train_valid_test_split(
+    ...         smiles, labels, train_size=0.5, valid_size=0.25, test_size=0.25, random_state=42
+    ...     )
+    ... )
+    >>> print('Train SMILES:', train_smiles)
+    Train SMILES: ['CCBr', 'CCF', 'CCC', 'CCI']
     """
     data_arr = np.array(data)
     labels = np.array(labels, dtype=int)
