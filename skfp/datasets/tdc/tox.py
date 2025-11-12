@@ -19,7 +19,7 @@ def load_ames(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the AMES dataset.
 
@@ -89,7 +89,7 @@ def load_carcinogens_lagunin(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Carcinogens dataset.
 
@@ -162,7 +162,7 @@ def load_dili(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the DILI (Drug Induced Liver Injury) dataset.
 
@@ -232,7 +232,7 @@ def load_herg(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the hERG blockers dataset.
 
@@ -302,7 +302,7 @@ def load_herg_central_at_1um(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the 1 µM subset of hERG Central dataset.
 
@@ -374,7 +374,7 @@ def load_herg_central_at_10um(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the 10 µM subset of hERG Central dataset.
 
@@ -446,7 +446,7 @@ def load_herg_central_inhib(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the inhibition subset of hERG Central dataset.
 
@@ -519,7 +519,7 @@ def load_herg_karim(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the hERG Karim dataset.
 
@@ -592,7 +592,7 @@ def load_ld50_zhu(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Acute Toxicity LD50 dataset.
 
@@ -662,7 +662,7 @@ def load_skin_reaction(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Skin Reaction dataset.
 

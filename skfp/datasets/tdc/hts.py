@@ -19,7 +19,7 @@ def load_sarscov2_3clpro_diamond(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the SARS-CoV-2 3CL Protease Diamond dataset.
 
@@ -86,7 +86,7 @@ def load_sarscov2_vitro_touret(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the SARSCoV2 Vitro Touret dataset.
 
