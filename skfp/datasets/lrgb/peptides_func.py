@@ -21,7 +21,7 @@ def load_peptides_func(
     mol_type: str = "SMILES",
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Peptides-func dataset.
 

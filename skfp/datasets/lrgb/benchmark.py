@@ -126,7 +126,7 @@ def load_lrgb_mol_dataset(
     standardize_labels: bool = True,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load LRGB molecular dataset by name.
 

@@ -19,7 +19,7 @@ def load_chembl204_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL204 Ki dataset.
 
@@ -105,7 +105,7 @@ def load_chembl214_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL214 Ki dataset.
 
@@ -191,7 +191,7 @@ def load_chembl218_ec50(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL218 EC50 dataset.
 
@@ -277,7 +277,7 @@ def load_chembl219_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL219 Ki dataset.
 
@@ -363,7 +363,7 @@ def load_chembl228_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL228 Ki dataset.
 
@@ -449,7 +449,7 @@ def load_chembl231_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL231 Ki dataset.
 
@@ -535,7 +535,7 @@ def load_chembl233_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL233 Ki dataset.
 
@@ -621,7 +621,7 @@ def load_chembl234_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL234 Ki dataset.
 
@@ -707,7 +707,7 @@ def load_chembl235_ec50(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL235 EC50 dataset.
 
@@ -793,7 +793,7 @@ def load_chembl236_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL236 Ki dataset.
 
@@ -879,7 +879,7 @@ def load_chembl237_ec50(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL237 EC50 dataset.
 
@@ -965,7 +965,7 @@ def load_chembl237_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL237 Ki dataset.
 
@@ -1051,7 +1051,7 @@ def load_chembl238_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL238 Ki dataset.
 
@@ -1137,7 +1137,7 @@ def load_chembl239_ec50(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL239 EC50 dataset.
 
@@ -1223,7 +1223,7 @@ def load_chembl244_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL244 Ki dataset.
 
@@ -1309,7 +1309,7 @@ def load_chembl262_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL262 Ki dataset.
 
@@ -1395,7 +1395,7 @@ def load_chembl264_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL264 Ki dataset.
 
@@ -1481,7 +1481,7 @@ def load_chembl287_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL287 Ki dataset.
 
@@ -1567,7 +1567,7 @@ def load_chembl1862_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL1862 Ki dataset.
 
@@ -1653,7 +1653,7 @@ def load_chembl1871_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL1871 Ki dataset.
 
@@ -1739,7 +1739,7 @@ def load_chembl2034_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL2034 Ki dataset.
 
@@ -1825,7 +1825,7 @@ def load_chembl2047_ec50(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL2047 EC50 dataset.
 
@@ -1911,7 +1911,7 @@ def load_chembl2147_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL2147 Ki dataset.
 
@@ -1997,7 +1997,7 @@ def load_chembl2835_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL2835 Ki dataset.
 
@@ -2083,7 +2083,7 @@ def load_chembl2971_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL2971 Ki dataset.
 
@@ -2169,7 +2169,7 @@ def load_chembl3979_ec50(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL3979 EC50 dataset.
 
@@ -2255,7 +2255,7 @@ def load_chembl4005_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL4005 Ki dataset.
 
@@ -2341,7 +2341,7 @@ def load_chembl4203_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL4203 Ki dataset.
 
@@ -2427,7 +2427,7 @@ def load_chembl4616_ec50(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL4616 EC50 dataset.
 
@@ -2513,7 +2513,7 @@ def load_chembl4792_ki(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the ChEMBL4792 Ki dataset.
 

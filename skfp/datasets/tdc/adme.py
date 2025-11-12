@@ -19,7 +19,7 @@ def load_b3db_classification(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the classification subset of Blood-Brain-Barrier dataset.
 
@@ -101,7 +101,7 @@ def load_b3db_regression(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     r"""
     Load the regression subset of Blood-Brain-Barrier dataset.
 
@@ -181,7 +181,7 @@ def load_bioavailability_ma(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Bioavailability dataset.
 
@@ -254,7 +254,7 @@ def load_caco2_wang(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Caco-2 dataset.
 
@@ -326,7 +326,7 @@ def load_clearance_hepatocyte_az(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the hepatocyte subset of Clearance AstraZeneca dataset.
 
@@ -408,7 +408,7 @@ def load_clearance_microsome_az(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the microsome subset of Clearance AstraZeneca dataset.
 
@@ -490,7 +490,7 @@ def load_cyp1a2_veith(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP1A2 subset of CYP P450 Veith dataset.
 
@@ -574,7 +574,7 @@ def load_cyp2c9_substrate_carbonmangels(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP2C9 subset of Substrate Carbon-Mangels dataset.
 
@@ -658,7 +658,7 @@ def load_cyp2c9_veith(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP2C9 subset of CYP P450 Veith dataset.
 
@@ -739,7 +739,7 @@ def load_cyp2c19_veith(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP2C19 subset of CYP P450 Veith dataset.
 
@@ -821,7 +821,7 @@ def load_cyp2d6_substrate_carbonmangels(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP2D6 subset of Substrate Carbon-Mangels dataset.
 
@@ -906,7 +906,7 @@ def load_cyp2d6_veith(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP2D6 subset of CYP P450 Veith dataset.
 
@@ -988,7 +988,7 @@ def load_cyp3a4_substrate_carbonmangels(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP3A4 subset of Substrate Carbon-Mangels dataset.
 
@@ -1074,7 +1074,7 @@ def load_cyp3a4_veith(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the CYP3A4 subset of CYP P450 Veith dataset.
 
@@ -1157,7 +1157,7 @@ def load_half_life_obach(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Half Life Obach dataset.
 
@@ -1229,7 +1229,7 @@ def load_hia_hou(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Human Intestinal Absorption dataset.
 
@@ -1300,7 +1300,7 @@ def load_hlm(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the human subset of Human/Rat Liver Microsomal Stability dataset.
 
@@ -1373,7 +1373,7 @@ def load_pampa_approved_drugs(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the approved drugs subset of PAMPA dataset.
 
@@ -1446,7 +1446,7 @@ def load_pampa_ncats(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the NCATS subset of PAMPA dataset.
 
@@ -1519,7 +1519,7 @@ def load_pgp_broccatelli(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the P-gp (P-glycoprotein) Inhibition dataset.
 
@@ -1591,7 +1591,7 @@ def load_ppbr_az(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the PPBR (Plasma Protein Binding Rate) AstraZeneca dataset.
 
@@ -1664,7 +1664,7 @@ def load_rlm(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the rat subset of Human/Rat Liver Microsomal Stability dataset.
 
@@ -1737,7 +1737,7 @@ def load_solubility_aqsoldb(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Solubility AqSolDB dataset.
 
@@ -1809,7 +1809,7 @@ def load_vdss_lombardo(
     data_dir: str | os.PathLike | None = None,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Volume of Distribution at Steady State dataset.
 
