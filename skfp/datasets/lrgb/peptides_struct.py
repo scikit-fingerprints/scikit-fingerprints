@@ -24,7 +24,7 @@ def load_peptides_struct(
     standardize_labels: bool = True,
     as_frame: bool = False,
     verbose: bool = False,
-) -> pd.DataFrame | tuple[list[str]] | np.ndarray:
+) -> pd.DataFrame | tuple[list[str], np.ndarray]:
     """
     Load the Peptides-struct dataset.
 
