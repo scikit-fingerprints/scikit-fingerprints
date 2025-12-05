@@ -22,7 +22,7 @@ def sokal_sneath_2_binary_similarity(
 
     .. math::
 
-        sim(a, b) = \frac{|a \cap b|}{|a \cup b| + |a \Delta b} =
+        sim(a, b) = \frac{|a \cap b|}{|a \cup b| + |a \Delta b|} =
                     \frac{|a \cap b|}{2 * |a| + 2 * |b| - 3 * |a \cap b|}
 
     where :`|a \Delta b|` is the XOR operation (symmetric difference), i.e. number
