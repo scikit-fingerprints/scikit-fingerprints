@@ -25,7 +25,6 @@ def load_chembl204_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Prothrombin target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -110,7 +109,6 @@ def load_chembl214_ki(
     Load the ChEMBL214 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the 5-hydroxytryptamine receptor 1a target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -197,7 +195,6 @@ def load_chembl218_ec50(
 
     The task is to predict the half maximal effective concentration (EC50) of molecules against the Cannabinoid receptor 1 target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -282,7 +279,6 @@ def load_chembl219_ki(
     Load the ChEMBL219 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the D(4) dopamine receptor target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -369,7 +365,6 @@ def load_chembl228_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Sodium-dependent serotonin transporter target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -454,7 +449,6 @@ def load_chembl231_ki(
     Load the ChEMBL231 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Histamine h1 receptor target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -541,7 +535,6 @@ def load_chembl233_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Mu-type opioid receptor target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -626,7 +619,6 @@ def load_chembl234_ki(
     Load the ChEMBL234 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the D(3) dopamine receptor target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -713,7 +705,6 @@ def load_chembl235_ec50(
 
     The task is to predict the half maximal effective concentration (EC50) of molecules against the Peroxisome proliferator-activated receptor gamma target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -798,7 +789,6 @@ def load_chembl236_ki(
     Load the ChEMBL236 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Delta-type opioid receptor target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -885,7 +875,6 @@ def load_chembl237_ec50(
 
     The task is to predict the half maximal effective concentration (EC50) of molecules against the Kappa-type opioid receptor target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -970,7 +959,6 @@ def load_chembl237_ki(
     Load the ChEMBL237 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Kappa-type opioid receptor target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -1057,7 +1045,6 @@ def load_chembl238_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Sodium-dependent dopamine transporter target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -1142,7 +1129,6 @@ def load_chembl239_ec50(
     Load the ChEMBL239 EC50 dataset.
 
     The task is to predict the half maximal effective concentration (EC50) of molecules against the Peroxisome proliferator-activated receptor alpha target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -1229,7 +1215,6 @@ def load_chembl244_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Coagulation factor x target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -1314,7 +1299,6 @@ def load_chembl262_ki(
     Load the ChEMBL262 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Glycogen synthase kinase-3 beta target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -1401,7 +1385,6 @@ def load_chembl264_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Histamine h3 receptor target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -1486,7 +1469,6 @@ def load_chembl287_ki(
     Load the ChEMBL287 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Sigma non-opioid intracellular receptor 1 target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -1573,7 +1555,6 @@ def load_chembl1862_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Tyrosine-protein kinase abl1 target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -1658,7 +1639,6 @@ def load_chembl1871_ki(
     Load the ChEMBL1871 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Androgen receptor target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -1745,7 +1725,6 @@ def load_chembl2034_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Glucocorticoid receptor target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -1830,7 +1809,6 @@ def load_chembl2047_ec50(
     Load the ChEMBL2047 EC50 dataset.
 
     The task is to predict the half maximal effective concentration (EC50) of molecules against the Bile acid receptor target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -1917,7 +1895,6 @@ def load_chembl2147_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Serine/threonine-protein kinase pim-1 target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -2002,7 +1979,6 @@ def load_chembl2835_ki(
     Load the ChEMBL2835 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Tyrosine-protein kinase jak1 target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -2089,7 +2065,6 @@ def load_chembl2971_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Tyrosine-protein kinase jak2 target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -2174,7 +2149,6 @@ def load_chembl3979_ec50(
     Load the ChEMBL3979 EC50 dataset.
 
     The task is to predict the half maximal effective concentration (EC50) of molecules against the Peroxisome proliferator-activated receptor delta target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -2261,7 +2235,6 @@ def load_chembl4005_ki(
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Phosphatidylinositol 4,5-bisphosphate 3-kinase catalytic subunit alpha isoform target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -2346,7 +2319,6 @@ def load_chembl4203_ki(
     Load the ChEMBL4203 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Dual specificity protein kinase clk4 target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
@@ -2433,7 +2405,6 @@ def load_chembl4616_ec50(
 
     The task is to predict the half maximal effective concentration (EC50) of molecules against the Growth hormone secretagogue receptor type 1 target [1]_ [2]_.
 
-
     ==================   ==============
     Tasks                             1
     Task type                regression
@@ -2518,7 +2489,6 @@ def load_chembl4792_ki(
     Load the ChEMBL4792 Ki dataset.
 
     The task is to predict the inhibitor constant (Ki) of molecules against the Orexin receptor type 2 target [1]_ [2]_.
-
 
     ==================   ==============
     Tasks                             1
