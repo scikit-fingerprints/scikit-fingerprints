@@ -69,10 +69,10 @@ class StandardDeviationADChecker(BaseADChecker):
     >>> y_train = X_train.sum(axis=1)
     >>> model = RandomForestRegressor(n_estimators=5, random_state=0)
     >>> model.fit(X_train, y_train)
+    RandomForestRegressor(n_estimators=5, random_state=0)
     >>> std_ad_checker = StandardDeviationADChecker(model=model, threshold=0.5)
-    >>> std_ad_checker.fit()
-    >>> std_ad_checker
-    StandardDeviationADChecker()
+    >>> std_ad_checker.fit() # doctest: +NORMALIZE_WHITESPACE
+    StandardDeviationADChecker(model=RandomForestRegressor(n_estimators=5, random_state=0), threshold=0.5)
 
     >>> X_test = np.random.uniform(0, 1, size=(100, 5))
     >>> std_ad_checker.predict(X_test).shape

@@ -104,11 +104,8 @@ class KNNADChecker(BaseADChecker):
     ... ])
     >>> X_test_binary = 1 - X_train_binary
     >>> knn_ad_checker_binary = KNNADChecker(k=2, metric="tanimoto_binary_distance", agg="mean")
-    >>> knn_ad_checker_binary
-    KNNADChecker()
-
     >>> knn_ad_checker_binary.fit(X_train_binary)
-    KNNADChecker()
+    KNNADChecker(k=2)
 
     >>> knn_ad_checker_binary.predict(X_test_binary)
     array([False, False, False])
@@ -179,6 +176,8 @@ class KNNADChecker(BaseADChecker):
 
         agg_dists = self._get_agg_dists(k_nearest)
         self.threshold_ = np.percentile(agg_dists, self.threshold)
+
+        return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
         return self.score_samples(X) <= self.threshold_

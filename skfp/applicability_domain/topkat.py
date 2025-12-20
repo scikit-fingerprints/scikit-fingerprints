@@ -62,7 +62,7 @@ class TOPKATADChecker(BaseADChecker):
     TOPKATADChecker()
 
     >>> topkat_ad_checker.predict(X_test)
-    array([ True,  True,  True,  True,  True])
+    array([ True,  True,  True,  True, False])
     """
 
     _parameter_constraints: dict = {

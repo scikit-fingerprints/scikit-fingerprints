@@ -73,10 +73,10 @@ class ProbStdADChecker(BaseADChecker):
     >>> y_train = (X_train[:, 0] + X_train[:, 1] > 1).astype(float)
     >>> model = RandomForestRegressor(n_estimators=10, random_state=0)
     >>> model.fit(X_train, y_train)
+    RandomForestRegressor(n_estimators=10, random_state=0)
     >>> probstd_ad_checker = ProbStdADChecker(model=model, threshold=0.1)
     >>> probstd_ad_checker.fit()
-    >>> probstd_ad_checker
-    ProbStdADChecker(model=RandomForestRegressor(...), threshold=0.1)
+    ProbStdADChecker(model=RandomForestRegressor(n_estimators=10, random_state=0))
 
     >>> X_test = np.random.uniform(0, 1, size=(100, 5))
     >>> probstd_ad_checker.predict(X_test).shape
