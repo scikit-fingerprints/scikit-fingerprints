@@ -15,7 +15,7 @@ class RuleOfThreeFilter(BaseFilter):
     """
     Rule of three (Ro3).
 
-    Rule optimised to search for fragment-based lead-like compounds with desired properties.
+    Rule optimized to search for fragment-based lead-like compounds with desired properties.
     It was described in [1]_.
 
     Molecule must fulfill conditions:

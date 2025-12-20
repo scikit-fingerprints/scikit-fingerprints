@@ -115,7 +115,7 @@ class MACCSFingerprint(BaseFingerprintTransformer):
             verbose=verbose,
         )
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
         """
         Get fingerprint output feature names. They correspond to substructure
         names defined by Greg Landrum, based on publicly available MACCS Keys

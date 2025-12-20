@@ -81,10 +81,11 @@ def require_strings(X: Sequence[Any]) -> None:
 
 def require_atoms(min_atoms: int = 1, only_explicit=True) -> Callable:
     """
-    Decorator for functions operating on single molecule. Ensures it is
-    nonempty (by default) or has at least the specified number of atoms,
-    raises ValueError otherwise.
-    """  # noqa: D401
+    Ensure molecule is nonempty or has at least min_atoms atoms.
+
+    Used as a decorator for functions operating on a single molecule.
+    Raises ValueError if conditions are not met.
+    """
 
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)

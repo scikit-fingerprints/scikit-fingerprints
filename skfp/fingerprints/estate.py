@@ -114,7 +114,7 @@ class EStateFingerprint(BaseFingerprintTransformer):
         )
         self.variant = variant
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
         """
         Get fingerprint output feature names. They correspond to SMARTS patterns
         defining atom types. See the original paper [1]_ for details.

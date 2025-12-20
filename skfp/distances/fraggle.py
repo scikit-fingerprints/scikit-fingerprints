@@ -111,7 +111,7 @@ def fraggle_distance(
 
         dist(a, b) = 1 - sim(a, b)
 
-    See also :py:func:`fraggle_binary_similarity`.
+    See also :py:func:`fraggle_similarity`.
     The calculated distance falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a distance of 0.
     Note that this measure is asymmetric, and order of query and reference molecules

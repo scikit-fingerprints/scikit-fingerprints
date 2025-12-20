@@ -109,7 +109,7 @@ class MordredFingerprint(BaseFingerprintTransformer):
         )
         self.use_3D = use_3D
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
         """
         Get fingerprint output feature names. They correspond to descriptor
         names used by Mordred descriptor calculator, used in this fingerprint.

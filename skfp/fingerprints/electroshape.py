@@ -151,7 +151,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         self.charge_errors = charge_errors
         self.errors = errors
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
         """
         Get fingerprint output feature names. They correspond to aggregates
         of atomic distances to 5 centroid-based points.
@@ -185,9 +185,7 @@ class ElectroShapeFingerprint(BaseFingerprintTransformer):
         ]
         return np.asarray(feature_names, dtype=object)
 
-    def transform(
-        self, X: Sequence[str | Mol], copy: bool = False
-    ) -> np.ndarray | csr_array:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray | csr_array:
         """
         Compute ElectroShape fingerprints.
 

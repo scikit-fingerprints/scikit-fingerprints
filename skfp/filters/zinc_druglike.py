@@ -52,20 +52,23 @@ class ZINCDruglikeFilter(BaseFilter):
         filter less restrictive.
 
     return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
-        What values to return as the filtering result. "mol" returns list of
-        molecules passing the filter. "indicators" returns a binary vector with
-        indicators which molecules pass the filter. "condition_indicators" returns
-        a Pandas DataFrame with molecules in rows, filter conditions in columns, and
-        0/1 indicators whether a given condition was fulfilled by a given molecule.
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
 
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
         filter, instead of list of molecules.
 
         .. deprecated:: 1.17
-            return_indicators is deprecated and will be removed in version 2.0.
-            Use return_type instead. If return_indicators is set to True,
-            it will take precedence over return_type.
+            ``return_indicators`` is deprecated and will be removed in version 2.0.
+            Use ``return_type`` instead. If ``return_indicators`` is set to ``True``,
+            it will take precedence over ``return_type``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -77,8 +80,10 @@ class ZINCDruglikeFilter(BaseFilter):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when filtering molecules.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     References
     ----------

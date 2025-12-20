@@ -12,7 +12,7 @@ class ProgressParallel(Parallel):
 
     Parameters
     ----------
-    tqdm_settings: Optional[dict] = None
+    tqdm_settings: dict or None, default=None
         Settings to use for the ``tqdm()`` progress bar.
     """
 

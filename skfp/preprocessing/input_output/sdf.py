@@ -61,7 +61,7 @@ class MolFromSDFTransformer(BasePreprocessor):
         self.sanitize = sanitize
         self.remove_hydrogens = remove_hydrogens
 
-    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # type: ignore[override] # noqa: ARG002
+    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # type: ignore[override]
         """
         Create RDKit ``Mol`` objects from SDF file.
 
@@ -159,7 +159,7 @@ class MolToSDFTransformer(BasePreprocessor):
         self.kekulize = kekulize
         self.force_V3000 = force_V3000
 
-    def transform(self, X: Sequence[Mol], copy: bool = False) -> None:  # noqa: ARG002
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> None:
         """
         Write RDKit ``Mol`` objects to SDF file at location given by
         ``filepath`` parameter. File is created if necessary, and overwritten

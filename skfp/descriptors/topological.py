@@ -21,7 +21,7 @@ def average_wiener_index(mol: Mol, distance_matrix: np.ndarray | None = None) ->
     mol : RDKit ``Mol`` object
         The molecule for which the Average Wiener index is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated using RDKit.
 
     References
@@ -70,7 +70,7 @@ def balaban_j_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> floa
     mol : RDKit ``Mol`` object
         The molecule for which the Balaban's J index is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated by RDKit.
 
     References
@@ -118,7 +118,7 @@ def burden_matrix(mol: Mol, descriptors: np.ndarray | None = None) -> np.ndarray
     mol : RDKit ``Mol`` object
         The molecule for which the Balaban's J index is to be calculated.
 
-    descriptors : np.ndarray, optional
+    descriptors : np.ndarray, default=None
         Vector of atomic descriptors, with the same length as number of atoms in the
         input molecule.
 
@@ -189,7 +189,7 @@ def diameter(mol: Mol, distance_matrix: np.ndarray | None = None) -> int:
     mol : RDKit ``Mol`` object
         The molecule for which the diameter is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated.
 
     References
@@ -238,7 +238,7 @@ def graph_distance_index(mol: Mol, distance_matrix: np.ndarray | None = None) ->
     mol : RDKit ``Mol`` object
         The molecule for which the Graph Distance Index is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated using RDKit.
 
     References
@@ -323,7 +323,7 @@ def petitjean_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> floa
     mol : RDKit ``Mol`` object
         The molecule for which the Petitjean index is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated.
 
     References
@@ -364,7 +364,7 @@ def polarity_number(
     mol : RDKit ``Mol`` object
         The molecule for which the Polarity Number is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated using RDKit.
 
     carbon_only : bool, default=False
@@ -544,7 +544,7 @@ def radius(mol: Mol, distance_matrix: np.ndarray | None = None) -> int:
     mol : RDKit ``Mol`` object
         The molecule for which the radius is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated.
 
     References
@@ -583,7 +583,7 @@ def wiener_index(mol: Mol, distance_matrix: np.ndarray | None = None) -> int:
     mol : RDKit ``Mol`` object
         The molecule for which the Wiener index is to be calculated.
 
-    distance_matrix : np.ndarray, optional
+    distance_matrix : np.ndarray, default=None
         Precomputed distance matrix. If not provided, it will be calculated using RDKit.
 
     References

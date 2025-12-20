@@ -93,7 +93,7 @@ class ConvexHullADChecker(BaseADChecker):
     def fit(  # noqa: D102
         self,
         X: np.ndarray,
-        y: np.ndarray | None = None,  # noqa: ARG002
+        y: np.ndarray | None = None,
     ):
         X = validate_data(self, X=X)
         self.points_ = X

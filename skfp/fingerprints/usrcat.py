@@ -121,7 +121,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
         )
         self.errors = errors
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
         """
         Get fingerprint output feature names. They correspond to aggregates
         of atomic distances to 4 centroid-based points, for each of 5 atom
@@ -166,9 +166,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
 
         return np.asarray(feature_names, dtype=object)
 
-    def transform(
-        self, X: Sequence[str | Mol], copy: bool = False
-    ) -> np.ndarray | csr_array:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray | csr_array:
         """
         Compute USRCAT fingerprints. If ``errors`` is set to ``"ignore"``, then in
         case of errors less than n_samples values may be returned.

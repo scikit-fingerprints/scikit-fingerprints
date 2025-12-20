@@ -99,7 +99,7 @@ class KlekotaRothFingerprint(BaseSubstructureFingerprint):
             verbose=verbose,
         )
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:
         """
         Get fingerprint output feature names. They are raw SMARTS patterns
         used as feature definitions.
