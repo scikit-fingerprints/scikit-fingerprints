@@ -359,7 +359,7 @@ def bulk_dice_binary_similarity(
     Computes the pairwise Dice similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`dice_binary_similarity`.
 
@@ -455,7 +455,7 @@ def bulk_dice_binary_distance(
     Computes the pairwise Dice distance between binary matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`dice_binary_distance`.
 
@@ -514,7 +514,7 @@ def bulk_dice_count_similarity(
     Computes the pairwise Dice similarity between count matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`dice_count_similarity`.
 
@@ -609,7 +609,7 @@ def bulk_dice_count_distance(
     Computes the pairwise Dice distance between count matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`dice_count_distance`.
 

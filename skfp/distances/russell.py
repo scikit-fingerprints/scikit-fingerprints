@@ -185,7 +185,7 @@ def bulk_russell_binary_similarity(
     Computes the pairwise Russell similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`russell_binary_similarity`.
 
@@ -245,17 +245,17 @@ def bulk_russell_binary_distance(
     Computes the pairwise Russell distance between binary matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`russell_binary_distance`.
 
     Parameters
     ----------
     X : ndarray
-        First binary input array, of shape :math:`m \times m`
+        First binary input array, of shape :math:`m \times d`
 
     Y : ndarray, default=None
-        Second binary input array, of shape :math:`n \times n`. If not passed, distances
+        Second binary input array, of shape :math:`n \times d`. If not passed, distances
         are computed between rows of X.
 
     Returns

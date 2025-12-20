@@ -26,7 +26,7 @@ class LeverageADChecker(BaseADChecker):
     training data is used as an outlier score. Typical threshold is :math:`3(d+1)/n`,
     where `d` is the number of features and `n` is the number of training molecules.
 
-    Typically, physicochemical properties (continous features) are used as inputs.
+    Typically, physicochemical properties (continuous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``. Features
     should not be too strongly correlated, as this can result in near-singular matrix

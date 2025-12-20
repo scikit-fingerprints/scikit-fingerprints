@@ -41,7 +41,7 @@ def load_tox21(
     are not read correctly due to disallowed hypervalent states of their aluminium
     atoms (see [release notes](https://github.com/rdkit/rdkit/releases/tag/Release_2024_09_1)).
     This version of the Tox21 dataset contains manual fixes for those molecules,
-    removing additional hydrogens, e.g. `[AlH3] -> [Al]`. In OGB scaffold split, used
+    removing additional hydrogens, e.g. ``[AlH3] -> [Al]``. In OGB scaffold split, used
     for benchmarking, only the first 1 of those problematic 8 is from the test set.
 
     Parameters

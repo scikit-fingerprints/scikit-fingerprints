@@ -39,6 +39,17 @@ def test_atomic_partial_charges_gasteiger(mols_list, gasteiger_allowed_mols):
         ]
 
 
+def test_atomic_partial_charges_precomputed(mols_list):
+    # set charge +1 everywhere
+    for mol in mols_list:
+        for atom in mol.GetAtoms():
+            atom.SetDoubleProp("charge", 1)
+
+    for mol in mols_list:
+        charges = atomic_partial_charges(mol, partial_charge_model="precomputed")
+        assert all(c == 1 for c in charges)
+
+
 def test_atomic_partial_charges_ignore_error():
     organometallics = [
         "CCCC[Li]",

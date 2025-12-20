@@ -295,8 +295,8 @@ def bulk_sokal_sneath_2_binary_distance(
     Computes the pairwise Sokal-Sneath distance 2 between binary matrices. If
     one array is passed, distances are computed between its rows. For two arrays,
     distances are between their respective rows, with `i`-th row and `j`-th
-    column in output corresponding to `i`-th row from first array and `j`-th row
-    from second array.
+    column in output corresponding to `i`-th row from the first array and `j`-th row
+    from the second array.
 
     See also :py:func:`sokal_sneath_2_binary_distance`.
 

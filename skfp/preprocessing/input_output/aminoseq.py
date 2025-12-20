@@ -62,14 +62,13 @@ class MolFromAminoseqTransformer(BasePreprocessor):
     Examples
     --------
     >>> from skfp.preprocessing import MolFromAminoseqTransformer
-    >>> sequences = ["KWLRRVWRWWR","FLPAIGRVLSGIL","ILGKLLSTAWGLLSKL",]
+    >>> sequences = ["KWLRRVWRWWR","FLPAIGRVLSGIL","ILGKLLSTAWGLLSKL"]
     >>> mol_from_aminoseq = MolFromAminoseqTransformer()
     >>> mol_from_aminoseq
     MolFromAminoseqTransformer()
 
     >>> mol_from_aminoseq.transform(sequences)  # doctest: +SKIP
         [<rdkit.Chem.rdchem.Mol>,
-         <rdkit.Chem.rdchem.Mol>,
          <rdkit.Chem.rdchem.Mol>,
          <rdkit.Chem.rdchem.Mol>]
     """
@@ -118,7 +117,7 @@ class MolFromAminoseqTransformer(BasePreprocessor):
 
         Returns
         -------
-        X : list of shape (n_samples_conf_gen,)
+        X : list of shape (n_samples,)
             List with RDKit ``Mol`` objects.
         """
         X = super().transform(X, copy)

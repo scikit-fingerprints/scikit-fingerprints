@@ -41,7 +41,7 @@ def load_pcba(
     not read correctly due to disallowed hypervalent states of some atoms
     (see [release notes](https://github.com/rdkit/rdkit/releases/tag/Release_2024_09_1)).
     This version of the PCBA dataset contains manual fixes for those molecules, removing
-    additional hydrogens, e.g. `[AlH3] -> [Al]`. In OGB scaffold split, used for
+    additional hydrogens, e.g. ``[AlH3] -> [Al]``. In OGB scaffold split, used for
     benchmarking, both molecules are in the training set.
 
     Parameters

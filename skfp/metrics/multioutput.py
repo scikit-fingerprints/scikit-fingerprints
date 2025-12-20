@@ -127,7 +127,7 @@ def multioutput_auroc_score(
 
     y_score : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Target scores, i.e. probability of the class with the greater label for each
-        output** of the classifier.
+        output of the classifier.
 
     suppress_warnings : boolean, default=False
         Whether to suppress any warnings that may arise during evaluation on some
@@ -197,7 +197,7 @@ def multioutput_auprc_score(
 
     y_score : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Target scores, i.e. probability of the class with the greater label for each
-        output** of the classifier.
+        output of the classifier.
 
     suppress_warnings : boolean, default=False
         Whether to suppress any warnings that may arise during evaluation on some

@@ -35,11 +35,11 @@ class ConvexHullADChecker(BaseADChecker):
         & 1^T \lambda = 1,\\
         & \lambda_i \geq 0 \text{  for all  } i=1,...,n
 
-    Typically, physicochemical properties (continous features) are used as inputs.
+    Typically, physicochemical properties (continuous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``.
 
-    This method scales very badly with both number of samples and features. It has
+    This method scales very badly with both the number of samples and features. It has
     quadratic scaling :math:`O(n^2)` in number of samples, and can be realistically run
     on at most 1000-3000 molecules. Its geometry also breaks down above ~10 features,
     marking everything as outside AD.

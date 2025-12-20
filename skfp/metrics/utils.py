@@ -10,7 +10,7 @@ def extract_pos_proba(predictions: np.ndarray | list[np.ndarray]) -> np.ndarray:
     """
     Extract positive class probabilities (``y-score``).
 
-    Probabilitic metrics like AUROC or AUPRC use predicted probabilities. This
+    Probabilistic metrics like AUROC or AUPRC use predicted probabilities. This
     function extracts them from ``.predict_proba()`` results.
 
     Returns `(n_samples,)` shape for single-task, and `(n_samples, n_tasks)` for
@@ -25,7 +25,7 @@ def extract_pos_proba(predictions: np.ndarray | list[np.ndarray]) -> np.ndarray:
 
     Returns
     -------
-    y_score : NumPy array of shape (n_samples,) or (n_samples, n_tasks
+    y_score : NumPy array of shape (n_samples,) or (n_samples, n_tasks)
         Predicted positive class probabilities for each task.
 
     Examples

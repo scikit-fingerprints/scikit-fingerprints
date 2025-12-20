@@ -14,12 +14,12 @@ from sklearn.utils._param_validation import (
 
 @deprecated(
     "Deprecated for scikit-learn >1.6, which returns np.nan for constant targets. "
-    "Will be removed in scikit-fingerprints 1.15"
+    "Will be removed in scikit-fingerprints 2.0"
 )
 @validate_params(
     {
         "y_true": ["array-like"],
-        "y_pred": ["array-like"],
+        "y_score": ["array-like"],
         "constant_target_behavior": [
             StrOptions({"raise"}),
             "nan",
@@ -51,7 +51,7 @@ def auroc_score(
 
     y_score : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Target scores, i.e. probability of the class with the greater label for each
-        output** of the classifier.
+        output of the classifier.
 
     *args, **kwargs
         Any additional parameters for the underlying ``roc_auc_score`` function.

@@ -16,7 +16,7 @@ class HotellingT2TestADChecker(BaseADChecker):
     Mahalanobis distance of a new sample from the mean of the training data, scaled
     by the covariance structure of the training data.
 
-    Typically, physicochemical properties (continous features) are used as inputs.
+    Typically, physicochemical properties (continuous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``. In case
     of Hotelling's T^2 test, using PCA beforehand to obtain orthogonal features is

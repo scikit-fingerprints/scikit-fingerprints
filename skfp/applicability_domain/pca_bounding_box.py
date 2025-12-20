@@ -17,11 +17,11 @@ class PCABoundingBoxADChecker(BaseADChecker):
     Analysis (PCA) [1]_. AD is a hyperrectangle, with thresholds defined as minimal and
     maximal values from the training set on PCA axes.
 
-    Typically, physicochemical properties (continous features) are used as inputs.
+    Typically, physicochemical properties (continuous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``.
 
-    This method scales very well with both number of samples and features, but doesn't
+    This method scales very well with both the number of samples and features, but doesn't
     work well for highly sparse input features (e.g. many molecular fingerprints),
     since PCA centers the data.
 

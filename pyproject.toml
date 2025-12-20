@@ -49,13 +49,13 @@ dev = [
     "coverage",
     "jupyter",
     "mypy",
-    "pip-audit",
     "pre-commit",
     "pytest",
     "pytest-cov",
     "pytest-rerunfailures",
     "ruff",
     "setuptools>=80",
+    "scipy-stubs",
     "xenon"
 ]
 
@@ -63,7 +63,6 @@ test = [
     "mypy",
     "ruff",
     "xenon",
-    "pip-audit",
     "pre-commit",
     "pytest",
     "pytest-rerunfailures"

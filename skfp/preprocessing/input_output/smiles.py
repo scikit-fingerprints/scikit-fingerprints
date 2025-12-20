@@ -115,7 +115,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
 
         Returns
         -------
-        X : list of shape (n_samples_conf_gen,)
+        X : list of shape (n_samples,)
             List with RDKit ``Mol`` objects.
         """
         y = np.empty(len(X))

@@ -54,10 +54,15 @@ class KNNADChecker(BaseADChecker):
         Distance metric to use.
 
     agg: "mean" or "max" or "min", default="mean"
-        Aggregation method for distances to k nearest neigbors:
-            - "mean": use the mean distance to k neighbors,
-            - "max": use the maximum distance among k neighbors,
-            - "min": use the distance to the closest neigbor.
+        Aggregation method for distances to k nearest neighbors:
+
+        - "mean": average distance
+        - "max": maximum distance, to k-th neighbor
+        - "min": minimal distance, to the nearest neighbor
+
+    threshold : float, default=95
+        Percentile of distance distribution, used as the threshold for determining the
+        applicability domain. Value in range ``[0, 100]``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -115,7 +120,7 @@ class KNNADChecker(BaseADChecker):
         "k": [Interval(Integral, 1, None, closed="left")],
         "metric": [callable, StrOptions(METRIC_NAMES)],
         "agg": [StrOptions({"mean", "max", "min"})],
-        "threshold": [None, Interval(Real, 0, 1, closed="both")],
+        "threshold": [None, Interval(Real, 0, 100, closed="both")],
     }
 
     def __init__(
@@ -123,7 +128,7 @@ class KNNADChecker(BaseADChecker):
         k: int = 1,
         metric: str | Callable = "tanimoto_binary_distance",
         agg: str = "mean",
-        threshold: float = 0.95,
+        threshold: float = 95,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
     ):
