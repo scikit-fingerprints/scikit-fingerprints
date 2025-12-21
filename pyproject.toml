@@ -56,13 +56,11 @@ dev = [
     "ruff",
     "setuptools>=80",
     "scipy-stubs",
-    "xenon"
 ]
 
 test = [
     "mypy",
     "ruff",
-    "xenon",
     "pre-commit",
     "pytest",
     "pytest-rerunfailures"
