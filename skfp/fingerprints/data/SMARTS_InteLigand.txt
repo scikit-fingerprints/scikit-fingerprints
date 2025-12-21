@@ -922,7 +922,7 @@ C_ONS_bond: [#6]~[#7,#8,#16]
 # probably all drug-like molecules have at least one O, N, or S connected to a C -> nice filter
 
 ## Mixture: (*).(*)
-# two or more separate parts, may also be salt
+# two or more seperate parts, may also be salt
 # component-level grouping is not yet supported in Open Babel Version 2.0
 
 
@@ -933,7 +933,7 @@ Anion: [-1,-2,-3,-4,-5,-6,-7]
 Kation: [+1,+2,+3,+4,+5,+6,+7]
 
 Salt: ([-1,-2,-3,-4,-5,-6,-7]).([+1,+2,+3,+4,+5,+6,+7])
-# two or more separate components with opposite charges
+# two or more seperate components with opposite charges
 
 ##Zwitterion: ([-1,-2,-3,-4,-5,-6,-7].[+1,+2,+3,+4,+5,+6,+7])
 # both negative and positive charges somewhere within the same molecule.
