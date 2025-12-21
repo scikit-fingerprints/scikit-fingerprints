@@ -156,9 +156,13 @@ class KNNADChecker(BaseADChecker):
                 f"k ({self.k}) must be smaller than or equal to the number of training samples ({X.shape[0]})"
             )
 
-        # k+1, since we need to exclude each point from being its own neighbor
         self.X_train_ = X
-        self._k_used = 2 if self.agg == "min" else self.k + 1
+
+        # k+1, since we need to exclude each point from being its own neighbor
+        if self.agg == "min":
+            self._k_used = min(len(X), 2)
+        else:
+            self._k_used = min(len(X), self.k + 1)
 
         if callable(self.metric):
             metric_func = self.metric
@@ -170,7 +174,7 @@ class KNNADChecker(BaseADChecker):
             )
 
         self.knn_ = NearestNeighbors(
-            n_neighbors=self._k_used + 1, metric=metric_func, n_jobs=self.n_jobs
+            n_neighbors=self._k_used, metric=metric_func, n_jobs=self.n_jobs
         )
         self.knn_.fit(X)
         k_nearest, _ = self.knn_.kneighbors(X)

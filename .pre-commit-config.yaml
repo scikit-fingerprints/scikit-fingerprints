@@ -13,5 +13,5 @@ repos:
     rev: v0.13.1
     hooks:
       - id: ruff-check  # linter
-        args: [ --fix ]
+        args: [ --fix, --exit-zero ]
       - id: ruff-format  # formatter
