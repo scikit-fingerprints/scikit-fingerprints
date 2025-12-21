@@ -156,8 +156,9 @@ class KNNADChecker(BaseADChecker):
                 f"k ({self.k}) must be smaller than or equal to the number of training samples ({X.shape[0]})"
             )
 
+        # k+1, since we need to exclude each point from being its own neighbor
         self.X_train_ = X
-        self.k_used = 1 if self.agg == "min" else self.k
+        self._k_used = 2 if self.agg == "min" else self.k + 1
 
         if callable(self.metric):
             metric_func = self.metric
@@ -169,10 +170,13 @@ class KNNADChecker(BaseADChecker):
             )
 
         self.knn_ = NearestNeighbors(
-            n_neighbors=self.k_used, metric=metric_func, n_jobs=self.n_jobs
+            n_neighbors=self._k_used + 1, metric=metric_func, n_jobs=self.n_jobs
         )
         self.knn_.fit(X)
         k_nearest, _ = self.knn_.kneighbors(X)
+
+        # exclude the point itself from the neighbors
+        k_nearest = k_nearest[:, 1:]
 
         agg_dists = self._get_agg_dists(k_nearest)
         self.threshold_ = np.percentile(agg_dists, self.threshold)
@@ -199,11 +203,10 @@ class KNNADChecker(BaseADChecker):
         """
         check_is_fitted(self)
         X = validate_data(self, X=X, reset=False)
-        k_nearest, _ = self.knn_.kneighbors(X, n_neighbors=self.k_used)
-
+        k_nearest, _ = self.knn_.kneighbors(X, n_neighbors=self._k_used)
         return self._get_agg_dists(k_nearest)
 
-    def _get_agg_dists(self, k_nearest) -> np.ndarray:
+    def _get_agg_dists(self, k_nearest: np.ndarray) -> np.ndarray:
         if self.agg == "mean":
             agg_dists = np.mean(k_nearest, axis=1)
         elif self.agg == "max":
