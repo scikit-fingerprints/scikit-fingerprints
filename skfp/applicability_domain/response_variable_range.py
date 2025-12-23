@@ -93,7 +93,7 @@ class ResponseVariableRangeADChecker(BaseADChecker):
     def fit(  # type: ignore[override]  # noqa: D102
         self,
         y: np.ndarray,
-        X: np.ndarray | None = None,
+        X: np.ndarray | None = None,  # noqa: ARG002
     ):
         y = check_array(y, ensure_2d=False, allow_nd=False)
         if y.ndim != 1:

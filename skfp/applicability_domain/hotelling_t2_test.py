@@ -89,7 +89,7 @@ class HotellingT2TestADChecker(BaseADChecker):
     def fit(  # noqa: D102
         self,
         X: np.ndarray,
-        y: np.ndarray | None = None,
+        y: np.ndarray | None = None,  # noqa: ARG002
     ):
         X = validate_data(self, X=X)
 
