@@ -145,7 +145,7 @@ class BCUT2DFingerprint(BaseFingerprintTransformer):
         self.charge_errors = charge_errors
         self.errors = errors
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They are largest and smallest
         eigenvalues of Burden matrix for 4 atomic properties.

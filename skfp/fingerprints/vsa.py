@@ -153,7 +153,7 @@ class VSAFingerprint(BaseFingerprintTransformer):
         except KeyError as err:
             raise ValueError(f'Variant "{variant}" not recognized') from err
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to histogram
         bins for descriptors.

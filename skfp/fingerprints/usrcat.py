@@ -121,7 +121,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
         )
         self.errors = errors
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to aggregates
         of atomic distances to 4 centroid-based points, for each of 5 atom

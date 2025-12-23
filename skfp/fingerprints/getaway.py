@@ -144,7 +144,7 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
         )
         self.clip_val = clip_val
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to various
         descriptors derived from weighted Molecular Influence Matrix (MIM).

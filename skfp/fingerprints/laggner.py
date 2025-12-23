@@ -112,7 +112,7 @@ class LaggnerFingerprint(BaseSubstructureFingerprint):
 
         return np.asarray(feature_names, dtype=object)
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to substructure
         names defined by Christian Laggner, intended to capture with SMARTS patterns

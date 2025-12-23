@@ -219,7 +219,7 @@ class GhoseCrippenFingerprint(BaseSubstructureFingerprint):
             verbose=verbose,
         )
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
         """
         Get fingerprint output feature names. They are raw SMARTS patterns
         used as feature definitions.
