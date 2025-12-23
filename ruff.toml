@@ -39,7 +39,6 @@ ignore = [
     "D413",  # no empty line after last docstring section
 
     # various other things
-    "ARG002",   # unused arguments due to scikit-learn API
     "B028",     # simple warnings
     "C408",     # call dict(), list(), set()
     "E731",     # Lambda expressions
