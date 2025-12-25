@@ -14,8 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # specific version in 3.13 due to bug https://github.com/python/cpython/issues/138031
-        python-version: ["3.10", "3.11", "3.12", "3.13.6"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:

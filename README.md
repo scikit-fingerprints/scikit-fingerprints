@@ -53,11 +53,13 @@ Main features:
 
 |             | `python3.10` | `python3.11` | `python3.12` | `python3.13` |
 |:-----------:|:------------:|:------------:|:------------:|:------------:|
-|  **Linux**  |       ✅      |       ✅      |       ✅      |       ✅      |
-| **Windows** |       ✅      |       ✅      |       ✅      |       ✅      |
-|  **macOS**  |       ✅      |       ✅      |       ✅      |       ✅      |
+|  **Linux**  |       ✅      |       ✅      |       ✅      |      ✅       |
+| **Windows** |       ✅      |       ✅      |       ✅      |      ✅       |
+|  **macOS**  |       ✅      |       ✅      |       ✅      |      ✅       |
 
 Python 3.9 was supported up to scikit-fingerprints 1.13.0.
+
+Python 3.13 is officially supported, but underlying libraries may not be fully compatible yet.
 
 ## Installation
 
