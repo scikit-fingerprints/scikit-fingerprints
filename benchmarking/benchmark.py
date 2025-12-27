@@ -83,15 +83,15 @@ def make_plot(
 
     if plot_type == "time":
         ax1.set_ylabel("Time of computation [s]")
-        for i, y in zip(N_CORES, times):
+        for i, y in zip(N_CORES, times, strict=False):
             ax1.plot(X, y, marker="o", label=f"# cores: {i}")
     elif plot_type == "speedup":
         ax1.set_ylabel("Speedup")
-        for i, y in zip(N_CORES[1:], times[1:]):
+        for i, y in zip(N_CORES[1:], times[1:], strict=False):
             ax1.plot(X, times[0] / y, marker="o", label=f"# cores: {i}")
     elif plot_type == "fps_per_second":
         ax1.set_ylabel("Fingerprints per second")
-        for i, y in zip(N_CORES, times):
+        for i, y in zip(N_CORES, times, strict=False):
             ax1.plot(X, X / y, marker="o", label=f"# cores: {i}")
 
     ax1.set_xlim(n_molecules * 0.1, n_molecules * 1.1)
