@@ -18,9 +18,26 @@ docs: ## Re-generate documentation
 doctest: docs ## Run documentation tests
 	uv run $(MAKE) -C docs doctest
 
+# detect if datasets directory changed for tests
+define DATASETS_CHANGED
+{ \
+	git diff --name-only master...HEAD ;\
+	git diff --name-only --cached ;\
+	git diff --name-only ;\
+} | grep -q '^skfp/datasets/'
+endef
+
 test: ## Run tests
 	uv run ruff check
-	uv run pytest tests
+
+	@# datasets tests are slow, so we run them only if Git indicates change there
+	@if $(DATASETS_CHANGED); then \
+	  echo "Datasets changed, running all tests" ;\
+	  uv run pytest tests ; \
+	else \
+	  echo "Skipping datasets tests" ;\
+	  uv run pytest tests --ignore=tests/datasets ;\
+	fi
 
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files
