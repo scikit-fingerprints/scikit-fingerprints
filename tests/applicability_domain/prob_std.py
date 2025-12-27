@@ -81,7 +81,7 @@ def test_probstd_ad_with_default_model():
 
     preds = ad_checker.predict(X)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X),))
 
 
@@ -107,7 +107,7 @@ def test_ptobstd_ad_checker_with_classifier():
 
     preds = ad_checker.predict(X)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X),))
 
 

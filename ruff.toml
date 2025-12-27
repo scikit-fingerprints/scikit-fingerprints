@@ -9,6 +9,8 @@ exclude = [
     "docs/**"
 ]
 
+target-version = "py310"  # same as the minimal version in pyproject.toml
+
 [lint]
 select = ["ALL"]
 ignore = [
@@ -21,6 +23,7 @@ ignore = [
     "PTH",  # os instead of Pathlib when useful
     "RET",  # format returns as needed for readability
     "T20",  # printing allowed
+    "TC",   # type checking linter works really badly
 
     # naming - we allow uppercase letters, e.g. X_train, use_3D
     "N802",
@@ -42,7 +45,7 @@ ignore = [
     "B028",     # simple warnings
     "C408",     # call dict(), list(), set()
     "E731",     # Lambda expressions
-    "TRY003",   # long error messages
+    "PERF203",  # `try`-`except` within a loop incurs performance overhead
     "PGH003",   # ignore types where necessary
     "PLC0415",  # imports inside functions/methods
     "PLR2004",  # numerical constants
@@ -55,7 +58,7 @@ ignore = [
     "RUF012",   # mutable class attributes
     "SLF001",   # use private members
     "SIM108",   # if/else instead of ternary if when we need
-    "PERF203",  # `try`-`except` within a loop incurs performance overhead
+    "TRY003",   # long error messages
 ]
 
 [lint.per-file-ignores]

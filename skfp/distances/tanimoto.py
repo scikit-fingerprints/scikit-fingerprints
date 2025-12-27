@@ -497,7 +497,6 @@ def bulk_tanimoto_count_similarity(
     array([[1.        , 0.33333333],
            [0.5       , 0.5       ]])
     """
-    # Numba does not allow integers
     if not isinstance(X, csr_array):
         X = csr_array(X)
 

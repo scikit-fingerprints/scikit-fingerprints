@@ -17,7 +17,7 @@ def test_inside_hotelling_t2_test_ad():
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
@@ -33,7 +33,7 @@ def test_outside_hotelling_t2_test_ad():
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 
@@ -51,7 +51,7 @@ def test_hotelling_t2_test_options(alpha):
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
