@@ -42,7 +42,7 @@ jobs:
           key: datasets
 
       - name: Install the project dependencies
-        run: uv sync --group test --python "$(python -c 'import sys; print(sys.executable)')"
+        run: uv sync --group test
         shell: bash
 
       - name: Check pre-commit
