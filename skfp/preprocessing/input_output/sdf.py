@@ -61,7 +61,7 @@ class MolFromSDFTransformer(BasePreprocessor):
         self.sanitize = sanitize
         self.remove_hydrogens = remove_hydrogens
 
-    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # type: ignore[override] # noqa: ARG002
+    def transform(self, X: str, copy: bool = False) -> list[Mol]:  # type: ignore[override]    # noqa: ARG002
         """
         Create RDKit ``Mol`` objects from SDF file.
 
@@ -75,7 +75,7 @@ class MolFromSDFTransformer(BasePreprocessor):
 
         Returns
         -------
-        X : list of shape (n_samples_conf_gen,)
+        X : list of shape (n_samples,)
             List with RDKit ``Mol`` objects.
         """
         self._validate_params()
@@ -115,7 +115,7 @@ class MolToSDFTransformer(BasePreprocessor):
     Parameters
     ----------
     filepath : string, default="mols.sdf"
-        A string with file path location to save the SDF file. Tt should be a valid
+        A string with file path location to save the SDF file. It should be a valid
         file path with ``.sdf`` extension.
 
     kekulize : bool, default=True

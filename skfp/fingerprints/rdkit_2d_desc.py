@@ -116,7 +116,7 @@ class RDKit2DDescriptorsFingerprint(BaseFingerprintTransformer):
         self.normalized = normalized
         self.clip_val = clip_val
 
-    def get_feature_names_out(self, input_features=None):  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to RDKit function
         names for computing descriptors.

@@ -53,11 +53,13 @@ Main features:
 
 |             | `python3.10` | `python3.11` | `python3.12` | `python3.13` |
 |:-----------:|:------------:|:------------:|:------------:|:------------:|
-|  **Linux**  |       ✅      |       ✅      |       ✅      |       ✅      |
-| **Windows** |       ✅      |       ✅      |       ✅      |       ✅      |
-|  **macOS**  |       ✅      |       ✅      |       ✅      |       ✅      |
+|  **Linux**  |       ✅      |       ✅      |       ✅      |      ✅       |
+| **Windows** |       ✅      |       ✅      |       ✅      |      ✅       |
+|  **macOS**  |       ✅      |       ✅      |       ✅      |      ✅       |
 
 Python 3.9 was supported up to scikit-fingerprints 1.13.0.
+
+Python 3.13 is officially supported, but underlying libraries may not be fully compatible yet.
 
 ## Installation
 
@@ -159,7 +161,7 @@ Examples and tutorials:
 
 ## Project overview
 
-`scikit-fingerprint` brings molecular fingerprints and related functionalities into
+`scikit-fingerprints` brings molecular fingerprints and related functionalities into
 the scikit-learn ecosystem. With familiar class-based design and `.transform()` method,
 fingerprints can be computed from SMILES strings or RDKit `Mol` objects. Resulting NumPy
 arrays or SciPy sparse arrays can be directly used in ML pipelines.
@@ -216,13 +218,16 @@ Publications using scikit-fingerprints:
 1. [J. Adamczyk, W. Czech "Molecular Topological Profile (MOLTOP) - Simple and Strong Baseline for Molecular Graph Classification" ECAI 2024](https://ebooks.iospress.nl/doi/10.3233/FAIA240663)
 2. [J. Adamczyk, P. Ludynia "Scikit-fingerprints: easy and efficient computation of molecular fingerprints in Python" SoftwareX](https://www.sciencedirect.com/science/article/pii/S2352711024003145)
 3. [J. Adamczyk, P. Ludynia, W. Czech "Molecular Fingerprints Are Strong Models for Peptide Function Prediction" ArXiv preprint](https://arxiv.org/abs/2501.17901)
-4. [M. Fitzner et al. "BayBE: a Bayesian Back End for experimental planning in the low-to-no-data regime" RSC Digital Discovery](https://pubs.rsc.org/en/content/articlehtml/2025/dd/d5dd00050e)
-5. [J. Xiong "Bridging 3D Molecular Structures and Artificial Intelligence by a Conformation Description Language"](https://www.biorxiv.org/content/10.1101/2025.05.07.652440v1.abstract)
+4. [J. Adamczyk "Towards Rational Pesticide Design with Graph Machine Learning Models for Ecotoxicology" CIKM 2025](https://dl.acm.org/doi/abs/10.1145/3746252.3761660)
+5. [J. Adamczyk, J. Poziemski, F. Job, M. Król, M. Makowski "MolPILE - large-scale, diverse dataset for molecular representation learning" ArXiv preprint](https://arxiv.org/abs/2509.18353)
+6. [M. Fitzner et al. "BayBE: a Bayesian Back End for experimental planning in the low-to-no-data regime" RSC Digital Discovery](https://pubs.rsc.org/en/content/articlehtml/2025/dd/d5dd00050e)
+7. [J. Xiong et al. "Bridging 3D Molecular Structures and Artificial Intelligence by a Conformation Description Language"](https://www.biorxiv.org/content/10.1101/2025.05.07.652440v1.abstract)
+8. [S. Mavlonazarova et al. "Untargeted Metabolomics Reveals Organ-Specific and Extraction-Dependent Metabolite Profiles in Endemic Tajik Species Ferula violacea Korovin" bioRxiv preprint](https://www.biorxiv.org/content/10.1101/2025.08.24.671964v1)
 
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of
-conduct, and the process for submitting pull requests to us.
+ conduct and the process for submitting pull requests.
 
 ## License
 

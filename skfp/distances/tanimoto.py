@@ -5,8 +5,8 @@ from sklearn.utils._param_validation import validate_params
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -85,8 +85,8 @@ def tanimoto_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -151,8 +151,8 @@ def tanimoto_binary_distance(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -234,8 +234,8 @@ def tanimoto_count_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -299,7 +299,7 @@ def tanimoto_count_distance(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -313,17 +313,17 @@ def bulk_tanimoto_binary_similarity(
     Computes the pairwise Tanimoto similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`tanimoto_binary_similarity`.
 
     Parameters
     ----------
     X : ndarray or CSR sparse array
-        First binary input array or sparse matrix, of shape :math:`m \times m`.
+        First binary input array or sparse matrix, of shape :math:`m \times d`.
 
     Y : ndarray or CSR sparse array, default=None
-        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        Second binary input array or sparse matrix, of shape :math:`n \times d`.
         If not passed, similarities are computed between rows of X.
 
     Returns
@@ -390,7 +390,7 @@ def _bulk_tanimoto_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarr
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -404,17 +404,17 @@ def bulk_tanimoto_binary_distance(
     Computes the pairwise Tanimoto distance between binary matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`tanimoto_binary_distance`.
 
     Parameters
     ----------
     X : ndarray or CSR sparse array
-        First binary input array or sparse matrix, of shape :math:`m \times m`
+        First binary input array or sparse matrix, of shape :math:`m \times d`
 
     Y : ndarray or CSR sparse array, default=None
-        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        Second binary input array or sparse matrix, of shape :math:`n \times d`.
         If not passed, distances are computed between rows of X.
 
     Returns
@@ -449,7 +449,7 @@ def bulk_tanimoto_binary_distance(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -463,17 +463,17 @@ def bulk_tanimoto_count_similarity(
     Computes the pairwise Tanimoto similarity between count matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`tanimoto_count_similarity`.
 
     Parameters
     ----------
     X : ndarray or CSR sparse array
-        First binary input array or sparse matrix, of shape :math:`m \times m`
+        First binary input array or sparse matrix, of shape :math:`m \times d`
 
     Y : ndarray or CSR sparse array, default=None
-        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        Second binary input array or sparse matrix, of shape :math:`n \times d`.
         If not passed, similarities are computed between rows of X.
 
     Returns
@@ -540,7 +540,7 @@ def _bulk_tanimoto_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarra
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -554,17 +554,17 @@ def bulk_tanimoto_count_distance(
     Computes the pairwise Tanimoto distance between count matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`tanimoto_count_distance`.
 
     Parameters
     ----------
     X : ndarray or CSR sparse array
-        First binary input array or sparse matrix, of shape :math:`m \times m`
+        First binary input array or sparse matrix, of shape :math:`m \times d`
 
     Y : ndarray or CSR sparse array, default=None
-        Second binary input array or sparse matrix, of shape :math:`n \times n`.
+        Second binary input array or sparse matrix, of shape :math:`n \times d`.
         If not passed, distances are computed between rows of X.
 
     Returns

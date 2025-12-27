@@ -15,10 +15,10 @@ class BoundingBoxADChecker(BaseADChecker):
     This creates a "bounding box" using their extreme values, and new molecules
     should lie in this distribution, i.e. have properties in the same ranges [1]_.
 
-    Typically, physicochemical properties (continous features) are used as inputs.
+    Typically, physicochemical properties (continuous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``. This is
-    particularly important if ``"three_sigma"`` is used as percentile bound, as it
+    particularly important if ``"three_sigma"`` is used as the percentile bound, as it
     assumes normal distribution.
 
     By default, the full range of training descriptors are allowed as AD. For stricter
@@ -26,7 +26,7 @@ class BoundingBoxADChecker(BaseADChecker):
     extremely low or large values, respectively. For looser check, use ``num_allowed_violations``
     to allow a number of desrciptors to lie outside the given ranges.
 
-    This method scales very well with both number of samples and features.
+    This method scales very well with both the number of samples and features.
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ class BoundingBoxADChecker(BaseADChecker):
         uses 3 standard deviations from the mean, a common rule-of-thumb for outliers
         assuming the normal distribution.
 
-    num_allowed_violations : bool, default=0
+    num_allowed_violations : int, default=0
         Number of allowed violations of feature ranges. By default, all descriptors
         must lie inside the bounding box.
 
@@ -85,8 +85,8 @@ class BoundingBoxADChecker(BaseADChecker):
 
     _parameter_constraints: dict = {
         **BaseADChecker._parameter_constraints,
-        "percentile_lower": [Interval(Real, 0, 100, closed="both")],
-        "percentile_upper": [Interval(Real, 0, 100, closed="both")],
+        "percentile_lower": [Interval(Real, 0, 100, closed="both"), "three_sigma"],
+        "percentile_upper": [Interval(Real, 0, 100, closed="both"), "three_sigma"],
         "num_allowed_violations": [Interval(Integral, 0, None, closed="left")],
     }
 
@@ -94,7 +94,7 @@ class BoundingBoxADChecker(BaseADChecker):
         self,
         percentile_lower: float | str = 0,
         percentile_upper: float | str = 100,
-        num_allowed_violations: int | None = 0,
+        num_allowed_violations: int = 0,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
     ):

@@ -140,7 +140,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
         )
         self.clip_val = clip_val
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002
+    def get_feature_names_out(self, input_features=None) -> np.ndarray:  # noqa: ARG002  # noqa: ARG002
         """
         Get fingerprint output feature names. They correspond to various
         descriptors derived from weighted covariance matrix. See references
@@ -215,9 +215,7 @@ class WHIMFingerprint(BaseFingerprintTransformer):
 
         return np.asarray(feature_names, dtype=object)
 
-    def transform(
-        self, X: Sequence[str | Mol], copy: bool = False
-    ) -> np.ndarray | csr_array:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray | csr_array:
         """
         Compute WHIM fingerprints.
 

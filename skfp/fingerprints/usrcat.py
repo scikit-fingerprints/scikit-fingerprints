@@ -166,9 +166,7 @@ class USRCATFingerprint(BaseFingerprintTransformer):
 
         return np.asarray(feature_names, dtype=object)
 
-    def transform(
-        self, X: Sequence[str | Mol], copy: bool = False
-    ) -> np.ndarray | csr_array:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray | csr_array:
         """
         Compute USRCAT fingerprints. If ``errors`` is set to ``"ignore"``, then in
         case of errors less than n_samples values may be returned.

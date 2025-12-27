@@ -18,11 +18,13 @@ def atomic_partial_charges(
     Parameters
     ----------
     mol : RDKit ``Mol`` object
-        The molecule for which the Balaban's J index is to be calculated.
+        The molecule for which to calculate the atomic partial charges.
 
     partial_charge_model : {"Gasteiger", "MMFF94", "formal", "precomputed"}, default="formal"
         Which model to use to compute atomic partial charges. Default ``"formal"``
         computes formal charges, and is the simplest and most error-resistant one.
+        ``"precomputed"`` assumes that the inputs are RDKit ``PropertyMol`` objects
+        with "charge" float property set.
 
     charge_errors : {"raise", "ignore", "zero"}, default="raise"
         How to handle errors during calculation of atomic partial charges. ``"raise"``
@@ -51,6 +53,8 @@ def atomic_partial_charges(
         ]
     elif partial_charge_model == "formal":
         charges = [atom.GetFormalCharge() for atom in atoms]
+    elif partial_charge_model == "precomputed":
+        charges = [atom.GetDoubleProp("charge") for atom in atoms]
     else:
         raise ValueError(
             f'Partial charge model "{partial_charge_model}" is not supported'

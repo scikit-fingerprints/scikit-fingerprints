@@ -58,11 +58,14 @@ class ValenceDiscoveryFilter(BaseFilter):
         filter less restrictive.
 
     return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
-        What values to return as the filtering result. "mol" returns list of
-        molecules passing the filter. "indicators" returns a binary vector with
-        indicators which molecules pass the filter. "condition_indicators" returns
-        a NumPy array with molecules in rows, filter conditions in columns, and
-        0/1 indicators whether a given condition was fulfilled by a given molecule.
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
 
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the
@@ -83,8 +86,10 @@ class ValenceDiscoveryFilter(BaseFilter):
         Number of inputs processed in each batch. ``None`` divides input data into
         equal-sized parts, as many as ``n_jobs``.
 
-    verbose : int, default=0
+    verbose : int or dict, default=0
         Controls the verbosity when filtering molecules.
+        If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
+        and can be used to control the progress bar.
 
     References
     ----------
@@ -107,8 +112,8 @@ class ValenceDiscoveryFilter(BaseFilter):
     def __init__(
         self,
         allow_one_violation: bool = False,
-        return_indicators: bool = False,
         return_type: str = "mol",
+        return_indicators: bool = False,
         n_jobs: int | None = None,
         batch_size: int | None = None,
         verbose: int = 0,
@@ -134,8 +139,8 @@ class ValenceDiscoveryFilter(BaseFilter):
         super().__init__(
             condition_names=condition_names,
             allow_one_violation=allow_one_violation,
-            return_indicators=return_indicators,
             return_type=return_type,
+            return_indicators=return_indicators,
             n_jobs=n_jobs,
             batch_size=batch_size,
             verbose=verbose,

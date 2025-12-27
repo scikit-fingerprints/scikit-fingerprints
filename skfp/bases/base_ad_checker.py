@@ -89,7 +89,7 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
     @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
         """
-        Predict labels (1 inside AD, 0 outside AD) of X according to fitted model.
+        Predict labels (1 inside AD, 0 outside AD) of X according to the fitted model.
 
         Parameters
         ----------
@@ -99,7 +99,7 @@ class BaseADChecker(ABC, BaseEstimator, OutlierMixin):
         Returns
         -------
         is_inside_applicability_domain : ndarray of shape (n_samples,)
-            Returns 1 for molecules inside applicability domain, and 0 for those
+            Returns 1 for molecules inside the applicability domain, and 0 for those
             outside (outliers).
         """
         raise NotImplementedError

@@ -5,8 +5,8 @@ from sklearn.utils._param_validation import validate_params
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -117,8 +117,8 @@ def mcconnaughey_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -137,7 +137,7 @@ def mcconnaughey_binary_distance(
         dist(a, b) = 1 - sim(a, b)
 
     See also :py:func:`mcconnaughey_binary_similarity`. It uses the normalized
-    similarity, scaled to range `[0, 1]`.
+    similarity, scaled to range ``[0, 1]``.
     The calculated distance falls within the range :math:`[0, 1]`.
     Passing all-zero vectors to this function results in a distance of 0.
 
@@ -191,7 +191,7 @@ def mcconnaughey_binary_distance(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -207,7 +207,7 @@ def bulk_mcconnaughey_binary_similarity(
     Computes the pairwise McConnaughey similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`mcconnaughey_binary_similarity`.
 
@@ -313,7 +313,7 @@ def _bulk_mcconnaughey_binary_similarity_two(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -327,7 +327,7 @@ def bulk_mcconnaughey_binary_distance(
     Computes the pairwise McConnaughey distance between binary matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`mcconnaughey_binary_distance`.
 

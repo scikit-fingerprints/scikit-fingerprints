@@ -24,11 +24,14 @@ class RuleOfVeberFilter(BaseFilter):
         filter less restrictive.
 
     return_type : {"mol", "indicators", "condition_indicators"}, default="mol"
-        What values to return as the filtering result. "mol" returns list of
-        molecules passing the filter. "indicators" returns a binary vector with
-        indicators which molecules pass the filter. "condition_indicators" returns
-        a Pandas DataFrame with molecules in rows, filter conditions in columns, and
-        0/1 indicators whether a given condition was fulfilled by a given molecule.
+        What values to return as the filtering result.
+
+        - ``"mol"`` - return a list of molecules remaining in the dataset after filtering
+        - ``"indicators"`` - return a binary vector with indicators which molecules pass
+          the filter (1) and which would be removed (0)
+        - ``"condition_indicators"`` - return a Pandas DataFrame with molecules in rows,
+          filter conditions in columns, and 0/1 indicators whether a given condition was
+          fulfilled by a given molecule
 
     return_indicators : bool, default=False
         Whether to return a binary vector with indicators which molecules pass the

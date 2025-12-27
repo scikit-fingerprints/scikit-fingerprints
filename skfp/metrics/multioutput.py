@@ -56,7 +56,7 @@ def multioutput_accuracy_score(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -127,9 +127,9 @@ def multioutput_auroc_score(
 
     y_score : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Target scores, i.e. probability of the class with the greater label for each
-        output** of the classifier.
+        output of the classifier.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -197,9 +197,9 @@ def multioutput_auprc_score(
 
     y_score : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Target scores, i.e. probability of the class with the greater label for each
-        output** of the classifier.
+        output of the classifier.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -267,7 +267,7 @@ def multioutput_balanced_accuracy_score(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -335,7 +335,7 @@ def multioutput_cohen_kappa_score(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -405,7 +405,7 @@ def multioutput_f1_score(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -468,7 +468,7 @@ def multioutput_matthews_corr_coef(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -536,7 +536,7 @@ def multioutput_mean_absolute_error(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -604,7 +604,7 @@ def multioutput_mean_squared_error(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -673,7 +673,7 @@ def multioutput_precision_score(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -742,7 +742,7 @@ def multioutput_recall_score(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -810,7 +810,7 @@ def multioutput_root_mean_squared_error(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 
@@ -876,7 +876,7 @@ def multioutput_spearman_correlation(
     y_pred : array-like of shape (n_samples,) or (n_samples, n_outputs)
         Estimated target values.
 
-    suppress_warnings : boolean, default=False
+    suppress_warnings : bool, default=False
         Whether to suppress any warnings that may arise during evaluation on some
         tasks.
 

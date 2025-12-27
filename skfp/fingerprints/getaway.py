@@ -218,9 +218,7 @@ class GETAWAYFingerprint(BaseFingerprintTransformer):
 
         return np.asarray(feature_names, dtype=object)
 
-    def transform(
-        self, X: Sequence[str | Mol], copy: bool = False
-    ) -> np.ndarray | csr_array:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray | csr_array:
         """
         Compute GETAWAY fingerprints.
 

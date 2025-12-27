@@ -32,7 +32,7 @@ dependencies = [
     "numba<1",
     "numpy>=1.20.0,<3",
     "pandas<3",
-    "rdkit<=2025.3.6",
+    "rdkit<=2025.9.3",
     "scikit-learn>=1.0.0,<2",
     "scipy>=1.0.0,<2",
     "tqdm>=4.0.0,<5"
@@ -49,21 +49,18 @@ dev = [
     "coverage",
     "jupyter",
     "mypy",
-    "pip-audit",
     "pre-commit",
     "pytest",
     "pytest-cov",
     "pytest-rerunfailures",
     "ruff",
     "setuptools>=80",
-    "xenon"
+    "scipy-stubs",
 ]
 
 test = [
     "mypy",
     "ruff",
-    "xenon",
-    "pip-audit",
     "pre-commit",
     "pytest",
     "pytest-rerunfailures"
@@ -73,7 +70,7 @@ docs = [
     "ipython",
     "nbsphinx",
     "pydata-sphinx-theme",
-    "scikit-learn!=1.7.1",  # due to scikit-learn docs issue: https://github.com/microsoft/lightgbm/issues/6978
+    "scikit-learn!=1.7.1", # due to scikit-learn docs issue: https://github.com/microsoft/lightgbm/issues/6978
     "sphinx",
     "sphinx-copybutton"
 ]
@@ -94,6 +91,15 @@ filterwarnings = [
     "ignore:The total space of parameters.*:UserWarning",
     "ignore:Function auroc_score.*:FutureWarning"
 ]
+
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true  # check all functions, this fixes some tests
+allow_redefinition = true  # we redefine variables a lot for efficiency
+# most libraries used are not properly typed in Python, particularly RDKit
+ignore_missing_imports = true
+disable_error_code = ["import-untyped"]
+no_site_packages = true
 
 [tool.uv.build-backend]
 module-name = "skfp"

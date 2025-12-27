@@ -54,10 +54,15 @@ class KNNADChecker(BaseADChecker):
         Distance metric to use.
 
     agg: "mean" or "max" or "min", default="mean"
-        Aggregation method for distances to k nearest neigbors:
-            - "mean": use the mean distance to k neighbors,
-            - "max": use the maximum distance among k neighbors,
-            - "min": use the distance to the closest neigbor.
+        Aggregation method for distances to k nearest neighbors:
+
+        - "mean": average distance
+        - "max": maximum distance, to k-th neighbor
+        - "min": minimal distance, to the nearest neighbor
+
+    threshold : float, default=95
+        Percentile of distance distribution, used as the threshold for determining the
+        applicability domain. Value in range ``[0, 100]``.
 
     n_jobs : int, default=None
         The number of jobs to run in parallel. :meth:`transform_x_y` and
@@ -99,11 +104,8 @@ class KNNADChecker(BaseADChecker):
     ... ])
     >>> X_test_binary = 1 - X_train_binary
     >>> knn_ad_checker_binary = KNNADChecker(k=2, metric="tanimoto_binary_distance", agg="mean")
-    >>> knn_ad_checker_binary
-    KNNADChecker()
-
     >>> knn_ad_checker_binary.fit(X_train_binary)
-    KNNADChecker()
+    KNNADChecker(k=2)
 
     >>> knn_ad_checker_binary.predict(X_test_binary)
     array([False, False, False])
@@ -115,7 +117,7 @@ class KNNADChecker(BaseADChecker):
         "k": [Interval(Integral, 1, None, closed="left")],
         "metric": [callable, StrOptions(METRIC_NAMES)],
         "agg": [StrOptions({"mean", "max", "min"})],
-        "threshold": [None, Interval(Real, 0, 1, closed="both")],
+        "threshold": [None, Interval(Real, 0, 100, closed="both")],
     }
 
     def __init__(
@@ -123,7 +125,7 @@ class KNNADChecker(BaseADChecker):
         k: int = 1,
         metric: str | Callable = "tanimoto_binary_distance",
         agg: str = "mean",
-        threshold: float = 0.95,
+        threshold: float = 95,
         n_jobs: int | None = None,
         verbose: int | dict = 0,
     ):
@@ -155,7 +157,12 @@ class KNNADChecker(BaseADChecker):
             )
 
         self.X_train_ = X
-        self.k_used = 1 if self.agg == "min" else self.k
+
+        # k+1, since we need to exclude each point from being its own neighbor
+        if self.agg == "min":
+            self._k_used = min(len(X), 2)
+        else:
+            self._k_used = min(len(X), self.k + 1)
 
         if callable(self.metric):
             metric_func = self.metric
@@ -167,13 +174,18 @@ class KNNADChecker(BaseADChecker):
             )
 
         self.knn_ = NearestNeighbors(
-            n_neighbors=self.k_used, metric=metric_func, n_jobs=self.n_jobs
+            n_neighbors=self._k_used, metric=metric_func, n_jobs=self.n_jobs
         )
         self.knn_.fit(X)
         k_nearest, _ = self.knn_.kneighbors(X)
 
+        # exclude the point itself from the neighbors
+        k_nearest = k_nearest[:, 1:]
+
         agg_dists = self._get_agg_dists(k_nearest)
         self.threshold_ = np.percentile(agg_dists, self.threshold)
+
+        return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:  # noqa: D102
         return self.score_samples(X) <= self.threshold_
@@ -195,11 +207,10 @@ class KNNADChecker(BaseADChecker):
         """
         check_is_fitted(self)
         X = validate_data(self, X=X, reset=False)
-        k_nearest, _ = self.knn_.kneighbors(X, n_neighbors=self.k_used)
-
+        k_nearest, _ = self.knn_.kneighbors(X, n_neighbors=self._k_used)
         return self._get_agg_dists(k_nearest)
 
-    def _get_agg_dists(self, k_nearest) -> np.ndarray:
+    def _get_agg_dists(self, k_nearest: np.ndarray) -> np.ndarray:
         if self.agg == "mean":
             agg_dists = np.mean(k_nearest, axis=1)
         elif self.agg == "max":

@@ -43,8 +43,8 @@ def get_data_outside_ad(
     )
 
     if binarize:
-        thresholds = np.median(X_train, axis=0)
-        X_train = (X_train > thresholds).astype(int)
+        threshold = np.percentile(X_train, 25)
+        X_train = (X_train > threshold).astype(int)
         X_test = 1 - X_train[:n_test]
     else:
         X_test = X_train[:n_test] + 100.0

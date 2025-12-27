@@ -116,7 +116,7 @@ class MolStandardizer(BasePreprocessor):
 
         Returns
         -------
-        X : list of shape (n_samples_conf_gen,)
+        X : list of shape (n_samples,)
             List with RDKit ``Mol`` objects.
         """
         return super().transform(X, copy)

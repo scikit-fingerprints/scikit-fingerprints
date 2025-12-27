@@ -178,9 +178,7 @@ class E3FPFingerprint(BaseFingerprintTransformer):
                 f"fp_size={self.fp_size}"
             )
 
-    def transform(
-        self, X: Sequence[str | Mol], copy: bool = False
-    ) -> np.ndarray | csr_array:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray | csr_array:
         """
         Compute E3FP fingerprints.
 

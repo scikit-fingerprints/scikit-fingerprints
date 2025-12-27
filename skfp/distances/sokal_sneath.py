@@ -5,8 +5,8 @@ from sklearn.utils._param_validation import validate_params
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -102,8 +102,8 @@ def sokal_sneath_2_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -175,7 +175,7 @@ def sokal_sneath_2_binary_distance(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -281,7 +281,7 @@ def _bulk_sokal_sneath_2_binary_similarity_two(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -295,8 +295,8 @@ def bulk_sokal_sneath_2_binary_distance(
     Computes the pairwise Sokal-Sneath distance 2 between binary matrices. If
     one array is passed, distances are computed between its rows. For two arrays,
     distances are between their respective rows, with `i`-th row and `j`-th
-    column in output corresponding to `i`-th row from first array and `j`-th row
-    from second array.
+    column in output corresponding to `i`-th row from the first array and `j`-th row
+    from the second array.
 
     See also :py:func:`sokal_sneath_2_binary_distance`.
 

@@ -10,7 +10,7 @@ from sklearn.utils.multiclass import type_of_target
 @validate_params(
     {
         "y_true": ["array-like"],
-        "y_pred": ["array-like"],
+        "y_score": ["array-like"],
         "fraction": [Interval(Real, 0, 1, closed="neither")],
     },
     prefer_skip_nested_validation=True,
@@ -98,7 +98,7 @@ def enrichment_factor(
 @validate_params(
     {
         "y_true": ["array-like"],
-        "y_pred": ["array-like"],
+        "y_score": ["array-like"],
         "alpha": [Interval(Real, 0, None, closed="neither")],
     },
     prefer_skip_nested_validation=True,
@@ -191,7 +191,7 @@ def rie_score(
 @validate_params(
     {
         "y_true": ["array-like"],
-        "y_pred": ["array-like"],
+        "y_score": ["array-like"],
         "alpha": [Interval(Real, 0, None, closed="neither")],
     },
     prefer_skip_nested_validation=True,

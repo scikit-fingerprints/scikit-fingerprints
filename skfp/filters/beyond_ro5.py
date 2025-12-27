@@ -22,7 +22,7 @@ class BeyondRo5Filter(BaseFilter):
 
     Molecule can violate at most one of the rules (conditions):
 
-    - molecular weight <= 1000 daltons
+    - molecular weight <= 1000
     - logP in range [-2, 10]
     - HBA <= 15
     - HBD <= 6

@@ -12,7 +12,7 @@ class ProgressParallel(Parallel):
 
     Parameters
     ----------
-    tqdm_settings: Optional[dict] = None
+    tqdm_settings: dict or None, default=None
         Settings to use for the ``tqdm()`` progress bar.
     """
 
@@ -91,7 +91,7 @@ def run_in_parallel(
     Returns
     -------
     X : list of length (n_samples,)
-        The processed data. If processing function returns functions, this will be
+        The processed data. If the processing function returns lists, this will be
         a list of lists.
 
     Examples

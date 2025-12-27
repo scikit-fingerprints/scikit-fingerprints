@@ -47,7 +47,7 @@ def bond_count(mol: Mol, bond_type: str | None = None) -> int:
     mol : RDKit ``Mol`` object
         The molecule for which the bond count is to be calculated.
 
-    bond_type : str, optional
+    bond_type : str, default=None
         If ``None``, returns the total number of bonds. Otherwise, the valid
         options are RDKit bond types [1]_, e.g. "SINGLE", "DOUBLE", "TRIPLE",
         "AROMATIC".

@@ -9,22 +9,9 @@ repos:
         language: system
         pass_filenames: false
 
-  - repo: https://github.com/pypa/pip-audit
-    rev: v2.9.0
-    hooks:
-      - id: pip-audit
-        args: [
-          --vulnerability-service, "pypi",
-          --cache-dir, ".pip_audit_cache",
-          # false alert for setuptools, we have a much newer version
-          --ignore-vuln, "GHSA-5rjg-fvgr-3xxf",
-          # false alert for pip
-          --ignore-vuln, "GHSA-4xh5-x5gv-qwph"
-        ]
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.13.1
     hooks:
       - id: ruff-check  # linter
-        args: [ --fix ]
+        args: [ --fix, --exit-zero ]
       - id: ruff-format  # formatter

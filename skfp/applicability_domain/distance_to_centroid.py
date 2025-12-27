@@ -63,7 +63,7 @@ class DistanceToCentroidADChecker(BaseADChecker):
     data centroid, i.e. the average (middle) point [1]_. New molecules should lie
     inside the hypersphere of a given radius (distance) from that centroid.
 
-    Typically, physicochemical properties (continous features) are used as inputs.
+    Typically, physicochemical properties (continuous features) are used as inputs.
     Consider scaling, normalizing, or transforming them before computing AD to lessen
     effects of outliers, e.g. with ``PowerTransformer`` or ``RobustScaler``.
 
@@ -129,7 +129,7 @@ class DistanceToCentroidADChecker(BaseADChecker):
     _parameter_constraints: dict = {
         **BaseADChecker._parameter_constraints,
         "threshold": [Interval(Real, 0, None, closed="neither"), StrOptions({"auto"})],
-        "distance": [
+        "metric": [
             callable,
             StrOptions(SCIPY_METRIC_NAMES | SKFP_METRIC_NAMES | SKFP_BULK_METRIC_NAMES),
         ],

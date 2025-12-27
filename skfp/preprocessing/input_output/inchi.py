@@ -49,7 +49,7 @@ class MolFromInchiTransformer(BasePreprocessor):
     verbose : int or dict, default=0
         Controls the verbosity when processing molecules.
         If a dictionary is passed, it is treated as kwargs for ``tqdm()``,
-        and can be used to control the progress bar..
+        and can be used to control the progress bar.
 
     References
     ----------
@@ -100,7 +100,7 @@ class MolFromInchiTransformer(BasePreprocessor):
     def transform(self, X, copy: bool = False) -> list[Mol]:
         """
         Create RDKit ``Mol`` objects from InChI strings. If ``valid_only`` is set to
-        True, returns only a subset of molecules which could be successfullyloaded.
+        True, returns only a subset of molecules which could be successfully loaded.
 
         Parameters
         ----------
@@ -112,7 +112,7 @@ class MolFromInchiTransformer(BasePreprocessor):
 
         Returns
         -------
-        X : list of shape (n_samples_conf_gen,)
+        X : list of shape (n_samples,)
             List with RDKit ``Mol`` objects.
         """
         X = super().transform(X, copy)

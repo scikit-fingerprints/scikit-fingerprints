@@ -5,8 +5,8 @@ from sklearn.utils._param_validation import validate_params
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -97,8 +97,8 @@ def ct4_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -174,8 +174,8 @@ def ct4_binary_distance(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -268,8 +268,8 @@ def ct4_count_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -345,7 +345,7 @@ def ct4_count_distance(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -359,7 +359,7 @@ def bulk_ct4_binary_similarity(
     Computes the pairwise Consonni–Todeschini 4 (CT4) similarity between binary matrices.
     If one array is passed, similarities are computed between its rows. For two arrays,
     similarities are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`ct4_binary_similarity`.
 
@@ -434,7 +434,7 @@ def _bulk_ct4_binary_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -448,7 +448,7 @@ def bulk_ct4_binary_distance(
     Computes the pairwise Consonni–Todeschini 4 (CT4) distance between binary matrices.
     If one array is passed, distances are computed between its rows. For two arrays,
     distances are between their respective rows, with `i`-th row and `j`-th column
-    in output corresponding to `i`-th row from first array and `j`-th row from second array.
+    in output corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`ct4_binary_distance`.
 
@@ -472,7 +472,7 @@ def bulk_ct4_binary_distance(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -486,7 +486,7 @@ def bulk_ct4_count_similarity(
     Computes the pairwise Consonni–Todeschini 4 similarity between count matrices.
     If one array is passed, similarities are computed between its rows. For two arrays,
     similarities are between their respective rows, with `i`-th row and `j`-th column
-    in output corresponding to `i`-th row from first array and `j`-th row from second array.
+    in output corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`ct4_count_similarity`.
 
@@ -552,7 +552,7 @@ def _bulk_ct4_count_similarity_two(X: csr_array, Y: csr_array) -> np.ndarray:
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -566,7 +566,7 @@ def bulk_ct4_count_distance(
     Computes the pairwise Consonni–Todeschini 4 distance between count matrices.
     If one array is passed, distances are computed between its rows. For two arrays,
     distances are between their respective rows, with `i`-th row and `j`-th column
-    in output corresponding to `i`-th row from first array and `j`-th row from second array.
+    in output corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`ct4_count_distance`.
 

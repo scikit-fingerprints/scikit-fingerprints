@@ -71,7 +71,7 @@ class USRFingerprint(BaseFingerprintTransformer):
     :class:`USRCAT` : Related fingerprint, which additionally uses pharmacophoric
         atom types.
 
-    :class:`ElectroShaoe` : Related fingerprint, which additionally uses atomic
+    :class:`ElectroShape` : Related fingerprint, which additionally uses atomic
         partial charges.
 
     References
@@ -156,9 +156,7 @@ class USRFingerprint(BaseFingerprintTransformer):
         ]
         return np.asarray(feature_names, dtype=object)
 
-    def transform(
-        self, X: Sequence[str | Mol], copy: bool = False
-    ) -> np.ndarray | csr_array:
+    def transform(self, X: Sequence[Mol], copy: bool = False) -> np.ndarray | csr_array:
         """
         Compute USR fingerprints. If ``errors`` is set to ``"ignore"``, then in
         case of errors less than n_samples values may be returned.

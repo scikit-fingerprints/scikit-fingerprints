@@ -5,8 +5,8 @@ from sklearn.utils._param_validation import validate_params
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -120,8 +120,8 @@ def rogot_goldberg_binary_similarity(
 
 @validate_params(
     {
-        "vec_a": ["array-like", csr_array],
-        "vec_b": ["array-like", csr_array],
+        "vec_a": ["array-like", "sparse matrix"],
+        "vec_b": ["array-like", "sparse matrix"],
     },
     prefer_skip_nested_validation=True,
 )
@@ -193,7 +193,7 @@ def rogot_goldberg_binary_distance(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -208,7 +208,7 @@ def bulk_rogot_goldberg_binary_similarity(
     Computes the pairwise Rogot-Goldberg similarity between binary matrices. If one array is
     passed, similarities are computed between its rows. For two arrays, similarities
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`rogot_goldberg_binary_similarity`.
 
@@ -318,7 +318,7 @@ def _bulk_rogot_goldberg_binary_similarity_two(
 
 @validate_params(
     {
-        "X": ["array-like", csr_array],
+        "X": ["array-like", "sparse matrix"],
         "Y": ["array-like", csr_array, None],
     },
     prefer_skip_nested_validation=True,
@@ -332,7 +332,7 @@ def bulk_rogot_goldberg_binary_distance(
     Computes the pairwise Rogot-Goldberg distance between binary matrices. If one array is
     passed, distances are computed between its rows. For two arrays, distances
     are between their respective rows, with `i`-th row and `j`-th column in output
-    corresponding to `i`-th row from first array and `j`-th row from second array.
+    corresponding to `i`-th row from the first array and `j`-th row from the second array.
 
     See also :py:func:`rogot_goldberg_binary_distance`.
 
