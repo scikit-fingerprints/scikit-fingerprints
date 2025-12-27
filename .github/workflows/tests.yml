@@ -29,17 +29,13 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - uses: actions/cache@v5
-        name: Cache venv
+      - name: Cache datasets
+        uses: actions/cache@v5
         with:
-          path: ./.venv
-          key: ${{ matrix.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/uv.lock') }}
-
-      - uses: actions/cache@v5
-        name: Cache datasets
-        with:
-          path: ~/scikit_learn_data
-          key: datasets
+          # GitHub Actions can't create a cache key on dataset contents, so we use
+          # dataset loader .py files instead
+          path: ~/.cache/huggingface/hub
+          key: ${{ hashFiles('skfp/datasets/**/*.py') }}
 
       - name: Install the project dependencies
         run: uv sync --group test
