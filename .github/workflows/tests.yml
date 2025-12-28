@@ -34,7 +34,7 @@ jobs:
         with:
           # GitHub Actions can't create a cache key on dataset contents, so we use
           # dataset loader .py files instead
-          path: ~/.cache/huggingface/hub
+          path: ~/scikit_learn_data
           key: ${{ hashFiles('skfp/datasets/**/*.py') }}
 
       - name: Install the project dependencies
