@@ -29,16 +29,12 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Set dataset cache dir
-        run: echo "SCIKIT_LEARN_DATA=$HOME/scikit_learn_data" >> $GITHUB_ENV
-        shell: bash
-
       - name: Cache datasets
         uses: actions/cache@v5
         with:
           # GitHub Actions can't create a cache key on dataset contents, so we use
           # dataset loader .py files instead
-          path: ${{ env.SCIKIT_LEARN_DATA }}
+          path: ~/scikit_learn_data
           key: ${{ hashFiles('skfp/datasets/**/*.py') }}
 
       - name: Install the project dependencies
@@ -50,3 +46,11 @@ jobs:
 
       - name: Run tests with pytest
         run: uv run make test
+
+      - name: Debug
+        run: ls
+        shell: bash
+
+      - name: Debug2
+        run: ls ~/scikit_learn_data
+        shell: bash
