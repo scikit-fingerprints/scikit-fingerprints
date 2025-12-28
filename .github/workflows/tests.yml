@@ -44,4 +44,4 @@ jobs:
         run: uv run pre-commit run --all-files
 
       - name: Run tests with pytest
-        run: uv run pytest tests/datasets/lrgb.py
+        run: uv run make test
