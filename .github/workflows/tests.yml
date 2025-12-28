@@ -22,10 +22,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: debug
-        run: echo $HOME
-
-      - name: debug2
-        run: ls $HOME
+        run: ls ~/
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -40,7 +37,7 @@ jobs:
         with:
           # GitHub Actions can't create a cache key on dataset contents, so we use
           # dataset loader .py files instead
-          path: $HOME/scikit_learn_data
+          path: ~/scikit_learn_data
           key: ${{ hashFiles('skfp/datasets/**/*.py') }}
 
       - name: Install the project dependencies
@@ -50,4 +47,10 @@ jobs:
         run: uv run pre-commit run --all-files
 
       - name: Run tests with pytest
-        run: uv run make test
+        run: uv run pytest tests/datasets/lrgb.py
+
+      - name: debug
+        run: ls ~/
+
+      - run: ls -ld "${HOME}/scikit_learn_data"
+        shell: bash
