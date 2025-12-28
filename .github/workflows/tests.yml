@@ -21,6 +21,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
 
+      - name: debug
+        run: echo $HOME
+
+      - name: debug2
+        run: ls $HOME
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -34,7 +40,7 @@ jobs:
         with:
           # GitHub Actions can't create a cache key on dataset contents, so we use
           # dataset loader .py files instead
-          path: ${{ env.HOME }}/scikit_learn_data
+          path: $HOME/scikit_learn_data
           key: ${{ hashFiles('skfp/datasets/**/*.py') }}
 
       - name: Install the project dependencies
