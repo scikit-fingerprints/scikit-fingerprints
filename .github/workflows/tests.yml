@@ -39,7 +39,6 @@ jobs:
 
       - name: Install the project dependencies
         run: uv sync --group test
-        shell: bash
 
       - name: Check pre-commit
         run: uv run pre-commit run --all-files
