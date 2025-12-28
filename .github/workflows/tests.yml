@@ -34,7 +34,7 @@ jobs:
         with:
           # GitHub Actions can't create a cache key on dataset contents, so we use
           # dataset loader .py files instead
-          path: ~/scikit_learn_data
+          path: ${{ env.HOME }}/scikit_learn_data
           key: ${{ hashFiles('skfp/datasets/**/*.py') }}
 
       - name: Install the project dependencies
@@ -44,10 +44,5 @@ jobs:
       - name: Check pre-commit
         run: uv run pre-commit run --all-files
 
-      # TODO revert this path change after debugging
       - name: Run tests with pytest
-        run: uv run pytest tests/datasets/lrgb.py
-
-      - name: Debug
-        run: ls {{ $HOME }}
-        shell: bash
+        run: uv run make test
