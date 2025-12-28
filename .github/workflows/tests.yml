@@ -44,13 +44,10 @@ jobs:
       - name: Check pre-commit
         run: uv run pre-commit run --all-files
 
+      # TODO revert this path change after debugging
       - name: Run tests with pytest
-        run: uv run make test
+        run: uv run pytest tests/datasets
 
       - name: Debug
-        run: ls
-        shell: bash
-
-      - name: Debug2
-        run: ls ~/scikit_learn_data
+        run: ls {{ $HOME }}
         shell: bash
