@@ -46,7 +46,7 @@ jobs:
 
       # TODO revert this path change after debugging
       - name: Run tests with pytest
-        run: uv run pytest tests/datasets
+        run: uv run pytest tests/datasets/lrgb
 
       - name: Debug
         run: ls {{ $HOME }}
