@@ -27,7 +27,7 @@ def test_inside_distance_to_centroid_ad():
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
@@ -43,12 +43,12 @@ def test_outside_distance_to_centroid_ad():
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 
 
-def test_knn_lower_distance():
+def test_distance_to_centroid_lower_distance():
     X_train, _ = get_data_inside_ad()
     X_test = X_train + 10
 
@@ -73,7 +73,7 @@ def test_knn_lower_distance():
     + list(SKFP_METRIC_NAMES)
     + list(SKFP_METRICS.values()),
 )
-def test_knn_different_metrics(metric):
+def test_distance_to_centroid_different_metrics(metric):
     X_train, X_test = get_data_inside_ad()
 
     # smoke test, should not throw errors

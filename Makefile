@@ -33,7 +33,7 @@ test: ## Run tests
 	@# datasets tests are slow, so we run them only if Git indicates change there
 	@if $(DATASETS_CHANGED); then \
 	  echo "Datasets changed, running all tests" ;\
-	  uv run pytest tests ; \
+	  uv run pytest tests ;\
 	else \
 	  echo "Skipping datasets tests" ;\
 	  uv run pytest tests --ignore=tests/datasets ;\

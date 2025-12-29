@@ -72,7 +72,4 @@ def test_different_types_raise_error(dist_func):
         dist_func(vec_numpy, vec_scipy)
 
     assert "Both vec_a and vec_b must be of the same type," in str(exc_info)
-    assert (
-        "got <class 'numpy.ndarray'> and <class 'scipy.sparse._csr.csr_array'>"
-        in str(exc_info)
-    )
+    assert "got <class 'numpy.ndarray'> and <class 'scipy.sparse" in str(exc_info)

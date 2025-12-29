@@ -16,7 +16,7 @@ def test_inside_topkat_ad():
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 1)
 
@@ -32,7 +32,7 @@ def test_outside_topkat_ad():
 
     preds = ad_checker.predict(X_test)
     assert isinstance(preds, np.ndarray)
-    assert np.isdtype(preds.dtype, np.bool)
+    assert np.issubdtype(preds.dtype, np.bool_)
     assert_equal(preds.shape, (len(X_test),))
     assert np.all(preds == 0)
 

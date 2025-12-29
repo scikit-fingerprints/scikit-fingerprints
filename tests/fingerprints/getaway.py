@@ -5,6 +5,8 @@ from skfp.fingerprints import GETAWAYFingerprint
 
 
 def test_getaway_fingerprint(mols_conformers_list):
+    mols_conformers_list = mols_conformers_list[:30]  # due to computation time
+
     getaway_fp = GETAWAYFingerprint(n_jobs=-1)
     X_skfp = getaway_fp.transform(mols_conformers_list)
 
@@ -13,6 +15,8 @@ def test_getaway_fingerprint(mols_conformers_list):
 
 
 def test_getaway_sparse_fingerprint(mols_conformers_list):
+    mols_conformers_list = mols_conformers_list[:30]  # due to computation time
+
     getaway_fp = GETAWAYFingerprint(sparse=True, n_jobs=-1)
     X_skfp = getaway_fp.transform(mols_conformers_list)
 

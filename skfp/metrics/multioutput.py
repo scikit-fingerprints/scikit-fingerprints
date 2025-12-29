@@ -14,8 +14,17 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     roc_auc_score,
-    root_mean_squared_error,
 )
+
+try:
+    from sklearn.metrics import root_mean_squared_error
+except ImportError:
+    from functools import partial
+
+    from sklearn.metrics import mean_squared_error
+
+    root_mean_squared_error = partial(mean_squared_error, squared=False)
+
 from sklearn.utils._param_validation import validate_params
 
 from skfp.metrics.auroc import auroc_score
