@@ -271,8 +271,11 @@ class BaseFingerprintTransformer(
             )
 
         shape = (len(X), fp_size)
-        dtype = np.uint32 if count else np.uint8
-        arr = dok_array(shape, dtype=dtype) if sparse else np.zeros(shape, dtype=dtype)
+        arr = (
+            dok_array(shape, dtype=np.uint32)
+            if sparse
+            else np.zeros(shape, dtype=np.uint32)
+        )
 
         if isinstance(X[0], SparseBitVect):
             for idx, x in enumerate(X):

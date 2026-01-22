@@ -1,9 +1,8 @@
 import numpy as np
 import skfp.fingerprints as fps
-from ogb.graphproppred import GraphPropPredDataset
 from rdkit.Chem import Mol
 from skfp.bases import BaseFingerprintTransformer
-from skfp.datasets.moleculenet import load_moleculenet_benchmark
+from skfp.datasets.moleculenet import load_moleculenet_benchmark, load_ogb_splits
 from skfp.preprocessing import MolFromSmilesTransformer
 from skfp.utils import no_rdkit_logs
 from sklearn.ensemble import RandomForestClassifier
@@ -42,7 +41,7 @@ def fp_name_to_fp(fp_name: str) -> tuple[BaseFingerprintTransformer, dict]:
         fingerprint = fps.EStateFingerprint(n_jobs=-1)
         fp_params_grid = {"variant": ["sum", "bit", "count"]}
     elif fp_name == "FCFP":
-        fingerprint = fps.ECFPFingerprint(use_fcfp=True, n_jobs=-1)
+        fingerprint = fps.ECFPFingerprint(use_pharmacophoric_invariants=True, n_jobs=-1)
         fp_params_grid = {
             "fp_size": [1024, 2048, 4096],
             "radius": [2, 3],
@@ -78,7 +77,7 @@ def fp_name_to_fp(fp_name: str) -> tuple[BaseFingerprintTransformer, dict]:
         fp_params_grid = {
             "fp_size": [512, 1024, 2048],
             "radius": [2, 3],
-            "variant": ["bit", "count"],
+            "count": [False, True],
         }
     elif fp_name == "Pattern":
         fingerprint = fps.PatternFingerprint()
@@ -157,13 +156,9 @@ if __name__ == "__main__":
         print("DATASET", dataset_name)
         X = np.array(X)
 
-        dataset = GraphPropPredDataset(
-            name=f"ogbg-mol{dataset_name.lower()}", root=".tmp"
-        )
-        split_idx = dataset.get_idx_split()
+        train_idxs, valid_idxs, test_idxs = load_ogb_splits(dataset_name)
 
-        train_idxs = list(split_idx["train"]) + list(split_idx["valid"])
-        test_idxs = list(split_idx["test"])
+        train_idxs = list(train_idxs) + list(valid_idxs)
 
         smiles_train = X[train_idxs]
         smiles_test = X[test_idxs]
@@ -206,6 +201,7 @@ if __name__ == "__main__":
                     fp=fp,
                     fp_params_grid=fp_params_grid,
                 )
+
             print(
                 f"AUROC default {auroc_default:.1%}, tuned {auroc_tuned:.1%}, diff: {diff:.1%}"
             )

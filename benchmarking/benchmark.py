@@ -6,15 +6,12 @@ from time import sleep, time
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import skfp.fingerprints as fps
 from joblib import cpu_count
-from ogb.graphproppred import GraphPropPredDataset
+from skfp.datasets.moleculenet import load_hiv
 from skfp.preprocessing import ConformerGenerator, MolFromSmilesTransformer
 
 mpl.rcParams.update({"font.size": 18})
-
-DATASET_NAME = "ogbg-molhiv"
 
 # N_SPLITS - number of parts in which the dataset will be divided.
 # the test is performed first on 1 of them, then 2, ... then N_SPLITS
@@ -160,17 +157,13 @@ if __name__ == "__main__":
     if not os.path.exists(SCORE_DIR):
         os.makedirs(SCORE_DIR)
 
-    GraphPropPredDataset(name=DATASET_NAME, root=os.path.join("..", "dataset"))
-    dataset_path = os.path.join(
-        "..", "dataset", "_".join(DATASET_NAME.split("-")), "mapping", "mol.csv.gz"
-    )
-    dataset = pd.read_csv(dataset_path)
+    dataset = load_hiv()
 
     if os.path.exists("mols_with_conformers.npy"):
         X = np.load("mols_with_conformers.npy", allow_pickle=True)
     else:
         X = dataset["smiles"][:10000]
-        X = MolFromSmilesTransformer().transform(X)
+        X = MolFromSmilesTransformer(valid_only=True).transform(X)
         X = ConformerGenerator(n_jobs=-1, errors="filter").transform(X)
         X = np.array(X)
         np.save("mols_with_conformers.npy", X, allow_pickle=True)
