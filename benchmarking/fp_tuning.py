@@ -156,10 +156,9 @@ if __name__ == "__main__":
         print("DATASET", dataset_name)
         X = np.array(X)
 
-        split_idx = load_ogb_splits(dataset_name, as_dict=True)
+        train_idxs, valid_idxs, test_idxs = load_ogb_splits(dataset_name)
 
-        train_idxs = list(split_idx["train"]) + list(split_idx["valid"])
-        test_idxs = split_idx["test"]
+        train_idxs = list(train_idxs) + list(valid_idxs)
 
         smiles_train = X[train_idxs]
         smiles_test = X[test_idxs]
