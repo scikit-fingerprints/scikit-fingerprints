@@ -39,6 +39,10 @@ test: ## Run tests
 	  uv run pytest tests --ignore=tests/datasets ;\
 	fi
 
+test_with_datasets: ## Run tests, always including dataset tests
+	uv run ruff check
+	uv run pytest tests
+
 test-coverage: ## Run tests and calculate test coverage
 	-mkdir .tmp_coverage_files
 	uv run pytest --cov=skfp tests

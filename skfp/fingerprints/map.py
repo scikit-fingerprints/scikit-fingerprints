@@ -283,8 +283,8 @@ class MAPFingerprint(BaseFingerprintTransformer):
 
     @staticmethod
     def _make_shingle(env_a: str | None, env_b: str | None, distance: int) -> str:
-        env_a = env_a if env_a else ""
-        env_b = env_b if env_b else ""
+        env_a = env_a or ""
+        env_b = env_b or ""
 
         if len(env_a) > len(env_b):
             larger_env: str = env_a
