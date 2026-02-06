@@ -26,11 +26,11 @@ requires-python = ">=3.10,<3.14"
 dependencies = [
     "descriptastorus>=2.0.0,<3",
     "e3fp>=1.2.6,<2",
-    "huggingface_hub>=0.20.0,<1",
+    "huggingface_hub>=0.20.0,<2",
     "joblib>=1.0.0,<2",
     "mordredcommunity>=2.0.0,<3",
     "numpy>=1.26.4,<3",
-    "pandas>=1.5.3,<3",
+    "pandas>=1.5.3,<4",
     "rdkit>=2023.9.6,<=2025.9.3",
     "scikit-learn>=1.6.0,<2",
     "scipy>=1.12.0,<2",

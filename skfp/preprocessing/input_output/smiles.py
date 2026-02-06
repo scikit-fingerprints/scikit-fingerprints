@@ -158,7 +158,7 @@ class MolFromSmilesTransformer(BasePreprocessor):
     def _transform_batch(self, X: Sequence[str]) -> list[Mol]:
         with no_rdkit_logs() if self.suppress_warnings else nullcontext():
             require_strings(X)
-            replacements = self.replacements if self.replacements else {}
+            replacements = self.replacements or {}
             return [
                 MolFromSmiles(smi, sanitize=self.sanitize, replacements=replacements)
                 for smi in X
